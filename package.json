@@ -1,0 +1,28 @@
+{
+  "name": "iso",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "yarn watch",
+    "build": "rm -rf src/*.map src/main.js && tsc --sourceMap false && node scripts/build src",
+    "watch": "concurrently -n 1,2 \"http-server\" \"tsc --watch\""
+  },
+  "devDependencies": {
+    "@types/node": "^11.9.4",
+    "@typescript-eslint/eslint-plugin": "^3.1.0",
+    "@typescript-eslint/parser": "^3.1.0",
+    "concurrently": "^5.3.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "html-minifier": "^4.0.0",
+    "http-server": "^0.12.3",
+    "prettier": "^2.0.5",
+    "rollup": "^2.33.1",
+    "terser": "^4.6.11",
+    "typescript": "^3.9.3",
+    "uglifycss": "0.0.29"
+  },
+  "browserslist": "> 0.25%, not dead"
+}

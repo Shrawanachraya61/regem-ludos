@@ -1,0 +1,42 @@
+// cSpell Settings
+{
+    // Version of the setting file.  Always 0.1
+    "version": "0.1",
+    // language - current active spelling language
+    "language": "en",
+    // words - list of words to be always considered correct
+    "words": [
+        "readyroom",
+        "rpgscript",
+        "cmpt",
+        "cmpts",
+        "tilesets",
+        "Rydo",
+        "Ferelith",
+        "tileset",
+        "isnot",
+        "Elkhain",
+        "unmount",
+        "waypoint",
+        "pathfinding",
+        "Iroha",
+        "cooldown",
+        "firstgid",
+        "renderables",
+        "canv",
+        "renderable",
+        "centeredxy",
+        "spritesheet",
+        "spritesheets",
+        "nframe",
+        "nframes",
+        "anims",
+        "cmpts"
+    ],
+    // flagWords - list of words to be always considered incorrect
+    // This is useful for offensive words and common spelling errors.
+    // For example "hte" should be "the"
+    "flagWords": [
+        "hte"
+    ]
+}

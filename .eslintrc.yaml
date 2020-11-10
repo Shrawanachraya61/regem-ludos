@@ -1,0 +1,37 @@
+parser: '@typescript-eslint/parser'
+
+extends:
+  - 'plugin:prettier/recommended'
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+
+plugins:
+  - 'babel'
+  - 'prettier'
+  - '@typescript-eslint'
+
+env:
+  browser: true
+  node: true
+  mocha: true
+  es6: true
+
+ignorePatterns:
+  - main.js
+
+rules:
+  prettier/prettier:
+    - 2
+    - bracketSpacing: true
+      singleQuote: true
+      tabWidth: 2
+      trailingComma: 'es5'
+  no-lone-blocks: 0
+  no-throw-literal: 0
+  no-console: 0
+  no-case-declarations: 0
+  no-fallthrough: 0
+  no-sparse-arrays: 0
+  '@typescript-eslint/no-explicit-any': 0
+  '@typescript-eslint/no-var-requires': 0

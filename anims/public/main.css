@@ -1,0 +1,144 @@
+body {
+  margin: 0px;
+  background-color: #111;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: monospace;
+  color: #f8f8f8;
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.button {
+  font-size: 14px;
+  color: #f8f8f8;
+  border: 1px solid #f8f8f8;
+  background-color: #2e3740;
+  text-align: center;
+  padding: 10px;
+  min-width: 50px;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #111;
+}
+.button:active {
+  background-color: #2e3740;
+}
+
+.button-disabled {
+  color: #cfc6b8 !important;
+  border: 1px solid #cfc6b8 !important;
+  background-color: #5a5353 !important;
+  pointer-events: none !important;
+}
+
+.button-primary {
+  color: #3fc778;
+  border: 1px solid #3fc778;
+  background-color: #2e3740;
+}
+
+.button-secondary {
+  color: #92f4ff;
+  border: 1px solid #92f4ff;
+  background-color: #2e3740;
+}
+
+.button-cadence {
+  color: #AE57A4;
+  border: 1px solid #AE57A4;
+}
+
+.button-cancel {
+  color: #e1534a;
+  border: 1px solid #e1534a;
+  background-color: #2e3740;
+}
+
+.label {
+  font-size: 24px;
+  color: #3fc778;
+  padding: 5px;
+  text-align: left;
+}
+
+.middle-container {
+  width: calc(100% - 256px - 256px);
+  height: calc(100% - 4px);
+  border-top: 2px solid #3fc778;
+  border-bottom: 2px solid #3fc778;
+}
+
+.column {
+  width: 256px;
+  background-color: #111;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 2px solid #f8f8f8;
+}
+
+.column-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #3fc778;
+  text-align: center;
+  background-color: #111;
+  border: 1px solid #f8f8f8;
+  padding: 5px;
+}
+
+.column-item {
+  font-size: 16px;
+  color: #3fc778;
+  border: 1px solid #111;
+  text-align: left;
+  background-color: #2e3740;
+  cursor: pointer;
+  padding: 3px;
+}
+.column-item:hover {
+  border: 1px solid #f8f8f8;
+}
+.column-item-uninitialized {
+  color: #e1534a;
+}
+.column-item-selected {
+  background-color: #50576b;
+}
+.column-item-centered {
+  display: flex;
+  justify-content: center;
+}
+
+.animation-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+  height: 100%;
+}
+.centeredxy {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.animation-area-zoom-container {
+  display: flex;
+  justify-content: center;
+}
+
+.zoom-button {
+  margin: 5px;
+}
