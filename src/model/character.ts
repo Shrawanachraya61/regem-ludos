@@ -1,4 +1,5 @@
 import { createAnimation, Animation } from 'model/animation';
+import { BattleStats, battleStatsCreate } from 'model/battle';
 
 export enum Facing {
   LEFT = 'left',
@@ -26,6 +27,8 @@ export interface Character {
   spriteBase: string;
   x: number;
   y: number;
+  hp: number;
+  stats: BattleStats;
   facing: Facing;
   animationState: AnimationState;
   animationKey: string;
@@ -35,6 +38,7 @@ export interface Character {
 export interface CharacterTemplate {
   name: string;
   spriteBase: string;
+  stats?: BattleStats;
   facing?: Facing;
   animationState?: AnimationState;
 }
@@ -45,6 +49,8 @@ export const characterCreate = (name: string): Character => {
     spriteBase: 'ada',
     x: 0,
     y: 0,
+    hp: 10,
+    stats: battleStatsCreate(),
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     animationKey: '',
@@ -62,6 +68,9 @@ export const characterCreateFromTemplate = (
   ch.facing = template.facing || ch.facing;
   ch.animationState = template.animationState || ch.animationState;
   ch.animationKey = characterGetAnimKey(ch);
+  ch.stats = {
+    ...(template.stats || ch.stats),
+  };
   return ch;
 };
 
@@ -100,4 +109,13 @@ export const characterSetAnimationState = (
 export const characterSetFacing = (ch: Character, facing: Facing): void => {
   ch.facing = facing;
   characterSetAnimationState(ch, ch.animationState);
+};
+
+export const characterModifyHp = (ch: Character, n: number): void => {
+  ch.hp += n;
+  if (ch.hp > ch.stats.HP) {
+    ch.hp = ch.stats.HP;
+  } else if (ch.hp < 0) {
+    ch.hp = 0;
+  }
 };
