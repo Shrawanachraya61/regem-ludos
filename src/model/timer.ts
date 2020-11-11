@@ -24,6 +24,17 @@ export class Timer {
     return getNow() - this.timestampStart >= this.duration;
   }
 
+  getPctComplete(): number {
+    const now = getNow();
+    let diff = now - this.timestampStart;
+    if (diff > this.duration) {
+      diff = this.duration;
+    } else if (diff < 0) {
+      diff = 0;
+    }
+    return diff / this.duration;
+  }
+
   markForRemoval(): void {
     this.shouldRemove = true;
   }

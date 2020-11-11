@@ -13,6 +13,9 @@ class AssetLoader {
 
     const _Picture = async function (line: any) {
       const [, pictureName, url, spriteWidth, spriteHeight] = line;
+      if (pictureName === 'invisible') {
+        return;
+      }
       const img = await loadImageAsSpritesheet(
         url,
         pictureName,

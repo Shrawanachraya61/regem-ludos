@@ -1,18 +1,22 @@
 import { loadImageAsSprite } from 'model/sprite';
-import { removeFileExtension } from 'utils';
+import { removeFileExtension, Point } from 'utils';
 import { Character } from 'model/character';
 
-import * as battleJson from 'map/battle.json';
+import * as battle1Json from 'map/battle1.json';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
+
+export const tilePosToWorldPoint = (x: number, y: number): Point => {
+  return [(x * TILE_WIDTH) / 2, (y * TILE_HEIGHT) / 2];
+};
 
 const rooms: { [key: string]: Room } = {};
 
 export const loadRooms = async (): Promise<void> => {
   console.log('loading maps');
 
-  await createRoom('battle1', battleJson);
+  await createRoom('battle1', battle1Json);
 
   console.log('maps loaded');
 };
@@ -32,6 +36,7 @@ export interface Tile {
   id: number;
   x: number;
   y: number;
+  highlighted: boolean;
 }
 
 export interface Room {
@@ -73,6 +78,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       id: tiledTileId - 1,
       x: i % width,
       y: Math.floor(i / width),
+      highlighted: false,
     });
   });
 
@@ -105,4 +111,15 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
 
   rooms[name] = room;
   return room;
+};
+
+export const roomGetTileAt = (
+  room: Room,
+  x: number,
+  y: number
+): Tile | null => {
+  if (x < 0 || x >= room.width || y < 0 || y >= room.height) {
+    return null;
+  }
+  return room.tiles[y * room.width + x];
 };

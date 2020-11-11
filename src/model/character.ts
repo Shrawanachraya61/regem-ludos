@@ -1,5 +1,6 @@
 import { createAnimation, Animation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
+import { Transform } from 'model/transform';
 
 export enum Facing {
   LEFT = 'left',
@@ -28,6 +29,7 @@ export interface Character {
   x: number;
   y: number;
   hp: number;
+  transform: Transform | null;
   stats: BattleStats;
   facing: Facing;
   animationState: AnimationState;
@@ -49,6 +51,7 @@ export const characterCreate = (name: string): Character => {
     spriteBase: 'ada',
     x: 0,
     y: 0,
+    transform: null,
     hp: 10,
     stats: battleStatsCreate(),
     facing: Facing.LEFT,

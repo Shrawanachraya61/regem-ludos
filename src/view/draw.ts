@@ -1,7 +1,13 @@
 import { Sprite, getSprite } from 'model/sprite';
 import { Animation } from 'model/animation';
 import { getCtx, getScreenSize } from 'model/canvas';
-import { TILE_WIDTH, TILE_HEIGHT, Room, Prop } from 'model/room';
+import {
+  TILE_WIDTH,
+  TILE_HEIGHT,
+  Room,
+  Prop,
+  tilePosToWorldPoint,
+} from 'model/room';
 import { isoToPixelCoords, Point } from 'utils';
 import { Character, characterGetAnimation } from 'model/character';
 
@@ -120,8 +126,15 @@ export const drawCharacter = (
 ): void => {
   const { x, y } = ch;
   const anim = characterGetAnimation(ch);
+  // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
   const [px, py] = isoToPixelCoords(x, y);
-  drawAnimation(anim, px, py, scale, ctx);
+  drawAnimation(
+    anim,
+    px, // props are draw bottom-up, centered x
+    py,
+    scale,
+    ctx
+  );
 };
 
 export const drawRoom = (
@@ -129,12 +142,14 @@ export const drawRoom = (
   offset: Point,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const { width, height, tiles, props } = room;
+  const { width, height, tiles, props, characters } = room;
   const [offsetX, offsetY] = offset;
 
   ctx = ctx || getCtx();
   ctx.save();
   ctx.translate(offsetX, offsetY);
+
+  let highlightedTile: any = null;
 
   for (let k = 0; k <= width + height - 2; k++) {
     for (let j = 0; j <= k; j++) {
@@ -147,8 +162,19 @@ export const drawRoom = (
         );
 
         drawSprite(tile.sprite, px, py);
+
+        if (tile.highlighted) {
+          highlightedTile = tile;
+        }
       }
     }
+  }
+
+  if (highlightedTile) {
+    const { x, y } = highlightedTile;
+    const [tx, ty] = tilePosToWorldPoint(x, y);
+    const [px, py] = isoToPixelCoords(tx, ty);
+    drawSprite('indicator', px, py);
   }
 
   room.props = props.sort((a: Prop, b: Prop) => {
@@ -173,6 +199,11 @@ export const drawRoom = (
       px - spriteWidth / 2 + TILE_WIDTH / 2, // props are draw bottom-up, centered x
       py - spriteHeight + TILE_HEIGHT / 2
     );
+  }
+
+  for (let i = 0; i < characters.length; i++) {
+    const ch = characters[i];
+    drawCharacter(ch);
   }
 
   ctx.restore();

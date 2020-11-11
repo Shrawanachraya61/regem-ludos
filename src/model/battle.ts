@@ -1,12 +1,36 @@
-import { Room } from 'model/room';
+import { Room, tilePosToWorldPoint } from 'model/room';
 import { Character, CharacterTemplate } from 'model/character';
 import { Timer } from 'model/timer';
+import { Point } from 'utils';
 
 export enum BattlePosition {
   FRONT = 'front',
   MIDDLE = 'middle',
   BACK = 'back',
 }
+
+const BATTLE_ALLY_FRONT1: Point = [5, 7];
+const BATTLE_ALLY_FRONT2: Point = [8, 10];
+const BATTLE_ALLY_MIDDLE1: Point = [3, 9];
+const BATTLE_ALLY_MIDDLE2: Point = [6, 12];
+const BATTLE_ALLY_BACK1: Point = [1, 11];
+const BATTLE_ALLY_BACK2: Point = [4, 14];
+const BATTLE_ENEMY_FRONT1: Point = [7, 5];
+const BATTLE_ENEMY_FRONT2: Point = [10, 8];
+const BATTLE_ENEMY_MIDDLE1: Point = [9, 3];
+const BATTLE_ENEMY_MIDDLE2: Point = [12, 6];
+const BATTLE_ENEMY_BACK1: Point = [11, 1];
+const BATTLE_ENEMY_BACK2: Point = [14, 4];
+const BATTLE_POINTS_ALLY = {
+  [BattlePosition.FRONT]: [BATTLE_ALLY_FRONT1, BATTLE_ALLY_FRONT2],
+  [BattlePosition.MIDDLE]: [BATTLE_ALLY_MIDDLE1, BATTLE_ALLY_MIDDLE2],
+  [BattlePosition.BACK]: [BATTLE_ALLY_BACK1, BATTLE_ALLY_BACK2],
+};
+const BATTLE_POINTS_ENEMY = {
+  [BattlePosition.FRONT]: [BATTLE_ENEMY_FRONT1, BATTLE_ENEMY_FRONT2],
+  [BattlePosition.MIDDLE]: [BATTLE_ENEMY_MIDDLE1, BATTLE_ENEMY_MIDDLE2],
+  [BattlePosition.BACK]: [BATTLE_ENEMY_BACK1, BATTLE_ENEMY_BACK2],
+};
 
 export interface BattleStats {
   POW: number; // flat damage modifier
@@ -31,7 +55,7 @@ export const battleStatsCreate = (): BattleStats => {
 export interface BattleTemplateEnemy {
   chTemplate: CharacterTemplate;
   position: BattlePosition;
-  ai: string;
+  ai?: string;
 }
 
 export interface BattleTemplate {
@@ -45,7 +69,7 @@ interface BattleCharacter {
   position: BattlePosition;
   ai?: string;
 }
-export const battleCharacterCreate = (
+export const battleCharacterCreateEnemy = (
   ch: Character,
   template: BattleTemplateEnemy
 ): BattleCharacter => {
@@ -56,6 +80,18 @@ export const battleCharacterCreate = (
     ai: template.ai,
   };
 };
+export const battleCharacterCreateAlly = (
+  ch: Character,
+  args: {
+    position: BattlePosition;
+  }
+): BattleCharacter => {
+  return {
+    ch,
+    actionTimer: new Timer(100),
+    position: args.position,
+  };
+};
 
 export interface Battle {
   room: Room;
@@ -64,13 +100,68 @@ export interface Battle {
 }
 
 export const battleSetActorPositions = (battle: Battle): void => {
+  const positionsAlly = {
+    [BattlePosition.FRONT]: 0,
+    [BattlePosition.MIDDLE]: 0,
+    [BattlePosition.BACK]: 0,
+  };
+  const positionsEnemy = {
+    [BattlePosition.FRONT]: 0,
+    [BattlePosition.MIDDLE]: 0,
+    [BattlePosition.BACK]: 0,
+  };
   battle.allies.forEach((bCh: BattleCharacter) => {
-    bCh.ch.x = 0;
-    bCh.ch.y = 0;
+    let pos = [0, 0];
+    switch (bCh.position) {
+      case BattlePosition.FRONT:
+        pos =
+          BATTLE_POINTS_ALLY[BattlePosition.FRONT][
+            positionsAlly[BattlePosition.FRONT]++
+          ];
+        break;
+      case BattlePosition.MIDDLE:
+        pos =
+          BATTLE_POINTS_ALLY[BattlePosition.MIDDLE][
+            positionsAlly[BattlePosition.MIDDLE]++
+          ];
+        break;
+      case BattlePosition.BACK:
+        pos =
+          BATTLE_POINTS_ALLY[BattlePosition.BACK][
+            positionsAlly[BattlePosition.BACK]++
+          ];
+        break;
+    }
+
+    const [x, y] = tilePosToWorldPoint(pos[0], pos[1]);
+    bCh.ch.x = x;
+    bCh.ch.y = y;
   });
   battle.enemies.forEach((bCh: BattleCharacter) => {
-    bCh.ch.x = 0;
-    bCh.ch.y = 0;
+    let pos = [0, 0];
+    switch (bCh.position) {
+      case BattlePosition.FRONT:
+        pos =
+          BATTLE_POINTS_ENEMY[BattlePosition.FRONT][
+            positionsEnemy[BattlePosition.FRONT]++
+          ];
+        break;
+      case BattlePosition.MIDDLE:
+        pos =
+          BATTLE_POINTS_ENEMY[BattlePosition.MIDDLE][
+            positionsEnemy[BattlePosition.MIDDLE]++
+          ];
+        break;
+      case BattlePosition.BACK:
+        pos =
+          BATTLE_POINTS_ENEMY[BattlePosition.BACK][
+            positionsEnemy[BattlePosition.BACK]++
+          ];
+        break;
+    }
+    const [x, y] = tilePosToWorldPoint(pos[0], pos[1]);
+    bCh.ch.x = x;
+    bCh.ch.y = y;
   });
 };
 

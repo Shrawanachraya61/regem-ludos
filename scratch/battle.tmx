@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="isometric" renderorder="left-down" width="16" height="16" tilewidth="32" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="24">
+<map version="1.4" tiledversion="1.4.2" orientation="isometric" renderorder="left-down" width="16" height="16" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="28">
  <editorsettings>
-  <export target="../src/map/battle.json" format="json"/>
+  <export target="../src/map/battle1.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="battle-terrain1" tilewidth="32" tileheight="32" tilecount="16" columns="4">
   <image source="../res/battle-terrain1.png" width="128" height="128"/>
@@ -23,35 +23,39 @@
  </tileset>
  <layer id="1" name="Tile Layer 1" width="16" height="16">
   <data encoding="csv">
-3,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,
-3,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
-3,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
-3,3,2,2,1,1,1,1,1,1,1,1,1,1,1,1,
-3,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,
-2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
-2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
-2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,
-2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,
-1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,
-1,1,1,1,1,1,1,1,1,1,2,3,3,2,2,2
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 </data>
  </layer>
  <objectgroup id="5" name="Object Layer 1">
-  <object id="4" gid="17" x="0" y="64" width="32" height="64"/>
-  <object id="7" gid="17" x="128" y="32" width="32" height="64"/>
-  <object id="8" gid="17" x="48" y="16" width="32" height="64"/>
-  <object id="9" name="1" gid="18" x="96" y="144" width="32" height="32"/>
-  <object id="10" name="3" gid="18" x="64" y="224" width="32" height="32"/>
-  <object id="11" name="4" gid="18" x="96" y="192" width="32" height="32"/>
-  <object id="12" name="2" gid="18" x="144" y="192" width="32" height="32"/>
-  <object id="13" name="2" gid="19" x="192" y="96" width="32" height="32"/>
-  <object id="14" name="4" gid="19" x="224" y="64" width="32" height="32"/>
-  <object id="15" name="1" gid="19" x="192" y="144" width="32" height="32"/>
-  <object id="16" name="3" gid="19" x="144" y="96" width="32" height="32"/>
+  <object id="4" gid="17" x="32" y="96" width="32" height="64"/>
+  <object id="7" gid="17" x="224" y="240" width="32" height="64"/>
+  <object id="8" gid="17" x="64" y="32" width="32" height="64"/>
+  <object id="9" name="1" gid="18" x="96" y="128" width="32" height="32"/>
+  <object id="10" name="3" gid="18" x="80" y="240" width="32" height="32"/>
+  <object id="11" name="4" gid="18" x="64" y="160" width="32" height="32"/>
+  <object id="12" name="2" gid="18" x="144" y="176" width="32" height="32"/>
+  <object id="13" name="2" gid="19" x="160" y="64" width="32" height="32"/>
+  <object id="14" name="4" gid="19" x="192" y="32" width="32" height="32"/>
+  <object id="15" name="1" gid="19" x="176" y="144" width="32" height="32"/>
+  <object id="16" name="3" gid="19" x="128" y="96" width="32" height="32"/>
+  <object id="24" name="4" gid="18" x="112" y="208" width="32" height="32"/>
+  <object id="25" name="3" gid="18" x="32" y="192" width="32" height="32"/>
+  <object id="26" name="2" gid="19" x="208" y="112" width="32" height="32"/>
+  <object id="27" name="4" gid="19" x="240" y="80" width="32" height="32"/>
  </objectgroup>
 </map>
