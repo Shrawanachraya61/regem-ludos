@@ -1,4 +1,5 @@
-const SCREEN_WIDTH = 512;
+export const SCREEN_WIDTH = 512;
+export const CANVAS_ID = 'canv';
 
 let mainCanvas: HTMLCanvasElement | null = null;
 let frameMultiplier = 1;

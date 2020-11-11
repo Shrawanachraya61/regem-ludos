@@ -1,6 +1,7 @@
 import { createAnimation, Animation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
 import { Transform } from 'model/transform';
+import { Point } from 'utils';
 
 export enum Facing {
   LEFT = 'left',
@@ -120,5 +121,25 @@ export const characterModifyHp = (ch: Character, n: number): void => {
     ch.hp = ch.stats.HP;
   } else if (ch.hp < 0) {
     ch.hp = 0;
+  }
+};
+
+export const characterSetTransform = (
+  ch: Character,
+  transform: Transform
+): void => {
+  ch.transform = transform;
+};
+
+export const characterGetPos = (ch: Character): Point => {
+  if (ch.transform) {
+    return ch.transform.current();
+  }
+  return [ch.x, ch.y];
+};
+
+export const characterUpdate = (ch: Character): void => {
+  if (ch.transform) {
+    ch.transform.update();
   }
 };

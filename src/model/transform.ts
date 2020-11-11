@@ -13,13 +13,17 @@ export class Transform {
   endY: number;
   timer: Timer;
   ease: TransformEase;
-  constructor(duration: number, ease: TransformEase) {
-    this.startX = 0;
-    this.startY = 0;
-    this.endX = 0;
-    this.endY = 0;
+  shouldRemove: boolean;
+
+  constructor(start: Point, end: Point, duration: number, ease: TransformEase) {
+    this.startX = start[0];
+    this.startY = start[1];
+    this.endX = end[0];
+    this.endY = end[1];
     this.timer = new Timer(duration);
     this.ease = ease;
+    this.shouldRemove = false;
+    this.timer.start();
   }
 
   start(): Point {
@@ -41,5 +45,12 @@ export class Transform {
       transformEaseFunc(pct, 0, 1, this.startX, this.endX) * multX,
       transformEaseFunc(pct, 0, 1, this.startY, this.endY) * multY,
     ];
+  }
+  update(): void {
+    this.timer.update();
+  }
+
+  markForRemoval(): void {
+    this.shouldRemove = true;
   }
 }

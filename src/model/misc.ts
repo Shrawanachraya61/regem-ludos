@@ -23,3 +23,14 @@ export const getMousePos = (): Point => mousePos;
 export const setMousePos = (x: number, y: number): void => {
   mousePos = [x, y];
 };
+
+const keyState: { [key: string]: boolean } = {};
+export const setKeyDown = (key: string): void => {
+  keyState[key] = true;
+};
+export const setKeyUp = (key: string): void => {
+  keyState[key] = false;
+};
+export const isKeyDown = (key: string): boolean => {
+  return keyState[key] ?? false;
+};

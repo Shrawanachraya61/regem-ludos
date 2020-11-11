@@ -3,10 +3,39 @@ import { Character, CharacterTemplate } from 'model/character';
 import { Timer } from 'model/timer';
 import { Point } from 'utils';
 
+export interface Battle {
+  room: Room;
+  allies: BattleCharacter[];
+  enemies: BattleCharacter[];
+}
+
+interface BattleCharacter {
+  ch: Character;
+  actionTimer: Timer;
+  position: BattlePosition;
+  ai?: string;
+}
+
+export interface BattleTemplateEnemy {
+  chTemplate: CharacterTemplate;
+  position: BattlePosition;
+  ai?: string;
+}
+
+export interface BattleTemplate {
+  roomName: string;
+  enemies: BattleTemplateEnemy[];
+}
+
 export enum BattlePosition {
   FRONT = 'front',
   MIDDLE = 'middle',
   BACK = 'back',
+}
+
+export enum BattleAllegiance {
+  ALLY = 'ally',
+  ENEMY = 'enemy',
 }
 
 const BATTLE_ALLY_FRONT1: Point = [5, 7];
@@ -52,23 +81,6 @@ export const battleStatsCreate = (): BattleStats => {
   };
 };
 
-export interface BattleTemplateEnemy {
-  chTemplate: CharacterTemplate;
-  position: BattlePosition;
-  ai?: string;
-}
-
-export interface BattleTemplate {
-  roomName: string;
-  enemies: BattleTemplateEnemy[];
-}
-
-interface BattleCharacter {
-  ch: Character;
-  actionTimer: Timer;
-  position: BattlePosition;
-  ai?: string;
-}
 export const battleCharacterCreateEnemy = (
   ch: Character,
   template: BattleTemplateEnemy
@@ -92,12 +104,6 @@ export const battleCharacterCreateAlly = (
     position: args.position,
   };
 };
-
-export interface Battle {
-  room: Room;
-  allies: BattleCharacter[];
-  enemies: BattleCharacter[];
-}
 
 export const battleSetActorPositions = (battle: Battle): void => {
   const positionsAlly = {
@@ -179,4 +185,77 @@ let currentBattle: null | Battle = null;
 export const getCurrentBattle = (): Battle => currentBattle as Battle;
 export const setCurrentBattle = (b: Battle): void => {
   currentBattle = b;
+};
+
+export const battleGetAllegiance = (
+  battle: Battle,
+  ch: Character
+): BattleAllegiance => {
+  if (
+    battle.enemies.find((bCh: BattleCharacter) => {
+      return bCh.ch === ch;
+    })
+  ) {
+    return BattleAllegiance.ENEMY;
+  }
+  if (
+    battle.allies.find((bCh: BattleCharacter) => {
+      return bCh.ch === ch;
+    })
+  ) {
+    return BattleAllegiance.ALLY;
+  }
+  throw new Error(
+    `Cannot get battle allegiance for character '${ch.name}' that does not exist in battle.`
+  );
+};
+
+export const battleGetOppositeAllegiance = (
+  allegiance: BattleAllegiance
+): BattleAllegiance => {
+  return allegiance === BattleAllegiance.ALLY
+    ? BattleAllegiance.ENEMY
+    : BattleAllegiance.ALLY;
+};
+
+export const battleGetCharactersOfAllegiance = (
+  battle: Battle,
+  allegiance: BattleAllegiance
+): BattleCharacter[] => {
+  switch (allegiance) {
+    case BattleAllegiance.ALLY: {
+      return battle.allies;
+    }
+    case BattleAllegiance.ENEMY: {
+      return battle.enemies;
+    }
+    default: {
+      return battle.allies;
+    }
+  }
+};
+
+export const battleGetNearestAttackable = (
+  battle: Battle,
+  allegiance: BattleAllegiance
+): BattleCharacter | null => {
+  const arr = battleGetCharactersOfAllegiance(
+    battle,
+    battleGetOppositeAllegiance(allegiance)
+  );
+  let target: BattleCharacter | undefined;
+  target = arr.find((bCh: BattleCharacter) => {
+    return bCh.position === BattlePosition.FRONT;
+  });
+  if (!target) {
+    target = arr.find((bCh: BattleCharacter) => {
+      return bCh.position === BattlePosition.MIDDLE;
+    });
+  }
+  if (!target) {
+    target = arr.find((bCh: BattleCharacter) => {
+      return bCh.position === BattlePosition.BACK;
+    });
+  }
+  return target ?? null;
 };

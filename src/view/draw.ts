@@ -9,7 +9,11 @@ import {
   tilePosToWorldPoint,
 } from 'model/room';
 import { isoToPixelCoords, Point } from 'utils';
-import { Character, characterGetAnimation } from 'model/character';
+import {
+  Character,
+  characterGetAnimation,
+  characterGetPos,
+} from 'model/character';
 
 interface DrawTextParams {
   font?: string;
@@ -124,7 +128,7 @@ export const drawCharacter = (
   scale?: number,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const { x, y } = ch;
+  const [x, y] = characterGetPos(ch);
   const anim = characterGetAnimation(ch);
   // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
   const [px, py] = isoToPixelCoords(x, y);

@@ -20,6 +20,7 @@ export class Animation {
   totalDurationMs: number;
   currentSpriteIndex: number;
   timestampStart: number;
+  awaits: any[];
 
   constructor(loop: boolean) {
     this.loop = loop || false;
@@ -29,6 +30,7 @@ export class Animation {
     this.currentSpriteIndex = 0;
     this.timestampStart = 0;
     this.name = '';
+    this.awaits = [];
   }
 
   reset(): void {
@@ -95,6 +97,22 @@ export class Animation {
       }
     }
     this.currentSpriteIndex = this.getAnimIndex(now);
+    if (!this.loop) {
+      if (now - this.timestampStart >= this.totalDurationMs) {
+        this.done = true;
+        this.awaits.forEach(r => r());
+        this.awaits = [];
+      }
+    }
+  }
+
+  onCompletion(): Promise<void> {
+    return new Promise(resolve => {
+      if (this.isDone() || this.loop) {
+        return;
+      }
+      this.awaits.push(resolve);
+    });
   }
 
   getSprite(): string {
