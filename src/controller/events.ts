@@ -1,5 +1,7 @@
 import { setMousePos, setKeyDown, setKeyUp } from 'model/misc';
 import { CANVAS_ID } from 'model/canvas';
+import { attack } from 'controller/battle-management';
+import { getCurrentBattle } from 'model/battle';
 
 export const initEvents = (): void => {
   const canvasElem = document.getElementById(CANVAS_ID);
@@ -51,6 +53,8 @@ export const initEvents = (): void => {
       }
       case 'x':
       case 'X': {
+        const battle = getCurrentBattle();
+        attack(battle, battle.allies[0]);
         break;
       }
     }

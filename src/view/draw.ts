@@ -14,8 +14,9 @@ import {
   characterGetAnimation,
   characterGetPos,
 } from 'model/character';
+import { Particle, particleGetPos } from 'model/particle';
 
-interface DrawTextParams {
+export interface DrawTextParams {
   font?: string;
   color?: string;
   size?: number;
@@ -47,6 +48,24 @@ export const drawRect = (
   ctx.lineWidth = 1;
   ctx[stroke ? 'strokeStyle' : 'fillStyle'] = color;
   ctx[stroke ? 'strokeRect' : 'fillRect'](x, y, w, h);
+};
+
+export const measureText = (
+  text: string,
+  textParams: DrawTextParams,
+  ctx?: CanvasRenderingContext2D
+): Point => {
+  ctx = ctx || getCtx();
+  const { font, size } = {
+    ...DEFAULT_TEXT_PARAMS,
+    ...(textParams || {}),
+  };
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.font = size + 'px ' + font;
+  const width = ctx.measureText(text).width;
+  const height = size;
+  return [width, height];
 };
 
 export const drawText = (
@@ -108,6 +127,10 @@ export const drawAnimation = (
   ctx = ctx || getCtx();
   anim.update();
   const sprite = anim.getSprite();
+  if (!sprite) {
+    console.error(anim);
+    throw new Error(`Cannot draw animation that did not provide a sprite.`);
+  }
   const [image, sprX, sprY, sprW, sprH] =
     typeof sprite === 'string' ? getSprite(sprite) : sprite;
   ctx.drawImage(
@@ -128,17 +151,26 @@ export const drawCharacter = (
   scale?: number,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const [x, y] = characterGetPos(ch);
+  const [x, y, z] = characterGetPos(ch);
   const anim = characterGetAnimation(ch);
   // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
-  const [px, py] = isoToPixelCoords(x, y);
-  drawAnimation(
-    anim,
-    px, // props are draw bottom-up, centered x
-    py,
-    scale,
-    ctx
-  );
+  const [px, py] = isoToPixelCoords(x, y, z);
+  drawAnimation(anim, px, py, scale, ctx);
+};
+
+export const drawParticle = (
+  particle: Particle,
+  scale?: number,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  const [px, py] = particleGetPos(particle);
+  const { anim, text, textParams } = particle;
+  if (anim) {
+    drawAnimation(anim, px, py, scale, ctx);
+  }
+  if (text && textParams) {
+    drawText(text, px, py, textParams);
+  }
 };
 
 export const drawRoom = (
@@ -146,7 +178,7 @@ export const drawRoom = (
   offset: Point,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const { width, height, tiles, props, characters } = room;
+  const { width, height, tiles, props, characters, particles } = room;
   const [offsetX, offsetY] = offset;
 
   ctx = ctx || getCtx();
@@ -208,6 +240,11 @@ export const drawRoom = (
   for (let i = 0; i < characters.length; i++) {
     const ch = characters[i];
     drawCharacter(ch);
+  }
+
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    drawParticle(p);
   }
 
   ctx.restore();

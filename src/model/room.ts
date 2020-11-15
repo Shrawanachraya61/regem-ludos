@@ -1,6 +1,7 @@
 import { loadImageAsSprite } from 'model/sprite';
 import { removeFileExtension, Point } from 'utils';
 import { Character } from 'model/character';
+import { Particle } from 'model/particle';
 
 import * as battle1Json from 'map/battle1.json';
 
@@ -48,6 +49,7 @@ export interface Room {
   props: Prop[];
   tiles: Tile[];
   characters: Character[];
+  particles: Particle[];
 }
 
 const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
@@ -68,6 +70,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
     props: [] as Prop[],
     tiles: [] as Tile[],
     characters: [] as Character[],
+    particles: [] as Particle[],
   };
 
   const promises: Promise<any>[] = [];
@@ -122,4 +125,8 @@ export const roomGetTileAt = (
     return null;
   }
   return room.tiles[y * room.width + x];
+};
+
+export const roomAddParticle = (room: Room, particle: Particle): void => {
+  room.particles.push(particle);
 };

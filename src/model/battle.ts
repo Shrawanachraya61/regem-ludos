@@ -1,6 +1,13 @@
 import { Room, tilePosToWorldPoint } from 'model/room';
-import { Character, CharacterTemplate } from 'model/character';
+import {
+  AnimationState,
+  Character,
+  characterSetAnimationState,
+  CharacterTemplate,
+  characterOnAnimationCompletion,
+} from 'model/character';
 import { Timer } from 'model/timer';
+import { getFrameMultiplier } from 'model/misc';
 import { Point } from 'utils';
 
 export interface Battle {
@@ -9,10 +16,14 @@ export interface Battle {
   enemies: BattleCharacter[];
 }
 
-interface BattleCharacter {
+export interface BattleCharacter {
   ch: Character;
   actionTimer: Timer;
+  staggerTimer: Timer;
+  staggerGauge: Gauge;
   position: BattlePosition;
+  isActing: boolean;
+  isStaggered: boolean;
   ai?: string;
 }
 
@@ -36,6 +47,35 @@ export enum BattlePosition {
 export enum BattleAllegiance {
   ALLY = 'ally',
   ENEMY = 'enemy',
+}
+
+export class Gauge {
+  max: number;
+  current: number;
+  decayRate: number;
+  constructor(max: number, rate: number) {
+    this.max = max;
+    this.current = 0;
+    this.decayRate = rate;
+  }
+  fill(x: number): void {
+    this.current += x;
+    if (this.current > this.max) {
+      this.current = this.max;
+    }
+  }
+  empty(): void {
+    this.current = 0;
+  }
+  isFull(): boolean {
+    return this.current >= this.max;
+  }
+  update(): void {
+    this.current -= this.decayRate * getFrameMultiplier();
+    if (this.current < 0) {
+      this.current = 0;
+    }
+  }
 }
 
 const BATTLE_ALLY_FRONT1: Point = [5, 7];
@@ -87,8 +127,12 @@ export const battleCharacterCreateEnemy = (
 ): BattleCharacter => {
   return {
     ch,
-    actionTimer: new Timer(100),
+    actionTimer: new Timer(5000),
+    staggerTimer: new Timer(2000),
+    staggerGauge: new Gauge(11, 0.2),
     position: template.position,
+    isActing: false,
+    isStaggered: false,
     ai: template.ai,
   };
 };
@@ -100,9 +144,43 @@ export const battleCharacterCreateAlly = (
 ): BattleCharacter => {
   return {
     ch,
-    actionTimer: new Timer(100),
+    actionTimer: new Timer(5000),
+    staggerTimer: new Timer(1000),
+    staggerGauge: new Gauge(11, 0.02),
+    isActing: false,
+    isStaggered: false,
     position: args.position,
   };
+};
+export const battleCharacterSetStaggered = (bCh: BattleCharacter): void => {
+  bCh.isStaggered = true;
+  bCh.staggerTimer.start();
+  bCh.staggerGauge.empty();
+  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+};
+export const battleCharacterApplyDamage = (bCh: BattleCharacter): void => {
+  if (bCh.isStaggered) {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+  } else {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED);
+    characterOnAnimationCompletion(bCh.ch, () => {
+      if (bCh.isStaggered) {
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+      } else {
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+      }
+    });
+  }
+};
+
+export const battleCharacterUpdate = (bCh: BattleCharacter): void => {
+  if (bCh.isStaggered) {
+    if (bCh.staggerTimer.isComplete()) {
+      bCh.isStaggered = false;
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+    }
+  }
+  bCh.staggerGauge.update();
 };
 
 export const battleSetActorPositions = (battle: Battle): void => {
@@ -185,6 +263,12 @@ let currentBattle: null | Battle = null;
 export const getCurrentBattle = (): Battle => currentBattle as Battle;
 export const setCurrentBattle = (b: Battle): void => {
   currentBattle = b;
+};
+
+export const battleUpdate = (battle: Battle): void => {
+  battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
+    battleCharacterUpdate(bCh);
+  });
 };
 
 export const battleGetAllegiance = (

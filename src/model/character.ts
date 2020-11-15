@@ -1,7 +1,7 @@
 import { createAnimation, Animation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
 import { Transform } from 'model/transform';
-import { Point } from 'utils';
+import { Point, Point3d, isoToPixelCoords } from 'utils';
 
 export enum Facing {
   LEFT = 'left',
@@ -21,6 +21,7 @@ export enum AnimationState {
   BATTLE_JUMP = 'battle_jump',
   BATTLE_ATTACK = 'battle_attack',
   BATTLE_DAMAGED = 'battle_damaged',
+  BATTLE_STAGGERED = 'battle_staggered',
   BATTLE_FLOURISH = 'battle_flourish',
 }
 
@@ -29,12 +30,17 @@ export interface Character {
   spriteBase: string;
   x: number;
   y: number;
+  z: number;
   hp: number;
   transform: Transform | null;
   stats: BattleStats;
   facing: Facing;
   animationState: AnimationState;
   animationKey: string;
+  animationPromise?: {
+    resolve: () => void;
+    reject: () => void;
+  };
   storedAnimations: { [key: string]: Animation };
 }
 
@@ -52,6 +58,7 @@ export const characterCreate = (name: string): Character => {
     spriteBase: 'ada',
     x: 0,
     y: 0,
+    z: 0,
     transform: null,
     hp: 10,
     stats: battleStatsCreate(),
@@ -104,10 +111,46 @@ export const characterSetAnimationState = (
   ch.animationState = animState;
   const newAnimKey = characterGetAnimKey(ch);
   if (newAnimKey !== ch.animationKey) {
+    if (ch.animationPromise) {
+      ch.animationPromise.reject();
+      ch.animationPromise = undefined;
+    }
     const anim = characterGetAnimation(ch);
     anim.reset();
     anim.start();
   }
+};
+
+// waits for animation to complete, then calls the callback.  If an animation is changed while
+// waiting for the animation to complete, then the callback is never run.
+export const characterOnAnimationCompletion = (
+  ch: Character,
+  cb: () => void
+): Promise<void> => {
+  if (ch.animationPromise) {
+    ch.animationPromise.reject();
+  }
+  const newPromiseObj: any = {};
+  const promise = new Promise<void>((resolve, reject) => {
+    newPromiseObj.resolve = resolve;
+    newPromiseObj.reject = reject;
+    const doThing = async () => {
+      const anim = characterGetAnimation(ch);
+      await anim.onCompletion();
+      ch.animationPromise = undefined;
+      resolve();
+    };
+    doThing();
+  })
+    .then(() => {
+      cb();
+    })
+    .catch(e => {
+      console.log('reject anim promise', e);
+    });
+
+  ch.animationPromise = newPromiseObj;
+  return promise;
 };
 
 export const characterSetFacing = (ch: Character, facing: Facing): void => {
@@ -131,15 +174,34 @@ export const characterSetTransform = (
   ch.transform = transform;
 };
 
-export const characterGetPos = (ch: Character): Point => {
+export const characterGetPos = (ch: Character): Point3d => {
   if (ch.transform) {
     return ch.transform.current();
   }
-  return [ch.x, ch.y];
+  return [ch.x, ch.y, ch.z];
+};
+
+export const characterGetPosPx = (ch: Character): Point => {
+  const [x, y, z] = characterGetPos(ch);
+  return isoToPixelCoords(x, y, z);
+};
+
+export const characterGetPosCenterPx = (ch: Character): Point => {
+  const [px, py] = characterGetPosPx(ch);
+  const [w, h] = characterGetSize(ch);
+  return [px + w / 2, py + h / 2];
+};
+
+export const characterGetSize = (ch: Character): Point => {
+  const anim = characterGetAnimation(ch);
+  return anim.getSpriteSize(0);
 };
 
 export const characterUpdate = (ch: Character): void => {
   if (ch.transform) {
     ch.transform.update();
+    if (ch.transform.shouldRemove) {
+      ch.transform = null;
+    }
   }
 };

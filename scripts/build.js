@@ -48,6 +48,9 @@ const build = async () => {
     `cp -r ${__dirname}/../res/*.png ${__dirname}/../.build/ || :`
   );
   await execAsync(
+    `cp -r ${__dirname}/../res/*.txt ${__dirname}/../.build/ || :`
+  );
+  await execAsync(
     `cp -r ${__dirname}/../index.html ${__dirname}/../.build/ || :`
   );
   await execAsync(`rm -rf ${__dirname}/../${outputDirName}/*.map`);
@@ -77,6 +80,11 @@ const build = async () => {
       ','
     )} --mangle -o ${__dirname}/../.build/main.js -- ${__dirname}/../.build/main.tmp.js`
   );
+  await execAsync(
+    `${__dirname}/../node_modules/.bin/terser --compress ${terserArgs.join(
+      ','
+    )} --mangle -o ${__dirname}/../dist/almond.js -- ${__dirname}/../almond.js`
+  );
   // await execAsync('uglifycss --output public/style.css .build/style.tmp.css');
   console.log('minify html...');
   fs.writeFileSync(
@@ -95,7 +103,7 @@ const build = async () => {
     })
   );
   await execAsync(
-    `mkdir -p dist && cp .build/index.html dist && cp .build/main.js dist && cp .build/*.png dist`
+    `mkdir -p dist && cp .build/index.html dist && cp .build/main.js dist && cp .build/*.png dist && cp .build/*.txt dist`
   );
 
   console.log('\nZip (command line)...');
