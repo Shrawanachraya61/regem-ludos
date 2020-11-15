@@ -16,9 +16,8 @@ export const main = async (): Promise<void> => {
   await loadRooms();
   await loadRes();
   getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
-  setDrawScale(2);
+  setDrawScale(1);
   initEvents();
-  mountUi();
 
   const player = playerCreate({
     name: 'ada',
@@ -44,5 +43,7 @@ export const main = async (): Promise<void> => {
       },
     ],
   });
+
+  mountUi();
   runMainLoop();
 };

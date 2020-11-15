@@ -1,19 +1,14 @@
+import { getCurrentBattle } from 'model/battle';
 import { h, render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import style from 'view/style';
+import BattleCharacterButton from './components/BattleCharacterButton';
 
 interface UIInterface {
   render: () => void;
 }
 
-const Wrapper: any = style('div', {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: '14',
-  height: '14',
-  backgroundColor: 'orange',
-});
+const Wrapper: any = style('div', {});
 
 export let uiInterface: UIInterface | null = null;
 
@@ -28,7 +23,7 @@ const App = () => {
   });
   return (
     <Wrapper>
-      <div> This is the ui div </div>
+      <BattleCharacterButton bCh={getCurrentBattle().allies[0]} />
     </Wrapper>
   );
 };

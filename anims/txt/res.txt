@@ -63,6 +63,9 @@ AnimSprite,ada_18,100
 AnimSprite,ada_24,100
 AnimSprite,ada_21,100
 Picture,battle-terrain1,battle-terrain1.png,64,64
+Picture,battlePortraits,battlePortraits.png,64,64
+Animation,battlePortraits_ada,true
+AnimSprite,battlePortraits_0,100
 Picture,effects,effects.png,32,32
 Animation,effect_sword_left,false
 AnimSprite,effects_0,100
