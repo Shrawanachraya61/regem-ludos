@@ -116,7 +116,7 @@ export class Animation {
   }
 
   getSprite(): string {
-    return this.sprites[this.currentSpriteIndex].name;
+    return this.sprites[this.currentSpriteIndex]?.name;
   }
 
   getSpriteSize(i: number): Point {
@@ -133,7 +133,9 @@ export class Animation {
 }
 
 type AnimationBuilder = () => Animation;
-const animationBuilders: { [key: string]: AnimationBuilder } = {};
+const animationBuilders: {
+  [key: string]: AnimationBuilder;
+} = ((window as any).animations = {});
 export const createAnimationBuilder = (
   name: string,
   builder: () => Animation

@@ -2,8 +2,7 @@ export const SCREEN_WIDTH = 512;
 export const CANVAS_ID = 'canv';
 
 let mainCanvas: HTMLCanvasElement | null = null;
-let frameMultiplier = 1;
-let elapsedMs = 0;
+let drawScale = 1;
 
 // Create a canvas element given a width and a height, returning a reference to the
 // canvas, the rendering context, width, and height
@@ -29,7 +28,7 @@ export const getCanvas = (): HTMLCanvasElement => {
     return mainCanvas as HTMLCanvasElement;
   } else {
     const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH);
-    canvas.id = 'canv';
+    canvas.id = CANVAS_ID;
     ctx.imageSmoothingEnabled = false;
     const div = document.getElementById('canvas-container');
     if (div) {
@@ -47,21 +46,18 @@ export const getCtx = (): CanvasRenderingContext2D => {
   return getCanvas().getContext('2d') as CanvasRenderingContext2D;
 };
 
-// return the value to multiply all position and time values by in order to simulate
-// rendering at a consistent speed (as if it were 60 FPS).
-// Without this value, the game's physics are tied to the FPS, so a higher FPS results
-// in a faster game, while lower FPS results in a slower game.
-export const setFrameMultiplier = (v: number): void => {
-  frameMultiplier = v;
+export const setDrawScale = (s: number): void => {
+  drawScale = s;
+  const canvas = document.getElementById(CANVAS_ID) as HTMLCanvasElement | null;
+  if (canvas) {
+    canvas.style.width = String(SCREEN_WIDTH * drawScale);
+    canvas.style.height = String(SCREEN_WIDTH * drawScale);
+    // canvas.width = SCREEN_WIDTH * drawScale;
+    // canvas.height = SCREEN_WIDTH * drawScale;
+  }
 };
-export const getFrameMultiplier = (): number => {
-  return frameMultiplier;
-};
-export const setElapsedMs = (v: number): void => {
-  elapsedMs = v;
-};
-export const getElapsedMs = (): number => {
-  return elapsedMs;
+export const getDrawScale = (): number => {
+  return drawScale;
 };
 
 export const getScreenSize = (): number => {

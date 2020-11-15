@@ -2,6 +2,7 @@
   "name": "iso",
   "version": "0.1.0",
   "private": true,
+  "typings": "global.d.ts",
   "scripts": {
     "start": "yarn watch",
     "build": "rm -rf src/*.map src/main.js && tsc --sourceMap false && node scripts/build src",
@@ -19,10 +20,13 @@
     "html-minifier": "^4.0.0",
     "http-server": "^0.12.3",
     "prettier": "^2.0.5",
-    "rollup": "^2.33.1",
     "terser": "^4.6.11",
     "typescript": "^3.9.3",
     "uglifycss": "0.0.29"
   },
-  "browserslist": "> 0.25%, not dead"
+  "browserslist": "> 0.25%, not dead",
+  "dependencies": {
+    "picostyle": "^2.2.0",
+    "preact": "^10.5.7"
+  }
 }

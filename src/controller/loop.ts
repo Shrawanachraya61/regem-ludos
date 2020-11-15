@@ -4,6 +4,9 @@ import { getCurrentRoom } from 'model/scene';
 import { TILE_WIDTH, TILE_HEIGHT, roomGetTileAt } from 'model/room';
 import { pixelToIsoCoords } from 'utils';
 import { clearScreen, drawAnimation, drawRoom } from 'view/draw';
+import { characterUpdate } from 'model/character';
+import { particleUpdate } from 'model/particle';
+import { battleUpdate, getCurrentBattle } from 'model/battle';
 
 export const runMainLoop = async (): Promise<void> => {
   const startTime = performance.now();
@@ -27,6 +30,20 @@ export const runMainLoop = async (): Promise<void> => {
     const roomYOffset = 100;
 
     const room = getCurrentRoom();
+    for (let i = 0; i < room.characters.length; i++) {
+      characterUpdate(room.characters[i]);
+    }
+    for (let i = 0; i < room.particles.length; i++) {
+      particleUpdate(room.particles[i]);
+      if (room.particles[i].shouldRemove) {
+        room.particles.splice(i, 1);
+        i--;
+      }
+    }
+    const battle = getCurrentBattle();
+    if (battle) {
+      battleUpdate(battle);
+    }
     drawRoom(room, [roomXOffset, roomYOffset]);
 
     const [mouseX, mouseY] = getMousePos();
@@ -44,7 +61,6 @@ export const runMainLoop = async (): Promise<void> => {
       tile.highlighted = true;
     }
     lastHighlightedTile = tile;
-    // console.log('WORLD', tile);
 
     if ((window as any).running) requestAnimationFrame(loop);
     // if ((window as any).running) setTimeout(() => loop(performance.now()), 100); // for debugging

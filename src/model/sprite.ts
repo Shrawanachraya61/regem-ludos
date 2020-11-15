@@ -202,6 +202,18 @@ export const loadImageAsSpritesheet = async (
   }
 };
 
+const invisibleSprite = createSprite(
+  document.createElement('canvas'),
+  0,
+  0,
+  1,
+  1
+);
+
 // get a Sprite given a sprite name
-export const getSprite = (spriteName: string): Sprite =>
-  (loadedSprites as SpriteCollection)[spriteName];
+export const getSprite = (spriteName: string): Sprite => {
+  if (spriteName === 'invisible') {
+    return invisibleSprite;
+  }
+  return (loadedSprites as SpriteCollection)[spriteName];
+};

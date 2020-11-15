@@ -1,5 +1,9 @@
-export const isoToPixelCoords = (x: number, y: number): [number, number] => {
-  return [x - y, (x + y) / 2];
+export const isoToPixelCoords = (
+  x: number,
+  y: number,
+  z?: number
+): [number, number] => {
+  return [x - y, (x + y) / 2 - (z ?? 0) / 2];
 };
 
 export const pixelToIsoCoords = (x: number, y: number): [number, number] => {
@@ -15,6 +19,15 @@ export const removeFileExtension = (fileName: string): string => {
 };
 
 export type Point = [number, number];
+export type Point3d = [number, number, number];
+
+export const truncatePoint3d = (p: Point3d): Point => {
+  return [p[0], p[1]];
+};
+
+export const extrapolatePoint = (p: Point): Point3d => {
+  return [p[0], p[1], 0];
+};
 
 export type Rect = [number, number, number, number];
 
@@ -78,3 +91,13 @@ export function normalizeEaseOutClamp(
   const t = normalizeClamp(x, a, b, 0, 1);
   return easeOut(t, c, d - c, 1);
 }
+
+export const timeoutPromise = (ms: number): Promise<void> => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+};
+
+export const getRandBetween = (a: number, b: number): number => {
+  return Math.floor(Math.random() * (b - a)) + a;
+};
