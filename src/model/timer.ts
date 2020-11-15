@@ -2,20 +2,37 @@ import { getNow } from 'model/misc';
 
 export class Timer {
   timestampStart: number;
+  timestampPause: number;
   duration: number;
   shouldRemove: boolean;
   awaits: any[];
+  isPaused: boolean;
 
   constructor(duration: number) {
     this.timestampStart = getNow();
+    this.timestampPause = 0;
     this.duration = duration;
     this.shouldRemove = false;
+    this.isPaused = false;
     this.awaits = [];
   }
 
   start(duration?: number): void {
     this.timestampStart = getNow();
     this.duration = duration ?? this.duration;
+  }
+
+  pause(): void {
+    if (!this.isPaused) {
+      this.isPaused = true;
+      this.timestampPause = getNow();
+    }
+  }
+  unpause(): void {
+    if (this.isPaused) {
+      this.isPaused = false;
+      this.updateStart(getNow() - this.timestampPause);
+    }
   }
 
   updateStart(offsetDuration: number): void {
@@ -43,7 +60,10 @@ export class Timer {
   }
 
   getPctComplete(): number {
-    const now = getNow();
+    let now = getNow();
+    if (this.isPaused)  {
+      now -= now - this.timestampPause;
+    }
     let diff = now - this.timestampStart;
     if (diff > this.duration) {
       diff = this.duration;

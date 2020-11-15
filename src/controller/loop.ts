@@ -7,6 +7,7 @@ import { clearScreen, drawAnimation, drawRoom } from 'view/draw';
 import { characterUpdate } from 'model/character';
 import { particleUpdate } from 'model/particle';
 import { battleUpdate, getCurrentBattle } from 'model/battle';
+import { renderUi } from 'view/ui';
 
 export const runMainLoop = async (): Promise<void> => {
   const startTime = performance.now();
@@ -61,6 +62,8 @@ export const runMainLoop = async (): Promise<void> => {
       tile.highlighted = true;
     }
     lastHighlightedTile = tile;
+
+    renderUi();
 
     if ((window as any).running) requestAnimationFrame(loop);
     // if ((window as any).running) setTimeout(() => loop(performance.now()), 100); // for debugging

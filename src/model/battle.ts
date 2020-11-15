@@ -22,8 +22,10 @@ export interface BattleCharacter {
   staggerTimer: Timer;
   staggerGauge: Gauge;
   position: BattlePosition;
+  canAct: boolean;
   isActing: boolean;
   isStaggered: boolean;
+  onCanActCb: () => void;
   ai?: string;
 }
 
@@ -116,7 +118,7 @@ export const battleStatsCreate = (): BattleStats => {
     ACC: 1,
     SPD: 1,
     FOR: 1,
-    HP: 10,
+    HP: 100,
     STAGGER: 0,
   };
 };
@@ -132,7 +134,9 @@ export const battleCharacterCreateEnemy = (
     staggerGauge: new Gauge(11, 0.2),
     position: template.position,
     isActing: false,
+    canAct: false,
     isStaggered: false,
+    onCanActCb: function () {},
     ai: template.ai,
   };
 };
@@ -148,7 +152,9 @@ export const battleCharacterCreateAlly = (
     staggerTimer: new Timer(1000),
     staggerGauge: new Gauge(11, 0.02),
     isActing: false,
+    canAct: false,
     isStaggered: false,
+    onCanActCb: function () {},
     position: args.position,
   };
 };
@@ -173,6 +179,23 @@ export const battleCharacterApplyDamage = (bCh: BattleCharacter): void => {
   }
 };
 
+export const battleCharacterCanAct = (bCh: BattleCharacter): boolean => {
+  if (bCh.isActing) {
+    return false;
+  }
+  return bCh.actionTimer.isComplete();
+};
+
+export const battleCharacterSetCanActCb = (
+  bCh: BattleCharacter,
+  cb: () => void
+): void => {
+  bCh.onCanActCb = cb;
+};
+export const battleCharacterRemoveCanActCb = (bCh: BattleCharacter): void => {
+  bCh.onCanActCb = function () {};
+};
+
 export const battleCharacterUpdate = (bCh: BattleCharacter): void => {
   if (bCh.isStaggered) {
     if (bCh.staggerTimer.isComplete()) {
@@ -181,6 +204,15 @@ export const battleCharacterUpdate = (bCh: BattleCharacter): void => {
     }
   }
   bCh.staggerGauge.update();
+
+  if (!bCh.canAct) {
+    if (battleCharacterCanAct(bCh)) {
+      bCh.canAct = true;
+      bCh.onCanActCb();
+    }
+  } else {
+    bCh.canAct = battleCharacterCanAct(bCh);
+  }
 };
 
 export const battleSetActorPositions = (battle: Battle): void => {
@@ -259,10 +291,10 @@ export const battleIsVictory = (battle: Battle): boolean => {
   return true;
 };
 
-let currentBattle: null | Battle = null;
+let currentBattle: null | Battle = ((window as any).battle = null);
 export const getCurrentBattle = (): Battle => currentBattle as Battle;
 export const setCurrentBattle = (b: Battle): void => {
-  currentBattle = b;
+  currentBattle = (window as any).battle = b;
 };
 
 export const battleUpdate = (battle: Battle): void => {

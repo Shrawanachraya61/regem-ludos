@@ -12,6 +12,7 @@ import {
   battleGetAllegiance,
   battleGetNearestAttackable,
   BattleCharacter,
+  battleCharacterCanAct,
 } from 'model/battle';
 import {
   AnimationState,
@@ -68,11 +69,15 @@ export const initiateBattle = (
 };
 
 export const beginAction = (battle: Battle, bCh: BattleCharacter): void => {
+  console.log('begin action', bCh);
   bCh.isActing = true;
+  bCh.actionTimer.start();
+  bCh.actionTimer.pause();
 };
 export const endAction = (battle: Battle, bCh: BattleCharacter): void => {
+  console.log('end action', bCh);
   bCh.isActing = false;
-  bCh.actionTimer.start();
+  bCh.actionTimer.unpause();
 };
 
 export const applyDamage = (
@@ -113,8 +118,8 @@ export const attack = async (
   battle: Battle,
   bCh: BattleCharacter
 ): Promise<void> => {
-  if (bCh.isActing) {
-    console.log('cannot attack, character is already acting', bCh);
+  if (!battleCharacterCanAct(bCh)) {
+    console.log('cannot attack, battle character cannot act yet', bCh);
     return;
   }
 

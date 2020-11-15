@@ -79,6 +79,7 @@ export const characterCreateFromTemplate = (
   ch.facing = template.facing || ch.facing;
   ch.animationState = template.animationState || ch.animationState;
   ch.animationKey = characterGetAnimKey(ch);
+  ch.hp = ch.stats.HP;
   ch.stats = {
     ...(template.stats || ch.stats),
   };
@@ -166,6 +167,10 @@ export const characterModifyHp = (ch: Character, n: number): void => {
     ch.hp = 0;
   }
 };
+
+export const characterGetHpPct = (ch: Character): number => {
+  return Number((ch.hp / ch.stats.HP).toFixed(2));
+}
 
 export const characterSetTransform = (
   ch: Character,

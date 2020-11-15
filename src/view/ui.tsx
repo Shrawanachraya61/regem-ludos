@@ -23,7 +23,7 @@ const App = () => {
   });
   return (
     <Wrapper>
-      <BattleCharacterButton bCh={getCurrentBattle().allies[0]} />
+      <BattleCharacterButton battle={getCurrentBattle()} bCh={getCurrentBattle().allies[0]} />
     </Wrapper>
   );
 };

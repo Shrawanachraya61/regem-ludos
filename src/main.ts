@@ -20,7 +20,7 @@ export const main = async (): Promise<void> => {
   initEvents();
 
   const player = playerCreate({
-    name: 'ada',
+    name: 'Ada',
     spriteBase: 'ada',
     stats: battleStatsCreate(),
     facing: Facing.RIGHT,

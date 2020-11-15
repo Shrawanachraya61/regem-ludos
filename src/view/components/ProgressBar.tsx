@@ -40,7 +40,6 @@ const Label = style('div', {
 });
 
 const ProgressBar = (props: IProgressBarProps): h.JSX.Element => {
-  console.log('render progress', props.label, props.pct);
   return (
     <Outer backgroundColor={props.backgroundColor} height={props.height}>
       <Inner pct={props.pct * 100} backgroundColor={props.color}></Inner>
