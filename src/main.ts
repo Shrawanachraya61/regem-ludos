@@ -1,12 +1,12 @@
 import { loadTiles } from 'model/sprite';
 import { loadRooms } from 'model/room';
-import { loadRes } from 'model/loader';
 import { setCurrentPlayer, setCurrentRoom } from 'model/scene';
 import { runMainLoop } from 'controller/loop';
 import { playerCreate } from 'model/player';
 import { battleStatsCreate, BattlePosition } from 'model/battle';
 import { AnimationState, Facing } from 'model/character';
 import { getCanvas } from 'model/canvas';
+import { loadRes } from 'controller/res-loader';
 import { initiateBattle } from 'controller/battle-management';
 import { initEvents } from 'controller/events';
 
