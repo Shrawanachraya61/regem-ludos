@@ -58,7 +58,7 @@ const BattleCharacterButton = (
   props: IBattleCharacterButtonProps
 ): h.JSX.Element => {
   return (
-    <ButtonWrapper highlighted={battleCharacterCanAct(props.bCh)}>
+    <ButtonWrapper highlighted={battleCharacterCanAct(props.battle, props.bCh)}>
       <Bar top={true}>
         <ProgressBar
           backgroundColor="black"
@@ -74,6 +74,15 @@ const BattleCharacterButton = (
         ></AnimDiv>
         <NameLabel>{props.bCh.ch.name}</NameLabel>
       </AnimWrapper>
+      <Bar top={true}>
+        <ProgressBar
+          backgroundColor="black"
+          color={props.bCh.isStaggered ? 'white' : 'brown'}
+          height={4}
+          label=""
+          pct={props.bCh.isStaggered ? 1 : props.bCh.staggerGauge.getPct()}
+        />
+      </Bar>
       <Bar bottom={true}>
         <ProgressBar
           backgroundColor="black"

@@ -26,7 +26,7 @@ import {
   characterGetSize,
   characterGetPosCenterPx,
 } from 'model/character';
-import { getRoom, roomAddParticle } from 'model/room';
+import { getRoom, roomAddParticle, TILE_WIDTH } from 'model/room';
 import { setCurrentRoom } from 'model/scene';
 import { Player, playerGetBattlePosition } from 'model/player';
 import { Transform, TransformEase, transformOffsetJump } from 'model/transform';
@@ -118,7 +118,7 @@ export const attack = async (
   battle: Battle,
   bCh: BattleCharacter
 ): Promise<void> => {
-  if (!battleCharacterCanAct(bCh)) {
+  if (!battleCharacterCanAct(battle, bCh)) {
     console.log('cannot attack, battle character cannot act yet', bCh);
     return;
   }
@@ -133,11 +133,11 @@ export const attack = async (
     // jump to one tile closer towards the center of target
     const startPoint = characterGetPos(ch);
     const endPoint = characterGetPos(target.ch);
-    endPoint[0] -=
-      ((Math.abs(endPoint[0] - battle.room.width) /
-        (endPoint[0] - battle.room.width)) *
-        32) /
-      2;
+    if (allegiance === BattleAllegiance.ALLY) {
+      endPoint[0] -= TILE_WIDTH / 2;
+    } else {
+      endPoint[0] += TILE_WIDTH / 2;
+    }
     const transform = new Transform(
       startPoint,
       endPoint,

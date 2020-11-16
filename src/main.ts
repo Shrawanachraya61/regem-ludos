@@ -10,6 +10,7 @@ import { getCanvas, setDrawScale } from 'model/canvas';
 import { initiateBattle } from 'controller/battle-management';
 import { initEvents } from 'controller/events';
 import { mountUi } from 'view/ui';
+import { BATTLE_AI_ATTACK } from 'controller/battle-ai';
 
 export const main = async (): Promise<void> => {
   await loadTiles();
@@ -39,7 +40,7 @@ export const main = async (): Promise<void> => {
           animationState: AnimationState.BATTLE_IDLE,
         },
         position: BattlePosition.FRONT,
-        ai: 'attack',
+        ai: BATTLE_AI_ATTACK,
       },
     ],
   });

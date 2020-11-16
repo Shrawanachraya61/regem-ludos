@@ -9,6 +9,7 @@ import {
 import { Timer } from 'model/timer';
 import { getFrameMultiplier } from 'model/misc';
 import { Point } from 'utils';
+import { BattleAI } from 'controller/battle-ai';
 
 export interface Battle {
   room: Room;
@@ -26,13 +27,13 @@ export interface BattleCharacter {
   isActing: boolean;
   isStaggered: boolean;
   onCanActCb: () => void;
-  ai?: string;
+  ai?: BattleAI;
 }
 
 export interface BattleTemplateEnemy {
   chTemplate: CharacterTemplate;
   position: BattlePosition;
-  ai?: string;
+  ai?: BattleAI;
 }
 
 export interface BattleTemplate {
@@ -71,6 +72,9 @@ export class Gauge {
   }
   isFull(): boolean {
     return this.current >= this.max;
+  }
+  getPct(): number {
+    return this.current / this.max;
   }
   update(): void {
     this.current -= this.decayRate * getFrameMultiplier();
@@ -129,7 +133,7 @@ export const battleCharacterCreateEnemy = (
 ): BattleCharacter => {
   return {
     ch,
-    actionTimer: new Timer(5000),
+    actionTimer: new Timer(2000),
     staggerTimer: new Timer(2000),
     staggerGauge: new Gauge(11, 0.2),
     position: template.position,
@@ -148,7 +152,7 @@ export const battleCharacterCreateAlly = (
 ): BattleCharacter => {
   return {
     ch,
-    actionTimer: new Timer(5000),
+    actionTimer: new Timer(2000),
     staggerTimer: new Timer(1000),
     staggerGauge: new Gauge(11, 0.02),
     isActing: false,
@@ -179,9 +183,18 @@ export const battleCharacterApplyDamage = (bCh: BattleCharacter): void => {
   }
 };
 
-export const battleCharacterCanAct = (bCh: BattleCharacter): boolean => {
+export const battleCharacterCanAct = (battle: Battle, bCh: BattleCharacter): boolean => {
   if (bCh.isActing) {
     return false;
+  }
+  const ch = bCh.ch;
+  const allegiance = battleGetAllegiance(battle, ch);
+  const opposingBattleCharacters = allegiance === BattleAllegiance.ALLY ? battle.enemies : battle.allies;
+  for (let i = 0; i < opposingBattleCharacters.length; i++) {
+    const bc = opposingBattleCharacters[i];
+    if (bc.isActing) {
+      return false;
+    }
   }
   return bCh.actionTimer.isComplete();
 };
@@ -196,7 +209,10 @@ export const battleCharacterRemoveCanActCb = (bCh: BattleCharacter): void => {
   bCh.onCanActCb = function () {};
 };
 
-export const battleCharacterUpdate = (bCh: BattleCharacter): void => {
+export const battleCharacterUpdate = (
+  battle: Battle,
+  bCh: BattleCharacter
+): void => {
   if (bCh.isStaggered) {
     if (bCh.staggerTimer.isComplete()) {
       bCh.isStaggered = false;
@@ -206,12 +222,16 @@ export const battleCharacterUpdate = (bCh: BattleCharacter): void => {
   bCh.staggerGauge.update();
 
   if (!bCh.canAct) {
-    if (battleCharacterCanAct(bCh)) {
+    if (battleCharacterCanAct(battle, bCh)) {
       bCh.canAct = true;
       bCh.onCanActCb();
+      console.log('DO AI OR SOMETHING IDK');
+      if (bCh.ai) {
+        bCh.ai(battle, bCh);
+      }
     }
   } else {
-    bCh.canAct = battleCharacterCanAct(bCh);
+    bCh.canAct = battleCharacterCanAct(battle, bCh);
   }
 };
 
@@ -299,7 +319,7 @@ export const setCurrentBattle = (b: Battle): void => {
 
 export const battleUpdate = (battle: Battle): void => {
   battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-    battleCharacterUpdate(bCh);
+    battleCharacterUpdate(battle, bCh);
   });
 };
 
