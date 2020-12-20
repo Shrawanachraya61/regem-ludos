@@ -1,30 +1,95 @@
-import { getCurrentBattle } from 'model/battle';
 import { h, render } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
-import style from 'view/style';
-import BattleCharacterButton from './components/BattleCharacterButton';
+import { useEffect, useState, useReducer } from 'preact/hooks';
+import { colors, style } from 'view/style';
+
+import { getIsPaused } from 'model/generics';
+import { AppState, AppStateInitial } from 'model/store';
+import { appReducer } from 'controller/ui-actions';
+
+// sections
+import BattleConclusion from './components/BattleConclusion';
+import Debug from './components/Debug';
+import BattleUISection from './components/BattleUISection';
+import { AppSection } from 'model/store';
 
 interface UIInterface {
+  appState: AppState;
   render: () => void;
+  dispatch: (...args: any) => void;
 }
 
-const Wrapper: any = style('div', {});
+const Root = style('div', {
+  position: 'relative',
+  height: '100%',
+});
+
+const PausedOverlay = style('div', () => ({
+  position: 'absolute',
+  left: '0',
+  top: '0',
+  background: 'black',
+  opacity: '0.3',
+  textAlign: 'center',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: colors.WHITE,
+  fontSize: '24px',
+  width: '100%',
+  height: '100%',
+  pointerEvents: 'none',
+}));
+
+const PausedText = style('div', () => ({
+  marginBottom: '256px',
+}));
 
 export let uiInterface: UIInterface | null = null;
+export const getUiInterface = () => uiInterface as UIInterface;
 
 const App = () => {
   const [render, setRender] = useState(false);
+  const [appState, dispatch] = useReducer(appReducer, AppStateInitial);
   useEffect(() => {
     uiInterface = {
+      appState,
       render: () => {
         setRender(!render);
       },
+      dispatch,
     };
   });
+
+  const renderSection = (section: AppSection, key: number) => {
+    switch (section) {
+      case AppSection.BattleVictory: {
+        return <BattleConclusion key={key} isVictory={true} />;
+      }
+      case AppSection.BattleDefeated: {
+        return <BattleConclusion key={key} isVictory={false} />;
+      }
+      case AppSection.BattleUI: {
+        return <BattleUISection key={key} />;
+      }
+      case AppSection.Debug: {
+        return <Debug />;
+      }
+      default: {
+        return <div></div>;
+      }
+    }
+  };
+
+  console.log('render app', appState);
   return (
-    <Wrapper>
-      <BattleCharacterButton battle={getCurrentBattle()} bCh={getCurrentBattle().allies[0]} />
-    </Wrapper>
+    <Root>
+      {getIsPaused() ? (
+        <PausedOverlay>
+          <PausedText>PAUSED</PausedText>
+        </PausedOverlay>
+      ) : null}
+      {appState.sections.map(renderSection)}
+    </Root>
   );
 };
 
@@ -35,7 +100,7 @@ export const renderUi = (): void => {
 };
 
 export const mountUi = () => {
-  const dom = document.getElementById('lower-ui');
+  const dom = document.getElementById('ui');
   if (dom) {
     render(<App />, dom);
   }

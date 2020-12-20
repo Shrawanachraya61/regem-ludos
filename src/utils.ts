@@ -101,3 +101,20 @@ export const timeoutPromise = (ms: number): Promise<void> => {
 export const getRandBetween = (a: number, b: number): number => {
   return Math.floor(Math.random() * (b - a)) + a;
 };
+
+export const removeIfPresent = (arr: any[], item: any): boolean => {
+  const ind = arr.indexOf(item);
+  if (ind > -1) {
+    arr.splice(ind, 1);
+    return true;
+  }
+  return false;
+};
+
+export const calculateDistance = (a: Point3d, b: Point3d) => {
+  const [x1, y1, z1] = a;
+  const [x2, y2, z2] = b;
+  return Math.sqrt(
+    Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)
+  );
+};

@@ -1,10 +1,9 @@
-import { Timer } from 'model/timer';
+import { Timer, Transform, TransformEase } from 'model/utility';
 import { Animation, createAnimation } from 'model/animation';
-import { Point, truncatePoint3d } from 'utils';
+import { Point, truncatePoint3d, getRandBetween } from 'utils';
 import { SpriteModification } from './sprite';
 import { DrawTextParams, measureText } from 'view/draw';
-import { Transform, TransformEase } from 'model/transform';
-import { TILE_HEIGHT } from './room';
+import { TILE_HEIGHT, TILE_WIDTH } from './room';
 
 export interface Particle {
   anim?: Animation;
@@ -51,7 +50,7 @@ export const createDamageParticle = (
     shouldRemove: false,
     transform: new Transform(
       [x, y, 0],
-      [x, y - TILE_HEIGHT, 0],
+      [x + getRandBetween(-TILE_WIDTH / 2, TILE_WIDTH / 2), y - TILE_HEIGHT, 0],
       duration,
       TransformEase.EASE_OUT
     ),

@@ -1,7 +1,8 @@
 import { createAnimation, Animation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
-import { Transform } from 'model/transform';
+import { Transform } from 'model/utility';
 import { Point, Point3d, isoToPixelCoords } from 'utils';
+import { BattleActions, BattleAction } from 'controller/battle-actions';
 
 export enum Facing {
   LEFT = 'left',
@@ -22,8 +23,12 @@ export enum AnimationState {
   BATTLE_ATTACK = 'battle_attack',
   BATTLE_DAMAGED = 'battle_damaged',
   BATTLE_STAGGERED = 'battle_staggered',
+  BATTLE_ITEM = 'battle_item',
   BATTLE_FLOURISH = 'battle_flourish',
+  BATTLE_DEFEATED = 'battle_defeated',
 }
+
+export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
 
 export interface Character {
   name: string;
@@ -34,6 +39,8 @@ export interface Character {
   hp: number;
   transform: Transform | null;
   stats: BattleStats;
+  skills: BattleAction[];
+  skillIndex: number;
   facing: Facing;
   animationState: AnimationState;
   animationKey: string;
@@ -50,6 +57,7 @@ export interface CharacterTemplate {
   stats?: BattleStats;
   facing?: Facing;
   animationState?: AnimationState;
+  skills?: BattleAction[];
 }
 
 export const characterCreate = (name: string): Character => {
@@ -62,6 +70,8 @@ export const characterCreate = (name: string): Character => {
     transform: null,
     hp: 10,
     stats: battleStatsCreate(),
+    skills: [BattleActions.SWING] as BattleAction[],
+    skillIndex: 0,
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     animationKey: '',
@@ -83,13 +93,19 @@ export const characterCreateFromTemplate = (
   ch.stats = {
     ...(template.stats || ch.stats),
   };
+  ch.skills = template.skills || ch.skills;
   return ch;
 };
 
 export const characterGetAnimKey = (ch: Character): string => {
   const { spriteBase, facing, animationState } = ch;
-  const animStr = `${spriteBase}_${animationState}_${facing}`;
-  return animStr;
+  if (ANIMATIONS_WITHOUT_FACING.includes(animationState)) {
+    const animStr = `${spriteBase}_${animationState}`;
+    return animStr;
+  } else {
+    const animStr = `${spriteBase}_${animationState}_${facing}`;
+    return animStr;
+  }
 };
 
 export const characterGetAnimation = (ch: Character): Animation => {
@@ -131,12 +147,12 @@ export const characterOnAnimationCompletion = (
   if (ch.animationPromise) {
     ch.animationPromise.reject();
   }
+  const anim = characterGetAnimation(ch);
   const newPromiseObj: any = {};
   const promise = new Promise<void>((resolve, reject) => {
     newPromiseObj.resolve = resolve;
     newPromiseObj.reject = reject;
     const doThing = async () => {
-      const anim = characterGetAnimation(ch);
       await anim.onCompletion();
       ch.animationPromise = undefined;
       resolve();
@@ -147,7 +163,7 @@ export const characterOnAnimationCompletion = (
       cb();
     })
     .catch(e => {
-      console.log('reject anim promise', e);
+      console.log('animation was canceled:', anim.name, e);
     });
 
   ch.animationPromise = newPromiseObj;
@@ -170,7 +186,7 @@ export const characterModifyHp = (ch: Character, n: number): void => {
 
 export const characterGetHpPct = (ch: Character): number => {
   return Number((ch.hp / ch.stats.HP).toFixed(2));
-}
+};
 
 export const characterSetTransform = (
   ch: Character,

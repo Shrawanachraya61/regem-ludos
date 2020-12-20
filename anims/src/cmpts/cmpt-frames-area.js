@@ -171,12 +171,14 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
   const [isDraggingOver, setIsDraggingOver] = React.useState(false);
   const ref = React.useRef();
   const [duration, setDuration] = React.useState(durationMs);
+
   React.useEffect(() => {
     display.setCanvas(ref.current);
     display.clearScreen();
     display.drawSprite(spriteName, 32, 32, { centered: true });
     display.restoreCanvas();
   }, [spriteName, ref]);
+
   return (
     <div style={{ display: 'inline-block' }}>
       <div
@@ -271,28 +273,58 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
           </Button>
         </div>
         <div style={{ pointerEvents: appInterface.isDragging ? 'none' : null }}>
-          <Input
-            type="number"
-            name="duration"
-            label="Duration"
-            width={60}
-            value={duration}
-            onChange={ev => setDuration(ev.target.value)}
-            onBlur={() => {
-              anim.sprites[spriteIndex].durationMs = Number(duration);
-              display.updateAnimation(anim, null, anim.loop, anim.sprites);
-              anim.remakeMS();
-              appInterface.setAnimation(display.getAnimation(anim.name));
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '136px',
             }}
-            style={{ pointerEvents: appInterface.isDragging ? 'none' : null }}
-            inputStyle={{
-              pointerEvents: appInterface.isDragging ? 'none' : null,
-              margin: null,
-              marginTop: '5px',
-            }}
-            onMouseEnter={() => setIsDraggable(false)}
-            onMouseLeave={() => setIsDraggable(true)}
-          />
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <input
+                id={'select-frame-' + spriteIndex}
+                name={'select-frame-' + spriteIndex}
+                type="checkbox"
+                checked={appInterface.isFrameMarked(spriteIndex)}
+                onChange={ev => {
+                  if (ev.target.checked) {
+                    appInterface.addMarkedFrame(spriteIndex);
+                  } else {
+                    appInterface.removeMarkedFrame(spriteIndex);
+                  }
+                }}
+              ></input>
+              <label htmlFor={'select-frame-' + spriteIndex}>Mark</label>
+            </div>
+            <Input
+              type="number"
+              name="duration"
+              label="Duration"
+              width={60}
+              value={duration}
+              onChange={ev => setDuration(ev.target.value)}
+              onBlur={() => {
+                anim.sprites[spriteIndex].durationMs = Number(duration);
+                display.updateAnimation(anim, null, anim.loop, anim.sprites);
+                anim.remakeMS();
+                appInterface.setAnimation(display.getAnimation(anim.name));
+              }}
+              style={{ pointerEvents: appInterface.isDragging ? 'none' : null }}
+              inputStyle={{
+                pointerEvents: appInterface.isDragging ? 'none' : null,
+                margin: null,
+                marginTop: '5px',
+              }}
+              onMouseEnter={() => setIsDraggable(false)}
+              onMouseLeave={() => setIsDraggable(true)}
+            />
+          </div>
         </div>
         <canvas
           style={{

@@ -4,7 +4,7 @@ import {
   battleGetAllegiance,
   battleGetNearestAttackable,
 } from 'model/battle';
-import { attack } from 'controller/battle-management';
+import { BattleActions } from 'controller/battle-actions';
 
 export type BattleAI = (battle: Battle, bCh: BattleCharacter) => void;
 
@@ -16,6 +16,6 @@ export const BATTLE_AI_ATTACK: BattleAI = (
   const allegiance = battleGetAllegiance(battle, ch);
   const target = battleGetNearestAttackable(battle, allegiance);
   if (target) {
-    attack(battle, bCh);
+    BattleActions.Swing.cb(battle, bCh);
   }
 };

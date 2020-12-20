@@ -1,5 +1,9 @@
 <html>
   <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.5, maximum-scale=1, user-scalable=no"
+    />
     <style>
       body {
         margin: 0;
@@ -27,8 +31,13 @@
   </head>
   <body>
     <div class="centered-vrt">
-      <div id="canvas-container"></div>
-      <div id="lower-ui"></div>
+      <div style="position: relative">
+        <div id="canvas-container"></div>
+        <div
+          style="position: absolute; top: 0px; width: 512px; height: 512px"
+          id="ui"
+        ></div>
+      </div>
     </div>
   </body>
   <footer>

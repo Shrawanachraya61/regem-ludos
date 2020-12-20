@@ -131,19 +131,23 @@ export const drawAnimation = (
     console.error(anim);
     throw new Error(`Cannot draw animation that did not provide a sprite.`);
   }
-  const [image, sprX, sprY, sprW, sprH] =
-    typeof sprite === 'string' ? getSprite(sprite) : sprite;
-  ctx.drawImage(
-    image,
-    sprX,
-    sprY,
-    sprW,
-    sprH,
-    x,
-    y,
-    sprW * scale,
-    sprH * scale
-  );
+  try {
+    const [image, sprX, sprY, sprW, sprH] =
+      typeof sprite === 'string' ? getSprite(sprite) : sprite;
+    ctx.drawImage(
+      image,
+      sprX,
+      sprY,
+      sprW,
+      sprH,
+      x,
+      y,
+      sprW * scale,
+      sprH * scale
+    );
+  } catch (e) {
+    throw new Error(`Error attempting to draw animation sprite: "${sprite}"`);
+  }
 };
 
 export const drawCharacter = (

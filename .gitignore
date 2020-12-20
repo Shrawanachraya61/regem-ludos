@@ -5,3 +5,5 @@ main.js.map
 dist/
 *.log
 *.zip
+*.o
+*.exe

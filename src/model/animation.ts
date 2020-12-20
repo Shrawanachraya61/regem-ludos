@@ -1,4 +1,4 @@
-import { getNow } from 'model/misc';
+import { getNow } from 'model/generics';
 import { Point } from 'utils';
 import { getSprite } from 'model/sprite';
 
@@ -146,7 +146,9 @@ export const createAnimationBuilder = (
 export const createAnimation = (animName: string): Animation => {
   const builder = animationBuilders[animName];
   if (builder) {
-    return builder();
+    const anim = builder();
+    anim.name = animName;
+    return anim;
   } else {
     throw new Error(`No animation exists which is named '${animName}'`);
   }

@@ -26,6 +26,7 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "esModuleInterop": true,
   },
   "references": [],

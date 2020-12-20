@@ -40,6 +40,9 @@ const Text = ({
     case 'body':
       elem = <span style={{ ...style }}>{children}</span>;
       break;
+    case 'body-ellipsis':
+      elem = <div style={{ ...style }}>{children}</div>;
+      break;
     case 'error':
       elem = (
         <span style={{ color: colors.lightRed, fontSize: '14px', ...style }}>

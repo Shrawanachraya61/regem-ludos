@@ -5,28 +5,43 @@ import {
   characterSetAnimationState,
   CharacterTemplate,
   characterOnAnimationCompletion,
+  characterModifyHp,
 } from 'model/character';
-import { Timer } from 'model/timer';
-import { getFrameMultiplier } from 'model/misc';
 import { Point } from 'utils';
 import { BattleAI } from 'controller/battle-ai';
+import { BattleAction } from 'controller/battle-actions';
+import {
+  calculateStaggerDamage,
+  completeCast,
+} from 'controller/battle-management';
+import { Timer, Gauge } from 'model/utility';
 
 export interface Battle {
   room: Room;
+  isCompleted: boolean;
   allies: BattleCharacter[];
   enemies: BattleCharacter[];
+  defeated: BattleCharacter[];
 }
 
 export interface BattleCharacter {
   ch: Character;
+  isDefeated: boolean;
+  shouldRemove: boolean;
   actionTimer: Timer;
   staggerTimer: Timer;
   staggerGauge: Gauge;
+  castTimer: Timer;
   position: BattlePosition;
   canAct: boolean;
   isActing: boolean;
+  isCasting: boolean;
   isStaggered: boolean;
+  statuses: Status[];
   onCanActCb: () => void;
+  onCast: () => void;
+  onCastInterrupted: () => void;
+  row: BattleRow;
   ai?: BattleAI;
 }
 
@@ -47,42 +62,168 @@ export enum BattlePosition {
   BACK = 'back',
 }
 
+export enum BattleRow {
+  TOP = 'top',
+  BOTTOM = 'bottom',
+  NONE = 'none',
+}
+
 export enum BattleAllegiance {
   ALLY = 'ally',
   ENEMY = 'enemy',
 }
 
-export class Gauge {
-  max: number;
-  current: number;
-  decayRate: number;
-  constructor(max: number, rate: number) {
-    this.max = max;
-    this.current = 0;
-    this.decayRate = rate;
-  }
-  fill(x: number): void {
-    this.current += x;
-    if (this.current > this.max) {
-      this.current = this.max;
-    }
-  }
-  empty(): void {
-    this.current = 0;
-  }
-  isFull(): boolean {
-    return this.current >= this.max;
-  }
-  getPct(): number {
-    return this.current / this.max;
-  }
-  update(): void {
-    this.current -= this.decayRate * getFrameMultiplier();
-    if (this.current < 0) {
-      this.current = 0;
-    }
-  }
+export enum Status {
+  DEFEND = 'defend',
 }
+
+export interface BattleStats {
+  POW: number; // flat damage modifier
+  ACC: number; // reduces variance that weapons have
+  SPD: number; // how fast cooldown timer is
+  FOR: number; // more of this reduces time spent staggered
+  HP: number;
+  STAGGER: number; // number of hits before stagger
+}
+
+export const battleStatsCreate = (): BattleStats => {
+  return {
+    POW: 5,
+    ACC: 1,
+    SPD: 1,
+    FOR: 1,
+    HP: 1,
+    STAGGER: 2,
+  };
+};
+
+const battleCharacterCreate = (
+  ch: Character,
+  position: BattlePosition,
+  ai?: any
+): BattleCharacter => {
+  const skill = ch.skills[ch.skillIndex];
+  const staggerDmg = calculateStaggerDamage(ch);
+  return {
+    ch,
+    isDefeated: false,
+    shouldRemove: false,
+    actionTimer: new Timer(skill?.cooldown ?? 2000),
+    staggerTimer: new Timer(1000),
+    staggerGauge: new Gauge(staggerDmg, 0.02),
+    castTimer: new Timer(1000),
+    position: position,
+    isActing: false,
+    isCasting: false,
+    canAct: false,
+    isStaggered: false,
+    statuses: [] as Status[],
+    row: BattleRow.NONE,
+    onCanActCb: function () {},
+    onCast: function () {},
+    onCastInterrupted: function () {},
+    ai,
+  };
+};
+
+export const battleCharacterCreateEnemy = (
+  ch: Character,
+  template: BattleTemplateEnemy
+): BattleCharacter => {
+  return battleCharacterCreate(ch, template.position, template.ai);
+};
+export const battleCharacterCreateAlly = (
+  ch: Character,
+  args: {
+    position: BattlePosition;
+  }
+): BattleCharacter => {
+  return battleCharacterCreate(ch, args.position);
+};
+export const battleCharacterSetStaggered = (bCh: BattleCharacter): void => {
+  bCh.isStaggered = true;
+  bCh.staggerTimer.start();
+  bCh.staggerGauge.empty();
+  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+};
+export const battleCharacterApplyDamage = (
+  bCh: BattleCharacter,
+  dmg: number
+): void => {
+  characterModifyHp(bCh.ch, -dmg);
+  if (bCh.isStaggered) {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+  } else {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED);
+    characterOnAnimationCompletion(bCh.ch, () => {
+      if (bCh.isStaggered) {
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+      } else {
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+      }
+    });
+  }
+};
+
+export const battleCharacterCanAct = (
+  battle: Battle,
+  bCh: BattleCharacter
+): boolean => {
+  if (bCh.isActing) {
+    return false;
+  }
+  const ch = bCh.ch;
+  const allegiance = battleGetAllegiance(battle, ch);
+  const opposingBattleCharacters =
+    allegiance === BattleAllegiance.ALLY ? battle.enemies : battle.allies;
+  for (let i = 0; i < opposingBattleCharacters.length; i++) {
+    const bc = opposingBattleCharacters[i];
+    if (bc.isActing) {
+      return false;
+    }
+  }
+  return bCh.actionTimer.isComplete();
+};
+
+export const battleCharacterSetCanActCb = (
+  bCh: BattleCharacter,
+  cb: () => void
+): void => {
+  bCh.onCanActCb = cb;
+};
+export const battleCharacterRemoveCanActCb = (bCh: BattleCharacter): void => {
+  bCh.onCanActCb = function () {};
+};
+
+export const battleCharacterAddStatus = (
+  bCh: BattleCharacter,
+  status: Status
+) => {
+  if (!bCh.statuses.includes(status)) {
+    bCh.statuses.push(status);
+  }
+};
+
+export const battleCharacterRemoveStatus = (
+  bCh: BattleCharacter,
+  status: Status
+) => {
+  const ind = bCh.statuses.indexOf(status);
+  if (ind > -1) {
+    bCh.statuses.splice(ind, 1);
+  }
+};
+
+export const battleCharacterGetSelectedSkill = (
+  bCh: BattleCharacter
+): BattleAction => {
+  const skill = bCh.ch.skills[bCh.ch.skillIndex];
+  return skill;
+};
+
+export const battleCharacterGetRow = (bCh: BattleCharacter): BattleRow => {
+  return bCh.row;
+};
 
 const BATTLE_ALLY_FRONT1: Point = [5, 7];
 const BATTLE_ALLY_FRONT2: Point = [8, 10];
@@ -107,134 +248,6 @@ const BATTLE_POINTS_ENEMY = {
   [BattlePosition.BACK]: [BATTLE_ENEMY_BACK1, BATTLE_ENEMY_BACK2],
 };
 
-export interface BattleStats {
-  POW: number; // flat damage modifier
-  ACC: number; // reduces variance that weapons have
-  SPD: number; // how fast cooldown timer is
-  FOR: number; // more of this reduces time spent staggered
-  HP: number;
-  STAGGER: number; // number of hits before stagger
-}
-
-export const battleStatsCreate = (): BattleStats => {
-  return {
-    POW: 1,
-    ACC: 1,
-    SPD: 1,
-    FOR: 1,
-    HP: 100,
-    STAGGER: 0,
-  };
-};
-
-export const battleCharacterCreateEnemy = (
-  ch: Character,
-  template: BattleTemplateEnemy
-): BattleCharacter => {
-  return {
-    ch,
-    actionTimer: new Timer(2000),
-    staggerTimer: new Timer(2000),
-    staggerGauge: new Gauge(11, 0.2),
-    position: template.position,
-    isActing: false,
-    canAct: false,
-    isStaggered: false,
-    onCanActCb: function () {},
-    ai: template.ai,
-  };
-};
-export const battleCharacterCreateAlly = (
-  ch: Character,
-  args: {
-    position: BattlePosition;
-  }
-): BattleCharacter => {
-  return {
-    ch,
-    actionTimer: new Timer(2000),
-    staggerTimer: new Timer(1000),
-    staggerGauge: new Gauge(11, 0.02),
-    isActing: false,
-    canAct: false,
-    isStaggered: false,
-    onCanActCb: function () {},
-    position: args.position,
-  };
-};
-export const battleCharacterSetStaggered = (bCh: BattleCharacter): void => {
-  bCh.isStaggered = true;
-  bCh.staggerTimer.start();
-  bCh.staggerGauge.empty();
-  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
-};
-export const battleCharacterApplyDamage = (bCh: BattleCharacter): void => {
-  if (bCh.isStaggered) {
-    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
-  } else {
-    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED);
-    characterOnAnimationCompletion(bCh.ch, () => {
-      if (bCh.isStaggered) {
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
-      } else {
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
-      }
-    });
-  }
-};
-
-export const battleCharacterCanAct = (battle: Battle, bCh: BattleCharacter): boolean => {
-  if (bCh.isActing) {
-    return false;
-  }
-  const ch = bCh.ch;
-  const allegiance = battleGetAllegiance(battle, ch);
-  const opposingBattleCharacters = allegiance === BattleAllegiance.ALLY ? battle.enemies : battle.allies;
-  for (let i = 0; i < opposingBattleCharacters.length; i++) {
-    const bc = opposingBattleCharacters[i];
-    if (bc.isActing) {
-      return false;
-    }
-  }
-  return bCh.actionTimer.isComplete();
-};
-
-export const battleCharacterSetCanActCb = (
-  bCh: BattleCharacter,
-  cb: () => void
-): void => {
-  bCh.onCanActCb = cb;
-};
-export const battleCharacterRemoveCanActCb = (bCh: BattleCharacter): void => {
-  bCh.onCanActCb = function () {};
-};
-
-export const battleCharacterUpdate = (
-  battle: Battle,
-  bCh: BattleCharacter
-): void => {
-  if (bCh.isStaggered) {
-    if (bCh.staggerTimer.isComplete()) {
-      bCh.isStaggered = false;
-      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
-    }
-  }
-  bCh.staggerGauge.update();
-
-  if (!bCh.canAct) {
-    if (battleCharacterCanAct(battle, bCh)) {
-      bCh.canAct = true;
-      bCh.onCanActCb();
-      console.log('DO AI OR SOMETHING IDK');
-      if (bCh.ai) {
-        bCh.ai(battle, bCh);
-      }
-    }
-  } else {
-    bCh.canAct = battleCharacterCanAct(battle, bCh);
-  }
-};
-
 export const battleSetActorPositions = (battle: Battle): void => {
   const positionsAlly = {
     [BattlePosition.FRONT]: 0,
@@ -246,81 +259,66 @@ export const battleSetActorPositions = (battle: Battle): void => {
     [BattlePosition.MIDDLE]: 0,
     [BattlePosition.BACK]: 0,
   };
-  battle.allies.forEach((bCh: BattleCharacter) => {
+
+  const createPosSetter = (positionsAllegiance: any, battlePoints: any) => (
+    bCh: BattleCharacter
+  ) => {
     let pos = [0, 0];
+    let rowNumber = 0;
     switch (bCh.position) {
       case BattlePosition.FRONT:
+        rowNumber = positionsAllegiance[BattlePosition.FRONT];
         pos =
-          BATTLE_POINTS_ALLY[BattlePosition.FRONT][
-            positionsAlly[BattlePosition.FRONT]++
+          battlePoints[BattlePosition.FRONT][
+            positionsAllegiance[BattlePosition.FRONT]++
           ];
         break;
       case BattlePosition.MIDDLE:
+        rowNumber = positionsAllegiance[BattlePosition.MIDDLE];
         pos =
-          BATTLE_POINTS_ALLY[BattlePosition.MIDDLE][
-            positionsAlly[BattlePosition.MIDDLE]++
+          battlePoints[BattlePosition.MIDDLE][
+            positionsAllegiance[BattlePosition.MIDDLE]++
           ];
         break;
       case BattlePosition.BACK:
+        rowNumber = positionsAllegiance[BattlePosition.BACK];
         pos =
-          BATTLE_POINTS_ALLY[BattlePosition.BACK][
-            positionsAlly[BattlePosition.BACK]++
+          battlePoints[BattlePosition.BACK][
+            positionsAllegiance[BattlePosition.BACK]++
           ];
         break;
     }
 
     const [x, y] = tilePosToWorldPoint(pos[0], pos[1]);
-    bCh.ch.x = x;
-    bCh.ch.y = y;
-  });
-  battle.enemies.forEach((bCh: BattleCharacter) => {
-    let pos = [0, 0];
-    switch (bCh.position) {
-      case BattlePosition.FRONT:
-        pos =
-          BATTLE_POINTS_ENEMY[BattlePosition.FRONT][
-            positionsEnemy[BattlePosition.FRONT]++
-          ];
-        break;
-      case BattlePosition.MIDDLE:
-        pos =
-          BATTLE_POINTS_ENEMY[BattlePosition.MIDDLE][
-            positionsEnemy[BattlePosition.MIDDLE]++
-          ];
-        break;
-      case BattlePosition.BACK:
-        pos =
-          BATTLE_POINTS_ENEMY[BattlePosition.BACK][
-            positionsEnemy[BattlePosition.BACK]++
-          ];
-        break;
+    if (rowNumber <= 1) {
+      bCh.row = rowNumber === 0 ? BattleRow.TOP : BattleRow.BOTTOM;
+      bCh.ch.x = x;
+      bCh.ch.y = y;
+      console.log('SET ROW', bCh.row);
+    } else {
+      console.error(
+        'Error setting actor position for battle, Row number is greater than 1 (most likely more than 2 actors in a battle position)',
+        bCh
+      );
     }
-    const [x, y] = tilePosToWorldPoint(pos[0], pos[1]);
-    bCh.ch.x = x;
-    bCh.ch.y = y;
-  });
+  };
+
+  battle.allies.forEach(createPosSetter(positionsAlly, BATTLE_POINTS_ALLY));
+  battle.enemies.forEach(createPosSetter(positionsEnemy, BATTLE_POINTS_ENEMY));
 };
 
 export const battleIsVictory = (battle: Battle): boolean => {
-  for (let i = 0; i < battle.enemies.length; i++) {
-    const ch = battle.enemies[i].ch;
-    if (ch.hp > 0) {
-      return false;
-    }
-  }
-  return true;
+  return battle.enemies.length === 0;
+};
+
+export const battleIsLoss = (battle: Battle): boolean => {
+  return battle.allies.length === 0;
 };
 
 let currentBattle: null | Battle = ((window as any).battle = null);
 export const getCurrentBattle = (): Battle => currentBattle as Battle;
 export const setCurrentBattle = (b: Battle): void => {
   currentBattle = (window as any).battle = b;
-};
-
-export const battleUpdate = (battle: Battle): void => {
-  battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-    battleCharacterUpdate(battle, bCh);
-  });
 };
 
 export const battleGetAllegiance = (

@@ -2,7 +2,6 @@
   "name": "iso",
   "version": "0.1.0",
   "private": true,
-  "typings": "global.d.ts",
   "scripts": {
     "start": "yarn watch",
     "build": "rm -rf src/*.map src/main.js && tsc --sourceMap false && node scripts/build src",
@@ -19,9 +18,9 @@
     "eslint-plugin-prettier": "^3.1.4",
     "html-minifier": "^4.0.0",
     "http-server": "^0.12.3",
-    "prettier": "^2.0.5",
+    "prettier": "^2.2.1",
     "terser": "^4.6.11",
-    "typescript": "^3.9.3",
+    "typescript": "^4.1.3",
     "uglifycss": "0.0.29"
   },
   "browserslist": "> 0.25%, not dead",

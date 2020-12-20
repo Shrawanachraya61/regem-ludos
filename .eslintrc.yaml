@@ -5,7 +5,7 @@ extends:
   - 'eslint:recommended'
   - 'plugin:@typescript-eslint/eslint-recommended'
   - 'plugin:@typescript-eslint/recommended'
-  - 'plugin:preact/recommended',
+  - 'plugin:preact/recommended'
 
 plugins:
   - 'babel'

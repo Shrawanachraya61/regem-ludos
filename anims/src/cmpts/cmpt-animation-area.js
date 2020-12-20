@@ -205,6 +205,17 @@ const AnimationArea = ({ appInterface }) => {
           />
           <div
             style={{
+              fontSize: '18px',
+              fontWeight: 'bold',
+              padding: '6px 0px',
+              margin: '6px 0px',
+              borderBottom: '1px solid ' + colors.white,
+            }}
+          >
+            Spritesheet Helpers
+          </div>
+          <div
+            style={{
               display: 'flex',
               marginTop: '7px',
               justifyContent: 'space-around',
@@ -270,6 +281,68 @@ const AnimationArea = ({ appInterface }) => {
               }}
             >
               + Add Invisible
+            </Button>
+          </div>
+          <div
+            style={{
+              fontSize: '18px',
+              fontWeight: 'bold',
+              padding: '6px 0px',
+              margin: '6px 0px',
+              borderBottom: '1px solid ' + colors.white,
+            }}
+          >
+            Marked Frames
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              marginTop: '7px',
+              justifyContent: 'space-around',
+            }}
+          >
+            <Button
+              type="primary"
+              margin={2}
+              onClick={() => {
+                appInterface.markAllFrames();
+              }}
+            >
+              Mark All
+            </Button>
+            <Button
+              type="secondary"
+              margin={2}
+              onClick={() => {
+                appInterface.clearMarkedFrames();
+              }}
+            >
+              UnMark All
+            </Button>
+            <Button
+              type="cadence"
+              margin={2}
+              onClick={() => {
+                appInterface.getMarkedFrames().forEach(frameIndex => {
+                  console.log(
+                    'add sprite at index',
+                    frameIndex,
+                    anim,
+                    anim.sprites[frameIndex].name,
+                    anim.sprites.length,
+                    defaultDuration
+                  );
+                  addSpriteAtIndex(
+                    anim,
+                    anim.sprites[frameIndex].name,
+                    anim.sprites.length,
+                    defaultDuration
+                  );
+                });
+                appInterface.setAnimation(display.getAnimation(anim.name));
+              }}
+            >
+              + Clone Marked
             </Button>
           </div>
         </div>

@@ -35,7 +35,7 @@ const SpriteSizeInputDialog = ({ open, setOpen, appInterface }) => {
       }}
       content={
         <>
-          <div>Set with width and height of sprites in this spritesheet.</div>
+          <div>Set width and height of sprites in this spritesheet.</div>
           <div style={{ margin: '5px' }}>
             <Input
               focus={true}
@@ -76,16 +76,31 @@ const Tile = ({
     spriteHeight > MAX_SPRITE_HEIGHT ? MAX_SPRITE_HEIGHT : spriteHeight;
   const scale = spriteWidth > MAX_SPRITE_WIDTH ? 0.5 : 1;
   const sprite = display.getSprite(spriteName);
+  const spriteSheetScale = appInterface.getSpriteSheetZoom();
   React.useEffect(() => {
     if (sprite) {
       display.setCanvas(ref.current);
-      display.drawSprite(spriteName, width / 2, height / 2, {
-        centered: true,
-        scale,
-      });
+      display.drawSprite(
+        spriteName,
+        (width * spriteSheetScale) / 2,
+        (height * spriteSheetScale) / 2,
+        {
+          centered: true,
+          scale: scale * spriteSheetScale,
+        }
+      );
       display.restoreCanvas();
     }
-  }, [spriteName, spriteWidth, spriteHeight, width, height, scale, sprite]);
+  }, [
+    spriteName,
+    spriteWidth,
+    spriteHeight,
+    width,
+    height,
+    scale,
+    sprite,
+    spriteSheetScale,
+  ]);
 
   if (!sprite) {
     return <div />;
@@ -104,6 +119,7 @@ const Tile = ({
       style={{
         margin: '5px',
         justifyContent: 'center',
+        overflow: 'hidden',
         flexDirection: 'column',
         alignItems: 'center',
         cursor: 'pointer',
@@ -112,16 +128,17 @@ const Tile = ({
       }}
     >
       <div className="no-select" style={{ marginBottom: '5px' }}>
-        {spriteName}
+        {spriteName.slice(spriteName.lastIndexOf('_') + 1)}
       </div>
       <canvas
         style={{
           margin: '5px',
           border: '1px solid ' + (isSelected ? colors.green : colors.white),
+          // transform: `scale(${appInterface.getSpriteSheetZoom()})`,
         }}
         ref={ref}
-        width={width}
-        height={height}
+        width={width * spriteSheetScale}
+        height={height * spriteSheetScale}
       ></canvas>
     </div>
   );
@@ -232,7 +249,10 @@ const Spritesheet = props => {
       <div style={{ backgroundColor: colors.darkGrey }}>
         <Button
           style={{ float: 'left', margin: '4px 48px 4px 4px' }}
-          onClick={() => appInterface.setImageName('')}
+          onClick={() => {
+            appInterface.clearMarkedFrames();
+            appInterface.setImageName('');
+          }}
         >
           ← Back
         </Button>
@@ -265,7 +285,7 @@ const Spritesheet = props => {
         >
           <div>
             <Text ownLine={true} lineHeight={5} type="container-label">
-              Size
+              Spritesheet Properties
             </Text>
             <Text ownLine={true} lineHeight={5}>
               Sprite Width: {spriteWidth}
@@ -278,7 +298,35 @@ const Spritesheet = props => {
             Set Sprite Size
           </Button>
         </div>
-        <div style={{ overflowY: 'auto', height: 'calc(100% - 127px)' }}>
+        <div
+          style={{
+            backgroundColor: colors.lightBlack,
+            padding: '5px',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            borderBottom: '1px solid ' + colors.grey,
+          }}
+        >
+          <Text ownLine={true} lineHeight={5} type="container-label">
+            Zoom {appInterface.getSpriteSheetZoom()}x
+          </Text>
+          <input
+            style={{
+              width: '50%',
+            }}
+            type="range"
+            min={0.5}
+            max={2.0}
+            step={0.1}
+            value={appInterface.getSpriteSheetZoom()}
+            onChange={ev => {
+              appInterface.setSpriteSheetZoom(ev.target.value);
+            }}
+          ></input>
+        </div>
+        <div style={{ overflowY: 'auto', height: 'calc(100% - 187px)' }}>
           <div
             style={{
               display: 'flex',

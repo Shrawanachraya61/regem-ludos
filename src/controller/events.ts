@@ -1,7 +1,11 @@
-import { setMousePos, setKeyDown, setKeyUp } from 'model/misc';
+import { setMousePos, setKeyDown, setKeyUp, getIsPaused } from 'model/generics';
 import { CANVAS_ID } from 'model/canvas';
-import { attack } from 'controller/battle-management';
-import { getCurrentBattle } from 'model/battle';
+import { BattleActions } from 'controller/battle-actions';
+import {
+  getCurrentBattle,
+  battleCharacterGetSelectedSkill,
+} from 'model/battle';
+import { pause, unpause } from './loop';
 
 export const initEvents = (): void => {
   const canvasElem = document.getElementById(CANVAS_ID);
@@ -51,10 +55,21 @@ export const initEvents = (): void => {
       case 'ArrowRight': {
         break;
       }
+      case 'p':
+      case 'P': {
+        if (getIsPaused()) {
+          unpause();
+        } else {
+          pause();
+        }
+        break;
+      }
       case 'x':
       case 'X': {
         const battle = getCurrentBattle();
-        attack(battle, battle.allies[0]);
+        const bCh = battle.allies[0];
+        const skill = battleCharacterGetSelectedSkill(bCh);
+        skill.cb(battle, bCh);
         break;
       }
     }

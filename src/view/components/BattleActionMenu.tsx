@@ -1,28 +1,64 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { BattleCharacter } from 'model/battle';
-import style from 'view/style';
+import VerticalMenu from 'view/elements/VerticalMenu';
+import { colors, style } from 'view/style';
+import { battleSetChButtonsStatus } from 'controller/ui-actions';
+import { BattleAction } from 'controller/battle-actions';
+import { pause, unpause } from 'controller/loop';
 
-const Button = style('div', props => ({
-  textAlign: 'center',
-  width: '100%',
-  margin: '2px',
-  padding: '8px 0px',
-  borderRadius: '4px',
-  background: 'gray',
-  cursor: props.open ? 'default' : 'pointer',
-  '&:hover': {
-    filter: props.open ? '' : 'brightness(120%)',
-  },
-}));
+interface IBattleActionMenuProps {
+  bCh: BattleCharacter;
+  open: boolean;
+  onClose: () => void;
+}
+const MenuWrapper = style('div', () => {
+  return {};
+});
 
-const BattleActionMenu = (): h.JSX.Element => {
-  const [open, setOpen] = useState(false);
-  if (open) {
-    return <div></div>;
-  } else {
-    return <Button open={open}>Menu</Button>;
-  }
+const MenuLabel = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+});
+
+const MenuIcon = style('div', () => {
+  return {
+    width: '24px',
+    height: '24px',
+  };
+});
+
+const BattleActionMenu = (props: IBattleActionMenuProps): h.JSX.Element => {
+  return (
+    <MenuWrapper>
+      <VerticalMenu
+        title="ACTION"
+        open={true}
+        onClose={props.onClose}
+        width="8rem"
+        items={props.bCh.ch.skills.map((skill, i) => {
+          return {
+            label: (
+              <MenuLabel>
+                <span>{skill.name}</span>
+                <MenuIcon>
+                  <skill.icon color={colors.WHITE} />
+                </MenuIcon>
+              </MenuLabel>
+            ),
+            value: i,
+          };
+        })}
+        onItemClick={(value: number) => {
+          props.bCh.ch.skillIndex = value;
+          props.onClose();
+        }}
+      />
+    </MenuWrapper>
+  );
 };
 
 export default BattleActionMenu;

@@ -1,0 +1,48 @@
+<html>
+  <style>
+    body {
+      background: #444;
+      color: #dedede;
+      margin: 0px;
+    }
+    #game {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+    }
+    #score-area {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: center;
+      width: 412px;
+      height: 64px;
+    }
+  </style>
+  <header>
+    <title>Tic Tac Toe</title>
+  </header>
+  <body>
+    <div id="game">
+      <div id="score-area">
+        <div>
+          <div>Player Score</div>
+          <div id="player-score">0</div>
+        </div>
+        <div id="game-result">Game Result</div>
+        <div>
+          <div>CPU Score</div>
+          <div id="cpu-score">0</div>
+        </div>
+      </div>
+      <div id="canvas-area"></div>
+    </div>
+  </body>
+  <footer>
+    <script src="tic-tac-toe.js"></script>
+  </footer>
+</html>

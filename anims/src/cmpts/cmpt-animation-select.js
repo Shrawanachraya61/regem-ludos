@@ -134,6 +134,7 @@ const CreateAnimDialog = ({ open, setOpen, appInterface }) => {
     if (isInvalid) {
       return;
     }
+    appInterface.clearMarkedFrames();
     setOpen(false);
     setAnimName(appInterface.imageName);
     display.createAnimation(animName, appInterface.imageName, () => {
@@ -183,6 +184,7 @@ const CreateAnimDialog = ({ open, setOpen, appInterface }) => {
 };
 
 const AnimationItem = ({
+  i,
   anim,
   appInterface,
   setDeleteConfirmOpen,
@@ -193,9 +195,12 @@ const AnimationItem = ({
   const isSelected = appInterface.animation
     ? appInterface.animation.name === anim.name
     : false;
+  const { imageName } = appInterface;
+  const { animations } = display.pictures[imageName] || { animations: [] };
   React.useEffect(() => {
     if (spriteName) {
       display.setCanvas(ref.current);
+      display.clearScreen();
       display.drawSprite(spriteName, 32, 32, {
         centered: true,
         width: 64,
@@ -207,11 +212,14 @@ const AnimationItem = ({
   return (
     <div
       className="button"
-      onClick={() =>
-        isSelected
-          ? appInterface.setAnimation(null)
-          : appInterface.setAnimation(anim)
-      }
+      onClick={() => {
+        if (isSelected) {
+          appInterface.setAnimation(null);
+        } else {
+          appInterface.setAnimation(anim);
+        }
+        appInterface.clearMarkedFrames();
+      }}
       style={{
         height: 64,
         display: 'flex',
@@ -238,60 +246,113 @@ const AnimationItem = ({
         }}
       >
         <Text
-          type="body"
+          type="body-ellipsis"
           noSelect={true}
           ownLine={true}
           lineHeight={5}
-          style={{ padding: '5px' }}
+          style={{
+            padding: '5px',
+            overflow: 'hidden',
+            direction: 'rtl',
+            textAlign: 'left',
+            textOverflow: 'ellipsis',
+          }}
         >
           {anim.name}
         </Text>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            width: '100px',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
           }}
         >
-          <Button
-            style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-            type="cancel"
-            onClick={() => {
-              setDeleteConfirmOpen(anim.name);
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
           >
-            Delete
-          </Button>
-          <Button
-            style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-            type="secondary"
-            onClick={() => {
-              setRenameAnimDialogOpen(anim.name);
-            }}
-          >
-            Rename
-          </Button>
+            <Button
+              style={{
+                margin: '2px',
+                fontSize: '10px',
+                padding: '2px',
+              }}
+              type="primary"
+              onClick={() => {
+                display.changeAnimationOrder(animations, i, 'up');
+                appInterface.render();
+              }}
+            >
+              Move UP
+            </Button>
+            <Button
+              style={{
+                margin: '2px',
+                fontSize: '10px',
+                padding: '2px',
+              }}
+              type="primary"
+              onClick={() => {
+                display.changeAnimationOrder(animations, i, 'dn');
+                appInterface.render();
+              }}
+            >
+              Move DN
+            </Button>
+          </div>
+          <div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100px',
+              }}
+            >
+              <Button
+                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+                type="cancel"
+                onClick={() => {
+                  setDeleteConfirmOpen(anim.name);
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+                type="secondary"
+                onClick={() => {
+                  setRenameAnimDialogOpen(anim.name);
+                }}
+              >
+                Rename
+              </Button>
+            </div>
+            <Button
+              style={{
+                margin: '2px',
+                fontSize: '10px',
+                padding: '2px',
+                width: '80px',
+                float: 'left',
+              }}
+              type={anim.isCadence ? 'secondary' : 'cadence'}
+              onClick={() => {
+                if (anim.sprites.length !== 3) {
+                } else {
+                  anim.isCadence = !anim.isCadence;
+                  display.updateAnimation(anim, null, anim.loop, anim.sprites);
+                  appInterface.setAnimation(display.getAnimation(anim.name));
+                }
+              }}
+            >
+              {anim.isCadence ? 'To Anim' : 'To Cadence'}
+            </Button>
+          </div>
         </div>
-        <Button
-          style={{
-            margin: '2px',
-            fontSize: '10px',
-            padding: '2px',
-            width: '80px',
-            float: 'left',
-          }}
-          type={anim.isCadence ? 'secondary' : 'cadence'}
-          onClick={() => {
-            if (anim.sprites.length !== 3) {
-            } else {
-              anim.isCadence = !anim.isCadence;
-              display.updateAnimation(anim, null, anim.loop, anim.sprites);
-              appInterface.setAnimation(display.getAnimation(anim.name));
-            }
-          }}
-        >
-          {anim.isCadence ? 'To Anim' : 'To Cadence'}
-        </Button>
       </div>
       <canvas
         style={{ margin: '5px' }}
@@ -333,8 +394,37 @@ const AnimationSelect = ({ appInterface }) => {
             borderBottom: '1px solid ' + colors.grey,
           }}
         >
-          <Button type="primary" onClick={() => setCreateAnimDialogOpen(true)}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setCreateAnimDialogOpen(true);
+            }}
+          >
             + Anim
+          </Button>
+          <Button
+            type="secondary"
+            onClick={() => {
+              const newAnimations = animations.sort();
+              for (let i = 0; i < animations.length; i++) {
+                animations[i] = newAnimations[i];
+              }
+              appInterface.render();
+            }}
+          >
+            ASC Sort
+          </Button>
+          <Button
+            type="secondary"
+            onClick={() => {
+              const newAnimations = animations.sort().reverse();
+              for (let i = 0; i < animations.length; i++) {
+                animations[i] = newAnimations[i];
+              }
+              appInterface.render();
+            }}
+          >
+            DSC Sort
           </Button>
         </div>
       ) : null}
@@ -351,9 +441,10 @@ const AnimationSelect = ({ appInterface }) => {
             Select a spritesheet to see a list of animations.
           </Text>
         ) : null}
-        {anims.map(anim => (
+        {anims.map((anim, i) => (
           <AnimationItem
             key={anim.name}
+            i={i}
             anim={anim}
             appInterface={appInterface}
             setDeleteConfirmOpen={setDeleteConfirmOpen}

@@ -212,7 +212,7 @@ const invisibleSprite = createSprite(
 
 // get a Sprite given a sprite name
 export const getSprite = (spriteName: string): Sprite => {
-  if (spriteName === 'invisible') {
+  if (spriteName.indexOf('invisible') === 0) {
     return invisibleSprite;
   }
   return (loadedSprites as SpriteCollection)[spriteName];

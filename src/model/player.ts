@@ -4,6 +4,7 @@ import {
   CharacterTemplate,
 } from 'model/character';
 import { BattlePosition } from 'model/battle';
+import { removeIfPresent } from 'utils'
 
 export interface Player {
   leader: Character;
@@ -23,6 +24,19 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
     },
   };
   return player;
+};
+
+export const playerSetBattlePosition = (player: Player, ch: Character, pos: BattlePosition): void => {
+  removeIfPresent(player.battlePositions[BattlePosition.FRONT], ch)
+  removeIfPresent(player.battlePositions[BattlePosition.MIDDLE], ch)
+  removeIfPresent(player.battlePositions[BattlePosition.BACK], ch)
+
+  if (player.party.includes(ch)) {
+    player.battlePositions[pos].push(ch);
+  } else {
+    console.error(player, ch, pos);
+    throw new Error('Cannot set battle position for player, the given character is not in the party.');
+  }
 };
 
 export const playerGetBattlePosition = (

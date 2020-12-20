@@ -188,6 +188,23 @@ display.createAnimationFromPicture = function(name) {
   });
 };
 
+display.changeAnimationOrder = function(animations, i, direction) {
+  if (direction === 'up') {
+    if (i <= 0) {
+      return;
+    }
+    const tmp = animations[i - 1];
+    animations[i - 1] = animations[i];
+    animations[i] = tmp;
+  } else if (direction === 'dn') {
+    if (i >= animations.length - 1) {
+    }
+    const tmp = animations[i + 1];
+    animations[i + 1] = animations[i];
+    animations[i] = tmp;
+  }
+};
+
 display.setError = function() {
   display.error = true;
 };

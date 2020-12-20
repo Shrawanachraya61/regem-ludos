@@ -1,0 +1,9 @@
+Sound,begin,assets/begin.wav
+Sound,damaged,assets/damaged.wav
+Sound,damagedEnemy,assets/damagedEnemy.wav
+Sound,end,assets/end.wav
+Sound,explosion,assets/explosion.wav
+Sound,hiscore,assets/hiscore.wav
+Sound,lazer,assets/lazer.wav
+Sound,lazer2,assets/lazer2.wav
+Music,menu,assets/menu.wav

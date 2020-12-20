@@ -4,7 +4,7 @@ import ImageSelect from 'cmpts/cmpt-image-select';
 import AnimationArea from 'cmpts/cmpt-animation-area';
 import AnimationSelect from 'cmpts/cmpt-animation-select';
 import Spritesheet from 'cmpts/cmpt-spritesheet';
-import FramesArea from 'cmpts/cmpt-frames-area';
+import FramesArea, { addSpriteAtIndex } from 'cmpts/cmpt-frames-area';
 import { useWindowDimensions } from 'hooks';
 import { colors } from 'utils';
 
@@ -24,7 +24,10 @@ export default () => {
   const [spritesheetMode, setSpritesheetMode] = React.useState('');
   const [defaultAnimDuration, setDefaultAnimDuration] = React.useState(100);
   const [isDragging, setIsDragging] = React.useState('');
+  const [spriteSheetZoom, setSpriteSheetZoom] = React.useState(1.0);
   const [, updateState] = React.useState();
+  const [render, setRender] = React.useState(false);
+  const [markedFrames, setMarkedFrames] = React.useState([]);
   const forceUpdate = React.useCallback(() => updateState({}), []);
   const appInterface = (window.appInterface = {
     imageName,
@@ -35,6 +38,9 @@ export default () => {
     },
     animations: [],
     animation,
+    render: () => {
+      setRender(!render);
+    },
     setAnimation: n => {
       if (n) {
         if (appInterface.animation && n.name !== appInterface.animation.name) {
@@ -60,6 +66,40 @@ export default () => {
     forceUpdate,
     isDragging,
     setIsDragging,
+    isFrameMarked: i => {
+      return markedFrames.indexOf(i) > -1;
+    },
+    addMarkedFrame: i => {
+      const ind = markedFrames.indexOf(i);
+      if (ind === -1) {
+        const newFrames = [...markedFrames];
+        newFrames.push(i);
+        setMarkedFrames(newFrames);
+      }
+    },
+    removeMarkedFrame: i => {
+      const ind = markedFrames.indexOf(i);
+      if (ind > -1) {
+        const newFrames = [...markedFrames];
+        newFrames.splice(ind, 1);
+        setMarkedFrames(newFrames);
+      }
+    },
+    markAllFrames: () => {
+      setMarkedFrames(
+        anim.sprites.map((_, i) => {
+          return i;
+        })
+      );
+    },
+    getMarkedFrames: () => markedFrames.sort(),
+    clearMarkedFrames: () => {
+      setMarkedFrames([]);
+    },
+    setSpriteSheetZoom: n => {
+      setSpriteSheetZoom(n);
+    },
+    getSpriteSheetZoom: () => spriteSheetZoom,
   });
 
   display.resize(window.innerWidth, window.innerHeight);

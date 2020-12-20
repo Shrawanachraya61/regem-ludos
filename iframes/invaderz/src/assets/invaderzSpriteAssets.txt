@@ -1,0 +1,12 @@
+Picture,invadersSpritesheet,assets/invaders.png
+SpriteList,badShip,3,32,32
+SpriteList,badShip2,2,32,32
+SpriteList,goodShip,2,32,32
+SpriteList,goodLazer,2,32,32
+SpriteList,badLazer,2,32,32
+SpriteList,badLazer2,2,32,32
+SpriteList,healthPickup,3,32,32
+SpriteList,healthBar,1,32,32
+SpriteList,explosion,5,32,32
+SpriteList,starsBg,3,32,32
+SpriteList,invisible,1,32,32
