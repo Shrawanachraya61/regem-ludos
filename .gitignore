@@ -10,3 +10,4 @@ dist/
 *.wasm
 *.min.js
 *.data
+desktop.ini

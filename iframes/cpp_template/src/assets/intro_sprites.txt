@@ -1,0 +1,3 @@
+Picture,cpp_splash_bg,assets/cpp_splash_bg.png
+Picture,cpp_splash_fg,assets/cpp_splash_fg.png
+Picture,cpp_splash_black,assets/cpp_splash_black.png

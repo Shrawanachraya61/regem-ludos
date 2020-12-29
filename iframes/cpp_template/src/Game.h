@@ -16,6 +16,8 @@ class Game
 	int score;
 	int lastScore;
 
+	Actor* test;
+
 public:
 	SDL2Wrapper::Window &window;
 	std::vector<int> background;

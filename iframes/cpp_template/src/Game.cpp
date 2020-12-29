@@ -28,7 +28,8 @@ Game::Game(SDL2Wrapper::Window& windowA)
       shouldPlayHiscoreSound(false),
       score(0),
       lastScore(0),
-      window(windowA) {
+      window(windowA),
+      test(nullptr) {
   SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
   window.setCurrentFont("default", 18);
 
@@ -42,8 +43,6 @@ Game::Game(SDL2Wrapper::Window& windowA)
   SDL2Wrapper::Events& events = window.getEvents();
   events.setKeyboardEvent(
       "keydown", std::bind(&Game::handleKeyDown, this, std::placeholders::_1));
-
-  // playerShip = std::make_unique<Ship>(*this, "goodShip", 0, 20);
   initPlayer();
   initWorld();
   enableMenu();
@@ -51,7 +50,7 @@ Game::Game(SDL2Wrapper::Window& windowA)
 
 Game::~Game() {}
 
-void Game::initPlayer() {}
+void Game::initPlayer() { test = new Actor(*this, "player"); }
 
 void Game::initWorld() {
   score = 0;
@@ -176,6 +175,9 @@ void Game::drawMenu() {
                             scoreTextY,
                             window.makeColor(255, 255, 255));
   }
+
+  SDL2Wrapper::Store::getSprite("player_normal_up_0");
+  test->draw();
 }
 
 void Game::drawUI() {

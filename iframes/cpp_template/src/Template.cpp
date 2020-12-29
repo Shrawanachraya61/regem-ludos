@@ -7,8 +7,6 @@
 #include <map>
 #include <vector>
 
-#define PROGRAM_NAME "BouncePaddle"
-
 void parseArgs(int argc, char* argv[], std::vector<std::string>& args) {
   for (int i = 0; i < argc; i++) {
     std::string arg = argv[i];
@@ -32,37 +30,8 @@ void loadIntro() {
   SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
 }
 
-class Intro {
-public:
-  bool isPlayingIntro;
-  bool isBgMoving;
-  bool isFgShowing;
-  bool isFading;
-  SDL2Wrapper::BoolTimer introTimer;
-  SDL2Wrapper::BoolTimer introBgTimer;
-  SDL2Wrapper::BoolTimer introFadeTimer;
-  SDL2Wrapper::FuncTimer introFgTimer;
-  Intro(SDL2Wrapper::Window& window)
-      : isPlayingIntro(true),
-        isBgMoving(true),
-        isFgShowing(false),
-        isFading(false),
-        introTimer(SDL2Wrapper::BoolTimer(window, 3800, isPlayingIntro)),
-        introBgTimer(SDL2Wrapper::BoolTimer(window, 900, isBgMoving)),
-        introFadeTimer(SDL2Wrapper::BoolTimer(window, 900, isFading)),
-        introFgTimer(SDL2Wrapper::FuncTimer(window, 1200, [&]() {
-          isFgShowing = true;
-          introFadeTimer.restart();
-        })) {}
-  ~Intro() {}
-  void load() {
-    SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
-    SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
-  }
-};
-
 int main(int argc, char* argv[]) {
-  SDL2Wrapper::Logger(PROGRAM_NAME) << " Program Begin." << std::endl;
+  std::cout << "[BouncePaddle] Program Begin." << std::endl;
   srand(time(NULL));
 
   std::vector<std::string> args;
@@ -130,7 +99,7 @@ int main(int argc, char* argv[]) {
       }
     });
 
-    SDL2Wrapper::Logger(PROGRAM_NAME) << "Program End." << std::endl;
+    std::cout << "[BouncePaddle] Program End." << std::endl;
   } catch (const std::string& e) {
     std::cout << e;
   }
