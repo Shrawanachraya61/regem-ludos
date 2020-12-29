@@ -11,6 +11,7 @@ class Logger {
 public:
   Logger() {}
   Logger(typelog type) { operator<<("[" + getLabel(type) + "] "); }
+  Logger(const std::string& type) { operator<<("[" + type + "] "); }
   ~Logger() {}
 
   template <class T> Logger operator<<(const T& msg) {
@@ -20,7 +21,7 @@ public:
   typedef Logger& (*StreamManipulator)(Logger&);
   typedef std::basic_ostream<char, std::char_traits<char>> CoutType;
   typedef CoutType& (*StandardEndLine)(CoutType&);
-  Logger& operator<<(StandardEndLine manipulate) {
+  Logger& operator<<(const StandardEndLine manipulate) {
     manipulate(std::cout);
     return *this;
   }

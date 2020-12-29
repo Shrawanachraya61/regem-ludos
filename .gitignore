@@ -7,3 +7,6 @@ dist/
 *.zip
 *.o
 *.exe
+*.wasm
+*.min.js
+*.data
