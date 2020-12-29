@@ -66,5 +66,5 @@ void Actor::update() {
 
 void Actor::draw() {
   SDL2Wrapper::Animation& anim = anims[animState];
-  game.window.drawAnimation(anim, static_cast<int>(x), static_cast<int>(y));
+  game.window.drawAnimation(anim, static_cast<int>(x), static_cast<int>(y), false);
 }

@@ -32,7 +32,7 @@ js: dist
 	cp -r dist/* ../
 
 run: $(EXE)
-	./$(EXE)
+	./$(EXE) --nointro
 
 clean_all: clean
 	rm -f $(SDL2_WRAPPER_DIR)/*.o
