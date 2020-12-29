@@ -1,0 +1,15 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "GCC",
+            "intelliSenseMode": "gcc-x86",
+            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
+            "compilerPath": "\"D:\\Program Files\\MSYS64\\mingw32\\bin\\g++.exe\" -Wall",
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra"
+            ]
+        }
+    ]
+}

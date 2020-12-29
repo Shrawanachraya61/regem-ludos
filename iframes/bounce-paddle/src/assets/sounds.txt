@@ -1,0 +1,2 @@
+#Sound,begin,assets/begin.wav
+#Music,menu,assets/menu.wav

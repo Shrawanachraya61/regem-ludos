@@ -1,0 +1,9 @@
+{
+  "name": "arcade_invaderz",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "cd src && make js"
+  },
+  "dependencies": {}
+}

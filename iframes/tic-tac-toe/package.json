@@ -1,0 +1,9 @@
+{
+  "name": "regemludos_tictactoe",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "../../node_modules/.bin/terser src/tic-tac-toe.js -o tic-tac-toe.js"
+  },
+  "dependencies": {}
+}

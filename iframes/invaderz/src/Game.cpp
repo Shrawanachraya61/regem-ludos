@@ -8,6 +8,11 @@
 #include <cctype>
 #include <string>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 const int GameOptions::width = 512;
 const int GameOptions::height = 512;
 const int GameOptions::spriteSize = 32;
@@ -29,7 +34,7 @@ const int GameOptions::pointsPerDestroyedShip2 = 1000;
 const int GameOptions::pointsLostPerShot = 1;
 GameOptions::GameOptions() {}
 
-const float distance(const int x1, const int y1, const int x2, const int y2)
+float distance(const int x1, const int y1, const int x2, const int y2)
 {
 	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
@@ -179,7 +184,7 @@ void Game::handleKeyUp(const std::string &key)
 
 void Game::handleKeyUpdate()
 {
-	SDL2Wrapper::Events &events = window.getEvents();
+	const SDL2Wrapper::Events &events = window.getEvents();
 	if (events.isKeyPressed("Left"))
 	{
 		playerShip->setVx(-GameOptions::playerSpeed);
@@ -285,7 +290,7 @@ void Game::drawMenu()
 	int startTextX = GameOptions::width / 2;
 	int startTextY = GameOptions::height - GameOptions::height / 4;
 	window.setCurrentFont("default", 36);
-	window.drawTextCentered("Press 'Enter' to start", startTextX, startTextY, window.makeColor(255, 255, 255));
+	window.drawTextCentered("Press button to start.", startTextX, startTextY, window.makeColor(255, 255, 255));
 
 	if (score)
 	{
@@ -422,6 +427,10 @@ bool Game::loop()
 	{
 		shouldPlayHiscoreSound = false;
 		window.playSound("hiscore");
+#ifdef __EMSCRIPTEN__
+		const std::string script = std::string("window.notifyHighScore(\"" + std::to_string(score) + "\")");
+		emscripten_run_script(script.c_str());
+#endif
 	}
 
 	if (shouldDrawMenu)

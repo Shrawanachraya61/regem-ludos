@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sdl2wrapper/SDL2Wrapper.h"
+#include "SDL2Wrapper.h"
 
 #include <string>
 #include <vector>

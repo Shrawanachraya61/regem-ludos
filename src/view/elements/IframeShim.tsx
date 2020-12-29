@@ -1,17 +1,23 @@
-import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { h, Ref } from 'preact';
 import { style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 
 interface IIframeShimProps {
+  id?: string;
   src: string;
   width: string;
   height: string;
   expanded: boolean;
+  ref?: Ref<any>;
 }
 
 const IframeBorder = style(
   'div',
-  (props: { expanded: boolean; borderImageUrl: string, width: string, height: string }) => {
+  (props: {
+    expanded: boolean;
+    borderImageUrl: string;
+    width: string;
+    height: string;
+  }) => {
     return {
       border: '20px solid black',
       transition: 'width 0.25s, height 0.25s, marginTop 0.25s',
@@ -41,6 +47,8 @@ const IframeShim = (props: IIframeShimProps) => {
       height={props.height}
     >
       <iframe
+        id={props.id}
+        ref={props.ref}
         src={props.src}
         style={{
           border: '0px',

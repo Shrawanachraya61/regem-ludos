@@ -1,0 +1,173 @@
+#
+player
+noloop
+player_normal_up_0 100
+
+#
+player_normal_up
+noloop
+player_normal_up_0 100
+
+#
+player_normal_up_bounce
+noloop
+player_normal_up_0 100
+player_normal_up_1 100
+
+#
+player_normal_left
+noloop
+player_normal_up_0 100
+player_normal_left_0 100
+
+#
+player_normal_left_bounce
+noloop
+player_normal_left_0 100
+player_normal_left_1 100
+
+#
+player_normal_right
+noloop
+player_normal_up_0 100
+player_normal_right_0 100
+
+#
+player_normal_right_bounce
+noloop
+player_normal_right_0 100
+player_normal_right_1 100
+
+#
+player_short_up
+noloop
+player_short_up_0 100
+
+#
+player_short_up_bounce
+noloop
+player_normal_up_0 100
+player_normal_up_1 100
+
+#
+player_short_left
+noloop
+player_short_up_0 100
+player_normal_left_0 100
+
+#
+player_short_left_bounce
+noloop
+player_short_left_0 100
+player_short_left_1 100
+
+#
+player_short_right
+noloop
+player_short_up_0 100
+player_short_right_0 100
+
+#
+player_short_right_bounce
+noloop
+player_short_right_0 100
+player_short_right_1 100
+
+#
+player_sticky_up
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_up_bounce
+noloop
+player_sticky_up_0 100
+player_sticky_up_1 100
+
+#
+player_sticky_left
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_left_bounce
+noloop
+player_sticky_up_0 100
+player_sticky_up_1 100
+
+#
+player_sticky_right
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_right_bounce
+noloop
+player_sticky_up_0 100
+player_sticky_up_1 100
+
+#
+powerup_good
+loop
+powerup_good_0 100
+powerup_good_1 100
+
+#
+powerup_bad
+loop
+powerup_bad_0 100
+powerup_bad_1 100
+
+#
+brick_normal
+noloop
+brick_normal_0 100
+
+#
+brick_normal_destroyed
+noloop
+brick_normal_0 100
+brick_normal_1 100
+brick_normal_2 100
+brick_normal_3 100
+invisible 100
+
+#
+brickPowerup
+loop
+brickPowerup_0 100
+brickPowerup_1 100
+brickPowerup_2 100
+
+#
+brickPowerup_destroyed
+loop
+brickPowerup_0 100
+brick_normal_1 100
+brick_normal_2 100
+brick_normal_3 100
+invisible 100
+
+#
+brickMetal
+noloop
+brickMetal_0 100
+
+#
+brickMetalBomb
+loop
+brickMetalBomb_0 250
+brickMetalBomb_1 250
+brickMetalBomb_2 250
+
+#
+brickMetal_destroyed
+noloop
+brickExplosion_0 100
+brickExplosion_1 100
+brickExplosion_2 100
+brickExplosion_3 100
+brickExplosion_4 100
+brickExplosion_5 100
+brickExplosion_6 100
+invisible 100

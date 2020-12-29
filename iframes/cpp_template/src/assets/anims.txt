@@ -1,0 +1,174 @@
+#
+badShip
+loop
+badShip_0 500
+badShip_1 500
+
+#
+playerNormal_up
+noloop
+playerNormal_up_0, 100
+
+#
+playerNormal_up_bounce
+noloop
+playerNormal_up_0, 100
+playerNormal_up_1, 100
+
+#
+playerNormal_left
+noloop
+playerNormal_up_0, 100
+playerNormal_left_0, 100
+
+#
+playerNormal_left_bounce
+noloop
+playerNormal_left_0, 100
+playerNormal_left_1, 100
+
+#
+playerNormal_right
+noloop
+playerNormal_up_0, 100
+playerNormal_right_0, 100
+
+#
+playerNormal_right_bounce
+noloop
+playerNormal_right_0, 100
+playerNormal_right_1, 100
+
+#
+playerShort_up
+noloop
+playerShort_up_0, 100
+
+#
+playerShort_up_bounce
+noloop
+playerNormal_up_0, 100
+playerNormal_up_1, 100
+
+#
+playerShort_left
+noloop
+playerShort_up_0, 100
+playerNormal_left_0, 100
+
+#
+playerShort_left_bounce
+noloop
+playerShort_left_0, 100
+playerShort_left_1, 100
+
+#
+playerShort_right
+noloop
+playerShort_up_0, 100
+playerShort_right_0, 100
+
+#
+playerShort_right_bounce
+noloop
+playerShort_right_0, 100
+playerShort_right_1, 100
+
+#
+playerSticky_up
+noloop
+playerSticky_up_0, 100
+
+#
+playerSticky_up_bounce
+noloop
+playerSticky_up_0, 100
+playerSticky_up_1, 100
+
+#
+playerSticky_left
+noloop
+playerSticky_up_0, 100
+
+#
+playerSticky_left_bounce
+noloop
+playerSticky_up_0, 100
+playerSticky_up_1, 100
+
+#
+playerSticky_right
+noloop
+playerSticky_up_0, 100
+
+#
+playerSticky_right_bounce
+noloop
+playerSticky_up_0, 100
+playerSticky_up_1, 100
+
+#
+powerupGood
+loop
+powerupGood_0 100
+powerupGood_1 100
+
+#
+powerupBad
+loop
+powerupBad_0 100
+powerupBad_1 100
+
+#
+brickNormal
+noloop
+brickNormal_0 100
+
+#
+brickNormal_destroyed
+noloop
+brickNormal_0 100
+brickNormal_1 100
+brickNormal_2 100
+brickNormal_3 100
+invisible 100
+
+#
+brickPowerup
+loop
+brickPowerup_0 100
+brickPowerup_1 100
+brickPowerup_2 100
+
+#
+brickPowerup_destroyed
+loop
+brickPowerup_0 100
+brickNormal_1 100
+brickNormal_2 100
+brickNormal_3 100
+invisible 100
+
+#
+brickMetal
+noloop
+brickMetal_0 100
+
+#
+brickMetalBomb
+loop
+brickMetalBomb_0 250
+brickMetalBomb_1 250
+brickMetalBomb_2 250
+
+#
+brickMetal_destroyed
+noloop
+brickExplosion_0 100
+brickExplosion_1 100
+brickExplosion_2 100
+brickExplosion_3 100
+brickExplosion_4 100
+brickExplosion_5 100
+brickExplosion_6 100
+invisible 100

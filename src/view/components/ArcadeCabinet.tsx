@@ -1,19 +1,112 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { useState } from 'preact/hooks';
 import { colors, style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
+import {
+  hideControls,
+  showControls,
+  muteAudio,
+  unmuteAudio,
+  setScaleOriginal,
+  setScaleWindow,
+  setButtonDown,
+  setButtonUp,
+} from 'controller/arcade-iframe-actions';
 
 import Button, { ButtonType } from 'view/elements/Button';
 import IframeShim from 'view/elements/IframeShim';
+import Arrow from 'view/icons/Arrow';
+import Help from 'view/icons/Help';
+
+enum SDLKeyID {
+  Enter = 13,
+  Space = 32,
+  Left = 1073741904,
+  Right = 1073741903,
+}
+
+const buttonHandlers = (key: SDLKeyID) => {
+  return {
+    onMouseDown: () => {
+      setButtonDown(key);
+    },
+    onMouseUp: () => {
+      setButtonUp(key);
+    },
+    onTouchStart: () => {
+      setButtonDown(key);
+    },
+    onTouchEnd: () => {
+      setButtonUp(key);
+    },
+  };
+};
 
 export enum ArcadeGamePath {
   PRESIDENT = 'iframes/president/president.html',
   TIC_TAC_TOE = 'iframes/tic-tac-toe/tic-tac-toe.html',
   INVADERZ = 'iframes/invaderz/Invaderz.html',
 }
-
-const ArcadeGamePathTitles = {
-  [ArcadeGamePath.PRESIDENT]: 'President',
-  [ArcadeGamePath.TIC_TAC_TOE]: 'Tic Tac Toe',
+const ArcadeGamePathMeta = {
+  [ArcadeGamePath.PRESIDENT]: {
+    title: 'President',
+    controls: () => {
+      return <div></div>;
+    },
+  },
+  [ArcadeGamePath.TIC_TAC_TOE]: {
+    title: 'Tic Tac Toe',
+    controls: () => {
+      return (
+        <>
+          <CabinetControlButton
+            width="48px"
+            height="48px"
+            type="text"
+            {...buttonHandlers(SDLKeyID.Enter)}
+          >
+            <Help color={colors.YELLOW} />
+          </CabinetControlButton>
+        </>
+      );
+    },
+  },
+  [ArcadeGamePath.INVADERZ]: {
+    title: 'INVADERZ',
+    controls: () => (
+      <>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          {...buttonHandlers(SDLKeyID.Left)}
+        >
+          <Arrow color={colors.GREEN} direction="left"></Arrow>
+        </CabinetControlButton>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          {...buttonHandlers(SDLKeyID.Right)}
+        >
+          <Arrow color={colors.GREEN} direction="right"></Arrow>
+        </CabinetControlButton>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          type="text"
+          {...buttonHandlers(SDLKeyID.Space)}
+        >
+          FIRE
+        </CabinetControlButton>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          type="text"
+          {...buttonHandlers(SDLKeyID.Enter)}
+        >
+          START
+        </CabinetControlButton>
+      </>
+    ),
+  },
 };
 
 interface IArcadeCabinetProps {
@@ -79,12 +172,70 @@ const CabinetImage = style('div', () => {
     position: 'absolute',
     left: '0px',
     top: '0px',
+    zIndex: '-1',
   };
 });
+
+const CabinetControls = style('div', (props: {}) => {
+  return {
+    minHeight: '96px',
+    width: '548px',
+    background: colors.GREY,
+    textAlign: 'center',
+    zIndex: '1',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'all',
+    transform: 'perspective(512px) rotateX(24deg) translateY(12px)',
+    border: `2px solid ${colors.WHITE}`,
+  };
+});
+
+const CabinetControlButton = style(
+  'div',
+  (props: {
+    backgroundColor?: string;
+    color?: string;
+    width?: string;
+    height?: string;
+    type?: 'text' | 'other';
+  }) => {
+    return {
+      tapHighlightColor: 'rgba(0, 0, 0, 0)',
+      webkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+      padding: '16px',
+      fontSize: '16px',
+      minWidth: props.width ? 'unset' : '48px',
+      width: props.width,
+      height: props.height,
+      margin: '16px 4px',
+      background: props.backgroundColor ?? colors.DARKBLUE,
+      color: props.color ?? colors.WHITE,
+      cursor: 'pointer',
+      borderRadius: '8px',
+      border: `2px solid ${colors.GREY}`,
+      textAlign: 'center',
+      fontFamily: 'monospace',
+      userSelect: 'none',
+      display: props.type === 'text' ? 'flex' : '',
+      justifyContent: 'center',
+      touchAction: 'manipulate',
+      alignItems: 'center',
+      '&:hover': {
+        filter: 'brightness(120%)',
+      },
+      '&:active': {
+        filter: 'brightness(80%)',
+      },
+    };
+  }
+);
 
 const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(false);
+  const meta = ArcadeGamePathMeta[props.game];
   return (
     <CabinetWrapper>
       <CabinetHeader>
@@ -102,7 +253,15 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             marginRight: '1rem',
           }}
           onClick={() => {
-            setExpanded(!expanded);
+            const nextExpanded = !expanded;
+            setExpanded(nextExpanded);
+            if (nextExpanded) {
+              showControls();
+              setScaleWindow();
+            } else {
+              hideControls();
+              setScaleOriginal();
+            }
           }}
         >
           {expanded ? 'Contract' : 'Expand'}
@@ -113,16 +272,20 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             marginRight: '1rem',
           }}
           onClick={() => {
-            setMuted(!muted);
+            const nextMuted = !muted;
+            setMuted(nextMuted);
+            if (nextMuted) {
+              muteAudio();
+            } else {
+              unmuteAudio();
+            }
           }}
         >
           {muted ? 'Unmute' : 'Mute'}
         </Button>
       </CabinetHeader>
       <CabinetInnerWrapper>
-        {expanded ? null : (
-          <CabinetTitle>{ArcadeGamePathTitles[props.game]}</CabinetTitle>
-        )}
+        {expanded ? null : <CabinetTitle>{meta.title}</CabinetTitle>}
         <div
           style={{
             transition: 'height 0.25s',
@@ -134,11 +297,15 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
           {expanded ? null : <CabinetImage />}
         </div>
         <IframeShim
-          src={props.game}
+          id="arcade-iframe"
+          src={props.game + '?cabinet=true&mute=true'}
           width={expanded ? '100%' : 512 + 'px'}
           height={expanded ? '100%' : 512 + 'px'}
           expanded={expanded}
         ></IframeShim>
+        {expanded ? null : (
+          <CabinetControls id="controls">{meta.controls()}</CabinetControls>
+        )}
       </CabinetInnerWrapper>
     </CabinetWrapper>
   );

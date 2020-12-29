@@ -1,0 +1,9 @@
+{
+  "name": "regemludos_president",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "../../node_modules/.bin/terser src/president.js --keep-fnames -o president.js"
+  },
+  "dependencies": {}
+}

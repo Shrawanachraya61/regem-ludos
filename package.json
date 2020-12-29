@@ -2,9 +2,12 @@
   "name": "iso",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "yarn watch",
     "build": "rm -rf src/*.map src/main.js && tsc --sourceMap false && node scripts/build src",
+    "build:all": "yarn build:iframes && yarn build",
+    "build:iframes": "(cd iframes && yarn build)",
     "watch": "concurrently -n 1,2 \"http-server\" \"tsc --watch\""
   },
   "devDependencies": {

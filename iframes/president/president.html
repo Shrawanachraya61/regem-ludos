@@ -1,5 +1,11 @@
 <html>
   <header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <!-- <link rel="stylesheet" href="../lib.css" /> -->
+    <title>President</title>
     <style>
       body {
         background: #444;
@@ -73,13 +79,14 @@
       #play-card {
         box-shadow: 0px 0px 14px -1px rgba(0, 0, 0, 0.75);
         position: absolute;
+        border: 2px solid black;
         left: 20px;
         top: 164px;
       }
       .play-card {
         padding: 32px;
         border-radius: 32px;
-        background: brown;
+        background: rgb(0, 115, 157);
         color: white;
         font-family: monospace;
         cursor: pointer;
@@ -89,12 +96,13 @@
         pointer-events: none;
         padding: 32px;
         border-radius: 32px;
-        color: white;
+        color: rgba(255, 255, 255, 0.33);
         font-family: monospace;
         cursor: pointer;
       }
       #pass {
         box-shadow: 0px 0px 14px -1px rgba(0, 0, 0, 0.75);
+        border: 2px solid black;
         position: absolute;
         left: 20px;
         bottom: 164px;
@@ -104,15 +112,12 @@
         width: 38px;
         padding: 32px;
         border-radius: 32px;
-        background: blue;
+        background: rgb(63, 18, 114);
         color: white;
         font-family: monospace;
         cursor: pointer;
       }
     </style>
-    <title>
-      President
-    </title>
   </header>
   <body>
     <div id="game">
@@ -124,6 +129,7 @@
     </div>
   </body>
   <footer>
+    <script src="../lib.js"></script>
     <script src="president.js"></script>
   </footer>
 </html>

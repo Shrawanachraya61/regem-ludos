@@ -1,0 +1,12 @@
+{
+  "name": "regemludos_iframes",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:tic-tac-toe && yarn build:president && yarn build:invaderz",
+    "build:tic-tac-toe": "cd tic-tac-toe && yarn build",
+    "build:president": "cd president && yarn build",
+    "build:invaderz": "cd invaderz && yarn build"
+  },
+  "dependencies": {}
+}

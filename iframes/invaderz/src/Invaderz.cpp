@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Game.h"
 #include "GameOptions.h"
-#include "sdl2wrapper/SDL2Wrapper.h"
+#include "SDL2Wrapper.h"
 #include <ctime>
 #include <functional>
 #include <map>
@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-	std::cout << "[Invaderz] Program Start." << std::endl;
+	std::cout << "[Invaderz] Program Begin." << std::endl;
 	srand(time(NULL));
 
 	try
@@ -28,7 +28,5 @@ int main(int argc, char *argv[])
 	{
 		std::cout << e;
 	}
-
-	std::cout << "end." << std::endl;
 	return 0;
 }
