@@ -120,7 +120,7 @@ void Events::mousemove(int x, int y) {
 }
 void Events::keydown(int key) {
   std::unique_ptr<EventRoute>& route = routes.top();
-  Logger(DEBUG) << "SDLKEY: " << key << std::endl;
+  // Logger(DEBUG) << "SDLKEY: " << key << std::endl;
   const std::string k = std::string(SDL_GetKeyName(key));
   if (!keys[k]) {
     keys[k] = true;

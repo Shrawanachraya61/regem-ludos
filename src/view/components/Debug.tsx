@@ -18,7 +18,7 @@ const ButtonContainer = style('div', () => {
 const Debug = () => {
   return (
     <div id="debug">
-      <ArcadeCabinet game={ArcadeGamePath.TIC_TAC_TOE} />
+      <ArcadeCabinet game={ArcadeGamePath.INVADERZ} />
       {/* <ButtonContainer>
         <Button type={ButtonType.PRIMARY} onClick={() => {}}>
           <span>Click Me!</span>

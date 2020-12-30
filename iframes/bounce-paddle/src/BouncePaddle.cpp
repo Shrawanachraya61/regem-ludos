@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-#define PROGRAM_NAME "BouncePaddle"
+const std::string GameOptions::programName = "Bounce Paddle";
 
 void parseArgs(int argc, char* argv[], std::vector<std::string>& args) {
   for (int i = 0; i < argc; i++) {
@@ -25,11 +25,6 @@ bool includes(const std::string& arg, const std::vector<std::string>& args) {
   } else {
     return false;
   }
-}
-
-void loadIntro() {
-  SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
-  SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
 }
 
 class Intro {
@@ -59,61 +54,53 @@ public:
     SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
     SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
   }
+  void render(SDL2Wrapper::Window& window) {
+    introTimer.update();
+    introBgTimer.update();
+    introFgTimer.update();
+    double introOffset = (512.0 * introBgTimer.getPctComplete());
+    window.drawSprite("cpp_splash_bg", 0, 0, false);
+    if (isBgMoving) {
+      window.drawSprite("cpp_splash_black", introOffset, 0, false);
+    }
+    if (isFgShowing) {
+      window.globalAlpha =
+          static_cast<int>(introFadeTimer.getPctComplete() * 255);
+      window.drawSprite("cpp_splash_black", 0, 0, false);
+      window.globalAlpha = 255;
+      window.drawSprite("cpp_splash_fg", 0, 0, false);
+      introFadeTimer.update();
+    }
+
+    if (introTimer.shouldRemove()) {
+      introTimer.remove();
+    }
+    if (introBgTimer.shouldRemove()) {
+      introBgTimer.remove();
+    }
+    if (introFgTimer.shouldRemove()) {
+      introFgTimer.remove();
+    }
+  }
 };
 
 int main(int argc, char* argv[]) {
-  SDL2Wrapper::Logger(PROGRAM_NAME) << " Program Begin." << std::endl;
+  SDL2Wrapper::Logger(GameOptions::programName)
+      << "Program Begin." << std::endl;
   srand(time(NULL));
 
   std::vector<std::string> args;
   parseArgs(argc, argv, args);
-  bool isPlayingIntro = includes("nointro", args) ? false : true;
   try {
     SDL2Wrapper::Window window(
-        "Bounce Paddle", GameOptions::width, GameOptions::height);
+        GameOptions::programName, GameOptions::width, GameOptions::height);
     Game game(window);
-    bool isBgMoving = true;
-    bool isFgShowing = false;
-    bool isFading = false;
-    SDL2Wrapper::BoolTimer introTimer(window, 3800, isPlayingIntro);
-    SDL2Wrapper::BoolTimer introBgTimer(window, 900, isBgMoving);
-    SDL2Wrapper::BoolTimer introFadeTimer(window, 1500, isFading);
-    SDL2Wrapper::FuncTimer introFgTimer(window, 1200, [&]() {
-      isFgShowing = true;
-      introFadeTimer.restart();
-    });
+    Intro intro(window);
 
-    auto intro = [&]() {
-      introTimer.update();
-      introBgTimer.update();
-      introFgTimer.update();
-      double introOffset = (512.0 * introBgTimer.getPctComplete());
-      window.drawSprite("cpp_splash_bg", 0, 0, false);
-      if (isBgMoving) {
-        window.drawSprite("cpp_splash_black", introOffset, 0, false);
-      }
-      if (isFgShowing) {
-        window.globalAlpha =
-            static_cast<int>(introFadeTimer.getPctComplete() * 255);
-        window.drawSprite("cpp_splash_black", 0, 0, false);
-        window.globalAlpha = 255;
-        window.drawSprite("cpp_splash_fg", 0, 0, false);
-        introFadeTimer.update();
-      }
+    intro.isPlayingIntro = includes("nointro", args) ? false : true;
 
-      if (introTimer.shouldRemove()) {
-        introTimer.remove();
-      }
-      if (introBgTimer.shouldRemove()) {
-        introBgTimer.remove();
-      }
-      if (introFgTimer.shouldRemove()) {
-        introFgTimer.remove();
-      }
-    };
-
-    if (isPlayingIntro) {
-      loadIntro();
+    if (intro.isPlayingIntro) {
+      intro.load();
       window.playSound("cpp_intro");
     }
 
@@ -121,16 +108,24 @@ int main(int argc, char* argv[]) {
     // SDL2Wrapper::Store::logSprites();
     // SDL2Wrapper::Store::logAnimationDefinitions();
 
+    bool firstRender = true;
+
     window.startRenderLoop([&]() {
-      if (isPlayingIntro) {
-        intro();
+      if (intro.isPlayingIntro) {
+        intro.render(window);
         return true;
       } else {
+        if (firstRender) {
+          // game.enableMenu();
+          game.disableMenu();
+          firstRender = false;
+        }
         return game.loop();
       }
     });
 
-    SDL2Wrapper::Logger(PROGRAM_NAME) << "Program End." << std::endl;
+    SDL2Wrapper::Logger(GameOptions::programName)
+        << "Program End." << std::endl;
   } catch (const std::string& e) {
     std::cout << e;
   }

@@ -1,4 +1,9 @@
 #
+invisible
+noloop
+invisible 100
+
+#
 player
 noloop
 player_normal_up_0 100
@@ -11,32 +16,44 @@ player_normal_up_0 100
 #
 player_normal_up_bounce
 noloop
-player_normal_up_0 100
 player_normal_up_1 100
 
 #
 player_normal_left
 noloop
-player_normal_up_0 100
 player_normal_left_0 100
 
 #
 player_normal_left_bounce
 noloop
-player_normal_left_0 100
 player_normal_left_1 100
 
 #
 player_normal_right
 noloop
-player_normal_up_0 100
 player_normal_right_0 100
 
 #
 player_normal_right_bounce
 noloop
-player_normal_right_0 100
 player_normal_right_1 100
+
+#
+player_intro
+noloop
+playerIntro_0 100
+playerIntro_1 100
+playerIntro_2 100
+playerIntro_3 100
+playerIntro_4 100
+playerIntro_5 100
+playerIntro_6 100
+playerIntro_7 100
+playerIntro_8 100
+playerIntro_9 100
+playerIntro_10 100
+playerIntro_11 100
+playerIntro_12 100
 
 #
 player_short_up
@@ -107,18 +124,6 @@ player_sticky_up_0 100
 player_sticky_up_1 100
 
 #
-powerup_good
-loop
-powerup_good_0 100
-powerup_good_1 100
-
-#
-powerup_bad
-loop
-powerup_bad_0 100
-powerup_bad_1 100
-
-#
 brick_normal
 noloop
 brick_normal_0 100
@@ -126,42 +131,42 @@ brick_normal_0 100
 #
 brick_normal_destroyed
 noloop
-brick_normal_0 100
-brick_normal_1 100
-brick_normal_2 100
-brick_normal_3 100
-invisible 100
+brick_normal_0 75
+brick_normal_1 75
+brick_normal_2 75
+brick_normal_3 75
+invisible_0 100
 
 #
-brickPowerup
+brick_powerup
 loop
 brickPowerup_0 100
 brickPowerup_1 100
 brickPowerup_2 100
 
 #
-brickPowerup_destroyed
-loop
+brick_powerup_destroyed
+noloop
 brickPowerup_0 100
 brick_normal_1 100
 brick_normal_2 100
 brick_normal_3 100
-invisible 100
+invisible_0 100
 
 #
-brickMetal
+brick_metal
 noloop
 brickMetal_0 100
 
 #
-brickMetalBomb
+brick_metalBomb
 loop
-brickMetalBomb_0 250
-brickMetalBomb_1 250
-brickMetalBomb_2 250
+brickMetalBomb_0 75
+brickMetalBomb_1 75
+brickMetalBomb_2 75
 
 #
-brickMetal_destroyed
+brick_metal_destroyed
 noloop
 brickExplosion_0 100
 brickExplosion_1 100
@@ -170,4 +175,48 @@ brickExplosion_3 100
 brickExplosion_4 100
 brickExplosion_5 100
 brickExplosion_6 100
-invisible 100
+invisible_0 100
+
+#
+brick_metalBomb_destroyed
+noloop
+brickExplosion_0 75
+brickExplosion_1 75
+brickExplosion_2 75
+brickExplosion_3 75
+brickExplosion_4 75
+brickExplosion_5 75
+brickExplosion_6 75
+invisible_0 100
+
+#
+ball_normal
+noloop
+ball_normal_0 100;
+
+#
+ball_armored
+noloop
+ball_armored_0 100;
+
+#
+ball_extra
+noloop
+ball_extra_0 100;
+
+#
+ball_damaged
+noloop
+ball_damaged_0 100;
+
+#
+powerup_good
+loop
+powerup_good_0 100;
+powerup_good_1 100;
+
+#
+powerup_bad
+loop
+powerup_bad_0 100;
+powerup_bad_1 100;
