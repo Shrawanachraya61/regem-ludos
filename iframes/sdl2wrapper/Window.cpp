@@ -115,12 +115,20 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
     throw new std::runtime_error("");
   }
 
+#ifdef __EMSCRIPTEN__
   renderer = std::unique_ptr<SDL_Renderer, SDL_Deleter>(
       SDL_CreateRenderer(window.get(),
                          -1,
                          SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
                              SDL_RENDERER_TARGETTEXTURE),
       SDL_Deleter());
+#else
+  renderer = std::unique_ptr<SDL_Renderer, SDL_Deleter>(
+      SDL_CreateRenderer(window.get(),
+                         -1,
+                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE),
+      SDL_Deleter());
+#endif
   SDL_SetRenderDrawColor(renderer.get(), 0x55, 0x55, 0x55, 0xFF);
 
   if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {

@@ -34,16 +34,16 @@ FuncTimer::FuncTimer(const Window& windowA,
 void FuncTimer::remove() {
   if (!removeFlag) {
     cb();
-    Timer::remove();
   }
+  Timer::remove();
 }
 BoolTimer::BoolTimer(const Window& windowA, int maxFrames, bool& refA)
     : Timer(windowA, maxFrames), ref(refA) {}
 void BoolTimer::remove() {
   if (!removeFlag) {
     ref = !ref;
-    Timer::remove();
   }
+  Timer::remove();
 }
 
 } // namespace SDL2Wrapper

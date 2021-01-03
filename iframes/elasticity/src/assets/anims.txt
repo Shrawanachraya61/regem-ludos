@@ -1,0 +1,292 @@
+#
+invisible
+noloop
+invisible_0 100
+
+#
+player
+noloop
+player_normal_up_0 100
+
+#
+player_normal_up
+noloop
+player_normal_up_0 100
+
+#
+player_normal_up_bounce
+noloop
+player_normal_up_1 100
+
+#
+player_normal_left
+noloop
+player_normal_left_0 100
+
+#
+player_normal_left_bounce
+noloop
+player_normal_left_1 100
+
+#
+player_normal_right
+noloop
+player_normal_right_0 100
+
+#
+player_normal_right_bounce
+noloop
+player_normal_right_1 100
+
+#
+player_intro
+noloop
+playerIntro_0 75
+playerIntro_1 75
+playerIntro_2 75
+playerIntro_3 75
+playerIntro_4 75
+playerIntro_5 75
+playerIntro_6 200
+playerIntro_7 75
+playerIntro_8 75
+playerIntro_9 75
+playerIntro_10 75
+playerIntro_11 75
+playerIntro_12 75
+player_normal_up_0 100
+
+#
+player_short_up
+noloop
+player_short_up_0 100
+
+#
+player_short_up_bounce
+noloop
+player_short_up_1 100
+
+#
+player_short_left
+noloop
+player_short_left_0 100
+
+#
+player_short_left_bounce
+noloop
+player_short_left_1 100
+
+#
+player_short_right
+noloop
+player_short_right_0 100
+
+#
+player_short_right_bounce
+noloop
+player_short_right_1 100
+
+#
+player_sticky_up
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_up_bounce
+noloop
+player_sticky_up_1 100
+
+#
+player_sticky_left
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_left_bounce
+noloop
+player_sticky_up_1 100
+
+#
+player_sticky_right
+noloop
+player_sticky_up_0 100
+
+#
+player_sticky_right_bounce
+noloop
+player_sticky_up_1 100
+
+#
+brick_normal
+noloop
+brick_normal_0 100
+
+#
+brick_normal_destroyed
+noloop
+brick_normal_0 75
+brick_normal_1 75
+brick_normal_2 75
+brick_normal_3 75
+invisible_0 100
+
+#
+brick_normal_green
+noloop
+brick_normal_green_0 100
+
+#
+brick_normal_green_destroyed
+noloop
+brick_normal_green_0 75
+brick_normal_1 75
+brick_normal_2 75
+brick_normal_3 75
+invisible_0 100
+
+#
+brick_normal_pink
+noloop
+brick_normal_pink_0 100
+
+#
+brick_normal_pink_destroyed
+noloop
+brick_normal_pink_0 75
+brick_normal_1 75
+brick_normal_2 75
+brick_normal_3 75
+invisible_0 100
+
+#
+brick_normal_blue
+noloop
+brick_normal_blue_0 100
+
+#
+brick_normal_blue_destroyed
+noloop
+brick_normal_blue_0 75
+brick_normal_1 75
+brick_normal_2 75
+brick_normal_3 75
+invisible_0 100
+
+#
+brick_powerup
+loop
+brickPowerup_0 100
+brickPowerup_1 100
+brickPowerup_2 100
+
+#
+brick_powerup_destroyed
+noloop
+brickPowerup_0 100
+brick_normal_1 100
+brick_normal_2 100
+brick_normal_3 100
+invisible_0 100
+
+#
+brick_powerup_bad
+loop
+brick_powerup_bad_0 100
+brick_powerup_bad_1 100
+brick_powerup_bad_2 100
+
+#
+brick_powerup_bad_destroyed
+noloop
+brick_powerup_bad_0 100
+brick_normal_1 100
+brick_normal_2 100
+brick_normal_3 100
+invisible_0 100
+
+#
+brick_metal
+noloop
+brickMetal_0 100
+
+#
+brick_metal_destroyed
+noloop
+brickExplosion_0 100
+brickExplosion_1 100
+brickExplosion_2 100
+brickExplosion_3 100
+brickExplosion_4 100
+brickExplosion_5 100
+brickExplosion_6 100
+invisible_0 100
+
+#
+brick_metalBomb
+loop
+brickMetalBomb_0 75
+brickMetalBomb_1 75
+brickMetalBomb_2 75
+
+#
+brick_metalBomb_destroyed
+noloop
+brickExplosion_0 75
+brickExplosion_1 75
+brickExplosion_2 75
+brickExplosion_3 75
+brickExplosion_4 75
+brickExplosion_5 75
+brickExplosion_6 75
+invisible_0 100
+
+#
+brick_powerup_metal
+noloop
+brick_powerup_metal_0 100
+
+#
+brick_powerup_metal_destroyed
+noloop
+brick_powerup_metal_0 100
+brick_normal_1 100
+brick_normal_2 100
+brick_normal_3 100
+invisible_0 100
+
+#
+ball_normal
+noloop
+ball_normal_0 100;
+
+#
+ball_armored
+noloop
+ball_armored_0 100;
+
+#
+ball_extra
+noloop
+ball_extra_0 100;
+
+#
+ball_damaged
+noloop
+ball_damaged_0 100;
+
+#
+powerup_good
+loop
+powerup_good_0 100;
+powerup_good_1 100;
+
+#
+powerup_bad
+loop
+powerup_bad_0 100;
+powerup_bad_1 100;
+
+#
+mana
+noloop
+mana_0 100;

@@ -1,0 +1,16 @@
+Sound,game_start,assets/game_start.wav
+Sound,game_over,assets/game_over.wav
+Sound,explosion,assets/explosion_quiet.wav
+Sound,level_complete,assets/level_complete.wav
+Sound,paddle_hit,assets/paddle_hit.wav
+Sound,brick_hit1,assets/brick_hit.wav
+Sound,brick_hit2,assets/brick_hit2.wav
+Sound,paddle_normal,assets/paddle_normal.wav
+Sound,paddle_small,assets/paddle_small.wav
+Sound,victory,assets/victory.wav
+Sound,metal_hit2,assets/metal_hit2.wav
+Sound,powerup_good,assets/powerup_good.wav
+Sound,powerup_bad,assets/powerup_bad.wav
+Sound,extra_balls,assets/extra_balls.wav
+Sound,ship_intro,assets/ship_intro.wav
+Music,menu,assets/menu.wav
