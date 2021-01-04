@@ -36,10 +36,11 @@ Game::Game(SDL2Wrapper::Window& windowA)
       isGameOver(false),
       levelIndex(0),
       score(0),
+      scoreLevelStart(0),
       lastScore(0),
       combo(0),
-      bricksXOffset(24 + 58 / 2),
-      bricksYOffset(64),
+      bricksXOffset(24 + 58 / 2 + 1),
+      bricksYOffset(64 - 1),
       brickWidth(58),
       brickHeight(28),
       bgWidth((512 / 24 + 1)),
@@ -50,7 +51,8 @@ Game::Game(SDL2Wrapper::Window& windowA)
       brickColor(""),
       isVictory(false),
       window(windowA),
-      retryIndex(1) {
+      retryIndex(1),
+      numRetries(0) {
   SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
   window.setCurrentFont("default", 18);
 
@@ -79,6 +81,7 @@ void Game::initWorld() {
   isVictory = false;
   isGameOver = false;
   player->setPaddleState("normal");
+
   balls.erase(balls.begin(), balls.end());
   powerups.erase(powerups.begin(), powerups.end());
   bricks.erase(bricks.begin(), bricks.end());
@@ -113,8 +116,8 @@ void Game::initWorld() {
                 {1, 4, 0, 1, 1, 0, 4, 1},
                 {0, 1, 0, 2, 2, 0, 1, 0},
                 {0, 1, 0, 2, 2, 0, 1, 0},
-                {2, 2, 1, 4, 4, 1, 2, 2},
-                {3, 6, 1, 0, 0, 1, 6, 3},
+                {6, 2, 1, 4, 4, 1, 2, 6},
+                {3, 2, 1, 0, 0, 1, 2, 3},
                 {0, 2, 2, 1, 1, 2, 2, 0},
                 {0, 0, 0, 1, 1, 0, 0, 0},
                 {4, 0, 0, 2, 2, 0, 0, 4}});
@@ -200,8 +203,8 @@ void Game::initWorld() {
   } else if (levelIndex == 8) {
     brickColor = "blue";
     terrainIndex = 1;
-    loadBricks({{1, 3, 3, 0, 1, 3, 3, 0},
-                {1, 2, 2, 1, 1, 2, 2, 1},
+    loadBricks({{1, 1, 3, 0, 1, 3, 1, 0},
+                {1, 3, 2, 1, 1, 2, 3, 1},
                 {1, 2, 2, 1, 1, 2, 2, 1},
                 {1, 2, 2, 1, 1, 2, 2, 1},
                 {1, 1, 1, 0, 1, 1, 1, 0},
@@ -245,6 +248,16 @@ void Game::initWorld() {
         {0, 2, 2, 2, 1, 2, 2, 2},
     });
   }
+
+  if (levelIndex == 10) {
+    addTextParticle(window.width / 2, window.height / 2, "Final Level", 3000);
+  } else {
+    addTextParticle(window.width / 2,
+                    window.height / 2,
+                    "Level " + std::to_string(levelIndex + 1),
+                    3000);
+  }
+  particles.back()->vy = 0;
 
   background.erase(background.begin(), background.end());
   for (unsigned int i = 0; i < bgHeight; i++) {
@@ -324,6 +337,8 @@ void Game::modifyScore(const int value) {
     return;
   }
   score += value;
+  addTextParticle(GameOptions::width / 2, 32, std::to_string(value), 500);
+  particles.back()->vy = 0.5;
   if (score < 0) {
     score = 0;
   }
@@ -364,6 +379,15 @@ void Game::handleKeyUpdate() {
         ball.setVx(4);
       }
     }
+  } else {
+    player->setDirection("up");
+    player->setVx(0);
+    for (unsigned int i = 0; i < balls.size(); i++) {
+      Ball& ball = *balls[i];
+      if (ball.isSticky) {
+        ball.setVx(0);
+      }
+    }
   }
 
   if (events.isKeyPressed("Space")) {
@@ -377,14 +401,15 @@ void Game::handleKeyUpdate() {
 void Game::handleKeyMenu(const std::string& key) {
   if (key == "Return") {
     levelIndex = 0;
-    terrainIndex = 0;
     score = 0;
     combo = 0;
     player->mana = 3;
     isGameOver = true;
+    numRetries = 0;
     particles.push_back(std::make_unique<Particle>(*this, "fade_out", 1000));
     addFuncTimer(1000, [&]() {
       disableMenu();
+      terrainIndex = 0;
       window.playSound("game_start");
       particles.push_back(std::make_unique<Particle>(*this, "black", 2000));
       addFuncTimer(2000, [&]() {
@@ -415,18 +440,23 @@ void Game::handleKeyRetry(const std::string& key) {
   }
 
   if (key == "Return") {
+    SDL2Wrapper::Events& events = window.getEvents();
+    events.popRouteNextTick();
     if (retryIndex == 0) {
-      SDL2Wrapper::Events& events = window.getEvents();
-      events.popRouteNextTick();
       window.playSound("brick_hit1");
       addFuncTimer(100, [&]() {
         shouldDrawRetry = false;
         enableMenu();
       });
     } else {
+      score = scoreLevelStart;
       window.playSound("level_complete");
-      initWorld();
-      particles.push_back(std::make_unique<Particle>(*this, "fade_in", 1000));
+      addFuncTimer(1500, [&]() {
+        numRetries++;
+        shouldDrawRetry = false;
+        initWorld();
+        particles.push_back(std::make_unique<Particle>(*this, "fade_in", 1000));
+      });
     }
   }
 }
@@ -448,13 +478,13 @@ std::string Game::collidesCircleRect(const Circle& c, const Rect& r2) {
       collision = (crossWidth > -(crossHeight)) ? "right" : "top";
     }
 
-    if (c.x < r2.x && c.y < r2.y) {
+    if (c.x <= r2.x && c.y <= r2.y) {
       collision = "top-left";
-    } else if (c.x > r2.x + r2.w && c.y < r2.y) {
+    } else if (c.x >= r2.x + r2.w && c.y <= r2.y) {
       collision = "top-right";
-    } else if (c.x < r2.x && c.y < r2.y + r2.h) {
+    } else if (c.x <= r2.x && c.y >= r2.y + r2.h) {
       collision = "bottom-left";
-    } else if (c.x > r2.x + r2.w && c.y > r2.y + r2.h) {
+    } else if (c.x >= r2.x + r2.w && c.y >= r2.y + r2.h) {
       collision = "bottom-right";
     }
   }
@@ -631,21 +661,32 @@ void Game::checkGameOver() {
 
   if (!isGameOver && numActiveBricks <= 0) {
     isGameOver = true;
+    if (combo > 2) {
+      modifyScore(combo * 75);
+    }
     addFuncTimer(250, [&]() {
       window.playSound("level_complete");
-      particles.push_back(std::make_unique<Particle>(*this, "fade_out", 1000));
+      particles.insert(particles.begin(),
+                       std::make_unique<Particle>(*this, "fade_out", 1000));
       addFuncTimer(1000, [&]() {
         levelIndex++;
         int ms = 2000;
         if (levelIndex == 11) {
           ms = 7000;
         }
-        particles.push_back(std::make_unique<Particle>(*this, "black", ms));
+        addTextParticle(
+            GameOptions::width / 2,
+            GameOptions::height / 2,
+            "Remaining ball bonus: " + std::to_string(balls.size()) + "x 1000");
+        modifyScore(balls.size() * 1000);
+        scoreLevelStart = score;
+        particles.insert(particles.begin(),
+                         std::make_unique<Particle>(*this, "black", ms));
         addFuncTimer(2000, [&]() {
           if (levelIndex == 11) {
             window.playSound("victory");
             isVictory = true;
-            addFuncTimer(5000, [&]() {
+            addFuncTimer(15000, [&]() {
               isVictory = false;
               enableMenu();
               particles.push_back(
@@ -677,8 +718,8 @@ void Game::addPowerup(int x, int y, const std::string& type) {
   powerups.back()->set(x, y);
 }
 
-void Game::addTextParticle(int x, int y, const std::string& text) {
-  particles.push_back(std::make_unique<Particle>(*this, "text", 1500));
+void Game::addTextParticle(int x, int y, const std::string& text, int ms) {
+  particles.push_back(std::make_unique<Particle>(*this, "text", ms));
   particles.back()->text = text;
   particles.back()->set(x, y);
 }
@@ -761,21 +802,16 @@ void Game::drawRetry() {
   if (retryIndex == 0) {
     window.drawSprite("mana_0",
                       GameOptions::width / 3,
-                      GameOptions::height - GameOptions::height / 3 + 48);
+                      GameOptions::height - GameOptions::height / 3 + 32);
   } else {
     window.drawSprite("mana_0",
                       GameOptions::width - GameOptions::width / 3,
-                      GameOptions::height - GameOptions::height / 3 + 48);
+                      GameOptions::height - GameOptions::height / 3 + 32);
   }
 }
 
 void Game::drawUI() {
   window.setCurrentFont("default", 20);
-  window.drawTextCentered("Score: " + std::to_string(score),
-                          window.width / 2,
-                          16,
-                          window.makeColor(255, 255, 255));
-
   window.drawText("Combo: " + std::to_string(combo),
                   16,
                   4,
@@ -783,7 +819,7 @@ void Game::drawUI() {
 
   if (player->isPlayingIntro) {
     window.drawSprite("cpp_splash_black", 0, 512 - 28, false);
-    window.drawSprite("cpp_splash_black", 0, -512 + 28, false);
+    window.drawSprite("cpp_splash_black", 0, -512 + 32, false);
     player->draw();
   }
 }
@@ -868,10 +904,22 @@ bool Game::gameLoop() {
     window.drawTextCentered(
         "VICTORY!", titleX, titleY, window.makeColor(255, 255, 255));
 
+    window.setCurrentFont("default", 18);
+    window.drawTextCentered("Retries used: " + std::to_string(numRetries),
+                            window.width / 2,
+                            window.height - 96,
+                            window.makeColor(255, 0, 0));
+
     window.setCurrentFont("default", 20);
     window.drawTextCentered("Score: " + std::to_string(score),
                             window.width / 2,
                             window.height - 64,
+                            window.makeColor(255, 255, 255));
+  } else {
+    window.setCurrentFont("default", 20);
+    window.drawTextCentered("Score: " + std::to_string(score),
+                            window.width / 2,
+                            16,
                             window.makeColor(255, 255, 255));
   }
 

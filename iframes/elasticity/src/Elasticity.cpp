@@ -30,25 +30,34 @@ bool includes(const std::string& arg, const std::vector<std::string>& args) {
 class Intro {
 public:
   bool isPlayingIntro;
+  bool isPaused;
   bool isBgMoving;
   bool isFgShowing;
   bool isFading;
   SDL2Wrapper::BoolTimer introTimer;
+  SDL2Wrapper::BoolTimer pausedTimer;
   SDL2Wrapper::BoolTimer introBgTimer;
   SDL2Wrapper::BoolTimer introFadeTimer;
   SDL2Wrapper::FuncTimer introFgTimer;
   Intro(SDL2Wrapper::Window& window)
       : isPlayingIntro(true),
+        isPaused(true),
         isBgMoving(true),
         isFgShowing(false),
         isFading(false),
-        introTimer(SDL2Wrapper::BoolTimer(window, 3800, isPlayingIntro)),
+        introTimer(SDL2Wrapper::BoolTimer(window, 4400, isPlayingIntro)),
+#ifdef __EMSCRIPTEN__
+        pausedTimer(SDL2Wrapper::BoolTimer(window, 350, isPaused)),
+#else
+        pausedTimer(SDL2Wrapper::BoolTimer(window, 650, isPaused)),
+#endif
         introBgTimer(SDL2Wrapper::BoolTimer(window, 900, isBgMoving)),
         introFadeTimer(SDL2Wrapper::BoolTimer(window, 900, isFading)),
         introFgTimer(SDL2Wrapper::FuncTimer(window, 1200, [&]() {
           isFgShowing = true;
           introFadeTimer.restart();
-        })) {}
+        })) {
+  }
   ~Intro() {}
   void load() {
     SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
@@ -56,8 +65,12 @@ public:
   }
   void render(SDL2Wrapper::Window& window) {
     introTimer.update();
-    introBgTimer.update();
-    introFgTimer.update();
+    pausedTimer.update();
+    if (pausedTimer.shouldRemove()) {
+      pausedTimer.remove();
+      introBgTimer.update();
+      introFgTimer.update();
+    }
     double introOffset = (512.0 * introBgTimer.getPctComplete());
     window.drawSprite("cpp_splash_bg", 0, 0, false);
     if (isBgMoving) {

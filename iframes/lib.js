@@ -65,10 +65,6 @@ function handleButtonDown(key) {
 function handleButtonUp(key) {
   Module.ccall('setKeyUp', 'void', ['number'], [key]);
 }
-var loadTimeout = setTimeout(function () {
-  console.error('[IFRAME] Content took too long to load.');
-  showError();
-}, 30000);
 var Module = {
   jsLoaded: function () {
     Module.preRun[0]();
@@ -76,7 +72,7 @@ var Module = {
   preRun: [
     function () {
       hideLoading();
-      clearTimeout(loadTimeout);
+      clearTimeout(window.loadTimeout);
     },
   ],
   postRun: [
@@ -104,6 +100,10 @@ var Module = {
 
     return canvas;
   })(),
+  onAbort: function () {
+    console.error('[IFRAME] Program encountered an unknown error.');
+    showError();
+  },
   totalDependencies: 0,
 };
 // required by the wasm, called when the game ends and there was a high score
@@ -154,6 +154,14 @@ setInterval(() => {
   window.focus();
 }, 500);
 
+function localInit() {
+  window.loadTimeout = setTimeout(function () {
+    console.error('[IFRAME] Content took too long to load.');
+    showError();
+  }, 30000);
+  window.init();
+}
+
 var queryString = window.location.search;
 var params = new URLSearchParams(queryString);
 var expand = params.get('cabinet');
@@ -165,4 +173,34 @@ if (expand === 'true') {
   if (toggleScaleElem) toggleScaleElem.style.display = 'none';
   var toggleSoundElem = document.getElementById('toggle-sound');
   if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+}
+
+var tapToStart = params.get('tap');
+if (tapToStart === 'true') {
+  var div = document.createElement('div');
+  var loading = document.getElementById('loading');
+  if (loading) {
+    loading.style.display = 'none';
+  }
+  window.onTapToStart = function () {
+    if (loading) {
+      loading.style.display = 'flex';
+    }
+    div.style.display = 'none';
+    localInit();
+  };
+  div.innerHTML = 'tap to start';
+  div.className = 'tap-to-start';
+  div.onclick = window.onTapToStart;
+  document.body.appendChild(div);
+} else {
+  //must be defined inside the html file
+  try {
+    localInit();
+  } catch (e) {
+    console.error(
+      '[IFRAME] Error calling init function, is it defined for this program?'
+    );
+    throw e;
+  }
 }

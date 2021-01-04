@@ -133,7 +133,6 @@ void Events::keyup(int key) {
   const std::string k = std::string(SDL_GetKeyName(key));
   keys[k] = false;
 
-  std::cout << "KEYUP: " << k << std::endl;
   route->onkeyup(k);
 }
 void Events::update() {

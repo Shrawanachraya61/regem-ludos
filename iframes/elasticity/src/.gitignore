@@ -1,2 +1,3 @@
-Invaderz
-dist
+.build
+*.o
+*.exe

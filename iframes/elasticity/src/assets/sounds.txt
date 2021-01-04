@@ -13,4 +13,8 @@ Sound,powerup_good,assets/powerup_good.wav
 Sound,powerup_bad,assets/powerup_bad.wav
 Sound,extra_balls,assets/extra_balls.wav
 Sound,ship_intro,assets/ship_intro.wav
+Sound,combo1,assets/combo1.wav
+Sound,combo2,assets/combo2.wav
+Sound,combo3,assets/combo3.wav
+Sound,ball_lost,assets/ball_lost.wav
 Music,menu,assets/menu.wav

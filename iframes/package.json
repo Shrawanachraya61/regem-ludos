@@ -1,12 +1,11 @@
 {
-  "name": "regemludos_iframes",
+  "name": "arcade_iframes",
   "version": "1.0",
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:tic-tac-toe && yarn build:president && yarn build:invaderz",
-    "build:tic-tac-toe": "cd tic-tac-toe && yarn build",
-    "build:president": "cd president && yarn build",
-    "build:invaderz": "cd invaderz && yarn build"
+    "build": "node ../scripts/build-iframes.js tic-tac-toe president invaderz elasticity && yarn build:lib",
+    "clean": "rm -rf dist",
+    "build:lib": "cp -t dist lib.js lib.css"
   },
   "dependencies": {}
 }

@@ -114,3 +114,12 @@ canvas {
 .on-screen-control-button:active {
   filter: brightness(120%);
 }
+.tap-to-start {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  font-size: 32px;
+  user-select: none;
+}

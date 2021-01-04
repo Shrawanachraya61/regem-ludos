@@ -1,9 +1,11 @@
 {
-  "name": "regemludos_president",
+  "name": "arcade_president",
   "version": "1.0",
   "license": "MIT",
   "scripts": {
-    "build": "../../node_modules/.bin/terser src/president.js --keep-fnames -o president.js"
+    "build": "mkdir -p dist && ../../node_modules/.bin/terser president.js --keep-fnames -o dist/president.js && yarn mv",
+    "mv": "mkdir -p dist && cp -t dist/ president.html favicon.png -v",
+    "clean": "rm -rf dist"
   },
   "dependencies": {}
 }

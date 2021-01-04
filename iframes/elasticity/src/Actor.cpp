@@ -73,16 +73,18 @@ void Actor::update() {
   x += vx * frameRatio;
   y += vy * frameRatio;
 
-  for (unsigned int i = 0; i < timers.size(); i++) {
-    SDL2Wrapper::Timer& timer = *timers[i];
-    timer.update();
-  }
-  for (unsigned int i = 0; i < timers.size(); i++) {
+  unsigned int len = timers.size();
+  for (unsigned int i = 0; i < len; i++) {
     SDL2Wrapper::Timer& timer = *timers[i];
     if (timer.shouldRemove()) {
       timers.erase(timers.begin() + i);
       i--;
+      len--;
     }
+  }
+  for (unsigned int i = 0; i < len; i++) {
+    SDL2Wrapper::Timer& timer = *timers[i];
+    timer.update();
   }
 }
 

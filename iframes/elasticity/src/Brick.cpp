@@ -165,6 +165,10 @@ int Brick::indexOfBrickOnSide(const std::string& side) {
                    brick.y - game.brickHeight / 2,
                    game.brickWidth,
                    game.brickHeight);
+    if (brick.isExploding) {
+      continue;
+    }
+
     if (side == "top" && game.collidesCircleRect(top, brickRect) != "none") {
       return i;
     } else if (side == "bottom" &&

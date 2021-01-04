@@ -6,10 +6,12 @@ class Brick;
 
 class Ball : public Actor {
   std::vector<std::pair<double, double>> previousStates;
-  std::function<void()> stateSaver;
   double lastVx;
   double lastVy;
   bool disableCollisionSpeedIncrease;
+  SDL2Wrapper::Gauge stateGauge;
+
+  void saveState();
 
 public:
   std::string ballType;

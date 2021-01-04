@@ -60,6 +60,7 @@ public:
   std::unique_ptr<Player> player;
 
   int score;
+  int scoreLevelStart;
   int lastScore;
   int combo;
   unsigned int brickWidth;
@@ -71,6 +72,7 @@ public:
   std::string brickColor;
   bool isVictory;
   int retryIndex;
+  int numRetries;
 
   Game(SDL2Wrapper::Window& windowA);
   ~Game();
@@ -84,7 +86,7 @@ public:
   void addFuncTimer(const int maxFrames, std::function<void()> cb);
   void addBall(int x, int y, double vx, double vy);
   void addPowerup(int x, int y, const std::string& type);
-  void addTextParticle(int x, int y, const std::string& text);
+  void addTextParticle(int x, int y, const std::string& text, int ms=1500);
   void modifyScore(const int value);
   std::pair<double, double> getNormalizedVec(const double x, const double y);
   void handleKeyDown(const std::string& key);

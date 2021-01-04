@@ -36,6 +36,7 @@ class Window {
   bool isLooping = false;
   bool firstLoop;
   Uint64 lastFrameTime = 0;
+  bool shouldRender = true;
 
   static int instanceCount;
 
@@ -46,6 +47,7 @@ public:
   int fps;
   int globalAlpha;
   Uint32 colorkey;
+  bool soundForcedDisabled;
 
   static Uint64 now;
   static const double targetFrameMS;

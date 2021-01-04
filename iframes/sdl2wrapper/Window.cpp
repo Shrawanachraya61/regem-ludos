@@ -13,6 +13,7 @@ void enableSound() {
   if (Mix_PlayingMusic()) {
     Mix_VolumeMusic(MIX_MAX_VOLUME);
   }
+  Mix_Volume(-1, MIX_MAX_VOLUME);
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Enable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
@@ -21,6 +22,7 @@ void disableSound() {
   if (Mix_PlayingMusic()) {
     Mix_VolumeMusic(0);
   }
+  Mix_Volume(-1, 0);
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Disable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
@@ -66,6 +68,7 @@ Window::Window() : events(*this) {
   deltaTime = 0;
   currentFontSize = 20;
   onresize = nullptr;
+  soundForcedDisabled = false;
 }
 Window::Window(const std::string& title, int widthA, int heightA)
     : events(*this), currentFontSize(18), deltaTime(0), globalAlpha(255) {
@@ -80,6 +83,8 @@ Window::Window(const std::string& title, int widthA, int heightA)
   width = 512;
   firstLoop = true;
   onresize = nullptr;
+  soundEnabled = true;
+  soundForcedDisabled = false;
 }
 
 Window::~Window() {
@@ -97,6 +102,7 @@ Window& Window::getGlobalWindow() { return *Window::globalWindow; }
 
 void Window::createWindow(const std::string& title, const int w, const int h) {
   SDL_Init(SDL_INIT_EVERYTHING);
+  SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
   colorkey = 0x00FFFFFF;
   width = w;
   height = h;
@@ -114,6 +120,11 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
                      std::string(SDL_GetError()));
     throw new std::runtime_error("");
   }
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    Logger(ERROR) << "SDL_mixer could not initialize! "
+                  << std::string(Mix_GetError()) << std::endl;
+    soundForcedDisabled = true;
+  }
 
 #ifdef __EMSCRIPTEN__
   renderer = std::unique_ptr<SDL_Renderer, SDL_Deleter>(
@@ -124,18 +135,10 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
       SDL_Deleter());
 #else
   renderer = std::unique_ptr<SDL_Renderer, SDL_Deleter>(
-      SDL_CreateRenderer(window.get(),
-                         -1,
-                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE),
+      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED),
       SDL_Deleter());
 #endif
   SDL_SetRenderDrawColor(renderer.get(), 0x55, 0x55, 0x55, 0xFF);
-
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-    windowThrowError("SDL_mixer could not initialize! SDL_mixer Error: " +
-                     std::string(Mix_GetError()));
-    throw new std::runtime_error("");
-  }
 
   Store::setRenderer(renderer);
 }
@@ -170,7 +173,7 @@ const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
 void Window::disableSound() { Window::soundEnabled = false; }
 void Window::enableSound() { Window::soundEnabled = true; }
 void Window::playSound(const std::string& name) {
-  if (!Window::soundEnabled) {
+  if (soundForcedDisabled) {
     return;
   }
 
@@ -178,7 +181,7 @@ void Window::playSound(const std::string& name) {
   Mix_PlayChannel(-1, sound, 0);
 }
 void Window::playMusic(const std::string& name) {
-  if (!Window::soundEnabled) {
+  if (soundForcedDisabled) {
     return;
   }
 
@@ -314,7 +317,11 @@ void Window::renderLoop() {
       break;
     }
 #endif
-    else if (e.type == SDL_KEYDOWN) {
+    else if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+      break;
+    } else if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+      break;
+    } else if (e.type == SDL_KEYDOWN) {
       events.keydown(e.key.keysym.sym);
     } else if (e.type == SDL_KEYUP) {
       events.keyup(e.key.keysym.sym);
@@ -357,7 +364,11 @@ void Window::startRenderLoop(std::function<bool(void)> cb) {
   emscripten_set_main_loop_arg(&RenderLoopCallback, this, -1, 1);
 #else
   while (isLooping) {
-    renderLoop();
+    if (shouldRender) {
+      renderLoop();
+    } else {
+      SDL_Delay(33);
+    }
   }
 #endif
 }

@@ -93,10 +93,14 @@ void Player::handleCollision(const Ball& ball) {
     ss << game.combo << " Combo!";
     if (game.combo > 4) {
       ss << "!";
-    }
-    if (game.combo > 9) {
+      game.window.playSound("combo2");
+    } else if (game.combo > 9) {
       ss << "!!!";
+      game.window.playSound("combo3");
+    } else {
+      game.window.playSound("combo1");
     }
+    game.modifyScore(game.combo * 75);
     game.addTextParticle(game.window.width / 2, y - 32, ss.str());
   }
   game.combo = 0;

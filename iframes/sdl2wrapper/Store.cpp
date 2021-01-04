@@ -1,4 +1,5 @@
 #include "Store.h"
+#include "Window.h"
 #include <algorithm>
 
 namespace SDL2Wrapper {
@@ -129,6 +130,14 @@ AnimationDefinition& Store::createAnimationDefinition(const std::string& name,
   return *anims[name];
 }
 void Store::createSound(const std::string& name, const std::string& path) {
+  if (Window::getGlobalWindow().soundForcedDisabled) {
+    std::cout << "[SDL2Wrapper] WARNING sound load skipped due to force sound disabled "
+                 "exists: '" +
+                     name + "'"
+              << std::endl;
+    return;
+  }
+
   if (sounds.find(name) == sounds.end()) {
     sounds[name] = std::unique_ptr<Mix_Chunk, SDL_Deleter>(
         Mix_LoadWAV(path.c_str()), SDL_Deleter());
@@ -142,6 +151,10 @@ void Store::createSound(const std::string& name, const std::string& path) {
   }
 }
 void Store::createMusic(const std::string& name, const std::string& path) {
+  if (Window::getGlobalWindow().soundForcedDisabled) {
+    return;
+  }
+
   if (musics.find(name) == musics.end()) {
     musics[name] = std::unique_ptr<Mix_Music, SDL_Deleter>(
         Mix_LoadMUS(path.c_str()), SDL_Deleter());

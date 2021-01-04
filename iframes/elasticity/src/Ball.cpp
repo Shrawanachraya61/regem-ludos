@@ -9,6 +9,7 @@ Ball::Ball(Game& gameA)
       lastVx(0),
       lastVy(0),
       disableCollisionSpeedIncrease(false),
+      stateGauge(SDL2Wrapper::Gauge(gameA.window, 50)),
       ballType("normal"),
       speed(1.0),
       isSticky(false) {
@@ -21,20 +22,16 @@ Ball::Ball(Game& gameA)
 
   setAnimState("ball_normal");
   r = 8;
-
-  stateSaver = [&]() {
-    previousStates.push_back(std::make_pair(x, y));
-    if (previousStates.size() > 3) {
-      previousStates.erase(previousStates.begin());
-    }
-
-    this->addFuncTimer(50, stateSaver);
-  };
-
-  addFuncTimer(50, stateSaver);
 }
 
 Ball::~Ball() {}
+
+void Ball::saveState() {
+  previousStates.push_back(std::make_pair(x, y));
+  if (previousStates.size() > 3) {
+    previousStates.erase(previousStates.begin());
+  }
+}
 
 void Ball::setSpeed(double speedA) {
   if (speed > 9) {
@@ -71,31 +68,68 @@ void Ball::handleCollision(const Brick& brick, const std::string& side) {
   if (!disableCollisionSpeedIncrease) {
     disableCollisionSpeedIncrease = true;
     if (ballType == "armored") {
-      setSpeed(speed + speed * 0.05);
+      setSpeed(speed + speed * 0.04);
     } else {
       setSpeed(speed + speed * 0.03);
     }
     addBoolTimer(250, disableCollisionSpeedIncrease);
   }
-  set(x - vx * game.window.getFrameRatio(),
-      y - vy * game.window.getFrameRatio());
   if (ballType == "armored" && brick.brickType != "metal") {
     return;
   }
-  if (side == "left" || side == "right") {
+
+  double minX = game.brickWidth / 2 + r + 1;
+  double minY = game.brickHeight / 2 + r + 1;
+  if (side == "left") {
+    set(brick.x - minX, y);
     setVx(-vx);
-  } else if (side == "top" || side == "bottom") {
+  } else if (side == "right") {
+    set(brick.x + minX, y);
+    setVx(-vx);
+  } else if (side == "top") {
+    set(x, brick.y - minY);
+    setVy(-vy);
+  } else if (side == "bottom") {
+    set(x, brick.y + minY);
     setVy(-vy);
   } else if (side == "top-left") {
+    double dEdgeX = abs((brick.x - game.brickWidth / 2) - (x + r));
+    double dEdgeY = abs((brick.y - game.brickHeight / 2) - (y + r));
+    if (dEdgeX >= dEdgeY) {
+      set(x, brick.y - minY);
+    } else {
+      set(brick.x - minX, y);
+    }
     setV(-1, -1);
     setSpeed(speed);
   } else if (side == "top-right") {
+    double dEdgeX = abs((brick.x + game.brickWidth / 2) - (x + r));
+    double dEdgeY = abs((brick.y - game.brickHeight / 2) - (y + r));
+    if (dEdgeX > dEdgeY) {
+      set(x, brick.y - minY);
+    } else {
+      set(brick.x + minX, y);
+    }
     setV(1, -1);
     setSpeed(speed);
   } else if (side == "bottom-left") {
+    double dEdgeX = abs((brick.x - game.brickWidth / 2) - (x + r));
+    double dEdgeY = abs((brick.y + game.brickHeight / 2) - (y + r));
+    if (dEdgeX >= dEdgeY) {
+      set(x, brick.y + minY);
+    } else {
+      set(brick.x - minX, y);
+    }
     setV(-1, 1);
     setSpeed(speed);
   } else {
+    double dEdgeX = abs((brick.x + game.brickWidth / 2) - (x + r));
+    double dEdgeY = abs((brick.y + game.brickHeight / 2) - (y + r));
+    if (dEdgeX > dEdgeY) {
+      set(x, brick.y + minY);
+    } else {
+      set(brick.x + minX, y);
+    }
     setV(1, 1);
     setSpeed(speed);
   }
@@ -103,13 +137,16 @@ void Ball::handleCollision(const Brick& brick, const std::string& side) {
 
 void Ball::update() {
   Actor::update();
-
   if (x > GameOptions::width) {
     x = GameOptions::width;
-    vx = -vx;
+    if (!isSticky) {
+      vx = -vx;
+    }
   } else if (x < 0) {
     x = 0;
-    vx = -vx;
+    if (!isSticky) {
+      vx = -vx;
+    }
   }
   if (y > GameOptions::height) {
     y = GameOptions::height;
@@ -120,7 +157,11 @@ void Ball::update() {
   }
 
   if (abs(vy) < 0.85 && !isSticky) {
-    vy -= 0.001 * game.window.getFrameRatio();
+    if (vy < 0) {
+      vy -= 0.001 * game.window.getFrameRatio();
+    } else {
+      vy += 0.001 * game.window.getFrameRatio();
+    }
   }
 
   if (y > game.window.height - 8) {
@@ -140,6 +181,11 @@ void Ball::draw() {
           anim, static_cast<int>(state.first), static_cast<int>(state.second));
       game.window.globalAlpha = 255;
     }
+  }
+  stateGauge.fill();
+  if (stateGauge.isFull()) {
+    saveState();
+    stateGauge.empty();
   }
   Actor::draw();
 }
