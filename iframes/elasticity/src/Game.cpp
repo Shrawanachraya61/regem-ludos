@@ -390,7 +390,7 @@ void Game::handleKeyUpdate() {
     }
   }
 
-  if (events.isKeyPressed("Space")) {
+  if (events.isKeyPressed("Space") || events.isKeyPressed("Return")) {
     if (balls.size() > 0) {
       Ball& ball = *balls[0];
       ball.setSticky(false);
