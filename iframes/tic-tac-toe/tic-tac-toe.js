@@ -204,7 +204,7 @@ window.newGame = () => {
   draw(board);
 };
 
-const init = () => {
+window.init = () => {
   setScore(PLAYER, 0);
   setScore(CPU, 0);
 
@@ -240,5 +240,3 @@ const init = () => {
   });
   window.newGame();
 };
-
-window.addEventListener('load', init);

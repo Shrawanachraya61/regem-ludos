@@ -585,7 +585,7 @@ const newGame = () => {
 
   for (let i in deck) {
     const card = deck[i];
-    card.dom.onclick = function() {};
+    card.dom.onclick = function () {};
   }
 
   deal(deck, players);
@@ -599,7 +599,7 @@ const newGame = () => {
   drawUi();
 };
 
-const init = () => {
+window.init = () => {
   // need this to prevent load timeout
   Module.jsLoaded();
 
@@ -642,5 +642,3 @@ const init = () => {
 
   endGame(true);
 };
-
-window.addEventListener('load', init);

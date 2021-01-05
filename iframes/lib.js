@@ -86,17 +86,19 @@ var Module = {
   ],
   canvas: (function () {
     const canvas = document.getElementById('canvas');
-    canvas.addEventListener(
-      'webglcontextlost',
-      function (e) {
-        console.error(
-          '[IFRAME] WebGL context lost. You will need to reload the page.'
-        );
-        showError();
-        e.preventDefault();
-      },
-      false
-    );
+    if (canvas) {
+      canvas.addEventListener(
+        'webglcontextlost',
+        function (e) {
+          console.error(
+            '[IFRAME] WebGL context lost. You will need to reload the page.'
+          );
+          showError();
+          e.preventDefault();
+        },
+        false
+      );
+    }
 
     return canvas;
   })(),

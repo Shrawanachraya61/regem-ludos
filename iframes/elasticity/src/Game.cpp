@@ -153,7 +153,7 @@ void Game::initWorld() {
     brickColor = "blue";
     terrainIndex = 2;
     loadBricks({
-        {2, 2, 2, 1, 1, 2, 2, 2},
+        {2, 5, 2, 1, 1, 2, 5, 2},
         {2, 0, 2, 4, 4, 2, 0, 2},
         {2, 1, 2, 2, 2, 2, 1, 2},
         {2, 0, 2, 4, 4, 2, 0, 2},
@@ -399,7 +399,7 @@ void Game::handleKeyUpdate() {
 }
 
 void Game::handleKeyMenu(const std::string& key) {
-  if (key == "Return") {
+  if (key == "Return" || key == "Space") {
     levelIndex = 0;
     score = 0;
     combo = 0;
@@ -439,7 +439,7 @@ void Game::handleKeyRetry(const std::string& key) {
     }
   }
 
-  if (key == "Return") {
+  if (key == "Return" || key == "Space") {
     SDL2Wrapper::Events& events = window.getEvents();
     events.popRouteNextTick();
     if (retryIndex == 0) {
@@ -672,7 +672,7 @@ void Game::checkGameOver() {
         levelIndex++;
         int ms = 2000;
         if (levelIndex == 11) {
-          ms = 7000;
+          ms = 15000;
         }
         addTextParticle(
             GameOptions::width / 2,
