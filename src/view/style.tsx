@@ -6,6 +6,7 @@ export const colors = {
   BLACK: '#111',
   WHITE: '#F8F8F8',
   GREY: '#999',
+  DARKGREY: '#2E3740',
   RED: '#BE2633',
   GREEN: '#44891A',
   BROWN: '#A46422',
@@ -31,6 +32,7 @@ interface IntrinsicProps {
   onMouseUp?: (ev: any) => void;
   onTouchStart?: (ev: any) => void;
   onTouchEnd?: (ev: any) => void;
+  ref?: Object;
 }
 
 export const style = function <T>(

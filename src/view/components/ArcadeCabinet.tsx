@@ -45,6 +45,7 @@ export enum ArcadeGamePath {
   PRESIDENT = 'iframes/president/president.html',
   TIC_TAC_TOE = 'iframes/tic-tac-toe/tic-tac-toe.html',
   INVADERZ = 'iframes/invaderz/Invaderz.html',
+  ELASTICITY = 'iframes/elasticity/elasticity.html',
 }
 const ArcadeGamePathMeta = {
   [ArcadeGamePath.PRESIDENT]: {
@@ -95,6 +96,35 @@ const ArcadeGamePathMeta = {
           {...buttonHandlers(SDLKeyID.Space)}
         >
           FIRE
+        </CabinetControlButton>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          type="text"
+          {...buttonHandlers(SDLKeyID.Enter)}
+        >
+          START
+        </CabinetControlButton>
+      </>
+    ),
+  },
+  [ArcadeGamePath.ELASTICITY]: {
+    title: 'ELASTICITY',
+    controls: () => (
+      <>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          {...buttonHandlers(SDLKeyID.Left)}
+        >
+          <Arrow color={colors.GREEN} direction="left"></Arrow>
+        </CabinetControlButton>
+        <CabinetControlButton
+          width="48px"
+          height="48px"
+          {...buttonHandlers(SDLKeyID.Right)}
+        >
+          <Arrow color={colors.GREEN} direction="right"></Arrow>
         </CabinetControlButton>
         <CabinetControlButton
           width="48px"

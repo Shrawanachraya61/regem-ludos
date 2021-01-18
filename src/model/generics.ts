@@ -1,12 +1,33 @@
 import { Point } from 'utils';
-
 import { Room } from 'model/room';
 import { Player } from 'model/player';
+import { Battle } from 'model/battle';
+import { Overworld } from 'model/overworld';
+import { Scene } from 'model/scene';
 
 let currentRoom: Room | null = ((window as any).room = null);
 export const getCurrentRoom = (): Room => currentRoom as Room;
 export const setCurrentRoom = (r: Room): void => {
   currentRoom = (window as any).room = r;
+};
+
+let currentBattle: null | Battle = ((window as any).battle = null);
+export const getCurrentBattle = (): Battle => currentBattle as Battle;
+export const setCurrentBattle = (b: Battle | null): void => {
+  currentBattle = (window as any).battle = b;
+};
+
+let currentOverworld: null | Overworld = ((window as any).overworld = null);
+export const getCurrentOverworld = (): Overworld =>
+  currentOverworld as Overworld;
+export const setCurrentOverworld = (o: Overworld | null): void => {
+  currentOverworld = (window as any).overworld = o;
+};
+
+let currentScene: null | Scene = ((window as any).scene = null);
+export const getCurrentScene = (): Scene => currentScene as Scene;
+export const setCurrentScene = (s: Scene | null): void => {
+  currentScene = (window as any).scene = s;
 };
 
 let currentPlayer: Player | null = ((window as any).player = null);
@@ -65,4 +86,13 @@ export const removeRenderable = (name: string) => {
 };
 export const getRenderables = (): Record<string, () => void> => {
   return renderables;
+};
+
+let keyUpdateEnabled = true;
+export const getKeyUpdateEnabled = (): boolean => keyUpdateEnabled;
+export const enableKeyUpdate = (): void => {
+  keyUpdateEnabled = true;
+};
+export const disableKeyUpdate = (): void => {
+  keyUpdateEnabled = false;
 };

@@ -6,7 +6,6 @@ import {
   battleCharacterCreateAlly,
   battleCharacterSetStaggered,
   battleCharacterApplyDamage,
-  setCurrentBattle,
   battleSetActorPositions,
   BattleCharacter,
   battleCharacterCanAct,
@@ -22,12 +21,13 @@ import {
   AnimationState,
 } from 'model/character';
 import { getRoom, roomAddParticle } from 'model/room';
-import { setCurrentRoom } from 'model/generics';
+import { setCurrentRoom, setCurrentBattle } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
 import { createDamageParticle } from 'model/particle';
 import { getRandBetween } from 'utils';
 import { AppSection } from 'model/store';
 import { showSection } from 'controller/ui-actions';
+import { setCurrentPlayer } from 'model/generics';
 
 export const initiateBattle = (
   player: Player,
@@ -60,6 +60,7 @@ export const initiateBattle = (
 
   battleSetActorPositions(battle);
 
+  setCurrentPlayer(player);
   setCurrentBattle(battle);
   setCurrentRoom(room);
   return battle;

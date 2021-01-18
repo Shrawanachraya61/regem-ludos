@@ -119,9 +119,9 @@ export class Animation {
     return this.sprites[this.currentSpriteIndex]?.name;
   }
 
-  getSpriteSize(i: number): Point {
+  getSpriteSize(i?: number): Point {
     const now = getNow();
-    i = i || this.getAnimIndex(now);
+    i = i ?? this.getAnimIndex(now);
     const { name } = this.sprites[i];
     const [, , , width, height] = getSprite(name);
     return [width, height];

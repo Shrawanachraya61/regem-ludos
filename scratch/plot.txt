@@ -1,0 +1,223 @@
+Regem Ludos: Story Mode
+
+Characters:
+
+Ada - Our protag.  precocious, bit of a loner, typically disdainful of others, however also creative and daring.
+Conscience - Our protag's... umm... friend?  Condescending and snarky.  Also eager and excitable. Follows Ada around everywhere.
+Carl-Arnold - (yes, needs the hyphen).  The villain. Fancies himself as a mastermind.  A particularly annoying boy who constantly tries to compete with her; a "rival".
+Skye - Potential party member.  A burly girl, short of temper and petty, but very loyal.
+Iroha - Potential party member.  A stubborn girl, naieve at times but very skilled at certain things.
+Vivi - Potential party member.  A short girl, very athletic; quiet, but not shy, non-confrontational.
+Bartolo - Boss of floor 3: super nerd who can rewire machines and builds robots 
+Anjana - Potential party member.  A tinkerer who holds disdain for games of chance.  Glib and speaks her mind without asking, driven and focused.
+Lotte - Boss of floor 7.  A vain girl who wants to win the costume contest.
+Jesse - Side quest.  Is on a blind date, but can't find her date.
+Johnathan - Side quest.  Is on a blind date, but can't find his date.
+
+Setting: Arcade building, 10 stories tall.  Each floor has it's own sort of theme or collection, and each contains: a set of arcade games, a ticket store, a food store, .  Every odd-numbered floor except for floor 1 are VR floors.  VR floors are rendered as something like fantasy landscapes: Forest, Mountains, Caves, Volcanos, etc.  Inside these are large areas to explore, similar to an RPG dungeon like pokemon or final fantasy, where Ada and anybody in her party can explore.  Monster encounters are on each of these floors.  These encounters provide drops like tokens and experience, and respawn when Ada leaves the floor.  Each VR floor has a boss that must be defeated to advance further up in the arcade.
+
+Non-VR floors contain arcade games which require tokens to play, but scoring well in them gives tickets that allow Ada to purchase items from ticket shops.  These shops usually sell items that benefit VR space (weapons/armor/potions) but also these stores might sell things that aid in quests, or allow the user to "cheat" in certain games.  These games are not required to win, however, good usage of tokens and tickets will allow Ada a much easier time to traverse the arcade.
+
+An elevator exists which allows a player to access any even numbered floor that they have been to previously.  Ada cannot use this elevator initially due to "plot" reasons.
+
+Plot Scenes
+
+GAME INTRO
+
+- Ada (with Conscience in tow) arrives at Regem Ludos Arcade at the behest of one, Carl Arnold
+- Ada travels Carl on the 2nd floor of the arcade.
+  - On her way, she gets the VR bracelet that allows her to interact with the VR floors (see VR note in "Setting" above)
+- Carl explains his master plan to lock her in the arcade with him to prove who is a better gamer.
+- Carl executes his master plan, him and Ada cannot leave the arcade unless one of them is "defeated"
+- Carl runs off, exclaiming that he will challenge Ada on the TOP FLOOR of the arcade.  She should approach him when she is "ready"
+- Ada is angry with him and vows to beat him.
+
+STAGE 1 - Floors 1, 2, and 3. (Theme: Old-School arcade, VR: Space Station)
+
+Main:
+- Floors 1 and 2 contain simple arcade games that provide minimal tickets, but also cost minimal tokens.
+- When attempting to go to floor 3 (VR floor), Ada is blocked by a couple of thug-like robots. Bartolo steps out from behind them and claims the he wont permit her any higher because she does not "deserve" to be there.
+- On floor 2, Ada encounters Skye, attempting to get a drink from a vending machine.  The machine keeps eating her tokens, and she is growing more and more angry.
+  - Ada discovers that this machine has been rigged by Bartolo to take advantage of "simpletons"
+  - Ada fixes the machine, and asks for Skye's help to beat Bartolo's robots, she joins Ada's party
+- Ada battles through VR floor 3 and beats Bartolo, going to the next floor
+
+Side Quests:
+- Tic-tac-toe machine: lose 5 in a row
+- Pong: beat the opponent
+- Invaderz: beat par score
+- Runnerz: beat par score
+- Johnathan: Help him ascend to the next floor to find his date.
+- Buy a stuffed animal for the little girl.  Hacked by Bartolo to be more expensive than normal
+- Beat Carl-Arnold's scores in each game (progress towards A ending)
+
+Stage 2 - Floors 4 and 5. (Theme: Card game floor, VR: Cityscape)
+- When getting to floor 4, an attendant gives Ada a small number of poker chips.  These are used to play the games on this floor.
+- In the VR, the way to the next floor is blocked.
+- All electric games on this floor result in a loss due to Carl Arnold's tampering.
+- After playing a single electric game, Anjana approaches and points out that the games are rigged.  She offers to help Ada and joins her party.
+- Ada battles through the VR to turn off Carl Arnold's tampering, beating an automated card machine in a battle as the boss.
+- Anjana reveals that she can open it up if she has the right part, which can conveniently be found in the store on this level.
+- Ada makes enough money to buy the part, and Anjana opens the door to the next floor.
+- Ada must battle an edgy dealer that Carl Arnold placed to guard the entrance before proceeding to floor 6.
+
+Side Quests:
+- President: Win a round
+- Black Jack: Win 5 chips
+- 5 Card Draw: Win 5 chips
+- Slots: Win 5 chips
+- Jesse is at a table here, waiting for her date to show up.  Help her grow the courage to go find him.
+- Some kids are playing WAR at a nearby table, defeat them and they provide a strong weapon for Skye.
+- Beat Carl-Arnold's scores in each game (progress towards A ending)
+
+Stage 3 - Floors 6 and 7. (Theme. Medieval, VR: Forest + Plains)
+- When getting to floor 6, Ada discovers that there's a costume competition going on themed: Medieval and cannot proceed into the arcade without acquiring a costume.
+- By speaking with various contestants, Ada can cobble together a costume for herself, and is let into the arcade.
+- Lotte, who wears a sorceress's costume, confronts Ada and belittles her crappy one.
+  - If Skye is in the party, she defends Ada.
+  - If Anjana is in the party, she remarks about how pointless this is
+- Ada can acquire a better costume be speaking with others in the arcade.  Each piece of clothing she acquires makes Lotte's boss fight easier.
+- Iroha is here trying to win a rhythm game.  The game is obviously broken, the yellow button doesn't work very well.
+  * Ada can fix the game, and when Iroha wins it, she asks to help Ada.
+- In the VR, Lotte has a trap for Ada that puts her into a dungeon where she has to beat a boss rush.
+- Ada escapes and steals Lotte's earrings which she has stored securely in a nearby room.
+  * The door to the next floor won't open until the costume contest is over.
+- Ada enters the costume contest.  Score is based on how many improvements are on her costume.
+- Before the judges make a result.  Three possible results:
+  - Ada wins with the best costume
+    * Lotte accuses Ada of cheating by stealing her earrings, nobody believes her, and, furious, she challenges Ada to fight in VR.
+  - Neither Ada nor Lotte wins
+    * Lotte accuses Ada of stealing her earrings and that makes the difference, and, furious, she challenges Ada to fight in VR.
+  - Lotte wins with best costume
+    * Lotte gives an insufferable acceptance speech
+    * Ada goes to floor 7 to proceed, but it's blocked by a petty Lotte who wants to enact revenge
+- Ada beats Lotte's boss fight and proceeds to the next floor
+
+Side Quests:
+- Realm 404: Win a game
+- DnD Sim: Win a game
+- Medi Scavenger: High score
+- Guffs and Gubbins: Get to stage 3
+- Johnathan: Is on this floor, speaking to a bunch of girls who find him attractive.  Help him get away from them and go find his date.
+- A little girl lost her witch's hat.  Find her hat amongst the costumers.
+- Beat Carl-Arnold's scores in each game (progress towards A ending)
+
+Stage 4 - Floors 8 and 9. (Theme. Future Arcade, VR: Something like Mega Man Battle Network 3-4)
+- Floor 8 is reserved for "elite gamers".  Anybody in here can be challenged to fight in vr (like a pokemon trainer battle).
+- All the contestants here speak of Carl-Arnold with reverence, like he is the best gamer ever.
+- To proceed, Ada must defeat at least 3 people.  Each "trainer" is good at a certain game type.  Winning these games grants items that aid in defeating them.
+- Ada finds Vivi up here, who is beating every challenger in a racing game.
+  * Ada discovers that another contestant plans to sabotage Vivi and claim victory.
+  * Ada stops the sabotage and tells Vivi.
+  * Vivi retires from the game and offers to join Ada.
+- When going to the VR, a ghost of Carl-Arnold appears and challenges her to a fight.
+- Ada defeats the ghost, and then proclaims that she is ready to fight him, but she must beat this dungeon first.
+- Ada battles her way through the dungeon and proceeds to the roof.
+
+
+Side Quests:
+- Planet Offline: get above 4mil
+- GGGolf: Score under or equal to par
+- Elasticity: Win the game with fewer than 10 retries.
+- Jesse somehow got up here... but her date sure didn't.  Help her out of a bind and send her to him.
+- Beat Carl-Arnold's scores in each game (progress towards A ending)
+
+Stage 5 - Floor 10. Final Stage.
+- Ada confronts Carl-Arnold over putting her through all of this.
+  - If Ada has beaten all of Carl-Arnold's scores, she points that out to him
+  - Carl-Arnold is enraged, and refuses to admit defeat.
+    - In the fight he has an "enraged" status which gives him less cooldowns on abilities
+- Ada and Carl-Arnold fight in the final confrontation.
+- Ada wins, but Carl-Arnold retreats to an alternate elevator and takes it down.  Ada Follows him to the basement.
+- There's a separate VR here, reminiscent of the SHADOW REALM
+- Here, Carl-Arnold manifests his true form and the final Boss Battle happens.
+- Ada wins
+  - If Ada beat all of Carl-Arnold's scores, he is mentally broken.  He admits defeat, grants ada the prestigious Regem Ludos pin, and runs off.
+  - If Ada did not beat all of his scores, he says something like "you may have won this battle but I will win the next battle."
+
+Fin.
+
+Epilogue.
+
+- If Jesse and Johnathan's quest line is fully completed:
+  - On floor 1, still not having found her date, Jesse decides she is hungry and wants pizza.  She wanders over to the pizza vendor.
+  - Johnathan is in line, staring morosely at the menu sign.
+  - Jesse gets in line behind him and there is a silence.
+  - The line moves forward, but Johnathan is lost in his own thoughts.
+  - Jesse politely asks him to move forward
+  - Spooked, Johnathan apologizes and asks her to go in front of him, saying that he still doesn't know what he wants.
+  - Jesse remarks that he's been looking at the sign for an awful long time.
+  - Johnathan tells her vaguely that he hasn't had the greatest day, and is a little distracted.
+  - Jesse vibes with him.
+  - They decide to eat pizza together.
+
+Required Portraits:
+
+Ada - Default, Default-Speaking, Angry, Smug/Pleased, Irritated, Confused
+Conscience - Default, Default-Speaking, Smug/Pleased, Confused, Excited, Sarcastic/Knowing (too similar to smug pleased?)
+Carl-Arnold - Default, Default-Speaking, Focused, Crazy, Morally Crushed/Defeated/Crying
+Skye - Default, Default-Speaking, Angry, Eye-Roll, Confused, Grin (like, dumb boy grin)
+Iroha - Default, Default-Speaking, Naive, Intent, Distraught, Happy
+Vivi - Default, Default-Speaking, Focused, Slightly Sad, Slightly Happy
+Bartolo - Default, Default-Speaking, Pushing Glasses Up On Nose, Defeated
+Anjana - Default, Default-Speaking, Eyebrow Raised, Bitter, Confused (Head Tilted Sideways)
+Lotte - Default, Default-Speaking, Glamorous? (idk what this would look like lol), Angry/Jealous, Smug/Pleased, Defeated
+Jesse - Default, Default-Speaking, Morose, Slightly Confused, Slightly Happy
+Johnathan - Default, Default-Speaking, Morose, Slightly Confused, Slightly Happy
+
+Required Character Animations:
+
+Intro + Chapter 1:
+Ada: Up, Down, Left, UpLeft, DownLeft + Walk, Cell Phone, Finger Snap
+Conscience: Up, Down, Left, UpLeft, DownLeft + Walk
+Carl-Arnold: Up, Down, Left, UpLeft, DownLeft + Walk, Smug/Diabolical
+Skye: Up, Down, Left, UpLeft, DownLeft + Walk, Vending Idle, Vending Kick
+Bartolo: Up, Down, Left, UpLeft, DownLeft + Walk, Glasses Push
+Johnathan: Up, Down, Left, UpLeft, DownLeft + Walk, Confused, Palm Forehead
+Robot Guard: Up, Down, Left, UpLeft, DownLeft + Walk, Menace
+Default Girl (Red, Green, Yellow, Blue): Up, Down, Left, UpLeft, DownLeft + Walk
+Default Boy (Red, Green, Yellow, Blue): Up, Down, Left, UpLeft, DownLeft + Walk
+Shop Vendor Food: Up, Down, Left, UpLeft, DownLeft
+Shop Vendor Tickets: Up, Down, Left, UpLeft, DownLeft
+
+Required Tile Sprites (Arcade Levels 1-2):
+
+Tiled Floor
+Carpeted Floor
+Cafe Floor
+Generic Arcade Machine: Red, Green, Yellow, Blue
+Elevator
+Sliding Glass Door (entrance to arcade)
+Painted Wall:  / \ 
+Painted Wall With RGB: \ /
+Neon Sign: Variant A, Variant B, Variant C
+Shop: Food
+Shop: Tickets
+Vending Machine: Food
+Vending Machine: Drinks
+Stairs: Up Left, Up Right
+Pillar/Column
+Inner Door
+Potted Plant
+Cardboard Box
+
+Required Tile Sprites (Level 3: VR Cityscape):
+
+Tall Office Building: A and B variants
+Asphalt Road
+Concrete Sidewalk
+Grass
+Tree embedded in concrete.
+Parking Garage
+Parking Garage Gate
+
+Required Battle Character Sprites (Level 3: VR Cityscape):
+Ada: Idle, Attack: Swing, Item, Damaged, Stunned, Defeated
+Conscience: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeated
+Skye: Idle, Attack: Swing, Item, Damaged, Stunned, Defeated
+Bartolo: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeated
+Guard Robot: Idle, Attack: Swing, Item, Damaged, Stunned, Defeated
+Scout Robot: Idle, Attack: Swing, Item, Damaged, Stunned, Defeated
+Support Robot: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeated
+Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
+

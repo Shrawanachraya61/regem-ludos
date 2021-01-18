@@ -1,0 +1,278 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "D:/progs/sadelica-new-world/scratch/map.tmx",
+    "expandedProjectPaths": [
+    ],
+    "exportAsImage.drawTileGrid": false,
+    "exportAsImage.includeBackgroundColor": false,
+    "exportAsImage.useCurrentScale": false,
+    "exportAsImage.visibleLayersOnly": true,
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "D:/progs/gloriam/src/db/map/rooms/tmx/readyroom3.tmx": {
+            "scale": 4,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 125.375,
+                "y": 72.25
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/castle_entrance.tmx": {
+            "scale": 2.738671875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 192.06389958636424,
+                "y": 191.516188846099
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/drawing-template.tmx": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 254.5,
+                "y": 282
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/east_window.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 94,
+                "y": 223.66666666666669
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/gardens.tmx": {
+            "scale": 3.540234375,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 192.07767847291186,
+                "y": 128.38133068520358
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/grid.tmx": {
+            "scale": 0.328046875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1586.6634913074545,
+                "y": 1601.9052155275065
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/library-l1.tmx": {
+            "scale": 2,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 234.25,
+                "y": 153.25
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/library_l1.tmx": {
+            "scale": 2,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 219.5,
+                "y": 190.75
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/readyroom.tmx": {
+            "scale": 4.8130859374999995,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128.0883009373859,
+                "y": 64.096092196567
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/readyroom3.tmx": {
+            "scale": 4.8130859374999995,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128.0883009373859,
+                "y": 64.19997565231506
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/readyroom4.tmx": {
+            "scale": 4.8130859374999995,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 128.0883009373859,
+                "y": 64.19997565231506
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/rust.tmx": {
+            "scale": 0.265703125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1584.4751543663629,
+                "y": 1601.411349603058
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/rvb.tmx": {
+            "scale": 4.2341796875,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 110.88334332764425,
+                "y": 68.01789750449744
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/servant_entrance.tmx": {
+            "scale": 3.5770408163265306,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 192.0581942661532,
+                "y": 237.48680644701184
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/template.tmx": {
+            "scale": 4.5087890625,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 128.08317089018843,
+                "y": 64.20792722547108
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/welcome_grounds.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 341.33333333333326,
+                "y": 253
+            }
+        },
+        "D:/progs/gloriam/tiled/tmx/west_wall.tmx": {
+            "scale": 1.82578125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 288.09584937954645,
+                "y": 287.82199400941374
+            }
+        },
+        "D:/progs/js13k-2020/scratch/Actors.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "D:/progs/js13k-2020/scratch/map.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 305.6666666666667,
+                "y": 395.33333333333337
+            }
+        },
+        "D:/progs/js13k-2020/scratch/map.tmx#platformterrain": {
+            "scaleInDock": 1
+        },
+        "D:/progs/js13k-2020/scratch/map.tmx#tileset": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "D:/progs/js13k-2020/scratch/map3.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 129.25,
+                "y": 219.25
+            }
+        },
+        "D:/progs/js13k-2020/scratch/map3.tmx#tileset": {
+            "scaleInDock": 1.5
+        },
+        "D:/progs/js13k-2020/scratch/platformterrain.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "D:/progs/realm404/scratch/map.tmx": {
+            "scale": 0.830322265625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 513.0538077036165,
+                "y": 512.4516318729785
+            }
+        },
+        "D:/progs/sadelica-new-world/scratch/map.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1409.3333333333333,
+                "y": 3438
+            }
+        },
+        "D:/progs/sadelica-new-world/scratch/map.tmx#characters": {
+            "scaleInDock": 1
+        },
+        "D:/progs/sadelica-new-world/scratch/map.tmx#terrain": {
+            "scaleInDock": 1
+        },
+        "D:/progs/sadelica-new-world/scratch/terrain.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 5.5
+        },
+        "battle.tmx": {
+            "scale": 2.2080078125,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 256.33967271118973,
+                "y": 120.01769128704112
+            }
+        },
+        "battle.tmx#battle-terrain1": {
+            "scaleInDock": 1
+        },
+        "battle.tmx#props": {
+            "scaleInDock": 1
+        },
+        "test.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1065,
+                "y": 172.5
+            }
+        },
+        "test.tmx#battle-terrain1": {
+            "scaleInEditor": 1
+        },
+        "test.tmx#control": {
+            "scaleInDock": 2
+        },
+        "test.tmx#floors": {
+            "scaleInDock": 1.5
+        },
+        "test.tmx#walls": {
+            "scaleInDock": 0.75
+        }
+    },
+    "map.fixedSize": true,
+    "map.height": 64,
+    "map.lastUsedExportFilter": "JSON map files (*.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.orientation": null,
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 64,
+    "openFiles": [
+        "D:/progs/sadelica-new-world/scratch/map.tmx",
+        "D:/progs/sadelica-new-world/scratch/terrain.tsx"
+    ],
+    "project": "regem-ludos.tiled-project",
+    "recentFiles": [
+        "D:/progs/sadelica-new-world/scratch/map.tmx",
+        "D:/progs/sadelica-new-world/scratch/terrain.tsx",
+        "D:/progs/js13k-2020/scratch/map.tmx",
+        "D:/progs/js13k-2020/scratch/map3.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 32
+    },
+    "tileset.transparentColor": "#ff00ff",
+    "tileset.type": 0,
+    "tileset.useTransparentColor": false
+}

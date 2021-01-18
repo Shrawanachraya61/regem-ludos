@@ -6,7 +6,7 @@ import {
   TILE_HEIGHT,
   Room,
   Prop,
-  tilePosToWorldPoint,
+  tilePosToWorldPos,
 } from 'model/room';
 import { isoToPixelCoords, Point } from 'utils';
 import {
@@ -101,19 +101,24 @@ export const drawSprite = (
 ): void => {
   scale = scale || 1;
   ctx = ctx || getCtx();
-  const [image, sprX, sprY, sprW, sprH] =
-    typeof sprite === 'string' ? getSprite(sprite) : sprite;
-  ctx.drawImage(
-    image,
-    sprX,
-    sprY,
-    sprW,
-    sprH,
-    x,
-    y,
-    sprW * scale,
-    sprH * scale
-  );
+  try {
+    const [image, sprX, sprY, sprW, sprH] =
+      typeof sprite === 'string' ? getSprite(sprite) : sprite;
+    ctx.drawImage(
+      image,
+      sprX,
+      sprY,
+      sprW,
+      sprH,
+      x,
+      y,
+      sprW * scale,
+      sprH * scale
+    );
+  } catch (e) {
+    console.error(sprite);
+    throw new Error('Could not draw sprite: ' + e);
+  }
 };
 
 export const drawAnimation = (
@@ -189,61 +194,85 @@ export const drawRoom = (
   ctx.save();
   ctx.translate(offsetX, offsetY);
 
-  let highlightedTile: any = null;
+  let renderObjects: {
+    sprite?: string;
+    character?: Character;
+    particle?: Particle;
+    origPy?: number;
+    highlighted?: boolean;
+    px?: number;
+    py?: number;
+    sortY: number;
+  }[] = [];
 
   for (let k = 0; k <= width + height - 2; k++) {
     for (let j = 0; j <= k; j++) {
       const i = k - j;
       if (i < height && j < width) {
         const tile = tiles[i * width + j];
-        const [px, py] = isoToPixelCoords(
+        let [px, py] = isoToPixelCoords(
           (tile.x * TILE_WIDTH) / 2,
           (tile.y * TILE_HEIGHT) / 2
         );
+        const origPy = py;
+        py -= tile.tileHeight - 32;
+        renderObjects.push({
+          sprite: tile.sprite,
+          origPy,
+          px,
+          py,
+          highlighted: tile.highlighted,
+          sortY: py + (tile.tileHeight - 32) + (tile.tileHeight > 32 ? 16 + 4 : 16), // corrects for the tile height
+        });
 
-        drawSprite(tile.sprite, px, py);
-
-        if (tile.highlighted) {
-          highlightedTile = tile;
-        }
+        // drawSprite(tile.sprite, px, py - (tile.tileHeight - 32));
       }
     }
   }
 
-  if (highlightedTile) {
-    const { x, y } = highlightedTile;
-    const [tx, ty] = tilePosToWorldPoint(x, y);
-    const [px, py] = isoToPixelCoords(tx, ty);
-    drawSprite('indicator', px, py);
-  }
-
-  room.props = props.sort((a: Prop, b: Prop) => {
-    const [, aPy] = isoToPixelCoords(
-      (a.x * TILE_WIDTH) / 2,
-      (a.y * TILE_HEIGHT) / 2
-    );
-    const [, bPy] = isoToPixelCoords(
-      (b.x * TILE_WIDTH) / 2,
-      (b.y * TILE_HEIGHT) / 2
-    );
-
-    return aPy < bPy ? -1 : 1;
-  });
-
   for (let i = 0; i < props.length; i++) {
     const prop = props[i];
-    const [px, py] = isoToPixelCoords(prop.x, prop.y);
+    let [px, py] = isoToPixelCoords(prop.x, prop.y);
     const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
-    drawSprite(
-      prop.sprite,
-      px - spriteWidth / 2 + TILE_WIDTH / 2, // props are draw bottom-up, centered x
-      py - spriteHeight + TILE_HEIGHT / 2
-    );
+    px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
+    py = py - spriteHeight + TILE_HEIGHT / 2;
+    renderObjects.push({
+      sprite: prop.sprite,
+      px,
+      py,
+      sortY: py + spriteHeight,
+    });
+    // drawSprite(
+    //   prop.sprite,
+    //   px - spriteWidth / 2 + TILE_WIDTH / 2, // props are draw bottom-up, centered x
+    //   py - spriteHeight + TILE_HEIGHT / 2
+    // );
   }
 
   for (let i = 0; i < characters.length; i++) {
     const ch = characters[i];
-    drawCharacter(ch);
+    const [x, y, z] = characterGetPos(ch);
+    const [, py] = isoToPixelCoords(x, y, z);
+    renderObjects.push({
+      character: ch,
+      sortY: py + 32, // because all characters are 32 px tall (right now)
+    });
+  }
+
+  renderObjects = renderObjects.sort((a, b) => {
+    return a.sortY < b.sortY ? -1 : 1;
+  });
+
+  for (let i = 0; i < renderObjects.length; i++) {
+    const { sprite, character, px, py, origPy, highlighted } = renderObjects[i];
+    if (sprite) {
+      drawSprite(sprite, px as number, py as number);
+      // if (highlighted) {
+      //   drawSprite('indicator', px as number, origPy as number - 3);
+      // }
+    } else if (character) {
+      drawCharacter(character);
+    }
   }
 
   for (let i = 0; i < particles.length; i++) {

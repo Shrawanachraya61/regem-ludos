@@ -5,11 +5,14 @@ import { colors, style } from 'view/style';
 import { getIsPaused } from 'model/generics';
 import { AppState, AppStateInitial } from 'model/store';
 import { appReducer } from 'controller/ui-actions';
+import { getDrawScale } from 'model/canvas';
 
 // sections
-import BattleConclusion from './components/BattleConclusion';
 import Debug from './components/Debug';
+import BattleConclusion from './components/BattleConclusion';
 import BattleUISection from './components/BattleUISection';
+import CutsceneSection from './components/CutsceneSection';
+
 import { AppSection } from 'model/store';
 
 interface UIInterface {
@@ -51,7 +54,7 @@ const App = () => {
   const [render, setRender] = useState(false);
   const [appState, dispatch] = useReducer(appReducer, AppStateInitial);
   useEffect(() => {
-    uiInterface = {
+    uiInterface = (window as any).uiInterface = {
       appState,
       render: () => {
         setRender(!render);
@@ -71,6 +74,9 @@ const App = () => {
       case AppSection.BattleUI: {
         return <BattleUISection key={key} />;
       }
+      case AppSection.Cutscene: {
+        return <CutsceneSection key={key} />;
+      }
       case AppSection.Debug: {
         return <Debug />;
       }
@@ -82,14 +88,23 @@ const App = () => {
 
   console.log('render app', appState);
   return (
-    <Root>
-      {getIsPaused() ? (
-        <PausedOverlay>
-          <PausedText>PAUSED</PausedText>
-        </PausedOverlay>
-      ) : null}
-      {appState.sections.map(renderSection)}
-    </Root>
+    <div
+      style={{
+        position: 'absolute',
+        top: '0px',
+        width: 512 * getDrawScale(),
+        height: 512 * getDrawScale(),
+      }}
+    >
+      <Root>
+        {getIsPaused() ? (
+          <PausedOverlay>
+            <PausedText>PAUSED</PausedText>
+          </PausedOverlay>
+        ) : null}
+        {appState.sections.map(renderSection)}
+      </Root>
+    </div>
   );
 };
 

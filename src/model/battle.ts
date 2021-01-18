@@ -1,4 +1,4 @@
-import { Room, tilePosToWorldPoint } from 'model/room';
+import { Room, tilePosToWorldPos } from 'model/room';
 import {
   AnimationState,
   Character,
@@ -289,12 +289,11 @@ export const battleSetActorPositions = (battle: Battle): void => {
         break;
     }
 
-    const [x, y] = tilePosToWorldPoint(pos[0], pos[1]);
+    const [x, y] = tilePosToWorldPos(pos[0], pos[1]);
     if (rowNumber <= 1) {
       bCh.row = rowNumber === 0 ? BattleRow.TOP : BattleRow.BOTTOM;
       bCh.ch.x = x;
       bCh.ch.y = y;
-      console.log('SET ROW', bCh.row);
     } else {
       console.error(
         'Error setting actor position for battle, Row number is greater than 1 (most likely more than 2 actors in a battle position)',
@@ -313,12 +312,6 @@ export const battleIsVictory = (battle: Battle): boolean => {
 
 export const battleIsLoss = (battle: Battle): boolean => {
   return battle.allies.length === 0;
-};
-
-let currentBattle: null | Battle = ((window as any).battle = null);
-export const getCurrentBattle = (): Battle => currentBattle as Battle;
-export const setCurrentBattle = (b: Battle): void => {
-  currentBattle = (window as any).battle = b;
 };
 
 export const battleGetAllegiance = (

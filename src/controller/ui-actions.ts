@@ -1,5 +1,10 @@
 import { getUiInterface } from 'view/ui';
-import { AppState, AppSection } from 'model/store';
+import {
+  AppState,
+  AppSection,
+  ICutsceneAppState,
+  CutsceneSpeaker,
+} from 'model/store';
 
 export interface ReducerAction<T> {
   action: string;
@@ -23,6 +28,12 @@ const mutations: { [key: string]: MutationFunction } = {
     if (!newState.sections.includes(payload)) {
       newState.sections.push(payload);
     }
+  },
+  setCutsceneState: (
+    newState: AppState,
+    payload: Partial<ICutsceneAppState>
+  ) => {
+    Object.assign(newState.cutscene, payload);
   },
 };
 
@@ -75,5 +86,63 @@ export const showSections = (sections: AppSection[], hideRest: boolean) => {
       action: 'showSection',
       payload: section,
     });
+  });
+};
+
+export const hideConversation = () => {
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload: {
+      visible: false,
+    } as Partial<ICutsceneAppState>,
+  });
+};
+
+export const showConversation = () => {
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload: {
+      visible: true,
+    } as Partial<ICutsceneAppState>,
+  });
+};
+
+export const startConversation = (portrait: string) => {
+  showSection(AppSection.Cutscene, true);
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload: {
+      portraitCenter: portrait,
+      visible: true,
+    } as Partial<ICutsceneAppState>,
+  });
+};
+
+export const startConversation2 = (
+  portraitLeft: string,
+  portraitRight: string
+) => {
+  showSection(AppSection.Cutscene, true);
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload: {
+      portraitLeft,
+      portraitRight,
+      visible: true,
+    } as Partial<ICutsceneAppState>,
+  });
+};
+
+export const setCutsceneText = (text: string, speaker?: CutsceneSpeaker) => {
+  const payload = {
+    text,
+    visible: true,
+  } as Partial<ICutsceneAppState>;
+  if (speaker) {
+    payload.speaker = speaker;
+  }
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload,
   });
 };

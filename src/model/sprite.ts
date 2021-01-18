@@ -123,6 +123,32 @@ const loadSpritesFromImage = (
     );
   };
 
+  const addSprites = (baseSpriteName: string, i: number, j: number) => {
+    const sprite = addSprite(
+      baseSpriteName,
+      image,
+      j * spriteWidth,
+      i * spriteHeight,
+      spriteWidth,
+      spriteHeight
+    );
+
+    // create rotated sprites:<baseSpriteName>_rN
+    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 1);
+    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 2);
+    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 3);
+
+    // create flipped sprite: <baseSpriteName>_f
+    addSprite(
+      `${baseSpriteName}${SpriteModification.FLIPPED}`,
+      createFlippedImg(spriteToCanvas(sprite)),
+      0,
+      0,
+      spriteWidth,
+      spriteHeight
+    );
+  };
+
   const numColumns = image.width / spriteWidth;
   const numRows = image.height / spriteHeight;
 
@@ -130,32 +156,14 @@ const loadSpritesFromImage = (
     for (let j = 0; j < numColumns; j++) {
       // create original sprite: <baseSpriteName>
       let baseSpriteName = `${spritePrefix}_${i * numColumns + j}`;
-      if (numColumns === 1 && numRows === 1) {
+      if (
+        numColumns === 1 &&
+        numRows === 1 &&
+        !baseSpriteName.includes('512')
+      ) {
         baseSpriteName = spritePrefix;
       }
-      const sprite = addSprite(
-        baseSpriteName,
-        image,
-        j * spriteWidth,
-        i * spriteHeight,
-        spriteWidth,
-        spriteHeight
-      );
-
-      // create rotated sprites:<baseSpriteName>_rN
-      addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 1);
-      addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 2);
-      addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 3);
-
-      // create flipped sprite: <baseSpriteName>_f
-      addSprite(
-        `${baseSpriteName}${SpriteModification.FLIPPED}`,
-        createFlippedImg(spriteToCanvas(sprite)),
-        0,
-        0,
-        spriteWidth,
-        spriteHeight
-      );
+      addSprites(baseSpriteName, i, j);
     }
   }
 };

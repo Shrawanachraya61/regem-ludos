@@ -1,0 +1,1 @@
+XCOPY /E .  %USERPROFILE%\.vscode\extensions\rpgscript-vscode

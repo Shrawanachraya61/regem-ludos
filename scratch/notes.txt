@@ -1,0 +1,12 @@
+Goal of the game is to get rid of all your cards.
+When it's your turn, you can put a card in the middle (or more than one in certain circumstances)
+ - the card you play must be higher than the card in the middle.
+ - if you can't play, you must pass
+ - you may also pass, even if you can play
+If everybody passes, the cards are wiped away, and the last person to play gets to put any card in the middle they want.
+ - this person may play doubles (two of the same number) triples (three of the same number) or quadruples (three of the same number)
+ - if there are multiple cards in the middle, in order to make a play, a player must also put multiple cards in the middle:
+  * if there are two 3's in the middle, the next player may only play two 4's or some number higher than 4.
+  * if there are three queens in the middle, the next play may only play three kings or three aces.
+The first person to play all their cards is in first place, subsequent players keep playing until one player has cards remaining.
+

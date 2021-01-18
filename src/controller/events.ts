@@ -1,11 +1,12 @@
 import { setMousePos, setKeyDown, setKeyUp, getIsPaused } from 'model/generics';
 import { CANVAS_ID } from 'model/canvas';
 import { BattleActions } from 'controller/battle-actions';
-import {
-  getCurrentBattle,
-  battleCharacterGetSelectedSkill,
-} from 'model/battle';
+import { battleCharacterGetSelectedSkill } from 'model/battle';
 import { pause, unpause } from './loop';
+import { getCurrentBattle, getCurrentPlayer } from 'model/generics';
+
+import { callScript } from 'controller/scene-management';
+import { disableKeyUpdate, enableKeyUpdate, getCurrentScene } from 'model/generics';
 
 export const initEvents = (): void => {
   const canvasElem = document.getElementById(CANVAS_ID);
@@ -41,7 +42,7 @@ export const initEvents = (): void => {
     setKeyUp(ev.key);
   });
 
-  setCurrentKeyHandler((ev: KeyboardEvent) => {
+  pushKeyHandler(async (ev: KeyboardEvent) => {
     switch (ev.key) {
       case 'ArrowUp': {
         break;
@@ -72,14 +73,28 @@ export const initEvents = (): void => {
         skill.cb(battle, bCh);
         break;
       }
+      case 'c': {
+        console.log('DISABLE KEYS');
+        disableKeyUpdate();
+        await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        console.log('ENABLE KEYS');
+        enableKeyUpdate();
+      }
     }
   });
 };
 
+const keyHandlers: KeyboardHandler[] = [];
+
 type KeyboardHandler = (ev: KeyboardEvent) => void;
-let currentKeyHandler: null | KeyboardHandler = null;
 export const getCurrentKeyHandler = (): KeyboardHandler | null =>
-  currentKeyHandler;
-export const setCurrentKeyHandler = (cb: KeyboardHandler): void => {
-  currentKeyHandler = cb;
+  keyHandlers[keyHandlers.length - 1];
+export const pushKeyHandler = (cb: KeyboardHandler): void => {
+  keyHandlers.push(cb);
+};
+export const popKeyHandler = (handler: KeyboardHandler) => {
+  const ind = keyHandlers.indexOf(handler);
+  if (ind > -1) {
+    keyHandlers.splice(ind, 1);
+  }
 };

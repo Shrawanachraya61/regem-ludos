@@ -54,6 +54,7 @@ export interface Character {
 export interface CharacterTemplate {
   name: string;
   spriteBase: string;
+  talkTrigger?: string;
   stats?: BattleStats;
   facing?: Facing;
   animationState?: AnimationState;
@@ -132,10 +133,17 @@ export const characterSetAnimationState = (
       ch.animationPromise.reject();
       ch.animationPromise = undefined;
     }
+    ch.animationKey = newAnimKey;
     const anim = characterGetAnimation(ch);
     anim.reset();
     anim.start();
   }
+};
+
+export const characterSetPos = (ch: Character, pt: Point3d): void => {
+  ch.x = pt[0];
+  ch.y = pt[1];
+  ch.z = pt[2];
 };
 
 // waits for animation to complete, then calls the callback.  If an animation is changed while
@@ -202,6 +210,11 @@ export const characterGetPos = (ch: Character): Point3d => {
   return [ch.x, ch.y, ch.z];
 };
 
+export const characterGetPosBottom = (ch: Character): Point => {
+  const { x, y } = ch;
+  return [x + 16, y + 16];
+}
+
 export const characterGetPosPx = (ch: Character): Point => {
   const [x, y, z] = characterGetPos(ch);
   return isoToPixelCoords(x, y, z);
@@ -212,6 +225,7 @@ export const characterGetPosCenterPx = (ch: Character): Point => {
   const [w, h] = characterGetSize(ch);
   return [px + w / 2, py + h / 2];
 };
+
 
 export const characterGetSize = (ch: Character): Point => {
   const anim = characterGetAnimation(ch);

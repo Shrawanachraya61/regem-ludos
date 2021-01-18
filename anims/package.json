@@ -6,7 +6,7 @@
   "scripts": {
     "start": "yarn watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "concurrently -n srv,webpack \"node src/srv\" \"webpack-dev-server --client-log-level error\"",
+    "watch": "concurrently -n srv,webpack \"node src/srv\" \"webpack serve --mode development --env development\"",
     "export": "node export.script.js"
   },
   "author": "Benjamin Brown",
@@ -66,9 +66,9 @@
     "express": "^4.17.1",
     "prettier": "^1.18.2",
     "react-dom": "^16.8.0",
-    "serialize-javascript": "^2.1.1",
-    "webpack": "^4.28.1",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.9.0"
+    "serialize-javascript": "^3.1.0",
+    "webpack-dev-server": "^3.11.0",
+    "webpack": "^5.6.0",
+    "webpack-cli": "^4.3.1"
   }
 }

@@ -1,0 +1,25 @@
+{
+    "name": "rpgscript",
+    "displayName": "RPGScript",
+    "description": "Syntax highlighting for RPGScript.",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.36.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "rpgscript",
+            "aliases": ["RPGScript", "rpgscript"],
+            "extensions": [".rpgscript"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "rpgscript",
+            "scopeName": "source.rpgscript",
+            "path": "./syntaxes/rpgscript.tmLanguage"
+        }]
+    }
+}

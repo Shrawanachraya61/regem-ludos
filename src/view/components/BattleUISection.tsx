@@ -2,12 +2,13 @@ import { h, Fragment } from 'preact';
 import { useState } from 'preact/hooks';
 import { style } from 'view/style';
 import BattleCharacterButton from 'view/components/BattleCharacterStatus';
-import { getCurrentBattle, BattleCharacter } from 'model/battle';
+import { BattleCharacter } from 'model/battle';
 import BattleActionMenu from 'view/components/BattleActionMenu';
 import Button, { ButtonType } from 'view/elements/Button';
 import { battleSetChButtonsStatus } from 'controller/ui-actions';
 import { BattleAction } from 'controller/battle-actions';
 import { pause, unpause } from 'controller/loop';
+import { getCurrentBattle } from 'model/generics';
 
 const BottomBarWrapper = style('div', {
   position: 'absolute',
