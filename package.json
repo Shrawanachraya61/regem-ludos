@@ -5,12 +5,13 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn watch",
+    "start:dist": "http-server ./dist -o index.html -g -p 8081",
     "build": "yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main",
     "build:setup": "mkdir -p dist",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
-    "watch": "concurrently -n 1,2 \"http-server\" \"tsc --watch\"",
+    "watch": "concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {
