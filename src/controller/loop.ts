@@ -111,39 +111,48 @@ export const runMainLoop = async (): Promise<void> => {
       updateScene(scene);
     }
 
-    let roomXOffset = 0;
-    let roomYOffset = 0;
-    if (battle) {
-      roomXOffset = 512 / 2 - 32 / 2;
-      roomYOffset = 50;
-    } else {
-      const player = getCurrentPlayer();
-      if (player) {
-        const leader = player.leader;
-        const [x, y] = isoToPixelCoords(leader.x, leader.y);
-        roomXOffset = 512 / 2 - x - 16;
-        roomYOffset = 512 / 2 - y;
-      }
-    }
-
     if (room) {
       for (let i = 0; i < room.tiles.length; i++) {
         room.tiles[i].highlighted = false;
       }
 
+      if (overworld) {
+        updateOverworld(overworld);
+      }
+
+      if (battle) {
+        updateBattle(battle);
+      }
+
       for (let i = 0; i < room.characters.length; i++) {
         const ch = room.characters[i];
         characterUpdate(ch);
-        const tile = roomGetTileBelow(room, ch);
-        if (tile) {
-          tile.highlighted = true;
-        }
+        // const tile = roomGetTileBelow(room, ch);
+        // if (tile) {
+        //   tile.highlighted = true;
+        // }
       }
       for (let i = 0; i < room.particles.length; i++) {
         particleUpdate(room.particles[i]);
         if (room.particles[i].shouldRemove) {
           room.particles.splice(i, 1);
           i--;
+        }
+      }
+
+      // position the camera in the right spot
+      let roomXOffset = 0;
+      let roomYOffset = 0;
+      if (battle) {
+        roomXOffset = 512 / 2 - 32 / 2;
+        roomYOffset = 50;
+      } else {
+        const player = getCurrentPlayer();
+        if (player) {
+          const leader = player.leader;
+          const [x, y] = isoToPixelCoords(leader.x, leader.y);
+          roomXOffset = 512 / 2 - x - 16;
+          roomYOffset = 512 / 2 - y;
         }
       }
 
@@ -163,12 +172,6 @@ export const runMainLoop = async (): Promise<void> => {
       }
 
       drawRoom(room, [roomXOffset, roomYOffset]);
-    }
-    if (battle) {
-      updateBattle(battle);
-    }
-    if (overworld) {
-      updateOverworld(overworld);
     }
 
     const renderables = getRenderables();

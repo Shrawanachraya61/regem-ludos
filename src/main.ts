@@ -39,6 +39,7 @@ export const main = async (): Promise<void> => {
 
   const scene = getCurrentScene();
   await loadRPGScript('floor1', scene);
+  await loadRPGScript('test', scene);
 
   console.log('initiate overworld');
   const player = playerCreate({
@@ -49,15 +50,7 @@ export const main = async (): Promise<void> => {
     animationState: AnimationState.IDLE,
     skills: [],
   });
-  initiateOverworld(player, getOverworld('TEST2'), [35, 220, 0]);
-
-  // setTimeout(async () => {
-  //   console.log('DISABLE KEYS');
-  //   disableKeyUpdate();
-  //   await callScript(getCurrentScene(), 'floor1-Skye_intro');
-  //   console.log('ENABLE KEYS');
-  //   enableKeyUpdate();
-  // }, 500);
+  initiateOverworld(player, getOverworld('TEST2'), [35, 205, 0]);
 
   mountUi();
   runMainLoop();

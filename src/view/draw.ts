@@ -259,6 +259,19 @@ export const drawRoom = (
     });
   }
 
+  // DEBUG: draws makers
+  // for (let i in room.markers) {
+  //   const marker = room.markers[i];
+  //   const {x, y} = marker;
+  //   const [px, py] = isoToPixelCoords(x, y, 0);
+  //   renderObjects.push({
+  //     sprite: 'control_1',
+  //     px,
+  //     py,
+  //     sortY: py + 32, // because all characters are 32 px tall (right now)
+  //   });
+  // }
+
   renderObjects = renderObjects.sort((a, b) => {
     return a.sortY < b.sortY ? -1 : 1;
   });
@@ -267,6 +280,10 @@ export const drawRoom = (
     const { sprite, character, px, py, origPy, highlighted } = renderObjects[i];
     if (sprite) {
       drawSprite(sprite, px as number, py as number);
+
+      if (sprite.indexOf('control_1') === 0) {
+        drawRect(px as number + 16 - 4, py as number + 32 - 4, 8, 8, 'orange');
+      }
       // if (highlighted) {
       //   drawSprite('indicator', px as number, origPy as number - 3);
       // }

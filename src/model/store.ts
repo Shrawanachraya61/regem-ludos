@@ -20,10 +20,15 @@ export interface ICutsceneAppState {
   speaker: CutsceneSpeaker;
   visible: boolean;
   portraitLeft: string;
+  portraitLeftEmotion: string;
   portraitLeft2: string;
+  portraitLeft2Emotion: string;
   portraitRight: string;
+  portraitRightEmotion: string;
   portraitRight2: string;
+  portraitRight2Emotion: string;
   portraitCenter: string;
+  portraitCenterEmotion: string;
 }
 
 export interface AppState {
@@ -41,10 +46,15 @@ export const AppStateInitial: AppState = {
     speaker: CutsceneSpeaker.None,
     visible: true,
     portraitLeft: '',
+    portraitLeftEmotion: '',
     portraitLeft2: '',
+    portraitLeft2Emotion: '',
     portraitRight: '',
+    portraitRightEmotion: '',
     portraitRight2: '',
+    portraitRight2Emotion: '',
     portraitCenter: '',
+    portraitCenterEmotion: '',
   },
   battle: {
     chButtonsEnabled: true,

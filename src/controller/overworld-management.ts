@@ -1,4 +1,10 @@
-import { getRoom, roomAddParticle, roomGetTileBelow } from 'model/room';
+import {
+  getRoom,
+  roomAddParticle,
+  roomGetTileBelow,
+  Tile,
+  roomGetTileAt,
+} from 'model/room';
 import {
   setCurrentRoom,
   setCurrentOverworld,
@@ -75,17 +81,9 @@ const getFacingFromKeyState = (): Facing => {
   }
 };
 
-const getNormalizedVec = (x: number, y: number): [number, number] => {
-  const d = Math.sqrt(x * x + y * y);
-  return [x / d, y / d];
-};
-
 export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
-  const room = overworld.room;
   const leader = player.leader;
-  const playerSpeed = 1.5;
-  const frameMult = getFrameMultiplier();
 
   let isMoving = false;
   let vx = 0;
@@ -111,25 +109,11 @@ export const updateOverworld = (overworld: Overworld): void => {
     }
 
     if (isMoving) {
-      const [newVx, newVy] = getNormalizedVec(vx, vy);
-      vx = newVx;
-      vy = newVy;
-      characterSetFacing(leader, getFacingFromKeyState());
       characterSetAnimationState(leader, AnimationState.WALK);
     } else {
       characterSetAnimationState(leader, AnimationState.IDLE);
     }
-    vx = vx * frameMult * playerSpeed;
-    vy = vy * frameMult * playerSpeed;
-    leader.x += vx;
-    leader.y += vy;
-    const tile = roomGetTileBelow(room, leader);
-    // if (tile) {
-    //   tile.highlighted = true;
-    // }
-    if (tile && tile.isWall) {
-      leader.x -= vx;
-      leader.y -= vy;
-    }
+    leader.vx = vx;
+    leader.vy = vy;
   }
 };

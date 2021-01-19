@@ -25,7 +25,7 @@
         {
          "draworder":"topdown",
          "id":2,
-         "name":"Characters",
+         "name":"Objects",
          "objects":[
                 {
                  "gid":193,
@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":48,
-                 "y":256
+                 "x":44,
+                 "y":248
                 }, 
                 {
                  "gid":193,
@@ -48,8 +48,32 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":80,
-                 "y":256
+                 "x":76,
+                 "y":236
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":5,
+                 "name":"MarkerWalkTest1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":76,
+                 "y":68
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":6,
+                 "name":"MarkerWalkTest2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":76,
+                 "y":276
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -58,7 +82,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":5,
+ "nextobjectid":7,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",

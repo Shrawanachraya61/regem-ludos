@@ -7,7 +7,7 @@
     <style>
       body {
         margin: 0;
-        /* overflow: hidden; */
+        overflow: hidden;
         background: #333;
         font-family: monospace;
         color: #eee;
@@ -36,6 +36,11 @@
         style="
           position: relative;
           box-shadow: 0px 0px 24px 16px rgba(0, 0, 0, 0.75);
+          min-width: 512px;
+          min-height: 512px;
+          max-width: 1024px;
+          max-height: 1024px;
+          overflow: hidden;
         "
       >
         <div id="canvas-container"></div>

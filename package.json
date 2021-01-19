@@ -1,15 +1,17 @@
 {
-  "name": "iso",
+  "name": "regem-ludos",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "scripts": {
     "start": "yarn watch",
-    "build": "yarn build:setup && yarn build:iframes && yarn build:main",
+    "build": "yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main",
     "build:setup": "mkdir -p dist",
-    "build:main": "rm -rf src/*.map src/main.js && tsc --sourceMap false && node scripts/build src",
+    "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
-    "watch": "concurrently -n 1,2 \"http-server\" \"tsc --watch\""
+    "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
+    "watch": "concurrently -n 1,2 \"http-server\" \"tsc --watch\"",
+    "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {
     "@types/node": "^11.9.4",
@@ -24,6 +26,7 @@
     "http-server": "^0.12.3",
     "prettier": "^2.2.1",
     "terser": "^4.6.11",
+    "typedoc": "^0.20.16",
     "typescript": "^4.1.3",
     "uglifycss": "0.0.29"
   },

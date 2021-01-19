@@ -178,7 +178,7 @@ AnimSprite,conscience_9,100
 Picture,conscience512,conscience512.png,512,512
 Animation,conscience_portrait,true
 AnimSprite,conscience512_0,100
-Picture,control,control.png,64,64
+Picture,control,control.png,32,32
 Picture,effects,effects.png,32,32
 Animation,effect_sword_left,false
 AnimSprite,effects_0,100

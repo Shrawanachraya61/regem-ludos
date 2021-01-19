@@ -52,6 +52,13 @@ export const setDrawScale = (s: number): void => {
   if (canvas) {
     canvas.style.width = String(SCREEN_WIDTH * drawScale);
     canvas.style.height = String(SCREEN_WIDTH * drawScale);
+
+    if (s > 2) {
+      canvas.style.position = 'relative';
+      canvas.style.left = -(parseInt(canvas.style.width) / 4) + 'px';
+      canvas.style.top = -(parseInt(canvas.style.height) / 4) + 'px';
+    }
+
     // canvas.width = SCREEN_WIDTH * drawScale;
     // canvas.height = SCREEN_WIDTH * drawScale;
   }

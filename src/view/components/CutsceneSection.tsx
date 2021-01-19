@@ -1,7 +1,5 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { colors, style } from 'view/style';
-import Button, { ButtonType } from 'view/elements/Button';
-import { pause, unpause } from 'controller/loop';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import AnimDiv from 'view/elements/AnimDiv';
 import { getUiInterface } from 'view/ui';
@@ -14,6 +12,23 @@ export enum PortraitActiveState {
   Passive = 'passive',
   Invisible = 'invisible',
 }
+
+const determinePortraitAnim = (
+  base: string,
+  emotion: string,
+  facingDirection: string
+): string => {
+  let animStr = '';
+  if (emotion) {
+    animStr = `${base}_portrait_${emotion}`;
+  } else {
+    animStr = `${base}_portrait`;
+  }
+  if (facingDirection === 'right') {
+    animStr += '_f';
+  }
+  return animStr;
+};
 
 const Root = style('div', {
   position: 'absolute',
@@ -81,18 +96,22 @@ const TextBoxWrapper = style(
     const hOffset = '6.25%';
     let left =
       props.align === 'left' ? hOffset : `calc(100% - ${hOffset} - 50%)`;
+    let height = '25%';
+    let transition = 'height 0.1s, left 0.1s, transform 0.25s ease-in';
     if (props.align === 'center') {
       left = '25%';
+      height = '75%';
+      transition = 'height 0.25s, left 0.25s, transform 0.25s ease-in';
     }
     return {
       position: 'absolute',
       width: '50%',
-      height: '33%',
+      height,
       left,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      transition: 'left 0.1s, transform 0.25s ease-in, opacity 0.25s linear',
+      transition,
       bottom: '0px',
       transform: props.visible ? 'scale(1)' : 'scale(0)',
     };
@@ -105,15 +124,14 @@ const TextBox = style('div', {
   boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
   boxSizing: 'border-box',
   width: '100%',
-  padding: '5%',
+  padding: '2.5%',
   color: colors.WHITE,
-  fontSize: 24 * getDrawScale() + 'px',
+  fontSize: 22 * getDrawScale() + 'px',
   textAlign: 'left',
   transition: 'height 0.25s, width 0.25s',
 });
 
 const PortraitWrapper = style('div', (props: { visible: boolean }) => {
-  console.log('PORTRAIT PROPS', props);
   return {
     position: 'absolute',
     left: '0px',
@@ -128,13 +146,20 @@ const PortraitWrapper = style('div', (props: { visible: boolean }) => {
 const CutsceneSection = () => {
   const [barsVisible, setBarsVisible] = useState(false);
   const textBoxRef = useRef<null | HTMLSpanElement>(null);
+
+  // This hook executes on first render.  If a cutscene is not currently being rendered,
+  // then this will pull the cutscene bars towards the center of the screen.
   useEffect(() => {
     setBarsVisible(true);
   }, []);
+
+  // this hook executes on each render.  Preact renders the text as opacity '0',
+  // then this sets the opacity to '1' with a transition so that it fades in.
+  // The desired effect is that the text fades out, then in when the dialog box
+  // changes text.
   useEffect(() => {
     const textBox = textBoxRef?.current;
     if (textBox) {
-      console.log('Render as text transition?', textBox.style.opacity);
       textBox.style.transition = '';
       textBox.style.opacity = '0';
       textBox.innerHTML = cutscene.text;
@@ -145,12 +170,15 @@ const CutsceneSection = () => {
     }
   });
   const cutscene = getUiInterface().appState.cutscene;
-  console.log(
-    'RENDER CUTSCENE',
-    cutscene.text,
-    cutscene.speaker,
-    cutscene.visible
-  );
+
+  let textBoxAlign: 'left' | 'right' | 'center' = 'center';
+  if (
+    [CutsceneSpeaker.Left, CutsceneSpeaker.Center].includes(cutscene.speaker)
+  ) {
+    textBoxAlign = 'right';
+  } else if ([CutsceneSpeaker.Right].includes(cutscene.speaker)) {
+    textBoxAlign = 'left';
+  }
   return (
     <Root>
       <TopBarWrapper visible={cutscene.visible && barsVisible}></TopBarWrapper>
@@ -167,7 +195,31 @@ const CutsceneSection = () => {
                 : PortraitActiveState.Inactive
             }
           >
-            <AnimDiv animName={cutscene.portraitLeft + '_f'} />
+            <AnimDiv
+              animName={determinePortraitAnim(
+                cutscene.portraitLeft,
+                cutscene.portraitLeftEmotion,
+                'right'
+              )}
+            />
+          </Portrait>
+        ) : null}
+        {cutscene.portraitCenter !== '' ? (
+          <Portrait
+            align="left"
+            activeState={
+              cutscene.speaker === CutsceneSpeaker.Center
+                ? PortraitActiveState.Active
+                : PortraitActiveState.Inactive
+            }
+          >
+            <AnimDiv
+              animName={determinePortraitAnim(
+                cutscene.portraitCenter,
+                cutscene.portraitCenterEmotion,
+                'right'
+              )}
+            />
           </Portrait>
         ) : null}
         {cutscene.portraitRight !== '' ? (
@@ -179,13 +231,19 @@ const CutsceneSection = () => {
                 : PortraitActiveState.Inactive
             }
           >
-            <AnimDiv animName={cutscene.portraitRight} />
+            <AnimDiv
+              animName={determinePortraitAnim(
+                cutscene.portraitRight,
+                cutscene.portraitRightEmotion,
+                'left'
+              )}
+            />
           </Portrait>
         ) : null}
       </PortraitWrapper>
       <TextBoxWrapper
         visible={barsVisible && cutscene.text.length > 0}
-        align={cutscene.speaker === CutsceneSpeaker.Left ? 'right' : 'left'}
+        align={textBoxAlign}
       >
         <TextBox>
           <span
@@ -195,7 +253,8 @@ const CutsceneSection = () => {
             }}
             ref={textBoxRef}
           >
-            {/* Is this stupid? Yes. */}
+            {/* Is it stupid that this must be commented out for the text to fade properly? */}
+            {/* Yes, Other Ben, yes it is. */}
             {/* {cutscene.text} */}
           </span>
         </TextBox>

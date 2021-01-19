@@ -242,7 +242,30 @@
         "test.tmx#floors": {
             "scaleInDock": 1.5
         },
+        "test.tmx#props": {
+            "scaleInDock": 1
+        },
         "test.tmx#walls": {
+            "scaleInDock": 0.75
+        },
+        "test2.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 921.5,
+                "y": 115
+            }
+        },
+        "test2.tmx#control": {
+            "scaleInDock": 2
+        },
+        "test2.tmx#floors": {
+            "scaleInDock": 1.5
+        },
+        "test2.tmx#props": {
+            "scaleInDock": 1
+        },
+        "test2.tmx#walls": {
             "scaleInDock": 0.75
         }
     },

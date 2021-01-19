@@ -6,7 +6,7 @@ const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {
   const result = exp[key];
   if (!result) {
-    throw new Error(`No enemy exists with name: ${key}`);
+    throw new Error(`No enemy template exists with name: ${key}`);
   }
   return {
     ...result,

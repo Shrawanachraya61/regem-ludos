@@ -47,6 +47,12 @@ export interface Prop {
   y: number;
 }
 
+export interface Marker {
+  name: string;
+  x: number;
+  y: number;
+}
+
 export interface Tile {
   sprite: string;
   id: number;
@@ -68,6 +74,7 @@ export interface Room {
   tiles: Tile[];
   characters: Character[];
   particles: Particle[];
+  markers: Record<string, Marker>;
 }
 
 interface TiledTileset {
@@ -83,7 +90,7 @@ interface TiledTileset {
 }
 
 interface TiledLayer {
-  name: 'Props' | 'Characters' | 'Tiles';
+  name: 'Props' | 'Objects' | 'Tiles';
   objects?: any[];
   data?: any[];
 }
@@ -128,7 +135,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
   const { objects: props } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
   const { objects: characters } =
-    tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Characters') ||
+    tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Objects') ||
     {};
   const { tiles: propsTilesets, firstgid: propsTilesetsFirstGid } =
     tiledJson.tilesets.find((tileSet: any) => tileSet.name === 'props') || {};
@@ -143,6 +150,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
     tiles: [] as Tile[],
     characters: [] as Character[],
     particles: [] as Particle[],
+    markers: {} as Record<string, Marker>,
   };
 
   console.log(
@@ -167,7 +175,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       sprite,
       tileWidth,
       tileHeight,
-      isWall: sprite.indexOf('wall') > -1,
+      isWall: sprite.indexOf('wall') > -1 || sprite.indexOf('prop') > -1,
       id: tiledTileId - 1,
       x: i % width,
       y: Math.floor(i / width),
@@ -207,19 +215,34 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       (tiledCharacter: { x: number; y: number; name: string }, i: number) => {
         const x = tiledCharacter.x;
         const y = tiledCharacter.y;
-        const chTemplate = getCharacter(tiledCharacter.name);
-        if (!chTemplate) {
-          throw new Error(
-            `Could not load character '${i}' in room definition '${name}', the character '${tiledCharacter.name}' does not exist in the db.`
-          );
-        }
-        const ch = characterCreateFromTemplate(chTemplate);
-
         // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
         const [xPx, yPy] = isoToPixelCoords(x, y);
         const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
-        characterSetPos(ch, [newX, newY, 0]);
-        room.characters.push(ch);
+
+        if (tiledCharacter.name.toLowerCase().indexOf('marker') > -1) {
+          if (room.markers[tiledCharacter.name]) {
+            throw new Error(
+              `Could not load marker '${tiledCharacter.name}' in room definition '${name}', a marker with that name already exists.)`
+            );
+          }
+          room.markers[tiledCharacter.name] = {
+            name: tiledCharacter.name,
+            x: newX,
+            y: newY,
+          };
+        } else {
+          console.log('get template', tiledCharacter.name);
+          const chTemplate = getCharacter(tiledCharacter.name);
+          if (!chTemplate) {
+            throw new Error(
+              `Could not load character '${i}' in room definition '${name}', the character '${tiledCharacter.name}' does not exist in the db.`
+            );
+          }
+          const ch = characterCreateFromTemplate(chTemplate);
+
+          characterSetPos(ch, [newX, newY, 0]);
+          room.characters.push(ch);
+        }
       }
     );
   }
@@ -254,8 +277,8 @@ export const roomRemoveRemoveCharacter = (room: Room, ch: Character): void => {
 
 export const roomGetTileBelow = (room: Room, ch: Character): Tile | null => {
   const { x, y } = ch;
-  const tileX = Math.floor(((x + 16) / TILE_WIDTH) * 2);
-  const tileY = Math.floor(((y + 16) / TILE_HEIGHT) * 2);
+  const tileX = Math.floor(((x + 16 - 3) / TILE_WIDTH) * 2);
+  const tileY = Math.floor(((y + 16 - 3) / TILE_HEIGHT) * 2);
   return roomGetTileAt(room, tileX, tileY);
 };
 

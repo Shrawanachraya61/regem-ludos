@@ -87,13 +87,14 @@ const App = () => {
   };
 
   console.log('render app', appState);
+  const scale = getDrawScale();
   return (
     <div
       style={{
         position: 'absolute',
         top: '0px',
-        width: 512 * getDrawScale(),
-        height: 512 * getDrawScale(),
+        width: 512 * (scale > 2 ? 2 : scale),
+        height: 512 * (scale > 2 ? 2 : scale),
       }}
     >
       <Root>

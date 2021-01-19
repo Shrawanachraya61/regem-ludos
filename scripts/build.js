@@ -28,7 +28,7 @@ const build = async () => {
     .readFileSync(`${__dirname}/../index.html`)
     .toString()
     .replace('src/main.js', 'main.js');
-  const mainFile = (
+  const mainFile =
     CLIENT_FILES.reduce((prev, curr) => {
       return (
         prev +
@@ -37,25 +37,18 @@ const build = async () => {
           .readFileSync(__dirname + '/../' + outputDirName + '/' + curr)
           .toString()
       );
-    }, '(() => {\n') + '\n})()'
-  ).replace(/res\//g, '');
+    }, '(() => {\n') + '\n})()';
+  // ).replace(/res\//g, '');
 
   await execAsync(
     `rm -rf ${__dirname}/../.build ${__dirname}/../${outputDirName}.zip`
   );
-  await execAsync(`mkdir -p ${__dirname}/../.build`);
-  await execAsync(
-    `cp -r ${__dirname}/../res/*.png ${__dirname}/../.build/ || :`
-  );
-  await execAsync(
-    `cp -r ${__dirname}/../res/*.txt ${__dirname}/../.build/ || :`
-  );
+  await execAsync(`mkdir -p ${__dirname}/../.build/res`);
+  await execAsync(`cp -r ${__dirname}/../res/ ${__dirname}/../.build/ || :`);
   await execAsync(
     `cp -r ${__dirname}/../index.html ${__dirname}/../.build/ || :`
   );
   await execAsync(`rm -rf ${__dirname}/../${outputDirName}/*.map`);
-
-  console.log('\nWrite tmp files...');
   fs.writeFileSync(
     `${__dirname}/../.build/main.tmp.js`,
     mainFile.replace(/const /g, 'let ')
@@ -75,20 +68,20 @@ const build = async () => {
   ];
 
   console.log('\nMinify code...');
+  await execAsync(`mkdir -p ${__dirname}/../dist`);
   await execAsync(
-    `${__dirname}/../node_modules/.bin/terser --compress ${terserArgs.join(
+    `terser --compress ${terserArgs.join(
       ','
     )} --mangle -o ${__dirname}/../.build/main.js -- ${__dirname}/../.build/main.tmp.js`
   );
   await execAsync(
-    `${__dirname}/../node_modules/.bin/terser --compress ${terserArgs.join(
-      ','
-    )} --mangle -o ${__dirname}/../dist/almond.js -- ${__dirname}/../almond.js`
+    `terser --compress --keep-fnames -o ${__dirname}/../dist/almond.js -- ${__dirname}/../almond.js`
   );
-  // await execAsync('uglifycss --output public/style.css .build/style.tmp.css');
+  await execAsync('uglifycss --output dist/styles.css styles.css');
   console.log('minify html...');
   fs.writeFileSync(
     '.build/index.html',
+    // htmlFile
     minifyHtml(htmlFile, {
       removeAttributeQuotes: true,
       collapseWhitespace: true,
@@ -103,7 +96,7 @@ const build = async () => {
     })
   );
   await execAsync(
-    `mkdir -p dist && cp .build/index.html dist && cp .build/main.js dist && cp .build/*.png dist && cp .build/*.txt dist`
+    `cp .build/index.html dist && cp .build/main.js dist && cp -r .build/res dist`
   );
 
   console.log('\nZip (command line)...');

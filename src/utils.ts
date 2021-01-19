@@ -20,6 +20,7 @@ export const removeFileExtension = (fileName: string): string => {
 
 export type Point = [number, number];
 export type Point3d = [number, number, number];
+export type Circle = Point3d;
 
 export const truncatePoint3d = (p: Point3d): Point => {
   return [p[0], p[1]];
@@ -117,4 +118,66 @@ export const calculateDistance = (a: Point3d, b: Point3d) => {
   return Math.sqrt(
     Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)
   );
+};
+
+export const circleCircleCollision = (a: Circle, b: Circle): boolean => {
+  const [x1, y1, r1] = a;
+  const [x2, y2, r2] = b;
+
+  const dist = calculateDistance([x1, y1, 0], [x2, y2, 0]);
+  return dist <= r1 + r2;
+};
+
+export function getAngleTowards(
+  point1: Point3d | Point,
+  point2: Point3d | Point
+): number {
+  const [x1, y1] = point1;
+  const [x2, y2] = point2;
+  const lenY = y2 - y1;
+  const lenX = x2 - x1;
+  const hyp = Math.sqrt(lenX * lenX + lenY * lenY);
+  let ret = 0;
+  if (y2 >= y1 && x2 >= x1) {
+    ret = (Math.asin(lenY / hyp) * 180) / Math.PI + 90;
+  } else if (y2 >= y1 && x2 < x1) {
+    ret = (Math.asin(lenY / -hyp) * 180) / Math.PI - 90;
+  } else if (y2 < y1 && x2 > x1) {
+    ret = (Math.asin(lenY / hyp) * 180) / Math.PI + 90;
+  } else {
+    ret = (Math.asin(-lenY / hyp) * 180) / Math.PI - 90;
+  }
+  if (ret >= 360) {
+    ret = 360 - ret;
+  }
+  if (ret < 0) {
+    ret = 360 + ret;
+  }
+  return ret;
+}
+
+export const getNormalizedVec = (x: number, y: number): [number, number] => {
+  const d = Math.sqrt(x * x + y * y);
+  return [x / d, y / d];
+};
+
+export const radiansToDegrees = (rad: number) => {
+  return rad * (180 / Math.PI);
+};
+
+export const getAngleFromVector = (x: number, y: number): number => {
+  if (x == 0) {
+    return y > 0 ? 90 : y == 0 ? 0 : 270;
+  } else if (y == 0) {
+    return x >= 0 ? 0 : 180;
+  }
+  let ret = radiansToDegrees(Math.atan(y / x));
+  if (x < 0 && y < 0) {
+    ret = 180 + ret;
+  } else if (x < 0) {
+    ret = 180 + ret;
+  } else if (y < 0) {
+    ret = 270 + (90 + ret);
+  }
+  return ret;
 };
