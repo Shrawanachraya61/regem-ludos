@@ -38,7 +38,6 @@ const build = async () => {
           .toString()
       );
     }, '(() => {\n') + '\n})()';
-  // ).replace(/res\//g, '');
 
   await execAsync(
     `rm -rf ${__dirname}/../.build ${__dirname}/../${outputDirName}.zip`
@@ -75,7 +74,7 @@ const build = async () => {
     )} --mangle -o ${__dirname}/../.build/main.js -- ${__dirname}/../.build/main.tmp.js`
   );
   await execAsync(
-    `terser --compress --keep-fnames -o ${__dirname}/../dist/almond.js -- ${__dirname}/../almond.js`
+    `terser --keep-fnames -o ${__dirname}/../dist/almond.js -- ${__dirname}/../almond.js`
   );
   await execAsync('uglifycss --output dist/styles.css styles.css');
   console.log('minify html...');
@@ -84,10 +83,10 @@ const build = async () => {
     // htmlFile
     minifyHtml(htmlFile, {
       removeAttributeQuotes: true,
-      collapseWhitespace: true,
+      // collapseWhitespace: true,
       html5: true,
-      minifyCSS: true,
-      minifyJS: true,
+      // minifyCSS: true,
+      // minifyJS: true,
       removeRedundantAttributes: true,
       removeScriptTypeAttributes: true,
       removeTagWhitespace: true,
