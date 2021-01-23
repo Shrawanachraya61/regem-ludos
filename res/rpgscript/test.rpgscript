@@ -109,4 +109,3 @@ Ada: "We have arrived at our destination."
 Conscience: "The test will now conclude."
 +endConversation();
 +setFacing("Ada", "down");
-
