@@ -9,6 +9,8 @@ import {
 export interface Overworld {
   room: Room;
   people: OverworldCharacter[];
+  triggersEnabled: boolean;
+  characterCollisionEnabled: boolean;
   // triggers: Trigger
 }
 
@@ -21,13 +23,13 @@ export interface OverworldTemplate {
   characters: OverworldCharacter[];
 }
 
-// export const overworldCreate = (template: OverworldTemplate): Overworld => {
-//   const overworld = {
+export const overworldDisableTriggers = (overworld: Overworld) => {
+  overworld.triggersEnabled = false;
+};
 
-//   };
-
-//   return overworld;
-// };
+export const overworldEnableTriggers = (overworld: Overworld) => {
+  overworld.triggersEnabled = true;
+};
 
 export const overworldCharacterCreate = (
   template: OverworldCharacter

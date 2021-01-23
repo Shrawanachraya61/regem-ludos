@@ -615,8 +615,8 @@ export class ScriptParser {
   }
 }
 
-const scripts: Record<string, Script> = {};
-const triggers: Record<string, Trigger> = {};
+const scripts: Record<string, Script> = (window as any).scripts = {};
+const triggers: Record<string, Trigger> = (window as any).triggers = {};
 
 export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
   const url = `res/rpgscript/${scriptFileName}.rpgscript`;

@@ -27,4 +27,12 @@ export const init = () => {
     facing: Facing.LEFT_UP,
     animationState: AnimationState.IDLE,
   };
+
+  exp.Roger = {
+    name: 'Roger',
+    spriteBase: 'guy',
+    talkTrigger: 'test-roger',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
 };

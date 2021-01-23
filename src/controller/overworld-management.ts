@@ -4,30 +4,46 @@ import {
   roomGetTileBelow,
   Tile,
   roomGetTileAt,
+  roomAddCharacter,
 } from 'model/room';
 import {
   setCurrentRoom,
+  getCurrentRoom,
   setCurrentOverworld,
   setCurrentPlayer,
   getCurrentPlayer,
   isKeyDown,
   getFrameMultiplier,
   getKeyUpdateEnabled,
+  getCurrentScene,
+  enableKeyUpdate,
+  disableKeyUpdate,
+  getCurrentOverworld,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
   Overworld,
   OverworldCharacter,
+  overworldDisableTriggers,
+  overworldEnableTriggers,
   OverworldTemplate,
 } from 'model/overworld';
-import { pixelToIsoCoords, Point3d } from 'utils';
+import { Point3d } from 'utils';
 import {
   characterSetAnimationState,
   characterSetFacing,
   characterSetPos,
   Facing,
   AnimationState,
+  characterGetPosBottom,
+  characterCollidesWithPoint,
+  characterCollidesWithRect,
 } from 'model/character';
+import { invokeTrigger, callScript } from './scene-management';
+import { TriggerType } from 'lib/rpgscript';
+import { showSection } from './ui-actions';
+import { AppSection } from 'model/store';
+import { pushKeyHandler } from './events';
 
 export const initiateOverworld = (
   player: Player,
@@ -46,17 +62,105 @@ export const initiateOverworld = (
     characterSetPos(leader, [0, 0, 0]);
   }
 
-  room.characters.push(leader);
+  // room.characters.push(leader);
+  roomAddCharacter(room, leader);
 
   const overworld = {
     room,
     people: [oChLeader],
+    triggersEnabled: true,
+    characterCollisionEnabled: true,
   };
 
   setCurrentRoom(room);
   setCurrentPlayer(player);
   setCurrentOverworld(overworld);
+
+  pushKeyHandler(overworldKeyHandler);
   return overworld;
+};
+
+const checkAndCallTriggerOfType = async (
+  type: TriggerType
+): Promise<boolean> => {
+  const overworld = getCurrentOverworld();
+  const player = getCurrentPlayer();
+  const room = getCurrentRoom();
+  const leader = player.leader;
+
+  for (let i = 0; i < room.triggerActivators.length; i++) {
+    const ta = room.triggerActivators[i];
+    if (characterCollidesWithRect(leader, [ta.x, ta.y, ta.width, ta.height])) {
+      const scriptCaller = invokeTrigger(getCurrentScene(), ta.name, type);
+      if (scriptCaller !== null) {
+        overworldDisableTriggers(overworld);
+        disableKeyUpdate();
+        characterSetAnimationState(leader, AnimationState.IDLE);
+        await scriptCaller();
+        overworldEnableTriggers(overworld);
+        enableKeyUpdate();
+        showSection(AppSection.Debug, true);
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const checkAndCallTalkTrigger = async (): Promise<boolean> => {
+  const overworld = getCurrentOverworld();
+  const player = getCurrentPlayer();
+  const room = getCurrentRoom();
+  const leader = player.leader;
+
+  for (let i = 0; i < room.characters.length; i++) {
+    const ch = room.characters[i];
+    const [chX, chY] = characterGetPosBottom(ch);
+    if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 25])) {
+      const scriptCaller = invokeTrigger(
+        getCurrentScene(),
+        ch.talkTrigger,
+        TriggerType.ACTION
+      );
+      if (scriptCaller !== null) {
+        overworldDisableTriggers(overworld);
+        disableKeyUpdate();
+        characterSetAnimationState(leader, AnimationState.IDLE);
+        await scriptCaller();
+        overworldEnableTriggers(overworld);
+        enableKeyUpdate();
+        showSection(AppSection.Debug, true);
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const overworldKeyHandler = async (ev: KeyboardEvent) => {
+  const overworld = getCurrentOverworld();
+  switch (ev.key) {
+    case ' ': {
+      if (overworld.triggersEnabled) {
+        if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
+          checkAndCallTalkTrigger();
+        }
+      }
+      break;
+    }
+    case 'c': {
+      if (getKeyUpdateEnabled()) {
+        console.log('DISABLE KEYS');
+        disableKeyUpdate();
+        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        await callScript(getCurrentScene(), 'test-setConversation2');
+        showSection(AppSection.Debug, true);
+        console.log('ENABLE KEYS');
+        enableKeyUpdate();
+      }
+      break;
+    }
+  }
 };
 
 const getFacingFromKeyState = (): Facing => {
@@ -83,6 +187,7 @@ const getFacingFromKeyState = (): Facing => {
 
 export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
+  const room = getCurrentRoom();
   const leader = player.leader;
 
   let isMoving = false;
@@ -115,5 +220,9 @@ export const updateOverworld = (overworld: Overworld): void => {
     }
     leader.vx = vx;
     leader.vy = vy;
+  }
+
+  if (overworld.triggersEnabled) {
+    checkAndCallTriggerOfType(TriggerType.STEP);
   }
 };

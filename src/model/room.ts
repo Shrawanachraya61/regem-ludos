@@ -1,4 +1,4 @@
-import { loadImageAsSprite } from 'model/sprite';
+import { loadImageAsSprite, getSprite } from 'model/sprite';
 import {
   removeFileExtension,
   Point,
@@ -8,14 +8,17 @@ import {
 import {
   Character,
   characterSetPos,
+  characterGetPos,
   characterCreateFromTemplate,
 } from 'model/character';
 import { Particle } from 'model/particle';
 import { get as getCharacter } from 'db/characters';
+import { Polygon } from 'view/draw';
 
 import * as battle1Json from 'map/battle1.json';
 import * as testJson from 'map/test.json';
 import * as test2Json from 'map/test2.json';
+import { getTrigger } from 'lib/rpgscript';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -45,13 +48,79 @@ export interface Prop {
   sprite: string;
   x: number;
   y: number;
+  ro?: RenderObject;
 }
+
+export const createPropRenderObject = (prop: Prop): RenderObject => {
+  let [px, py] = isoToPixelCoords(prop.x, prop.y);
+  const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
+  px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
+  py = py - spriteHeight + TILE_HEIGHT / 2;
+  return {
+    sprite: prop.sprite,
+    px,
+    py,
+    sortY: py + spriteHeight,
+    visible: true,
+  };
+};
 
 export interface Marker {
   name: string;
   x: number;
   y: number;
+  ro?: RenderObject;
 }
+
+export const createMarkerRenderObject = (marker: Marker): RenderObject => {
+  const { x, y } = marker;
+  const [px, py] = isoToPixelCoords(x, y, 0);
+  return {
+    name: marker.name,
+    sprite: 'control_1',
+    px,
+    py,
+    sortY: py + 32, // because all markers are 32 px tall (right now)
+    visible: true,
+    isMarker: true,
+  };
+};
+
+export interface TriggerActivator {
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  polygon?: Polygon;
+  ro?: RenderObject;
+}
+
+export const createTriggerActivatorRenderObject = (
+  trigger: TriggerActivator
+): RenderObject => {
+  if (trigger.polygon) {
+    return {
+      name: trigger.name,
+      polygon: trigger.polygon,
+      sortY: Infinity,
+      visible: true,
+      isTrigger: true,
+    };
+  } else {
+    const { x, y } = trigger;
+    const [px, py] = isoToPixelCoords(x, y, 0);
+    return {
+      name: trigger.name,
+      sprite: 'control_2',
+      px,
+      py,
+      sortY: py + 32, // because all sprite trigger activators are 32 px tall (right now)
+      visible: true,
+      isTrigger: true,
+    };
+  }
+};
 
 export interface Tile {
   sprite: string;
@@ -62,6 +131,42 @@ export interface Tile {
   tileWidth: number;
   tileHeight: number;
   highlighted: boolean;
+  ro?: RenderObject;
+}
+
+export const createTileRenderObject = (tile: Tile): RenderObject => {
+  let [px, py] = isoToPixelCoords(
+    (tile.x * TILE_WIDTH) / 2,
+    (tile.y * TILE_HEIGHT) / 2
+  );
+  const origPy = py;
+  py -= tile.tileHeight - 32;
+  return {
+    sprite: tile.sprite,
+    origPy,
+    px,
+    py,
+    highlighted: tile.highlighted,
+    // corrects for the tile height, which can be any height
+    sortY: py + (tile.tileHeight - 32) + (tile.tileHeight > 32 ? 16 + 4 : 16),
+    visible: true,
+  };
+};
+
+export interface RenderObject {
+  name?: string;
+  sprite?: string;
+  character?: Character;
+  particle?: Particle;
+  origPy?: number;
+  highlighted?: boolean;
+  px?: number;
+  py?: number;
+  polygon?: Polygon;
+  isMarker?: boolean;
+  isTrigger?: boolean;
+  sortY: number;
+  visible: boolean;
 }
 
 export interface Room {
@@ -74,7 +179,18 @@ export interface Room {
   tiles: Tile[];
   characters: Character[];
   particles: Particle[];
+  renderObjects: RenderObject[];
   markers: Record<string, Marker>;
+  triggerActivators: TriggerActivator[];
+}
+
+interface TiledObject {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  name: string;
+  gid?: number;
 }
 
 interface TiledTileset {
@@ -134,7 +250,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
   const { width, height, data } = tiledJson.layers[0];
   const { objects: props } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
-  const { objects: characters } =
+  const { objects } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Objects') ||
     {};
   const { tiles: propsTilesets, firstgid: propsTilesetsFirstGid } =
@@ -151,6 +267,8 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
     characters: [] as Character[],
     particles: [] as Particle[],
     markers: {} as Record<string, Marker>,
+    triggerActivators: [] as TriggerActivator[],
+    renderObjects: [] as RenderObject[],
   };
 
   console.log(
@@ -170,8 +288,7 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       tiledJson.tilesets,
       tiledTileId
     );
-    room.tiles.push({
-      // sprite: 'terrain_' + (tiledTileId - 1),
+    const tile = {
       sprite,
       tileWidth,
       tileHeight,
@@ -180,7 +297,9 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       x: i % width,
       y: Math.floor(i / width),
       highlighted: false,
-    });
+    } as Tile;
+    room.tiles.push(tile);
+    room.renderObjects.push(createTileRenderObject(tile));
   });
 
   if (props) {
@@ -200,51 +319,130 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
         tilesetTile.image.lastIndexOf('/') + 1
       );
       promises.push(
-        loadImageAsSprite(pictureName, removeFileExtension(pictureName))
+        new Promise<void>(async resolve => {
+          await loadImageAsSprite(
+            pictureName,
+            removeFileExtension(pictureName)
+          );
+          const prop = {
+            x,
+            y,
+            sprite: pictureName.slice(0, -4),
+          };
+          room.props.push(prop);
+          room.renderObjects.push(createPropRenderObject(prop));
+          resolve();
+        })
       );
-      room.props.push({
-        x,
-        y,
-        sprite: pictureName.slice(0, -4),
-      });
     });
   }
 
-  if (characters) {
-    characters.forEach(
-      (tiledCharacter: { x: number; y: number; name: string }, i: number) => {
-        const x = tiledCharacter.x;
-        const y = tiledCharacter.y;
-        // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
-        const [xPx, yPy] = isoToPixelCoords(x, y);
-        const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
+  const addCharacter = (tiledObject: TiledObject) => {
+    console.log('Tiled addCharacter', tiledObject);
+    const x = tiledObject.x;
+    const y = tiledObject.y;
+    // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
+    const [xPx, yPy] = isoToPixelCoords(x, y);
+    const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
 
-        if (tiledCharacter.name.toLowerCase().indexOf('marker') > -1) {
-          if (room.markers[tiledCharacter.name]) {
-            throw new Error(
-              `Could not load marker '${tiledCharacter.name}' in room definition '${name}', a marker with that name already exists.)`
-            );
-          }
-          room.markers[tiledCharacter.name] = {
-            name: tiledCharacter.name,
-            x: newX,
-            y: newY,
-          };
-        } else {
-          console.log('get template', tiledCharacter.name);
-          const chTemplate = getCharacter(tiledCharacter.name);
-          if (!chTemplate) {
-            throw new Error(
-              `Could not load character '${i}' in room definition '${name}', the character '${tiledCharacter.name}' does not exist in the db.`
-            );
-          }
-          const ch = characterCreateFromTemplate(chTemplate);
+    const chTemplate = getCharacter(tiledObject.name);
+    if (!chTemplate) {
+      throw new Error(
+        `Could not load character '${tiledObject.name}' in room definition '${name}', no entry in the db.`
+      );
+    }
+    const ch = characterCreateFromTemplate(chTemplate);
 
-          characterSetPos(ch, [newX, newY, 0]);
-          room.characters.push(ch);
-        }
+    characterSetPos(ch, [newX, newY, 0]);
+    roomAddCharacter(room, ch);
+  };
+
+  const addMarker = (tiledObject: TiledObject) => {
+    console.log('Tiled addMarker', tiledObject);
+    const x = tiledObject.x;
+    const y = tiledObject.y;
+    // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
+    const [xPx, yPy] = isoToPixelCoords(x, y);
+    const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
+    if (room.markers[tiledObject.name]) {
+      throw new Error(
+        `Could not load marker '${tiledObject.name}' in room definition '${name}', a marker with that name already exists.)`
+      );
+    }
+    const marker = {
+      name: tiledObject.name,
+      x: newX,
+      y: newY,
+    };
+    room.markers[tiledObject.name] = marker;
+    room.renderObjects.push(createMarkerRenderObject(marker));
+  };
+
+  const addTrigger = (tiledObject: TiledObject) => {
+    console.log('Tiled addTrigger', tiledObject);
+    const x = tiledObject.x;
+    const y = tiledObject.y;
+    const width = tiledObject.width;
+    const height = tiledObject.height;
+    const triggerName = tiledObject.name.slice(1);
+
+    // is a polygon
+    if (tiledObject.gid === undefined) {
+      // I honestly have no idea why it needs these offsets
+      const yOffset = 8;
+      const xOffset = 16 + 8;
+      const polygon: Polygon = [
+        [xOffset + x, yOffset + y] as Point,
+        [xOffset + x + width, yOffset + y] as Point,
+        [xOffset + x + width, yOffset + y + height] as Point,
+        [xOffset + x, yOffset + y + height] as Point,
+      ];
+      const trigger = {
+        polygon,
+        name: triggerName,
+        x,
+        y,
+        width,
+        height,
+        isTrigger: true,
+      };
+      room.triggerActivators.push(trigger);
+      room.renderObjects.push(createTriggerActivatorRenderObject(trigger));
+    } else {
+      // Tiled specifies objects drawn from the bottom, subtract half height of a tile to put them in the same visual spot
+      const [xPx, yPy] = isoToPixelCoords(x, y);
+      const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
+      if (!getTrigger(triggerName)) {
+        throw new Error(
+          `Could not load trigger '${tiledObject.name}' in room definition '${name}', a trigger with that name does not exist.)`
+        );
       }
-    );
+      const trigger = {
+        name: triggerName,
+        x: newX,
+        y: newY,
+        width: 16,
+        height: 16,
+        isTrigger: true,
+      };
+      room.triggerActivators.push(trigger);
+      room.renderObjects.push(createTriggerActivatorRenderObject(trigger));
+    }
+  };
+
+  if (objects) {
+    objects.forEach((object: TiledObject) => {
+      const isMarker = object.name.toLowerCase().indexOf('marker') > -1;
+      const isTrigger = object.name.toLowerCase().indexOf('#') === 0;
+
+      if (isMarker) {
+        addMarker(object);
+      } else if (isTrigger) {
+        addTrigger(object);
+      } else {
+        addCharacter(object);
+      }
+    });
   }
 
   await Promise.all(promises);
@@ -293,4 +491,24 @@ export const roomGetCharacterByName = (
     }
   }
   return null;
+};
+
+export const roomAddCharacter = (room: Room, ch: Character) => {
+  room.characters.push(ch);
+  if (ch.ro) {
+    room.renderObjects.push(ch.ro);
+  }
+};
+
+export const roomRemoveCharacter = (room: Room, ch: Character) => {
+  const chInd = room.characters.indexOf(ch);
+  if (chInd > -1) {
+    room.characters.splice(chInd, 1);
+  }
+  if (ch.ro) {
+    const roInd = room.renderObjects.indexOf(ch.ro);
+    if (roInd > -1) {
+      room.renderObjects.splice(roInd, 1);
+    }
+  }
 };

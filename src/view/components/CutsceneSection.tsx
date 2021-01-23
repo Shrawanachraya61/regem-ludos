@@ -51,7 +51,7 @@ const BottomBarWrapper = style('div', (props: { visible: boolean }) => ({
   position: 'absolute',
   bottom: '0px',
   width: '100%',
-  height: props.visible ? '12.5%' : '0%',
+  height: props.visible ? '17%' : '0%',
   transition: 'height 0.25s',
   background: colors.DARKGREY,
 }));
@@ -72,6 +72,7 @@ const Portrait = style(
       vOffset = '-3.125%';
     } else if (props.activeState === PortraitActiveState.Invisible) {
       opacity = '0';
+      hOffset = '-50%';
     }
 
     const left = props.align === 'left' ? hOffset : '';
@@ -92,17 +93,24 @@ const Portrait = style(
 
 const TextBoxWrapper = style(
   'div',
-  (props: { align: 'left' | 'right' | 'center'; visible: boolean }) => {
+  (props: {
+    align: 'left' | 'right' | 'center' | 'center-low';
+    visible: boolean;
+  }) => {
     const hOffset = '6.25%';
     let left =
       props.align === 'left' ? hOffset : `calc(100% - ${hOffset} - 50%)`;
-    let height = '25%';
+    let height = '20%';
     let transition = 'height 0.1s, left 0.1s, transform 0.25s ease-in';
     if (props.align === 'center') {
       left = '25%';
       height = '75%';
       transition = 'height 0.25s, left 0.25s, transform 0.25s ease-in';
+    } else if (props.align === 'center-low') {
+      left = '25%';
+      height = '35%';
     }
+
     return {
       position: 'absolute',
       width: '50%',
@@ -118,18 +126,52 @@ const TextBoxWrapper = style(
   }
 );
 
-const TextBox = style('div', {
-  border: '2px solid ' + colors.WHITE,
-  background: colors.BLACK,
-  boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
-  boxSizing: 'border-box',
-  width: '100%',
-  padding: '2.5%',
-  color: colors.WHITE,
-  fontSize: 22 * getDrawScale() + 'px',
-  textAlign: 'left',
-  transition: 'height 0.25s, width 0.25s',
-});
+const TextBox = style(
+  'div',
+  (props: { align: 'right' | 'left' | 'center' | 'center-low' }) => {
+    let borderBottomLeftRadius = 'unset';
+    let borderBottomRightRadius = 'unset';
+    let borderLeft = 'solid';
+    let borderRight = 'solid';
+    let paddingLeft = '2.5%';
+    let paddingRight = '2.5%';
+    let borderRightColor = colors.WHITE;
+    let borderLeftColor = colors.WHITE;
+    if (props.align === 'right') {
+      paddingLeft = '5%';
+      borderBottomLeftRadius = '48px';
+      borderLeft = '16px solid';
+      borderLeftColor = colors.BLUE;
+    } else if (props.align === 'left') {
+      paddingRight = '5%';
+      borderBottomRightRadius = '48px';
+      borderRight = '16px solid';
+      borderRightColor = colors.BLUE;
+    }
+
+    return {
+      border: '2px solid ' + colors.WHITE,
+      background: colors.BLACK,
+      boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
+      boxSizing: 'border-box',
+      width: '100%',
+      padding: '2.5%',
+      color: colors.WHITE,
+      fontSize: '24px',
+      textAlign: 'left',
+      transition: 'height 0.25s, width 0.25s',
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderLeft,
+      borderRight,
+      paddingLeft,
+      paddingRight,
+      borderRightColor,
+      borderLeftColor,
+      borderTopColor: colors.BLUE,
+    };
+  }
+);
 
 const PortraitWrapper = style('div', (props: { visible: boolean }) => {
   return {
@@ -139,7 +181,7 @@ const PortraitWrapper = style('div', (props: { visible: boolean }) => {
     width: '100%',
     height: '100%',
     transform: props.visible ? 'translateY(0%)' : 'translateY(55%)',
-    transition: 'transform 0.33s, width 0.33s',
+    transition: 'transform 0.15s',
   };
 });
 
@@ -166,19 +208,24 @@ const CutsceneSection = () => {
       setTimeout(() => {
         textBox.style.transition = 'opacity 0.15s linear';
         textBox.style.opacity = '1';
-      }, 1);
+      }, 25);
     }
   });
   const cutscene = getUiInterface().appState.cutscene;
 
-  let textBoxAlign: 'left' | 'right' | 'center' = 'center';
-  if (
-    [CutsceneSpeaker.Left, CutsceneSpeaker.Center].includes(cutscene.speaker)
-  ) {
+  let textBoxAlign: 'left' | 'right' | 'center' | 'center-low' = 'center';
+  if ([CutsceneSpeaker.Left].includes(cutscene.speaker)) {
+    textBoxAlign = 'right';
+  } else if ([CutsceneSpeaker.Center].includes(cutscene.speaker)) {
     textBoxAlign = 'right';
   } else if ([CutsceneSpeaker.Right].includes(cutscene.speaker)) {
     textBoxAlign = 'left';
+  } else if (cutscene.portraitCenter) {
+    textBoxAlign = 'center-low';
   }
+
+  console.log('render textboxalgin', textBoxAlign);
+
   return (
     <Root>
       <TopBarWrapper visible={cutscene.visible && barsVisible}></TopBarWrapper>
@@ -210,7 +257,7 @@ const CutsceneSection = () => {
             activeState={
               cutscene.speaker === CutsceneSpeaker.Center
                 ? PortraitActiveState.Active
-                : PortraitActiveState.Inactive
+                : PortraitActiveState.Invisible
             }
           >
             <AnimDiv
@@ -245,7 +292,7 @@ const CutsceneSection = () => {
         visible={barsVisible && cutscene.text.length > 0}
         align={textBoxAlign}
       >
-        <TextBox>
+        <TextBox align={textBoxAlign}>
           <span
             style={{
               opacity: '0',

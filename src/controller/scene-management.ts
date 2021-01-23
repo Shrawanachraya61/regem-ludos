@@ -150,29 +150,30 @@ export const evalCondition = (
   }
 };
 
-export const callTrigger = async (
+export const invokeTrigger = (
   scene: Scene,
   triggerName: string,
   type: TriggerType
-) => {
+): null | (() => Promise<void>) => {
   const trigger = getTrigger(triggerName);
   if (!scene.currentScript && trigger) {
-    console.log('CALL TRIGGER', trigger);
+    // console.log('INVOKE TRIGGER', trigger);
     for (let i = 0; i < trigger.scriptCalls.length; i++) {
       const scriptCall = trigger.scriptCalls[i];
       scene.currentTrigger = trigger;
       const c = evalCondition(scene, scriptCall.condition);
-      console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
+      // console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
       if (scriptCall.type === type && c) {
-        // scene.unsetActiveItem();
-        await callScript(scene, scriptCall.scriptName);
-        scene.storage[trigger.name] = true;
-        break;
+        return async () => {
+          await callScript(scene, scriptCall.scriptName);
+          scene.storage[trigger.name] = true;
+        };
       } else {
         scene.currentTrigger = null;
       }
     }
   }
+  return null;
 };
 
 export const callScript = async (scene: Scene, scriptName: string) => {

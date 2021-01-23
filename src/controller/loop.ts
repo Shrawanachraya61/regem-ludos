@@ -20,15 +20,16 @@ import {
   roomGetTileBelow,
 } from 'model/room';
 import { pixelToIsoCoords, isoToPixelCoords } from 'utils';
-import { clearScreen, drawAnimation, drawRoom } from 'view/draw';
+import { clearScreen, drawAnimation, drawRoom, drawRect } from 'view/draw';
 import { Character, characterUpdate } from 'model/character';
 import { particleUpdate } from 'model/particle';
 import { BattleCharacter } from 'model/battle';
 import { renderUi } from 'view/ui';
 import { updateBattle } from 'controller/battle-management';
 import { updateOverworld } from 'controller/overworld-management';
-import { getDrawScale } from 'model/canvas';
+import { getDrawScale, getCtx, getScreenSize } from 'model/canvas';
 import { updateScene } from './scene-management';
+import { playerGetCameraOffset } from 'model/player';
 
 export const pause = () => {
   if (getIsPaused()) {
@@ -102,6 +103,8 @@ export const runMainLoop = async (): Promise<void> => {
     }
 
     clearScreen();
+    clearScreen(getCtx('outer'));
+    drawRect(0, 0, getScreenSize(), getScreenSize(), 'black');
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();
@@ -149,10 +152,9 @@ export const runMainLoop = async (): Promise<void> => {
       } else {
         const player = getCurrentPlayer();
         if (player) {
-          const leader = player.leader;
-          const [x, y] = isoToPixelCoords(leader.x, leader.y);
-          roomXOffset = 512 / 2 - x - 16;
-          roomYOffset = 512 / 2 - y;
+          const [oX, oY] = playerGetCameraOffset(player);
+          roomXOffset = oX;
+          roomYOffset = oY;
         }
       }
 

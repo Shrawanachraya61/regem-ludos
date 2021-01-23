@@ -9,10 +9,10 @@
  <tileset firstgid="129" name="floors" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../res/floors.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="193" name="control" tilewidth="32" tileheight="32" tilecount="4" columns="2">
-  <image source="../res/control.png" width="64" height="64"/>
+ <tileset firstgid="193" name="control" tilewidth="32" tileheight="32" tilecount="16" columns="4">
+  <image source="../res/control.png" width="128" height="128"/>
  </tileset>
- <tileset firstgid="197" name="props" tilewidth="32" tileheight="64" tilecount="128" columns="16">
+ <tileset firstgid="209" name="props" tilewidth="32" tileheight="64" tilecount="128" columns="16">
   <image source="../res/props.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tiles" width="64" height="64">

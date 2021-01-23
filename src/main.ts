@@ -9,7 +9,11 @@ import { initHooks } from 'view/hooks';
 import { initScene } from 'model/scene';
 import initDb from 'db';
 import { loadRPGScript } from 'lib/rpgscript';
-import { disableKeyUpdate, enableKeyUpdate, getCurrentScene } from 'model/generics';
+import {
+  disableKeyUpdate,
+  enableKeyUpdate,
+  getCurrentScene,
+} from 'model/generics';
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import OverworldSection from 'view/components/OverworldSection';
@@ -25,11 +29,11 @@ import {
 } from 'model/character';
 
 import { callScript } from 'controller/scene-management';
+import { getAngleTowards } from 'utils';
 
 export const main = async (): Promise<void> => {
   initDb();
   await loadTiles();
-  await loadRooms();
   await loadRes();
   getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
   setDrawScale(2);
@@ -40,6 +44,11 @@ export const main = async (): Promise<void> => {
   const scene = getCurrentScene();
   await loadRPGScript('floor1', scene);
   await loadRPGScript('test', scene);
+
+  await loadRooms();
+
+  // console.log('GET ANGLE', getAngleTowards([51, 217], [60, 52]));
+  // console.log('GET ANGLE', getAngleTowards([51, 200], [70, 52]));
 
   console.log('initiate overworld');
   const player = playerCreate({

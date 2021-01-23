@@ -13,8 +13,10 @@ import {
   Character,
   characterGetAnimation,
   characterGetPos,
+  characterGetPosBottom,
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
+import { colors } from './style';
 
 export interface DrawTextParams {
   font?: string;
@@ -31,8 +33,9 @@ const DEFAULT_TEXT_PARAMS = {
   strokeColor: '',
 };
 
-export const clearScreen = (): void => {
-  drawRect(0, 0, getScreenSize(), getScreenSize(), 'black');
+export const clearScreen = (ctx?: CanvasRenderingContext2D): void => {
+  ctx = ctx || getCtx();
+  ctx.clearRect(0, 0, getScreenSize(), getScreenSize());
 };
 
 export const drawRect = (
@@ -101,6 +104,10 @@ export const drawSprite = (
 ): void => {
   scale = scale || 1;
   ctx = ctx || getCtx();
+  if (sprite === 'invisible') {
+    return;
+  }
+
   try {
     const [image, sprX, sprY, sprW, sprH] =
       typeof sprite === 'string' ? getSprite(sprite) : sprite;
@@ -155,6 +162,34 @@ export const drawAnimation = (
   }
 };
 
+export type Polygon = Point[];
+
+export const drawPolygon = (
+  polygon: Polygon,
+  color: string,
+  scale?: number,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  scale = scale || 1;
+  ctx = ctx || getCtx();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+
+  const firstPoint = polygon[0];
+  const [x, y] = firstPoint;
+  const [px, py] = isoToPixelCoords(x, y, 0);
+  ctx.moveTo(px, py);
+  for (let i = 1; i < polygon.length; i++) {
+    const point = polygon[i];
+    const [x, y] = point;
+    const [px, py] = isoToPixelCoords(x, y, 0);
+    ctx.lineTo(px, py);
+  }
+
+  ctx.closePath();
+  ctx.fill();
+};
+
 export const drawCharacter = (
   ch: Character,
   scale?: number,
@@ -165,6 +200,22 @@ export const drawCharacter = (
   // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
   const [px, py] = isoToPixelCoords(x, y, z);
   drawAnimation(anim, px, py, scale, ctx);
+
+  // {
+  //   const [x, y] = characterGetPosBottom(ch);
+  //   const [px, py] = isoToPixelCoords(x, y, z);
+  //   // const yOffset = 8;
+  //   // const xOffset = 16 + 8;
+  //   drawRect(px, py, 4, 4, 'green');
+  // }
+
+  // if (ch.walkTarget) {
+  //   const [x, y] = ch.walkTarget;
+  //   const [px, py] = isoToPixelCoords(x, y, z);
+  //   // const yOffset = 8;
+  //   // const xOffset = 16 + 8;
+  //   drawRect(px, py, 4, 4, 'blue');
+  // }
 };
 
 export const drawParticle = (
@@ -187,106 +238,65 @@ export const drawRoom = (
   offset: Point,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const { width, height, tiles, props, characters, particles } = room;
+  const { particles } = room;
   const [offsetX, offsetY] = offset;
 
   ctx = ctx || getCtx();
   ctx.save();
   ctx.translate(offsetX, offsetY);
-
-  let renderObjects: {
-    sprite?: string;
-    character?: Character;
-    particle?: Particle;
-    origPy?: number;
-    highlighted?: boolean;
-    px?: number;
-    py?: number;
-    sortY: number;
-  }[] = [];
-
-  for (let k = 0; k <= width + height - 2; k++) {
-    for (let j = 0; j <= k; j++) {
-      const i = k - j;
-      if (i < height && j < width) {
-        const tile = tiles[i * width + j];
-        let [px, py] = isoToPixelCoords(
-          (tile.x * TILE_WIDTH) / 2,
-          (tile.y * TILE_HEIGHT) / 2
-        );
-        const origPy = py;
-        py -= tile.tileHeight - 32;
-        renderObjects.push({
-          sprite: tile.sprite,
-          origPy,
-          px,
-          py,
-          highlighted: tile.highlighted,
-          sortY: py + (tile.tileHeight - 32) + (tile.tileHeight > 32 ? 16 + 4 : 16), // corrects for the tile height
-        });
-
-        // drawSprite(tile.sprite, px, py - (tile.tileHeight - 32));
-      }
-    }
-  }
-
-  for (let i = 0; i < props.length; i++) {
-    const prop = props[i];
-    let [px, py] = isoToPixelCoords(prop.x, prop.y);
-    const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
-    px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
-    py = py - spriteHeight + TILE_HEIGHT / 2;
-    renderObjects.push({
-      sprite: prop.sprite,
-      px,
-      py,
-      sortY: py + spriteHeight,
-    });
-    // drawSprite(
-    //   prop.sprite,
-    //   px - spriteWidth / 2 + TILE_WIDTH / 2, // props are draw bottom-up, centered x
-    //   py - spriteHeight + TILE_HEIGHT / 2
-    // );
-  }
-
-  for (let i = 0; i < characters.length; i++) {
-    const ch = characters[i];
-    const [x, y, z] = characterGetPos(ch);
-    const [, py] = isoToPixelCoords(x, y, z);
-    renderObjects.push({
-      character: ch,
-      sortY: py + 32, // because all characters are 32 px tall (right now)
-    });
-  }
-
-  // DEBUG: draws makers
-  // for (let i in room.markers) {
-  //   const marker = room.markers[i];
-  //   const {x, y} = marker;
-  //   const [px, py] = isoToPixelCoords(x, y, 0);
-  //   renderObjects.push({
-  //     sprite: 'control_1',
-  //     px,
-  //     py,
-  //     sortY: py + 32, // because all characters are 32 px tall (right now)
-  //   });
-  // }
-
-  renderObjects = renderObjects.sort((a, b) => {
+  room.renderObjects = room.renderObjects.sort((a, b) => {
     return a.sortY < b.sortY ? -1 : 1;
   });
 
-  for (let i = 0; i < renderObjects.length; i++) {
-    const { sprite, character, px, py, origPy, highlighted } = renderObjects[i];
-    if (sprite) {
-      drawSprite(sprite, px as number, py as number);
+  for (let i = 0; i < room.renderObjects.length; i++) {
+    const {
+      name,
+      sprite,
+      character,
+      px,
+      py,
+      origPy,
+      highlighted,
+      visible,
+      isMarker,
+      isTrigger,
+      polygon,
+    } = room.renderObjects[i];
+    if (!visible) {
+      continue;
+    }
 
-      if (sprite.indexOf('control_1') === 0) {
-        drawRect(px as number + 16 - 4, py as number + 32 - 4, 8, 8, 'orange');
+    if (isMarker) {
+      drawText(name || '', (px as number) + 16, py as number, {
+        align: 'center',
+        color: colors.WHITE,
+        size: 12,
+      });
+      drawSprite(sprite as string, px as number, py as number);
+    } else if (isTrigger) {
+      if (polygon) {
+        const point = polygon[0];
+        const [x, y] = point;
+        const [px, py] = isoToPixelCoords(x, y, 0);
+        drawPolygon(polygon, 'rgba(255, 0, 0, 0.33)');
+        drawText(name || '', px, py, {
+          align: 'center',
+          color: colors.PINK,
+          size: 12,
+        });
+      } else {
+        drawSprite(sprite as string, px as number, py as number);
+        drawText(name || '', (px as number) + 16, py as number, {
+          align: 'center',
+          color: colors.PINK,
+          size: 12,
+        });
       }
-      // if (highlighted) {
-      //   drawSprite('indicator', px as number, origPy as number - 3);
-      // }
+    } else if (sprite) {
+      drawSprite(sprite, px as number, py as number);
+      if (highlighted) {
+        drawSprite('indicator', px as number, (origPy as number) - 3);
+      }
     } else if (character) {
       drawCharacter(character);
     }

@@ -5,18 +5,63 @@ import {
   Point,
   Point3d,
   Circle,
+  Rect,
   isoToPixelCoords,
   getAngleTowards,
   getNormalizedVec,
   circleCircleCollision,
   getAngleFromVector,
   calculateDistance,
+  circleRectCollision,
+  createPolygonFromRect,
+  toFixedPrecision,
+  extrapolatePoint,
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
-import { getCurrentRoom, getFrameMultiplier } from 'model/generics';
-import { roomGetTileBelow, roomGetTileAt, Tile } from 'model/room';
+import {
+  getCurrentPlayer,
+  getCurrentRoom,
+  getFrameMultiplier,
+} from 'model/generics';
+import {
+  roomGetTileBelow,
+  roomGetTileAt,
+  Tile,
+  RenderObject,
+} from 'model/room';
+import { getCtx } from './canvas';
+import { drawPolygon, drawRect, drawText } from 'view/draw';
+import { playerGetCameraOffset } from 'model/player';
 
 export const DEFAULT_SPEED = 1;
+
+const DEBUG_drawRectPoint = (point: Point, color: string) => {
+  const player = getCurrentPlayer();
+  if (player) {
+    const outerCtx = getCtx('outer');
+    const size = 6;
+    const [bx, by] = point;
+    const polygon = createPolygonFromRect([
+      bx - size / 2,
+      by - size / 2,
+      size,
+      size,
+    ]);
+    const [offsetX, offsetY] = playerGetCameraOffset(player);
+    outerCtx.save();
+    outerCtx.translate(offsetX, offsetY);
+    drawPolygon(polygon, color, 1, outerCtx);
+    outerCtx.restore();
+  }
+};
+
+const DEBUG_drawText = (text: string, x: number, y: number, color: string) => {
+  const player = getCurrentPlayer();
+  if (player) {
+    const outerCtx = getCtx('outer');
+    drawText(text, x, y, { color, size: 14 }, outerCtx);
+  }
+};
 
 export enum Facing {
   LEFT = 'left',
@@ -70,7 +115,12 @@ export interface Character {
   };
   storedAnimations: { [key: string]: Animation };
   walkTarget: null | Point;
+  walkAngle: number;
+  walkDistance: number;
+  walkRetries: number;
   onReachWalkTarget: null | (() => void);
+  talkTrigger: string;
+  ro?: RenderObject;
 }
 
 export interface CharacterTemplate {
@@ -84,7 +134,7 @@ export interface CharacterTemplate {
 }
 
 export const characterCreate = (name: string): Character => {
-  const ch = {
+  const ch: Character = {
     name,
     spriteBase: 'ada',
     x: 0,
@@ -103,7 +153,16 @@ export const characterCreate = (name: string): Character => {
     animationKey: '',
     storedAnimations: {},
     walkTarget: null,
+    walkAngle: 0,
+    walkDistance: 0,
+    walkRetries: 0,
     onReachWalkTarget: null,
+    talkTrigger: '',
+  };
+  ch.ro = {
+    character: ch,
+    sortY: 0,
+    visible: true,
   };
   ch.animationKey = characterGetAnimKey(ch);
   return ch;
@@ -122,6 +181,7 @@ export const characterCreateFromTemplate = (
     ...(template.stats || ch.stats),
   };
   ch.skills = template.skills || ch.skills;
+  ch.talkTrigger = template.talkTrigger ?? '';
   return ch;
 };
 
@@ -263,7 +323,7 @@ export const characterGetPos = (ch: Character): Point3d => {
 
 export const characterGetPosBottom = (ch: Character): Point => {
   const { x, y } = ch;
-  return [x + 16, y + 16];
+  return [x + 16, y + 16 - 4];
 };
 
 export const characterGetPosPx = (ch: Character): Point => {
@@ -289,6 +349,24 @@ export const characterSetWalkTarget = (
 ) => {
   ch.walkTarget = point;
   ch.onReachWalkTarget = cb;
+  const point1 = characterGetPosBottom(ch);
+  const point2 = characterGetWalkTargetPoint(ch);
+  const angle = getAngleTowards(point1, point2);
+  ch.walkAngle = angle;
+  ch.walkDistance = calculateDistance(
+    extrapolatePoint(point1),
+    extrapolatePoint(point2)
+  );
+  ch.walkRetries = 0;
+};
+
+// This converts the walkTarget so that it's specified relative to characterPosBottom
+const characterGetWalkTargetPoint = (ch: Character): Point => {
+  if (ch.walkTarget) {
+    return [ch.walkTarget[0] + 16, ch.walkTarget[1] + 16 - 4] as Point;
+  } else {
+    return [0, 0];
+  }
 };
 
 export const characterSetSpeed = (ch: Character, speed: number) => {
@@ -301,16 +379,20 @@ export const characterResetSpeed = (ch: Character) => {
 
 export const characterCollidesWithPoint = (
   ch: Character,
-  target: Point,
-  r: number
+  target: Circle
 ): boolean => {
+  const myself = [...characterGetPosBottom(ch), 1] as Circle;
+  return circleCircleCollision(myself, target);
+};
+
+export const characterCollidesWithRect = (ch: Character, r: Rect) => {
   const myself = [...characterGetPosBottom(ch), 2] as Circle;
-  const other = [target[0], target[1], r] as Circle;
-  return circleCircleCollision(myself, other);
+  return circleRectCollision(myself, r) !== 'none';
 };
 
 export const characterUpdate = (ch: Character): void => {
   const room = getCurrentRoom();
+  const frameMult = getFrameMultiplier();
 
   if (ch.transform) {
     ch.transform.update();
@@ -319,19 +401,40 @@ export const characterUpdate = (ch: Character): void => {
     }
   }
 
-  const frameMult = getFrameMultiplier();
+  // DEBUG_drawRectPoint(characterGetPosBottom(ch), 'purple');
+  // if (ch.name === 'Ada') {
+  //   DEBUG_drawText(`${ch.x} ${ch.y}`, 50, 150, 'white');
+  // }
 
   if (ch.walkTarget) {
     const point1 = characterGetPosBottom(ch);
-    const point2 = ch.walkTarget;
+    const point2 = characterGetWalkTargetPoint(ch);
     const angle = getAngleTowards(point1, point2);
-    const vx = Math.sin(angle);
-    const vy = -Math.cos(angle);
+    ch.walkAngle = angle;
+    const vx = Math.sin((ch.walkAngle * Math.PI) / 180);
+    const vy = -Math.cos((ch.walkAngle * Math.PI) / 180);
+
+    const prevWalkDistance = ch.walkDistance;
+    ch.walkDistance = calculateDistance(
+      extrapolatePoint(point1),
+      extrapolatePoint(point2)
+    );
+
+    // If enough of these happen, the character probably cannot reach the intended
+    // destination, so just warp them there as a fallback.
+    if (prevWalkDistance <= ch.walkDistance) {
+      ch.walkRetries++;
+    }
+
     ch.vx = vx;
     ch.vy = vy;
     characterSetAnimationState(ch, AnimationState.WALK);
-    if (characterCollidesWithPoint(ch, ch.walkTarget, 6)) {
+    if (
+      ch.walkRetries > 10 ||
+      characterCollidesWithPoint(ch, [...point2, 1.5])
+    ) {
       characterSetAnimationState(ch, AnimationState.IDLE);
+      characterSetPos(ch, [...ch.walkTarget, ch.z]);
       if (ch.onReachWalkTarget) {
         ch.onReachWalkTarget();
       }
@@ -342,12 +445,15 @@ export const characterUpdate = (ch: Character): void => {
 
   if (ch.vx !== 0 || ch.vy !== 0) {
     const [newVx, newVy] = getNormalizedVec(ch.vx, ch.vy);
-    const finalVx = newVx * frameMult * ch.speed;
-    const finalVy = newVy * frameMult * ch.speed;
+    const finalVx = parseFloat((newVx * frameMult * ch.speed).toFixed(2));
+    const finalVy = parseFloat((newVy * frameMult * ch.speed).toFixed(2));
     ch.x += finalVx;
     ch.y += finalVy;
 
-    const angle = getAngleFromVector(-finalVx, -finalVy) - 45;
+    let angle = getAngleFromVector(-finalVx, -finalVy) - 45;
+    if (angle < 0) {
+      angle += 360;
+    }
     characterSetFacingFromAngle(ch, angle);
 
     const tile = roomGetTileBelow(room, ch);
@@ -366,8 +472,15 @@ export const characterUpdate = (ch: Character): void => {
       ch.x -= finalVx;
       ch.y -= finalVy;
     }
-
+    ch.x = parseFloat(ch.x.toFixed(2));
+    ch.y = parseFloat(ch.y.toFixed(2));
     ch.vx = 0;
     ch.vy = 0;
+  }
+
+  const [x, y, z] = characterGetPos(ch);
+  const [, py] = isoToPixelCoords(x, y, z);
+  if (ch.ro) {
+    ch.ro.sortY = py + 32;
   }
 };

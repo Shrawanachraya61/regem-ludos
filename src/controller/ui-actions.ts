@@ -94,6 +94,17 @@ export const hideConversation = () => {
     action: 'setCutsceneState',
     payload: {
       visible: false,
+      // speaker: CutsceneSpeaker.None,
+      portraitLeft: '',
+      portraitLeft2: '',
+      portraitRight: '',
+      portraitRight2: '',
+      portraitCenter: '',
+      portraitLeftEmotion: '',
+      portraitLeft2Emotion: '',
+      portraitRightEmotion: '',
+      portraitRight2Emotion: '',
+      portraitCenterEmotion: '',
     } as Partial<ICutsceneAppState>,
   });
 };
@@ -113,6 +124,15 @@ export const startConversation = (portrait: string) => {
     action: 'setCutsceneState',
     payload: {
       portraitCenter: portrait,
+      portraitLeft: '',
+      portraitRight: '',
+      portraitLeft2: '',
+      portraitRight2: '',
+      portraitLeftEmotion: '',
+      portraitLeft2Emotion: '',
+      portraitRightEmotion: '',
+      portraitRight2Emotion: '',
+      portraitCenterEmotion: '',
       visible: true,
     } as Partial<ICutsceneAppState>,
   });
@@ -128,6 +148,14 @@ export const startConversation2 = (
     payload: {
       portraitLeft,
       portraitRight,
+      portraitLeft2: '',
+      portraitRight2: '',
+      portraitCenter: '',
+      portraitLeftEmotion: '',
+      portraitLeft2Emotion: '',
+      portraitRightEmotion: '',
+      portraitRight2Emotion: '',
+      portraitCenterEmotion: '',
       visible: true,
     } as Partial<ICutsceneAppState>,
   });

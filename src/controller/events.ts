@@ -90,7 +90,7 @@ export const initEvents = (): void => {
           console.log('DISABLE KEYS');
           disableKeyUpdate();
           // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-          await callScript(getCurrentScene(), 'test-walkToMarker');
+          await callScript(getCurrentScene(), 'test-setConversation');
           showSection(AppSection.Debug, true);
           console.log('ENABLE KEYS');
           enableKeyUpdate();

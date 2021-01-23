@@ -1,3 +1,5 @@
+import { Polygon } from 'view/draw';
+
 export const isoToPixelCoords = (
   x: number,
   y: number,
@@ -128,6 +130,55 @@ export const circleCircleCollision = (a: Circle, b: Circle): boolean => {
   return dist <= r1 + r2;
 };
 
+type CircleRectCollision =
+  | 'none'
+  | 'bottom'
+  | 'left'
+  | 'top'
+  | 'right'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right';
+export const circleRectCollision = (
+  c: Circle,
+  r2: Rect
+): CircleRectCollision => {
+  const [cx, cy, cr] = c;
+  const r1 = [cx - cr, cy - cr, cr * 2, cr * 2];
+
+  const [r1x, r1y, r1w, r1h] = r1;
+  const [r2x, r2y, r2w, r2h] = r2;
+
+  const dx = r1x + r1w / 2 - (r2x + r2w / 2);
+  const dy = r1y + r1h / 2 - (r2y + r2h / 2);
+  const width = (r1w + r2w) / 2;
+  const height = (r1h + r2h) / 2;
+  const crossWidth = width * dy;
+  const crossHeight = height * dx;
+  let collision: CircleRectCollision = 'none';
+
+  if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
+    if (crossWidth > crossHeight) {
+      collision = crossWidth > -crossHeight ? 'bottom' : 'left';
+    } else {
+      collision = crossWidth > -crossHeight ? 'right' : 'top';
+    }
+
+    if (cx <= r2x && cy <= r2y) {
+      collision = 'top-left';
+    } else if (cx >= r2x + r2w && cy <= r2y) {
+      collision = 'top-right';
+    } else if (cx <= r2x && cy >= r2y + r2h) {
+      collision = 'bottom-left';
+    } else if (cx >= r2x + r2w && cy >= r2y + r2h) {
+      collision = 'bottom-right';
+    }
+  }
+
+  return collision;
+};
+
 export function getAngleTowards(
   point1: Point3d | Point,
   point2: Point3d | Point
@@ -181,3 +232,18 @@ export const getAngleFromVector = (x: number, y: number): number => {
   }
   return ret;
 };
+
+export const createPolygonFromRect = (r: Rect): Polygon => {
+  const [x, y, width, height] = r;
+  const polygon: Polygon = [
+    [x, y] as Point,
+    [x + width, y] as Point,
+    [x + width, y + height] as Point,
+    [x, y + height] as Point,
+  ];
+  return polygon;
+};
+
+export const toFixedPrecision = (n: number, precision: number): number => {
+  return parseFloat(n.toFixed(precision));
+}

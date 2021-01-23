@@ -1,6 +1,13 @@
 @floor1
 +setStorage('overworld', 'floor1');
 
+#floor1-skyeIntro
+action,floor1-Skye_intro
+
+#floor1-vendingPanel
+// step,?once():floor1-Skye_pressSecretSwitchWithoutTool
+action,floor1-Skye_pressSecretSwitchWithoutTool
+
 @floor1-intro
 
 @floor1-Skye_intro
@@ -90,7 +97,7 @@ Skye: "Grr.."
 @floor1-Skye_pressSecretSwitchWithoutTool
 +setConversation('Ada');
 Ada: "It looks like there's a small compartment that can be opened on the side of this vending machine."
-Ada: "But it needs some sort of tool to open, and I do not have that."
+Ada: "But it needs some sort of tool to unlock it, and I do not have that."
 +endConversation()
 
 @floor1-Skye_pressSecretSwitch
@@ -138,3 +145,20 @@ Ada: "Somehow I doubt that."
 Conscience: "Oh relax.  It can't hurt having her around."
 +endConversation();
 
+#test-roger
+action,test-roger1
+
+@test-roger1
++lookAtEachOther('Ada', 'Roger');
++setConversation('Ada');
+Roger: "Hello there."
+Roger: "I am a test construct.  I exist to provide you with someone else to speak to."
+Ada: "It is a pleasure to meet you."
+Roger: "You may speak to me again if you wish."
+Ada: "I may do just that."
+Roger: "That is fine."
+Roger: "This is an example of me saying something rather long.  It's a big chunk of text alright, so be prepared to read a whole lot of nothing."
+Ada: "Yes, you already told me."
+Ada: "This is an example of me saying something rather long.  It's a big chunk of text alright, so be prepared to read a whole lot."
+Roger: "For now, I will bid you good day."
++endConversation();

@@ -20,7 +20,7 @@ import {
   characterOnAnimationCompletion,
   AnimationState,
 } from 'model/character';
-import { getRoom, roomAddParticle } from 'model/room';
+import { getRoom, roomAddParticle, roomAddCharacter } from 'model/room';
 import { setCurrentRoom, setCurrentBattle } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
 import { createDamageParticle } from 'model/particle';
@@ -38,7 +38,7 @@ export const initiateBattle = (
 
   const enemies = template.enemies.map((t: BattleTemplateEnemy) => {
     const ch = characterCreateFromTemplate(t.chTemplate);
-    room.characters.push(ch);
+    roomAddCharacter(room, ch);
     return battleCharacterCreateEnemy(ch, t);
   });
 
@@ -48,7 +48,7 @@ export const initiateBattle = (
     enemies,
     defeated: [] as BattleCharacter[],
     allies: player.party.map((ch: Character) => {
-      room.characters.push(ch);
+      roomAddCharacter(room, ch);
       return battleCharacterCreateAlly(ch, {
         position: playerGetBattlePosition(player, ch),
       });

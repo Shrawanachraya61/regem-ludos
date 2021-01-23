@@ -24,6 +24,7 @@ import { getAngleTowards, Point } from 'utils';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
+ * 
  * An optional soundName may be given to play a sound when the text is shown.  This command
  * only works when a `conversation` is active, created by a command like `setConversation`
  * or `setConversation2`.  The text is shown to the user and the program waits for input
@@ -69,8 +70,8 @@ export const playDialogue = (
  * Starts a cutscene where the two provided actor names' portraits are displayed on the
  * left and the right respectively.
  *
- * NOTE: The given names must have a portrait animation
- * specified for them.  For example "Ada" has an animation specified "ada_portrait" in
+ * NOTE: The given names must have a portrait animation specified for them.
+ * For example "Ada" has an animation specified "ada_portrait" in
  * the "res.txt" file:
  *
  * ```
@@ -108,6 +109,7 @@ export const setConversation2 = (
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
   );
+  return waitMS(500);
 };
 
 /**
@@ -123,7 +125,7 @@ export const setConversation2 = (
  * ```
  *
  * If a conversation is not already happening, this pops up the cutscene bars on top and
- * bottom, and also slides the character portrait up from the bottom.
+ * bottom, and also slides the character portrait up from the bottom-left.
  *
  * Example test case:
  * ```
@@ -145,6 +147,7 @@ export const setConversation2 = (
  */
 export const setConversation = (actorName: string) => {
   startConversation(`${actorName.toLowerCase()}`);
+  return waitMS(100);
 };
 
 /**
@@ -157,16 +160,6 @@ export const endConversation = (ms?: number) => {
   setCutsceneText('');
   hideConversation();
   return waitMS(ms ?? 1000);
-};
-
-/**
- * (Don't use this.)
- */
-const pauseConversation = (ms?: number) => {
-  hideConversation();
-  return waitMS(ms ?? 1000, () => {
-    showConversation();
-  });
 };
 
 /**
@@ -197,7 +190,8 @@ const pauseConversation = (ms?: number) => {
  * +setConversation2('Ada', 'Conscience');
  * Ada: "This script tests `setConversationSpeaker`."
  * Conscience: "We are both speaking now, but after this dialog, a spooky disembodied voice will say something!"
- * // Note: specifying 'Other' as the speaker implicitly calls setConversationSpeaker('none')
+ * // Note: specifying any label that isn't part of the conversation implicitly calls setConversationSpeaker('none')
+ * // In this case "Other" is not in the conversation
  * Other: "WELL. WELL. WELL.  WHAT DO WE HAVE HERE?"
  * // Note: calling setConversationSpeaker directly will remove the dialog box.
  * +setConversationSpeaker('none');
@@ -415,7 +409,15 @@ export const lookAtMarker = (chName: string, markerName: string) => {
 };
 
 /**
- * A shortcut command that does the same thing as this:
+ * A shortcut command for double `lookAtCharacter` calls.
+ * 
+ * This command:
+ * 
+ * ```
+ * lookAtEachOther("Ada", "Conscience");
+ * ```
+ *
+ * Is the same as:
  * 
  * ```
  * +lookAtCharacter("Ada", "Conscience");
@@ -442,7 +444,7 @@ export const lookAtEachOther = (chName1: string, chName2: string) => {
  * ```
  *
  * The character name provided must be defined in the character database and in the current
- * room.  If not, this function will still work, but will error to the console.
+ * room.
  *
  * ```
  * // set facing for "Ada" to be up and left
@@ -459,7 +461,6 @@ export const setFacing = (chName: string, facing: Facing) => {
     } else if (facing === Facing.RIGHT_DOWN2) {
       facing = Facing.RIGHT_DOWN;
     }
-    console.log('SET FACING', chName, facing);
     characterSetFacing(ch, facing);
   } else {
     console.error(
@@ -497,7 +498,7 @@ export const shakeScreen = (ms?: number) => {
  *
  * ```
  * // set Ada at position 100, 100, in the current room
- * +setCharacterAt("Ada", 100, 1000);
+ * +setCharacterAt("Ada", 100, 100);
  * ```
  */
 export const setCharacterAt = (
@@ -519,9 +520,13 @@ export const setCharacterAt = (
 
 /**
  * Starts the given character moving towards a marker.  They will move in a straight line
- * directly at the marker until the reach it; their will be feet within a 4 pixel radius at 
- * the bottom of the marker. Once that character reaches the destination, the next line
- * in the script is invoked.
+ * directly at the marker until the reach it. Specifically this means that their FEET will
+ * be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
+ * destination, the next line in the script is invoked.
+ * 
+ * Here Ada has walked to the marker, and her feet at the bottom, where it points.
+ * 
+ * ![Example Image](../res/docs/AdaAtMarker.png)
  *
  * Optional params (xOffset, yOffset) can be provided to change the final destination of
  * the character.  This is useful for telling multiple characters to walk towards a marker
@@ -530,9 +535,9 @@ export const setCharacterAt = (
  * Optional param skipWait may be set to `true` if the cutscene should set the character
  * to walk towards the marker, but not wait for that character to reach their destination
  * before the next line in the script is invoked.
- * 
+ *
  * For example, if it is desired to have two characters walk simultaneously together:
- * 
+ *
  * ```
  * +walkToMarker("Ada", "MarkerA", 0, 0, true);
  * +walkToMarker("Conscience", "MarkerA", 16, 0);
@@ -541,8 +546,8 @@ export const setCharacterAt = (
  * +waitMS(100);
  * ```
  *
- * NOTE: It is possible to soft lock the game with this if the given character cannot
- * reach the provided target.
+ * NOTE: If a character cannot reach the intended location, then they will 
+ * get warped there by the game engine.
  */
 export const walkToMarker = (
   chName: string,
@@ -567,10 +572,10 @@ export const walkToMarker = (
   if (ch && marker) {
     // this offset puts the character's feet on the bottom of the marker
     const target = [
-      marker.x + (xOffset ?? 0) + 16,
-      marker.y + (yOffset ?? 0) + 16,
+      marker.x + (xOffset ?? 0),
+      marker.y + (yOffset ?? 0),
     ] as Point;
-    
+
     if (skipWait) {
       characterSetWalkTarget(ch, target, () => void 0);
     } else {
@@ -585,7 +590,6 @@ const commands = {
   setConversation2,
   setConversation,
   endConversation,
-  pauseConversation,
   setConversationSpeaker,
   waitMS,
   waitMSPreemptible,
