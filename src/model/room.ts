@@ -14,35 +14,53 @@ import {
 import { Particle } from 'model/particle';
 import { get as getCharacter } from 'db/characters';
 import { Polygon } from 'view/draw';
+import { Animation } from 'model/animation';
 
-import * as battle1Json from 'map/battle1.json';
-import * as testJson from 'map/test.json';
-import * as test2Json from 'map/test2.json';
 import { getTrigger } from 'lib/rpgscript';
+import { getReplacementTemplate } from 'db/tiles';
+import { createAnimation } from 'model/animation';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
+export const TILE_WIDTH_WORLD = 16;
+export const TILE_HEIGHT_WORLD = 16;
 
 // given an x, y in tile coordinates, return the isometric pixel coordinates
 export const tilePosToWorldPos = (x: number, y: number): Point => {
   return [(x * TILE_WIDTH) / 2, (y * TILE_HEIGHT) / 2];
 };
 
-const rooms: { [key: string]: Room } = {};
+export interface Room {
+  tiledJson: any;
+  width: number;
+  height: number;
+  widthPx: number;
+  heightPx: number;
+  props: Prop[];
+  tiles: Tile[];
+  characters: Character[];
+  particles: Particle[];
+  renderObjects: RenderObject[];
+  markers: Record<string, Marker>;
+  triggerActivators: TriggerActivator[];
+}
 
-export const loadRooms = async (): Promise<void> => {
-  console.log('loading rooms');
-
-  await createRoom('battle1', battle1Json);
-  await createRoom('test', testJson);
-  await createRoom('test2', test2Json);
-
-  console.log('rooms loaded');
-};
-
-export const getRoom = (mapName: string): Room => {
-  return rooms[mapName];
-};
+export interface RenderObject {
+  name?: string;
+  sprite?: string;
+  character?: Character;
+  particle?: Particle;
+  origPy?: number;
+  highlighted?: boolean;
+  px?: number;
+  py?: number;
+  polygon?: Polygon;
+  isMarker?: boolean;
+  isTrigger?: boolean;
+  anim?: Animation;
+  sortY: number;
+  visible: boolean;
+}
 
 export interface Prop {
   sprite: string;
@@ -124,6 +142,7 @@ export const createTriggerActivatorRenderObject = (
 
 export interface Tile {
   sprite: string;
+  animName?: string;
   id: number;
   x: number;
   y: number;
@@ -152,37 +171,6 @@ export const createTileRenderObject = (tile: Tile): RenderObject => {
     visible: true,
   };
 };
-
-export interface RenderObject {
-  name?: string;
-  sprite?: string;
-  character?: Character;
-  particle?: Particle;
-  origPy?: number;
-  highlighted?: boolean;
-  px?: number;
-  py?: number;
-  polygon?: Polygon;
-  isMarker?: boolean;
-  isTrigger?: boolean;
-  sortY: number;
-  visible: boolean;
-}
-
-export interface Room {
-  tiledJson: any;
-  width: number;
-  height: number;
-  widthPx: number;
-  heightPx: number;
-  props: Prop[];
-  tiles: Tile[];
-  characters: Character[];
-  particles: Particle[];
-  renderObjects: RenderObject[];
-  markers: Record<string, Marker>;
-  triggerActivators: TriggerActivator[];
-}
 
 interface TiledObject {
   x: number;
@@ -246,7 +234,10 @@ const gidToTileSpriteAndSize = (
   throw new Error('Could not determine sprite from gid:' + gid);
 };
 
-const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
+export const createRoom = async (
+  name: string,
+  tiledJson: any
+): Promise<Room> => {
   const { width, height, data } = tiledJson.layers[0];
   const { objects: props } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
@@ -299,7 +290,19 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
       highlighted: false,
     } as Tile;
     room.tiles.push(tile);
-    room.renderObjects.push(createTileRenderObject(tile));
+    const ro = createTileRenderObject(tile);
+    room.renderObjects.push(ro);
+    tile.ro = ro;
+    const tileTemplate = getReplacementTemplate(tile.sprite);
+    if (tileTemplate) {
+      tile.ro.sprite = tileTemplate.baseSprite;
+      tile.isWall = tileTemplate.isWall ?? tile.isWall;
+      if (tileTemplate?.animName) {
+        tile.animName = tileTemplate.animName;
+        tile.ro.anim = createAnimation(tileTemplate.animName);
+        tile.ro.anim.start();
+      }
+    }
   });
 
   if (props) {
@@ -447,7 +450,6 @@ const createRoom = async (name: string, tiledJson: any): Promise<Room> => {
 
   await Promise.all(promises);
 
-  rooms[name] = room;
   return room;
 };
 
@@ -473,10 +475,10 @@ export const roomRemoveRemoveCharacter = (room: Room, ch: Character): void => {
   }
 };
 
-export const roomGetTileBelow = (room: Room, ch: Character): Tile | null => {
-  const { x, y } = ch;
-  const tileX = Math.floor(((x + 16 - 3) / TILE_WIDTH) * 2);
-  const tileY = Math.floor(((y + 16 - 3) / TILE_HEIGHT) * 2);
+export const roomGetTileBelow = (room: Room, position: Point): Tile | null => {
+  const [x, y] = position;
+  const tileX = Math.floor(((x + TILE_WIDTH_WORLD - 3) / TILE_WIDTH) * 2);
+  const tileY = Math.floor(((y + TILE_HEIGHT_WORLD - 3) / TILE_HEIGHT) * 2);
   return roomGetTileAt(room, tileX, tileY);
 };
 

@@ -62,6 +62,7 @@ const Portrait = style(
     let opacity = '1';
     let hOffset = '0%';
     let vOffset = '0%';
+    let transition = 'left 0.2s, right 0.2s, bottom 0.2s';
     if (props.activeState === PortraitActiveState.Active) {
       hOffset = '3.125%';
     } else if (props.activeState === PortraitActiveState.Inactive) {
@@ -73,6 +74,7 @@ const Portrait = style(
     } else if (props.activeState === PortraitActiveState.Invisible) {
       opacity = '0';
       hOffset = '-50%';
+      transition = '';
     }
 
     const left = props.align === 'left' ? hOffset : '';
@@ -82,7 +84,7 @@ const Portrait = style(
       position: 'absolute',
       minWidth: '50%',
       minHeight: '50%',
-      transition: 'left 0.25s, right 0.25s, bottom 0.25s',
+      transition,
       left,
       right,
       bottom: vOffset,
@@ -109,6 +111,8 @@ const TextBoxWrapper = style(
     } else if (props.align === 'center-low') {
       left = '25%';
       height = '35%';
+    } else if (!props.visible) {
+      transition = '';
     }
 
     return {
@@ -223,8 +227,6 @@ const CutsceneSection = () => {
   } else if (cutscene.portraitCenter) {
     textBoxAlign = 'center-low';
   }
-
-  console.log('render textboxalgin', textBoxAlign);
 
   return (
     <Root>

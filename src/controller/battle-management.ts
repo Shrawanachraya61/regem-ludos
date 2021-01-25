@@ -20,7 +20,8 @@ import {
   characterOnAnimationCompletion,
   AnimationState,
 } from 'model/character';
-import { getRoom, roomAddParticle, roomAddCharacter } from 'model/room';
+import { roomAddParticle, roomAddCharacter } from 'model/room';
+import { getRoom } from 'db/overworlds';
 import { setCurrentRoom, setCurrentBattle } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
 import { createDamageParticle } from 'model/particle';

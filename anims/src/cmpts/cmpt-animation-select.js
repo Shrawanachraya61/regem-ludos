@@ -256,6 +256,8 @@ const AnimationItem = ({
             direction: 'rtl',
             textAlign: 'left',
             textOverflow: 'ellipsis',
+            wordBreak: 'break-all',
+            whiteSpace: 'pre',
           }}
         >
           {anim.name}
@@ -336,7 +338,7 @@ const AnimationItem = ({
                 margin: '2px',
                 fontSize: '10px',
                 padding: '2px',
-                width: '80px',
+                width: '60px',
                 float: 'left',
               }}
               type={anim.isCadence ? 'secondary' : 'cadence'}
@@ -349,7 +351,51 @@ const AnimationItem = ({
                 }
               }}
             >
-              {anim.isCadence ? 'To Anim' : 'To Cadence'}
+              {anim.isCadence ? 'To Anim' : 'To Cade'}
+            </Button>
+            <Button
+              style={{
+                margin: '2px',
+                fontSize: '10px',
+                padding: '2px',
+                width: '60px',
+                float: 'left',
+              }}
+              type="secondary"
+              onClick={() => {
+                let animName = anim.name;
+                do {
+                  animName += '_copy';
+                } while (display.hasAnimation(animName));
+                appInterface.clearMarkedFrames();
+
+                const { loop, isCadence } = anim;
+                const sprites = anim.sprites.slice(0);
+                console.log('DUPLICATE', sprites);
+                display.createAnimation(
+                  animName,
+                  appInterface.imageName,
+                  () => {
+                    let a = new Animation(loop, display);
+                    a.name = animName;
+                    a.isCadence = isCadence;
+                    sprites.forEach(obj => {
+                      a.addSprite({
+                        name: obj.name,
+                        duration: obj.durationMs,
+                        opacity: obj.opacity,
+                        offsetX: obj.offsetX,
+                        offsetY: obj.offsetY,
+                      });
+                    });
+                    return a;
+                  }
+                );
+
+                // appInterface.setAnimation(display.getAnimation(animName));
+              }}
+            >
+              Duplicate
             </Button>
           </div>
         </div>
@@ -441,16 +487,18 @@ const AnimationSelect = ({ appInterface }) => {
             Select a spritesheet to see a list of animations.
           </Text>
         ) : null}
-        {anims.map((anim, i) => (
-          <AnimationItem
-            key={anim.name}
-            i={i}
-            anim={anim}
-            appInterface={appInterface}
-            setDeleteConfirmOpen={setDeleteConfirmOpen}
-            setRenameAnimDialogOpen={setRenameAnimDialogOpen}
-          />
-        ))}
+        {anims.map((anim, i) => {
+          return (
+            <AnimationItem
+              key={anim.name}
+              i={i}
+              anim={anim}
+              appInterface={appInterface}
+              setDeleteConfirmOpen={setDeleteConfirmOpen}
+              setRenameAnimDialogOpen={setRenameAnimDialogOpen}
+            />
+          );
+        })}
       </div>
       <CreateAnimDialog
         open={createAnimDialogOpen}

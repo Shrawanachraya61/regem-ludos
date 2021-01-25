@@ -96,3 +96,13 @@ export const enableKeyUpdate = (): void => {
 export const disableKeyUpdate = (): void => {
   keyUpdateEnabled = false;
 };
+
+let triggersVisible = true;
+export const getTriggersVisible = (): boolean => triggersVisible;
+export const showTriggers = () => (triggersVisible = true);
+export const hideTriggers = () => (triggersVisible = false);
+
+let markersVisible = true;
+export const getMarkersVisible = (): boolean => markersVisible;
+export const showMarkers = () => (markersVisible = true);
+export const hideMarkers = () => (markersVisible = false);

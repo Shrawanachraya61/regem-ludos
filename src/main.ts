@@ -1,5 +1,4 @@
 import { loadTiles } from 'model/sprite';
-import { loadRooms } from 'model/room';
 import { runMainLoop } from 'controller/loop';
 import { loadRes } from 'controller/res-loader';
 import { getCanvas, setDrawScale } from 'model/canvas';
@@ -32,23 +31,26 @@ import { callScript } from 'controller/scene-management';
 import { getAngleTowards } from 'utils';
 
 export const main = async (): Promise<void> => {
-  initDb();
-  await loadTiles();
-  await loadRes();
-  getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
-  setDrawScale(2);
-  initEvents();
-  initHooks();
-  initScene();
+  // Mount this first so that appInterface is MOST LIKELY set when loading the overworld,
+  // which may depend on that being loaded because it calls the load trigger for a room
+  // when it starts.
+  // Still, it's loose.  This depends on the ui mounting fully in the time it takes
+  // for the rest of the app to load.  This is probably fine, but is not definitive.
+  mountUi();
 
+  initScene();
   const scene = getCurrentScene();
   await loadRPGScript('floor1', scene);
   await loadRPGScript('test', scene);
 
-  await loadRooms();
-
-  // console.log('GET ANGLE', getAngleTowards([51, 217], [60, 52]));
-  // console.log('GET ANGLE', getAngleTowards([51, 200], [70, 52]));
+  await loadRes();
+  await initDb();
+  await loadTiles();
+  getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
+  setDrawScale(2);
+  initEvents();
+  initHooks();
+  runMainLoop();
 
   console.log('initiate overworld');
   const player = playerCreate({
@@ -59,8 +61,5 @@ export const main = async (): Promise<void> => {
     animationState: AnimationState.IDLE,
     skills: [],
   });
-  initiateOverworld(player, getOverworld('TEST2'), [35, 205, 0]);
-
-  mountUi();
-  runMainLoop();
+  initiateOverworld(player, getOverworld('TEST2'));
 };

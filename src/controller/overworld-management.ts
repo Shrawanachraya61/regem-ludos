@@ -1,5 +1,4 @@
 import {
-  getRoom,
   roomAddParticle,
   roomGetTileBelow,
   Tile,
@@ -39,11 +38,12 @@ import {
   characterCollidesWithPoint,
   characterCollidesWithRect,
 } from 'model/character';
-import { invokeTrigger, callScript } from './scene-management';
+import { invokeTrigger, callScript } from 'controller/scene-management';
 import { TriggerType } from 'lib/rpgscript';
-import { showSection } from './ui-actions';
+import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
-import { pushKeyHandler } from './events';
+import { pushKeyHandler } from 'controller/events';
+import { getRoom } from 'db/overworlds';
 
 export const initiateOverworld = (
   player: Player,
@@ -51,39 +51,71 @@ export const initiateOverworld = (
   playerPos?: Point3d
 ): Overworld => {
   const room = getRoom(template.roomName);
+  if (!room) {
+    console.error(
+      'Cannot initiate overworld, no room exists with name: ',
+      template.roomName
+    );
+  }
+
   const leader = player.leader;
   const oChLeader: OverworldCharacter = {
     ch: leader,
   };
 
-  if (playerPos) {
-    characterSetPos(leader, playerPos);
-  } else {
-    characterSetPos(leader, [0, 0, 0]);
-  }
-
-  // room.characters.push(leader);
   roomAddCharacter(room, leader);
 
-  const overworld = {
+  const overworld: Overworld = {
     room,
-    people: [oChLeader],
     triggersEnabled: true,
     characterCollisionEnabled: true,
+    loadTriggerName: template.loadTriggerName,
   };
 
   setCurrentRoom(room);
   setCurrentPlayer(player);
   setCurrentOverworld(overworld);
 
+  // if (playerPos) {
+  //   characterSetPos(leader, playerPos);
+  // } else {
+  //   const marker = room.markers.MarkerPlayer;
+  //   if (marker) {
+  //     setCharacterAtMarker(leader.name, 'MarkerPlayer');
+  //   } else {
+  //     characterSetPos(leader, [0, 0, 0]);
+  //   }
+  // }
+
   pushKeyHandler(overworldKeyHandler);
+
+  if (overworld.loadTriggerName) {
+    callTrigger(overworld.loadTriggerName, TriggerType.ACTION);
+  }
+
   return overworld;
+};
+
+const callTrigger = async (triggerName: string, triggerType: TriggerType) => {
+  const overworld = getCurrentOverworld();
+  const scriptCaller = invokeTrigger(
+    getCurrentScene(),
+    triggerName,
+    triggerType
+  );
+  if (scriptCaller !== null) {
+    overworldDisableTriggers(overworld);
+    disableKeyUpdate();
+    await scriptCaller();
+    overworldEnableTriggers(overworld);
+    enableKeyUpdate();
+    showSection(AppSection.Debug, true);
+  }
 };
 
 const checkAndCallTriggerOfType = async (
   type: TriggerType
 ): Promise<boolean> => {
-  const overworld = getCurrentOverworld();
   const player = getCurrentPlayer();
   const room = getCurrentRoom();
   const leader = player.leader;
@@ -93,13 +125,10 @@ const checkAndCallTriggerOfType = async (
     if (characterCollidesWithRect(leader, [ta.x, ta.y, ta.width, ta.height])) {
       const scriptCaller = invokeTrigger(getCurrentScene(), ta.name, type);
       if (scriptCaller !== null) {
-        overworldDisableTriggers(overworld);
-        disableKeyUpdate();
-        characterSetAnimationState(leader, AnimationState.IDLE);
-        await scriptCaller();
-        overworldEnableTriggers(overworld);
-        enableKeyUpdate();
-        showSection(AppSection.Debug, true);
+        if (type === TriggerType.ACTION) {
+          characterSetAnimationState(leader, AnimationState.IDLE);
+        }
+        await callTrigger(ta.name, type);
         return true;
       }
     }
@@ -108,7 +137,6 @@ const checkAndCallTriggerOfType = async (
 };
 
 const checkAndCallTalkTrigger = async (): Promise<boolean> => {
-  const overworld = getCurrentOverworld();
   const player = getCurrentPlayer();
   const room = getCurrentRoom();
   const leader = player.leader;
@@ -117,21 +145,8 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
     const ch = room.characters[i];
     const [chX, chY] = characterGetPosBottom(ch);
     if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 25])) {
-      const scriptCaller = invokeTrigger(
-        getCurrentScene(),
-        ch.talkTrigger,
-        TriggerType.ACTION
-      );
-      if (scriptCaller !== null) {
-        overworldDisableTriggers(overworld);
-        disableKeyUpdate();
-        characterSetAnimationState(leader, AnimationState.IDLE);
-        await scriptCaller();
-        overworldEnableTriggers(overworld);
-        enableKeyUpdate();
-        showSection(AppSection.Debug, true);
-        return true;
-      }
+      await callTrigger(ch.talkTrigger, TriggerType.ACTION);
+      return true;
     }
   }
   return false;
@@ -187,7 +202,6 @@ const getFacingFromKeyState = (): Facing => {
 
 export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
-  const room = getCurrentRoom();
   const leader = player.leader;
 
   let isMoving = false;

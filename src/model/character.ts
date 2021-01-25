@@ -28,6 +28,8 @@ import {
   roomGetTileAt,
   Tile,
   RenderObject,
+  TILE_HEIGHT_WORLD,
+  TILE_WIDTH_WORLD,
 } from 'model/room';
 import { getCtx } from './canvas';
 import { drawPolygon, drawRect, drawText } from 'view/draw';
@@ -456,13 +458,30 @@ export const characterUpdate = (ch: Character): void => {
     }
     characterSetFacingFromAngle(ch, angle);
 
-    const tile = roomGetTileBelow(room, ch);
+    const tile = roomGetTileBelow(room, [ch.x, ch.y]);
     let tileBelowY1: Tile | null = null;
     let tileBelowX1: Tile | null = null;
     if (tile) {
       // tile.highlighted = true;
-      tileBelowY1 = roomGetTileAt(room, tile.x, tile.y + 1);
-      tileBelowX1 = roomGetTileAt(room, tile.x + 1, tile.y);
+      // if (ch.name === 'Ada') {
+      //   console.log(
+      //     tile.x,
+      //     tile.y,
+      //     tile.x,
+      //     Math.floor((ch.y + 8) / TILE_HEIGHT_WORLD)
+      //   );
+      // }
+
+      tileBelowY1 = roomGetTileAt(
+        room,
+        tile.x,
+        Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+      );
+      tileBelowX1 = roomGetTileAt(
+        room,
+        Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+        tile.y
+      );
     }
     if (tile?.isWall || tileBelowY1?.isWall || tileBelowX1?.isWall) {
       // if (tile && tileBelowY1) {

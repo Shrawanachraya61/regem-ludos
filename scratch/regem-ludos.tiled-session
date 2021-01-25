@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "D:/progs/sadelica-new-world/scratch/map.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
     ],
     "exportAsImage.drawTileGrid": false,
@@ -197,8 +197,8 @@
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1409.3333333333333,
-                "y": 3438
+                "x": 1492,
+                "y": 1788
             }
         },
         "D:/progs/sadelica-new-world/scratch/map.tmx#characters": {
@@ -278,8 +278,6 @@
     "map.tileWidth": 16,
     "map.width": 64,
     "openFiles": [
-        "D:/progs/sadelica-new-world/scratch/map.tmx",
-        "D:/progs/sadelica-new-world/scratch/terrain.tsx"
     ],
     "project": "regem-ludos.tiled-project",
     "recentFiles": [

@@ -5,12 +5,14 @@ import {
   characterSetAnimationState,
   CharacterTemplate,
 } from 'model/character';
+import { Trigger } from 'lib/rpgscript';
+import { invokeTrigger } from 'controller/scene-management';
 
 export interface Overworld {
   room: Room;
-  people: OverworldCharacter[];
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
+  loadTriggerName?: string;
   // triggers: Trigger
 }
 
@@ -20,7 +22,7 @@ export interface OverworldCharacter {
 
 export interface OverworldTemplate {
   roomName: string;
-  characters: OverworldCharacter[];
+  loadTriggerName?: string;
 }
 
 export const overworldDisableTriggers = (overworld: Overworld) => {

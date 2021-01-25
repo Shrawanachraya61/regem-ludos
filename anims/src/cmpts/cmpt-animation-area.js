@@ -168,9 +168,9 @@ const AnimationArea = ({ appInterface }) => {
           <Text type="bold" ownLine={true} centered={false} lineHeight={5}>
             Total Duration MS: {anim.totalDurationMs}
           </Text>
-          <Text type="bold" ownLine={true} centered={false} lineHeight={5}>
+          {/* <Text type="bold" ownLine={true} centered={false} lineHeight={5}>
             Number of Frames: {anim.sprites.length}
-          </Text>
+          </Text> */}
           <Input
             type="checkbox"
             name="loop"
@@ -242,7 +242,7 @@ const AnimationArea = ({ appInterface }) => {
                 appInterface.setAnimation(display.getAnimation(anim.name));
               }}
             >
-              + Add All
+              + All
             </Button>
             <Button
               type="secondary"
@@ -265,7 +265,7 @@ const AnimationArea = ({ appInterface }) => {
                 appInterface.setAnimation(display.getAnimation(anim.name));
               }}
             >
-              + Add All Reverse
+              + All Reverse
             </Button>
             <Button
               type="cadence"
@@ -280,7 +280,26 @@ const AnimationArea = ({ appInterface }) => {
                 appInterface.setAnimation(display.getAnimation(anim.name));
               }}
             >
-              + Add Invisible
+              + Invisible
+            </Button>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              marginTop: '7px',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <Button
+              type="secondary"
+              margin={2}
+              onClick={() => {
+                const sprites = anim.sprites.reverse();
+                display.updateAnimation(anim, imageName, anim.loop, sprites);
+                appInterface.setAnimation(display.getAnimation(anim.name));
+              }}
+            >
+              Reverse All
             </Button>
           </div>
           <div

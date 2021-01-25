@@ -17,6 +17,7 @@ import {
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
 import { colors } from './style';
+import { getMarkersVisible, getTriggersVisible } from 'model/generics';
 
 export interface DrawTextParams {
   font?: string;
@@ -187,7 +188,8 @@ export const drawPolygon = (
   }
 
   ctx.closePath();
-  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.stroke();
 };
 
 export const drawCharacter = (
@@ -252,6 +254,7 @@ export const drawRoom = (
     const {
       name,
       sprite,
+      anim,
       character,
       px,
       py,
@@ -267,31 +270,37 @@ export const drawRoom = (
     }
 
     if (isMarker) {
-      drawText(name || '', (px as number) + 16, py as number, {
-        align: 'center',
-        color: colors.WHITE,
-        size: 12,
-      });
-      drawSprite(sprite as string, px as number, py as number);
-    } else if (isTrigger) {
-      if (polygon) {
-        const point = polygon[0];
-        const [x, y] = point;
-        const [px, py] = isoToPixelCoords(x, y, 0);
-        drawPolygon(polygon, 'rgba(255, 0, 0, 0.33)');
-        drawText(name || '', px, py, {
-          align: 'center',
-          color: colors.PINK,
-          size: 12,
-        });
-      } else {
-        drawSprite(sprite as string, px as number, py as number);
+      if (getMarkersVisible()) {
         drawText(name || '', (px as number) + 16, py as number, {
           align: 'center',
-          color: colors.PINK,
+          color: colors.WHITE,
           size: 12,
         });
+        drawSprite(sprite as string, px as number, py as number);
       }
+    } else if (isTrigger) {
+      if (getTriggersVisible()) {
+        if (polygon) {
+          const point = polygon[0];
+          const [x, y] = point;
+          const [px, py] = isoToPixelCoords(x, y, 0);
+          drawPolygon(polygon, 'rgba(0, 0, 0, 0.5)');
+          drawText(name || '', px, py, {
+            align: 'center',
+            color: colors.PINK,
+            size: 12,
+          });
+        } else {
+          drawSprite(sprite as string, px as number, py as number);
+          drawText(name || '', (px as number) + 16, py as number, {
+            align: 'center',
+            color: colors.PINK,
+            size: 12,
+          });
+        }
+      }
+    } else if (anim) {
+      drawAnimation(anim, px as number, py as number);
     } else if (sprite) {
       drawSprite(sprite, px as number, py as number);
       if (highlighted) {

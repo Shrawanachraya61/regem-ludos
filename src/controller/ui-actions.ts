@@ -133,6 +133,7 @@ export const startConversation = (portrait: string) => {
       portraitRightEmotion: '',
       portraitRight2Emotion: '',
       portraitCenterEmotion: '',
+      speaker: CutsceneSpeaker.None,
       visible: true,
     } as Partial<ICutsceneAppState>,
   });
@@ -156,6 +157,7 @@ export const startConversation2 = (
       portraitRightEmotion: '',
       portraitRight2Emotion: '',
       portraitCenterEmotion: '',
+      speaker: CutsceneSpeaker.None,
       visible: true,
     } as Partial<ICutsceneAppState>,
   });

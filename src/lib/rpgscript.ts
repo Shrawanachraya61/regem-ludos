@@ -253,12 +253,12 @@ export class ScriptParser {
     throw new Error('Parsing error');
   }
 
-  parseCommand(commandSrc: string, lineNum: number, script: Script) {
+  parseCommand(commandSrc: string, lineNum: number, script?: Script) {
     commandSrc = commandSrc.trim();
     const firstParenIndex = commandSrc.indexOf('(');
     const lastParenIndex = commandSrc.lastIndexOf(')');
 
-    if (commandSrc.match(/^(\w)+:/)) {
+    if (commandSrc.match(/^(\w)+:/) && script) {
       return this.createDialogCommand(commandSrc, script);
     }
 
@@ -313,7 +313,7 @@ export class ScriptParser {
   parseConditional(
     conditionalSrc: string,
     lineNum: number,
-    script: Script
+    script?: Script
   ): Conditional | boolean {
     const { type, args } = this.parseCommand(conditionalSrc, lineNum, script);
     const validTypes = [
@@ -362,7 +362,7 @@ export class ScriptParser {
   getConditionalFromLine(
     line: string,
     lineNum: number,
-    script: Script
+    script?: Script
   ): {
     conditional: Conditional | boolean;
     endIndex: number;
@@ -563,31 +563,29 @@ export class ScriptParser {
           );
         }
 
-        if (currentScript) {
-          const {
-            conditional: localConditional,
-            endIndex,
-          } = this.getConditionalFromLine(
-            triggerContents,
-            lineNum,
-            currentScript
+        const {
+          conditional: localConditional,
+          endIndex,
+        } = this.getConditionalFromLine(
+          triggerContents,
+          lineNum,
+          currentScript as Script | undefined
+        );
+        let conditional = localConditional;
+        if (itemConditional) {
+          conditional = this.combineConditionals(
+            itemConditional,
+            localConditional,
+            'and'
           );
-          let conditional = localConditional;
-          if (itemConditional) {
-            conditional = this.combineConditionals(
-              itemConditional,
-              localConditional,
-              'and'
-            );
-          }
+        }
 
-          let scriptName = triggerContents.substr(endIndex);
-          if (scriptName === 'this' && currentTriggerName) {
-            scriptName = currentTriggerName;
-          }
-          if (currentTrigger) {
-            currentTrigger.addScriptCall(triggerType, conditional, scriptName);
-          }
+        let scriptName = triggerContents.substr(endIndex);
+        if (scriptName === 'this' && currentTriggerName) {
+          scriptName = currentTriggerName;
+        }
+        if (currentTrigger) {
+          currentTrigger.addScriptCall(triggerType, conditional, scriptName);
         }
       } else if (firstCh === '>') {
         if (currentBlock) {
@@ -615,8 +613,8 @@ export class ScriptParser {
   }
 }
 
-const scripts: Record<string, Script> = (window as any).scripts = {};
-const triggers: Record<string, Trigger> = (window as any).triggers = {};
+const scripts: Record<string, Script> = ((window as any).scripts = {});
+const triggers: Record<string, Trigger> = ((window as any).triggers = {});
 
 export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
   const url = `res/rpgscript/${scriptFileName}.rpgscript`;

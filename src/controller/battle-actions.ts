@@ -19,7 +19,8 @@ import {
   characterSetTransform,
   characterGetPosCenterPx,
 } from 'model/character';
-import { getRoom, roomAddParticle, TILE_WIDTH } from 'model/room';
+import { roomAddParticle, TILE_WIDTH } from 'model/room';
+import { getRoom } from 'db/overworlds';
 import {
   Transform,
   TransformEase,

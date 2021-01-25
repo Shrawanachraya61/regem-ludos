@@ -221,3 +221,11 @@ Scout Robot: Idle, Attack: Swing, Item, Damaged, Stunned, Defeated
 Support Robot: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeated
 Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
 
+1-Offs
+
+Boy: This ice cream cup says it contains no artificial growth hormones.
+Girl: That's good to know!
+Boy: Yeah, but sometimes I wish it would also have a label indicating that it was made without hot sauce.
+Boy: I hate hot sauce.
+Girl: That would totally put my mind at ease.
+

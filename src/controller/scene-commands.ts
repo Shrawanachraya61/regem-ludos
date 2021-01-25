@@ -17,14 +17,16 @@ import {
   characterSetWalkTarget,
   Facing,
 } from 'model/character';
-import { roomGetCharacterByName } from 'model/room';
+import { roomGetCharacterByName, roomGetTileBelow } from 'model/room';
 import { getCurrentScene, getCurrentRoom } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
-import { getAngleTowards, Point } from 'utils';
+import { extrapolatePoint, getAngleTowards, Point } from 'utils';
+import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
+import { createAnimation } from 'model/animation';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
- * 
+ *
  * An optional soundName may be given to play a sound when the text is shown.  This command
  * only works when a `conversation` is active, created by a command like `setConversation`
  * or `setConversation2`.  The text is shown to the user and the program waits for input
@@ -153,13 +155,13 @@ export const setConversation = (actorName: string) => {
 /**
  * Removes all portraits and cutscene bars from the screen.  Portraits slide downwards,
  * and cutscene bars slide off.  After an optionally specified number of milliseconds,
- * this function resumes executing the script. This number defaults to 1 second
+ * this function resumes executing the script. This number defaults to 0.5 seconds
  * if not provided.
  */
 export const endConversation = (ms?: number) => {
   setCutsceneText('');
   hideConversation();
-  return waitMS(ms ?? 1000);
+  return waitMS(ms ?? 500);
 };
 
 /**
@@ -410,15 +412,15 @@ export const lookAtMarker = (chName: string, markerName: string) => {
 
 /**
  * A shortcut command for double `lookAtCharacter` calls.
- * 
+ *
  * This command:
- * 
+ *
  * ```
  * lookAtEachOther("Ada", "Conscience");
  * ```
  *
  * Is the same as:
- * 
+ *
  * ```
  * +lookAtCharacter("Ada", "Conscience");
  * +lookAtCharacter("Conscience", "Ada");
@@ -523,9 +525,9 @@ export const setCharacterAt = (
  * directly at the marker until the reach it. Specifically this means that their FEET will
  * be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
  * destination, the next line in the script is invoked.
- * 
+ *
  * Here Ada has walked to the marker, and her feet at the bottom, where it points.
- * 
+ *
  * ![Example Image](../res/docs/AdaAtMarker.png)
  *
  * Optional params (xOffset, yOffset) can be provided to change the final destination of
@@ -546,7 +548,7 @@ export const setCharacterAt = (
  * +waitMS(100);
  * ```
  *
- * NOTE: If a character cannot reach the intended location, then they will 
+ * NOTE: If a character cannot reach the intended location, then they will
  * get warped there by the game engine.
  */
 export const walkToMarker = (
@@ -585,6 +587,89 @@ export const walkToMarker = (
   }
 };
 
+export const setCharacterAtMarker = (
+  chName: string,
+  markerName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  const marker = room.markers[markerName];
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+
+  if (ch && marker) {
+    // this offset puts the character's feet on the bottom of the marker
+    const target = [
+      marker.x + (xOffset ?? 0),
+      marker.y + (yOffset ?? 0),
+    ] as Point;
+
+    characterSetPos(ch, extrapolatePoint(target));
+  }
+};
+
+export const changeTileAtMarker = (
+  markerName: string,
+  tileTemplateName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const marker = room.markers[markerName];
+  const tileTemplate = getTileTemplateIfExists(tileTemplateName);
+
+  if (!tileTemplate) {
+    console.error(
+      'Could not get a tile template with name: ' + tileTemplateName
+    );
+    return;
+  }
+
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+
+  if (marker) {
+    const target = [
+      marker.x + (xOffset ?? 0),
+      marker.y + (yOffset ?? 0),
+    ] as Point;
+
+    const tile = roomGetTileBelow(room, target);
+    if (!tile) {
+      console.error(
+        'Could not get a tile below the provided marker: ' + markerName
+      );
+      return;
+    }
+
+    tile.isWall = tileTemplate.isWall ?? tile.isWall;
+    if (tile.ro) {
+      tile.ro.sprite = tileTemplate.baseSprite;
+      if (tile.animName !== tileTemplate.animName) {
+        tile.animName = tileTemplate.animName;
+        if (tileTemplate.animName) {
+          const anim = createAnimation(tileTemplate.animName);
+          anim.start();
+          tile.ro.anim = anim;
+        } else {
+          tile.ro.anim = undefined;
+        }
+      }
+    }
+  }
+};
+
 const commands = {
   playDialogue,
   setConversation2,
@@ -604,6 +689,8 @@ const commands = {
   shakeScreen,
   setCharacterAt,
   walkToMarker,
+  setCharacterAtMarker,
+  changeTileAtMarker,
 };
 
 export default commands;
