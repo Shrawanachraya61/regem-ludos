@@ -1,5 +1,10 @@
-@floor1
+
+#floor1
+action,this
+@this
 +setStorage('overworld', 'floor1');
++setCharacterAtMarker('Ada', 'MarkerPlayer');
++callScript('floor1-closeDoorsAB');
 
 #floor1-skyeIntro
 action,floor1-Skye_intro
@@ -146,9 +151,8 @@ Conscience: "Oh relax.  It can't hurt having her around."
 +endConversation();
 
 #test-roger
-action,test-roger1
-
-@test-roger1
+action,this
+@this
 +lookAtEachOther('Ada', 'Roger');
 +setConversation('Ada');
 Roger: "Hello there."
@@ -159,6 +163,30 @@ Ada: "I may do just that."
 Roger: "That is fine."
 Roger: "This is an example of me saying something rather long.  It's a big chunk of text alright, so be prepared to read a whole lot of nothing."
 Ada: "Yes, you already told me."
-Ada: "This is an example of me saying something rather long.  It's a big chunk of text alright, so be prepared to read a whole lot."
-Roger: "For now, I will bid you good day."
++setConversationSpeaker('None');
++waitMS(1000);
+Ada: "..."
+Ada: "Have you nothing further to say?"
+Roger: "The conversation has concluded.  I bid you good day."
 +endConversation();
+
+#floor1-closeDoorsAB
+step,this
+@this
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
+
+#floor1-openDoorA
+step,this
+@this
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN2);
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN1, 16, 0);
+
+#floor1-openDoorB
+step,this
+@this
+@this
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);

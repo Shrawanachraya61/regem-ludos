@@ -2683,6 +2683,9 @@ img {
 			<a href="modules.html#callscript" class="tsd-kind-icon">call<wbr>Script</a>
 		</li>
 		<li class=" tsd-kind-function">
+			<a href="modules.html#changetileatmarker" class="tsd-kind-icon">change<wbr>Tile<wbr>AtMarker</a>
+		</li>
+		<li class=" tsd-kind-function">
 			<a href="modules.html#endconversation" class="tsd-kind-icon">end<wbr>Conversation</a>
 		</li>
 		<li class=" tsd-kind-function">
@@ -2699,6 +2702,9 @@ img {
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="modules.html#setcharacterat" class="tsd-kind-icon">set<wbr>Character<wbr>At</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="modules.html#setcharacteratmarker" class="tsd-kind-icon">set<wbr>Character<wbr>AtMarker</a>
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="modules.html#setconversation" class="tsd-kind-icon">set<wbr>Conversation</a>
@@ -2749,12 +2755,14 @@ img {
 						<h3>Functions</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-function"><a href="modules.html#callscript" class="tsd-kind-icon">call<wbr>Script</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#changetileatmarker" class="tsd-kind-icon">change<wbr>Tile<wbr>AtMarker</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#endconversation" class="tsd-kind-icon">end<wbr>Conversation</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#lookatcharacter" class="tsd-kind-icon">look<wbr>AtCharacter</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#lookateachother" class="tsd-kind-icon">look<wbr>AtEach<wbr>Other</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#lookatmarker" class="tsd-kind-icon">look<wbr>AtMarker</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#playdialogue" class="tsd-kind-icon">play<wbr>Dialogue</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#setcharacterat" class="tsd-kind-icon">set<wbr>Character<wbr>At</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#setcharacteratmarker" class="tsd-kind-icon">set<wbr>Character<wbr>AtMarker</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#setconversation" class="tsd-kind-icon">set<wbr>Conversation</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#setconversation2" class="tsd-kind-icon">set<wbr>Conversation2</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#setconversationspeaker" class="tsd-kind-icon">set<wbr>Conversation<wbr>Speaker</a></li>
@@ -2774,10 +2782,10 @@ img {
 			<section class="tsd-panel tsd-member tsd-kind-variable">
 				<a name="default" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> default</h3>
-				<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>callScript<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>scriptName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>endConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>lookAtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, targetChName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtEachOther<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>playDialogue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, soundName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, z<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversation2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorNameLeft<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, actorNameRight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversationSpeaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>speaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CutsceneSpeaker</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setFacing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, facing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Facing</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setStorage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>shakeScreen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitForUserInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>waitMS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitMSPreemptible<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitUntil<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>walkToMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>callScript<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>scriptName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>changeTileAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>endConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>lookAtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, targetChName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtEachOther<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>playDialogue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, soundName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, z<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversation2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorNameLeft<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, actorNameRight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversationSpeaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>speaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CutsceneSpeaker</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setFacing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, facing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Facing</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setStorage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>shakeScreen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitForUserInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>waitMS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitMSPreemptible<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitUntil<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>walkToMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L588">scene-commands.ts:588</a></li>
+						<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L673">scene-commands.ts:673</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2829,6 +2837,36 @@ img {
 							</ul>
 						</li>
 						<li class="tsd-parameter">
+							<h5>change<wbr>Tile<wbr>AtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>tileTemplateName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
 							<h5>end<wbr>Conversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></h5>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter-signature">
@@ -2841,7 +2879,7 @@ img {
 												<div class="lead">
 													<p>Removes all portraits and cutscene bars from the screen.  Portraits slide downwards,
 														and cutscene bars slide off.  After an optionally specified number of milliseconds,
-														this function resumes executing the script. This number defaults to 1 second
+														this function resumes executing the script. This number defaults to 0.5 seconds
 													if not provided.</p>
 												</div>
 											</div>
@@ -3039,6 +3077,36 @@ img {
 												</li>
 												<li>
 													<h5><span class="tsd-flag ts-flagOptional">Optional</span> z: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
+							<h5>set<wbr>Character<wbr>AtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>chName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
 												</li>
 											</ul>
 											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -3559,7 +3627,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L353">scene-commands.ts:353</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L355">scene-commands.ts:355</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3597,6 +3665,38 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="changetileatmarker" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> change<wbr>Tile<wbr>AtMarker</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">change<wbr>Tile<wbr>AtMarker<span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L620">scene-commands.ts:620</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>tileTemplateName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
 				<a name="endconversation" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> end<wbr>Conversation</h3>
 				<ul class="tsd-signatures tsd-kind-function">
@@ -3606,14 +3706,14 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L159">scene-commands.ts:159</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L161">scene-commands.ts:161</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
 								<p>Removes all portraits and cutscene bars from the screen.  Portraits slide downwards,
 									and cutscene bars slide off.  After an optionally specified number of milliseconds,
-									this function resumes executing the script. This number defaults to 1 second
+									this function resumes executing the script. This number defaults to 0.5 seconds
 								if not provided.</p>
 							</div>
 						</div>
@@ -3637,7 +3737,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L363">scene-commands.ts:363</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L365">scene-commands.ts:365</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3669,7 +3769,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L427">scene-commands.ts:427</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L429">scene-commands.ts:429</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3707,7 +3807,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L389">scene-commands.ts:389</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L391">scene-commands.ts:391</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3739,7 +3839,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L46">scene-commands.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L48">scene-commands.ts:48</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3796,7 +3896,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L504">scene-commands.ts:504</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L506">scene-commands.ts:506</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3828,6 +3928,38 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="setcharacteratmarker" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> set<wbr>Character<wbr>AtMarker</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">set<wbr>Character<wbr>AtMarker<span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L590">scene-commands.ts:590</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>chName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
 				<a name="setconversation" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> set<wbr>Conversation</h3>
 				<ul class="tsd-signatures tsd-kind-function">
@@ -3837,7 +3969,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L148">scene-commands.ts:148</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L150">scene-commands.ts:150</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3886,7 +4018,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L104">scene-commands.ts:104</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L106">scene-commands.ts:106</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3942,7 +4074,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L210">scene-commands.ts:210</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L212">scene-commands.ts:212</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4003,7 +4135,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L454">scene-commands.ts:454</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L456">scene-commands.ts:456</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4048,7 +4180,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L323">scene-commands.ts:323</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L325">scene-commands.ts:325</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4079,7 +4211,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L483">scene-commands.ts:483</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L485">scene-commands.ts:485</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4110,7 +4242,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L219">scene-commands.ts:219</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L221">scene-commands.ts:221</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4154,7 +4286,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L250">scene-commands.ts:250</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L252">scene-commands.ts:252</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4209,7 +4341,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/35c972f/src/controller/scene-commands.ts#L552">scene-commands.ts:552</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/db92593/src/controller/scene-commands.ts#L554">scene-commands.ts:554</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
