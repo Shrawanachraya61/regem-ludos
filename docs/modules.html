@@ -2686,6 +2686,9 @@ img {
 			<a href="modules.html#changetileatmarker" class="tsd-kind-icon">change<wbr>Tile<wbr>AtMarker</a>
 		</li>
 		<li class=" tsd-kind-function">
+			<a href="modules.html#despawncharacter" class="tsd-kind-icon">despawn<wbr>Character</a>
+		</li>
+		<li class=" tsd-kind-function">
 			<a href="modules.html#endconversation" class="tsd-kind-icon">end<wbr>Conversation</a>
 		</li>
 		<li class=" tsd-kind-function">
@@ -2725,6 +2728,12 @@ img {
 			<a href="modules.html#shakescreen" class="tsd-kind-icon">shake<wbr>Screen</a>
 		</li>
 		<li class=" tsd-kind-function">
+			<a href="modules.html#spawncharacteratcharacter" class="tsd-kind-icon">spawn<wbr>Character<wbr>AtCharacter</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="modules.html#spawncharacteratmarker" class="tsd-kind-icon">spawn<wbr>Character<wbr>AtMarker</a>
+		</li>
+		<li class=" tsd-kind-function">
 			<a href="modules.html#waitms" class="tsd-kind-icon">waitMS</a>
 		</li>
 		<li class=" tsd-kind-function">
@@ -2732,6 +2741,9 @@ img {
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="modules.html#walktomarker" class="tsd-kind-icon">walk<wbr>ToMarker</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="modules.html#walktooffset" class="tsd-kind-icon">walk<wbr>ToOffset</a>
 		</li>
 	</ul>
 </nav>
@@ -2755,6 +2767,7 @@ img {
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-function"><a href="modules.html#callscript" class="tsd-kind-icon">call<wbr>Script</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#changetileatmarker" class="tsd-kind-icon">change<wbr>Tile<wbr>AtMarker</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#despawncharacter" class="tsd-kind-icon">despawn<wbr>Character</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#endconversation" class="tsd-kind-icon">end<wbr>Conversation</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#lookatcharacter" class="tsd-kind-icon">look<wbr>AtCharacter</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#lookateachother" class="tsd-kind-icon">look<wbr>AtEach<wbr>Other</a></li>
@@ -2768,9 +2781,12 @@ img {
 							<li class="tsd-kind-function"><a href="modules.html#setfacing" class="tsd-kind-icon">set<wbr>Facing</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#setstorage" class="tsd-kind-icon">set<wbr>Storage</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#shakescreen" class="tsd-kind-icon">shake<wbr>Screen</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#spawncharacteratcharacter" class="tsd-kind-icon">spawn<wbr>Character<wbr>AtCharacter</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#spawncharacteratmarker" class="tsd-kind-icon">spawn<wbr>Character<wbr>AtMarker</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#waitms" class="tsd-kind-icon">waitMS</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#waitmspreemptible" class="tsd-kind-icon">waitMSPreemptible</a></li>
 							<li class="tsd-kind-function"><a href="modules.html#walktomarker" class="tsd-kind-icon">walk<wbr>ToMarker</a></li>
+							<li class="tsd-kind-function"><a href="modules.html#walktooffset" class="tsd-kind-icon">walk<wbr>ToOffset</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2781,10 +2797,10 @@ img {
 			<section class="tsd-panel tsd-member tsd-kind-variable">
 				<a name="default" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> default</h3>
-				<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>callScript<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>scriptName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>changeTileAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>endConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>lookAtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, targetChName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtEachOther<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>playDialogue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, soundName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, z<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversation2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorNameLeft<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, actorNameRight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversationSpeaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>speaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CutsceneSpeaker</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setFacing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, facing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Facing</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setStorage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>shakeScreen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitForUserInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>waitMS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitMSPreemptible<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitUntil<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>walkToMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>callScript<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>scriptName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>changeTileAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, tileTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>despawnCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>endConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>lookAtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, targetChName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtEachOther<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>lookAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>playDialogue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, soundName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, z<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setCharacterAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setConversation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversation2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>actorNameLeft<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, actorNameRight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setConversationSpeaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>speaker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CutsceneSpeaker</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setFacing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, facing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Facing</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>setStorage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>shakeScreen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>spawnCharacterAtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>spawnCharacterAtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>waitForUserInput<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>waitMS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitMSPreemptible<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ms<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>waitUntil<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>walkToMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>walkToOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L673">scene-commands.ts:673</a></li>
+						<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L870">scene-commands.ts:870</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2844,6 +2860,21 @@ img {
 									</ul>
 									<ul class="tsd-descriptions">
 										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Changes the tile beneath the given marker to the tile template specified by the
+														tileTemplateName.  These are specified in <code>db/tiles</code>.  Both the tile template and
+														marker must exist for this to work.  Optional xOffset and yOffset can be specified
+													relative to the marker to select a different tile.</p>
+												</div>
+												<pre><code><span style="color: #008000">// Set the tiles beneath markerDoorA and one tile to the right + the tiles below</span>
+<span style="color: #008000">// markerDoorB and one tile to the right to be the respective tile templates.</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorA</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED2</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorA</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED1</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorB</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED2</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorB</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED1</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+</code></pre>
+											</div>
 											<h4 class="tsd-parameters-title">Parameters</h4>
 											<ul class="tsd-parameters">
 												<li>
@@ -2857,6 +2888,35 @@ img {
 												</li>
 												<li>
 													<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
+							<h5>despawn<wbr>Character<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Remove the character from the current room.  The character must exist in the current room.</p>
+												</div>
+												<pre><code><span style="color: #008000">// Remove Skye from the room</span>
+<span style="color: #000000">+</span><span style="color: #795E26">despawnCharacter</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Skye&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+											</div>
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>chName: <span class="tsd-signature-type">string</span></h5>
 												</li>
 											</ul>
 											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -3093,6 +3153,18 @@ img {
 									</ul>
 									<ul class="tsd-descriptions">
 										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Sets a character so that their feet are located where the marker is pointing.  Optional
+														xOffset and yOffset can be specified relative to the marker.  The character and the
+													marker must exist in the current room.</p>
+												</div>
+												<pre><code><span style="color: #008000">// Set Ada at &#039;MarkerPlayer&#039;</span>
+<span style="color: #000000">+</span><span style="color: #795E26">setCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Ada&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerPlayer&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Set Conscience one tile to the right of Ada. (Each tile is 16 units wide and tall)</span>
+<span style="color: #000000">+</span><span style="color: #795E26">setCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerPlayer&#039;</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+</code></pre>
+											</div>
 											<h4 class="tsd-parameters-title">Parameters</h4>
 											<ul class="tsd-parameters">
 												<li>
@@ -3376,6 +3448,90 @@ img {
 							</ul>
 						</li>
 						<li class="tsd-parameter">
+							<h5>spawn<wbr>Character<wbr>AtCharacter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Spawn a character in the current room of the given chTemplateName, on top of the
+														character specified by chName (at the same [x,y] coordinates).  Optional xOffset and
+														yOffset may be specified relative to the target location.  The target character
+														must exist in the room, and the character to be spawned must have a template defined
+													inside <code>db/characters</code>;</p>
+												</div>
+												<pre><code><span style="color: #008000">// Spawn Conscience on top of Ada</span>
+<span style="color: #000000">+</span><span style="color: #795E26">spawnCharacterAtCharacter</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;Ada&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+											</div>
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>chTemplateName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>chName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
+							<h5>spawn<wbr>Character<wbr>AtMarker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Spawn a character in the current room of the given chTemplateName, on top of the
+														marker specified by markerName (the character&#39;s feet will be where the marker is
+														pointing. Optional xOffset and yOffset may be specified relative to the target location.
+														The marker must exist in the room, and the character to be spawned must have a template
+													defined inside <code>db/characters</code>;</p>
+												</div>
+												<pre><code><span style="color: #008000">// Spawn Skye at MarkerSkyeSpawnPoint</span>
+<span style="color: #000000">+</span><span style="color: #795E26">spawnCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Skye&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerSkyeSpawnPoint&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+											</div>
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>chTemplateName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
 							<h5>wait<wbr>For<wbr>User<wbr>Input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter-signature">
@@ -3610,6 +3766,54 @@ img {
 								</li>
 							</ul>
 						</li>
+						<li class="tsd-parameter">
+							<h5>walk<wbr>ToOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<div class="tsd-comment tsd-typography">
+												<div class="lead">
+													<p>Starts the given character moving towards the point (xOffset, yOffset) specified
+														relative to that character&#39;s current position.  They will move in a straight line
+														directly at the target until the reach it. Specifically this means that their FEET will
+														be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
+													destination, the next line in the script is invoked.</p>
+												</div>
+												<p>Optional param skipWait may be set to <code>true</code> if the cutscene should set the character
+													to walk towards the marker, but not wait for that character to reach their destination
+												before the next line in the script is invoked.</p>
+												<pre><code><span style="color: #008000">// Have Conscience walk one tile to the right and one tile downwards (she will walk</span>
+<span style="color: #008000">// diagonally.</span>
+<span style="color: #000000">+</span><span style="color: #795E26">walkToOffset</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">)</span>
+</code></pre>
+												<p>NOTE: If a character cannot reach the intended location, then they will
+												get warped there by the game engine.</p>
+											</div>
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>chName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>xOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5>yOffset: <span class="tsd-signature-type">number</span></h5>
+												</li>
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> skipWait: <span class="tsd-signature-type">boolean</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 			</section>
@@ -3626,7 +3830,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L355">scene-commands.ts:355</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L363">scene-commands.ts:363</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3673,9 +3877,24 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L620">scene-commands.ts:620</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L697">scene-commands.ts:697</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Changes the tile beneath the given marker to the tile template specified by the
+									tileTemplateName.  These are specified in <code>db/tiles</code>.  Both the tile template and
+									marker must exist for this to work.  Optional xOffset and yOffset can be specified
+								relative to the marker to select a different tile.</p>
+							</div>
+							<pre><code><span style="color: #008000">// Set the tiles beneath markerDoorA and one tile to the right + the tiles below</span>
+<span style="color: #008000">// markerDoorB and one tile to the right to be the respective tile templates.</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorA</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED2</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorA</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED1</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorB</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED2</span><span style="color: #000000">);</span>
+<span style="color: #000000">+</span><span style="color: #795E26">changeTileAtMarker</span><span style="color: #000000">(</span><span style="color: #001080">markerDoorB</span><span style="color: #000000">, </span><span style="color: #0070C1">RED_DOOR_BCK_CLOSED1</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+</code></pre>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -3696,6 +3915,37 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="despawncharacter" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> despawn<wbr>Character</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">despawn<wbr>Character<span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L858">scene-commands.ts:858</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Remove the character from the current room.  The character must exist in the current room.</p>
+							</div>
+							<pre><code><span style="color: #008000">// Remove Skye from the room</span>
+<span style="color: #000000">+</span><span style="color: #795E26">despawnCharacter</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Skye&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>chName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
 				<a name="endconversation" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> end<wbr>Conversation</h3>
 				<ul class="tsd-signatures tsd-kind-function">
@@ -3705,7 +3955,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L161">scene-commands.ts:161</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L169">scene-commands.ts:169</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3736,7 +3986,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L365">scene-commands.ts:365</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L373">scene-commands.ts:373</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3768,7 +4018,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L429">scene-commands.ts:429</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L437">scene-commands.ts:437</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3806,7 +4056,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L391">scene-commands.ts:391</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L399">scene-commands.ts:399</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3838,7 +4088,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L48">scene-commands.ts:48</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L56">scene-commands.ts:56</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3895,7 +4145,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L506">scene-commands.ts:506</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L514">scene-commands.ts:514</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3936,9 +4186,21 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L590">scene-commands.ts:590</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L652">scene-commands.ts:652</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Sets a character so that their feet are located where the marker is pointing.  Optional
+									xOffset and yOffset can be specified relative to the marker.  The character and the
+								marker must exist in the current room.</p>
+							</div>
+							<pre><code><span style="color: #008000">// Set Ada at &#039;MarkerPlayer&#039;</span>
+<span style="color: #000000">+</span><span style="color: #795E26">setCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Ada&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerPlayer&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Set Conscience one tile to the right of Ada. (Each tile is 16 units wide and tall)</span>
+<span style="color: #000000">+</span><span style="color: #795E26">setCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerPlayer&#039;</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">0</span><span style="color: #000000">);</span>
+</code></pre>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -3968,7 +4230,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L150">scene-commands.ts:150</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L158">scene-commands.ts:158</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4017,7 +4279,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L106">scene-commands.ts:106</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L114">scene-commands.ts:114</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4073,7 +4335,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L212">scene-commands.ts:212</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L220">scene-commands.ts:220</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4134,7 +4396,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L456">scene-commands.ts:456</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L464">scene-commands.ts:464</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4179,7 +4441,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L325">scene-commands.ts:325</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L333">scene-commands.ts:333</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4210,7 +4472,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L485">scene-commands.ts:485</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L493">scene-commands.ts:493</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4232,6 +4494,94 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="spawncharacteratcharacter" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> spawn<wbr>Character<wbr>AtCharacter</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">spawn<wbr>Character<wbr>AtCharacter<span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L762">scene-commands.ts:762</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Spawn a character in the current room of the given chTemplateName, on top of the
+									character specified by chName (at the same [x,y] coordinates).  Optional xOffset and
+									yOffset may be specified relative to the target location.  The target character
+									must exist in the room, and the character to be spawned must have a template defined
+								inside <code>db/characters</code>;</p>
+							</div>
+							<pre><code><span style="color: #008000">// Spawn Conscience on top of Ada</span>
+<span style="color: #000000">+</span><span style="color: #795E26">spawnCharacterAtCharacter</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;Ada&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>chTemplateName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>chName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="spawncharacteratmarker" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> spawn<wbr>Character<wbr>AtMarker</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">spawn<wbr>Character<wbr>AtMarker<span class="tsd-signature-symbol">(</span>chTemplateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, markerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L810">scene-commands.ts:810</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Spawn a character in the current room of the given chTemplateName, on top of the
+									marker specified by markerName (the character&#39;s feet will be where the marker is
+									pointing. Optional xOffset and yOffset may be specified relative to the target location.
+									The marker must exist in the room, and the character to be spawned must have a template
+								defined inside <code>db/characters</code>;</p>
+							</div>
+							<pre><code><span style="color: #008000">// Spawn Skye at MarkerSkyeSpawnPoint</span>
+<span style="color: #000000">+</span><span style="color: #795E26">spawnCharacterAtMarker</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Skye&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;MarkerSkyeSpawnPoint&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>chTemplateName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>markerName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
 				<a name="waitms" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> waitMS</h3>
 				<ul class="tsd-signatures tsd-kind-function">
@@ -4241,7 +4591,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L221">scene-commands.ts:221</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L229">scene-commands.ts:229</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4285,7 +4635,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L252">scene-commands.ts:252</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L260">scene-commands.ts:260</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4340,7 +4690,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/56dd696/src/controller/scene-commands.ts#L554">scene-commands.ts:554</a></li>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L561">scene-commands.ts:561</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4381,6 +4731,56 @@ img {
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> skipWait: <span class="tsd-signature-type">boolean</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function">
+				<a name="walktooffset" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> walk<wbr>ToOffset</h3>
+				<ul class="tsd-signatures tsd-kind-function">
+					<li class="tsd-signature tsd-kind-icon">walk<wbr>ToOffset<span class="tsd-signature-symbol">(</span>chName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, yOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, skipWait<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/benjamin-t-brown/regem-ludos/blob/2a0bd5b/src/controller/scene-commands.ts#L615">scene-commands.ts:615</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Starts the given character moving towards the point (xOffset, yOffset) specified
+									relative to that character&#39;s current position.  They will move in a straight line
+									directly at the target until the reach it. Specifically this means that their FEET will
+									be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
+								destination, the next line in the script is invoked.</p>
+							</div>
+							<p>Optional param skipWait may be set to <code>true</code> if the cutscene should set the character
+								to walk towards the marker, but not wait for that character to reach their destination
+							before the next line in the script is invoked.</p>
+							<pre><code><span style="color: #008000">// Have Conscience walk one tile to the right and one tile downwards (she will walk</span>
+<span style="color: #008000">// diagonally.</span>
+<span style="color: #000000">+</span><span style="color: #795E26">walkToOffset</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Conscience&#039;</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">, </span><span style="color: #098658">16</span><span style="color: #000000">)</span>
+</code></pre>
+							<p>NOTE: If a character cannot reach the intended location, then they will
+							get warped there by the game engine.</p>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>chName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>xOffset: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5>yOffset: <span class="tsd-signature-type">number</span></h5>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> skipWait: <span class="tsd-signature-type">boolean</span></h5>
