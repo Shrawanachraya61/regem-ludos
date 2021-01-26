@@ -109,3 +109,41 @@ Ada: "We have arrived at our destination."
 Conscience: "The test will now conclude."
 +endConversation();
 +setFacing("Ada", "down");
+
+@test-spawnDespawnCharacter
++setConversation("Ada");
+Ada: "This script tests spawnCharacter; both spawnCharacterAtCharacter and spawnCharacterAtMarker."
+Ada: "Also, for soon-to-be obvious reasons, this tests despawnCharacter as well."
+Ada: "After this dialog, Conscience shall appear."
++endConversation();
++spawnCharacterAtCharacter("Conscience", "Ada");
++walkToOffset("Conscience", 16, 16);
++lookAtEachOther("Ada", "Conscience");
++setConversation2('Ada', 'Conscience');
+Conscience: "Hi there!"
+Ada: "As you can see, Conscience has popped into existence."
+Conscience: "Oh, you know, I'm always around!"
+Ada: "Conscience shall now disappear."
++setConversationSpeaker("none");
++endConversation();
++walkToOffset("Conscience", -16, -16);
++despawnCharacter("Conscience");
++waitMS(1000);
++setConversation("Ada");
+Ada: "See, it is actually rather easy to be rid of her."
+Conscience: "I heard that!"
+Ada: "..."
+Ada: "Anyway, Conscience shall now reappear at a designated marker."
++setConversationSpeaker("none");
++spawnCharacterAtMarker("Conscience", "MarkerSpawnAtMarker");
++waitMS(500);
++lookAtEachOther("Ada", "Conscience");
++waitMS(500)
++setConversation2('Ada', 'Conscience');
+Conscience: "Hi again!  I'm over here now!"
+Conscience: "Isn't that sweet."
+Ada: "Yes, you are quite talented."
+Conscience: "The test will now conclude."
+Conscience: "See ya next time!"
++despawnCharacter("Conscience");
++endConversation();

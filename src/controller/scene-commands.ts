@@ -10,6 +10,8 @@ import {
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
 import {
+  characterCreate,
+  characterCreateFromTemplate,
   characterGetPosCenterPx,
   characterSetFacing,
   characterSetFacingFromAngle,
@@ -17,11 +19,17 @@ import {
   characterSetWalkTarget,
   Facing,
 } from 'model/character';
-import { roomGetCharacterByName, roomGetTileBelow } from 'model/room';
+import {
+  roomAddCharacter,
+  roomGetCharacterByName,
+  roomGetTileBelow,
+  roomRemoveCharacter,
+} from 'model/room';
 import { getCurrentScene, getCurrentRoom } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
-import { extrapolatePoint, getAngleTowards, Point } from 'utils';
+import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
+import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { createAnimation } from 'model/animation';
 
 /**
@@ -515,9 +523,8 @@ export const setCharacterAt = (
     console.error('Could not find character with name: ' + chName);
     return;
   }
-  if (ch) {
-    characterSetPos(ch, [x, y, z ?? 0]);
-  }
+
+  characterSetPos(ch, [x, y, z ?? 0]);
 };
 
 /**
@@ -571,22 +578,77 @@ export const walkToMarker = (
     return;
   }
 
-  if (ch && marker) {
-    // this offset puts the character's feet on the bottom of the marker
-    const target = [
-      marker.x + (xOffset ?? 0),
-      marker.y + (yOffset ?? 0),
-    ] as Point;
+  // this offset puts the character's feet on the bottom of the marker
+  const target = [
+    marker.x + (xOffset ?? 0),
+    marker.y + (yOffset ?? 0),
+  ] as Point;
 
-    if (skipWait) {
-      characterSetWalkTarget(ch, target, () => void 0);
-    } else {
-      characterSetWalkTarget(ch, target, waitUntil());
-      return true;
-    }
+  if (skipWait) {
+    characterSetWalkTarget(ch, target, () => void 0);
+  } else {
+    characterSetWalkTarget(ch, target, waitUntil());
+    return true;
   }
 };
 
+/**
+ * Starts the given character moving towards the point (xOffset, yOffset) specified
+ * relative to that character's current position.  They will move in a straight line
+ * directly at the target until the reach it. Specifically this means that their FEET will
+ * be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
+ * destination, the next line in the script is invoked.
+ *
+ * Optional param skipWait may be set to `true` if the cutscene should set the character
+ * to walk towards the marker, but not wait for that character to reach their destination
+ * before the next line in the script is invoked.
+ *
+ * ```
+ * // Have Conscience walk one tile to the right and one tile downwards (she will walk
+ * // diagonally.
+ * +walkToOffset('Conscience', 16, 16)
+ * ```
+ *
+ * NOTE: If a character cannot reach the intended location, then they will
+ * get warped there by the game engine.
+ */
+export const walkToOffset = (
+  chName: string,
+  xOffset: number,
+  yOffset: number,
+  skipWait?: boolean
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  // this offset puts the character's feet on the bottom of the marker
+  const target = [ch.x + xOffset, ch.y + yOffset] as Point;
+
+  if (skipWait) {
+    characterSetWalkTarget(ch, target, () => void 0);
+  } else {
+    characterSetWalkTarget(ch, target, waitUntil());
+    return true;
+  }
+};
+
+/**
+ * Sets a character so that their feet are located where the marker is pointing.  Optional
+ * xOffset and yOffset can be specified relative to the marker.  The character and the
+ * marker must exist in the current room.
+ *
+ * ```
+ * // Set Ada at 'MarkerPlayer'
+ * +setCharacterAtMarker('Ada', 'MarkerPlayer');
+ * // Set Conscience one tile to the right of Ada. (Each tile is 16 units wide and tall)
+ * +setCharacterAtMarker('Conscience', 'MarkerPlayer', 16, 0);
+ * ```
+ */
 export const setCharacterAtMarker = (
   chName: string,
   markerName: string,
@@ -617,6 +679,21 @@ export const setCharacterAtMarker = (
   }
 };
 
+/**
+ * Changes the tile beneath the given marker to the tile template specified by the
+ * tileTemplateName.  These are specified in `db/tiles`.  Both the tile template and
+ * marker must exist for this to work.  Optional xOffset and yOffset can be specified
+ * relative to the marker to select a different tile.
+ *
+ * ```
+ * // Set the tiles beneath markerDoorA and one tile to the right + the tiles below
+ * // markerDoorB and one tile to the right to be the respective tile templates.
+ * +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
+ * +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
+ * +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
+ * +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
+ * ```
+ */
 export const changeTileAtMarker = (
   markerName: string,
   tileTemplateName: string,
@@ -670,6 +747,126 @@ export const changeTileAtMarker = (
   }
 };
 
+/**
+ * Spawn a character in the current room of the given chTemplateName, on top of the
+ * character specified by chName (at the same [x,y] coordinates).  Optional xOffset and
+ * yOffset may be specified relative to the target location.  The target character
+ * must exist in the room, and the character to be spawned must have a template defined
+ * inside `db/characters`;
+ *
+ * ```
+ * // Spawn Conscience on top of Ada
+ * +spawnCharacterAtCharacter('Conscience', 'Ada');
+ * ```
+ */
+export const spawnCharacterAtCharacter = (
+  chTemplateName: string,
+  chName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  const chTemplate = getCharacterTemplateIfExists(chTemplateName);
+
+  if (!chTemplate) {
+    console.error(
+      'Could not get a character template with name: ' + chTemplateName
+    );
+    return;
+  }
+
+  if (!ch) {
+    console.error('Could not find target character with name: ' + chName);
+    return;
+  }
+
+  if (roomGetCharacterByName(room, chTemplate.name)) {
+    console.error(
+      'The character to be spawned already exists in the current room: ' +
+        chTemplate.name
+    );
+    return;
+  }
+
+  const target = [ch.x + (xOffset ?? 0), ch.y + (yOffset ?? 0), 0] as Point3d;
+  const spawnCh = characterCreateFromTemplate(chTemplate);
+  characterSetPos(spawnCh, target);
+  roomAddCharacter(room, spawnCh);
+};
+
+/**
+ * Spawn a character in the current room of the given chTemplateName, on top of the
+ * marker specified by markerName (the character's feet will be where the marker is
+ * pointing. Optional xOffset and yOffset may be specified relative to the target location.
+ * The marker must exist in the room, and the character to be spawned must have a template
+ * defined inside `db/characters`;
+ *
+ * ```
+ * // Spawn Skye at MarkerSkyeSpawnPoint
+ * +spawnCharacterAtMarker('Skye', 'MarkerSkyeSpawnPoint');
+ * ```
+ */
+export const spawnCharacterAtMarker = (
+  chTemplateName: string,
+  markerName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const marker = room.markers[markerName];
+  const chTemplate = getCharacterTemplateIfExists(chTemplateName);
+
+  if (!chTemplate) {
+    console.error(
+      'Could not get a character template with name: ' + chTemplateName
+    );
+    return;
+  }
+
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+
+  if (roomGetCharacterByName(room, chTemplate.name)) {
+    console.error(
+      'The character to be spawned already exists in the current room: ' +
+        chTemplate.name
+    );
+    return;
+  }
+
+  const target = [
+    marker.x + (xOffset ?? 0),
+    marker.y + (yOffset ?? 0),
+    0,
+  ] as Point3d;
+  const spawnCh = characterCreateFromTemplate(chTemplate);
+  characterSetPos(spawnCh, target);
+  roomAddCharacter(room, spawnCh);
+};
+
+/**
+ * Remove the character from the current room.  The character must exist in the current room.
+ *
+ * ```
+ * // Remove Skye from the room
+ * +despawnCharacter('Skye');
+ * ```
+ */
+export const despawnCharacter = (chName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  roomRemoveCharacter(room, ch);
+};
+
 const commands = {
   playDialogue,
   setConversation2,
@@ -689,8 +886,12 @@ const commands = {
   shakeScreen,
   setCharacterAt,
   walkToMarker,
+  walkToOffset,
   setCharacterAtMarker,
   changeTileAtMarker,
+  spawnCharacterAtCharacter,
+  spawnCharacterAtMarker,
+  despawnCharacter,
 };
 
 export default commands;

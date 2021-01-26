@@ -468,13 +468,6 @@ export const roomAddParticle = (room: Room, particle: Particle): void => {
   room.particles.push(particle);
 };
 
-export const roomRemoveRemoveCharacter = (room: Room, ch: Character): void => {
-  const ind = room.characters.indexOf(ch);
-  if (ind > -1) {
-    room.characters.splice(ind, 1);
-  }
-};
-
 export const roomGetTileBelow = (room: Room, position: Point): Tile | null => {
   const [x, y] = position;
   const tileX = Math.floor(((x + TILE_WIDTH_WORLD - 3) / TILE_WIDTH) * 2);

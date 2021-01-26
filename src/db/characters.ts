@@ -11,6 +11,16 @@ export const get = (key: string): CharacterTemplate => {
   };
 };
 
+export const getIfExists = (key: string): CharacterTemplate | null => {
+  const result = exp[key];
+  if (!result) {
+    return null;
+  }
+  return {
+    ...result,
+  };
+};
+
 export const init = () => {
   exp.Skye = {
     name: 'Skye',

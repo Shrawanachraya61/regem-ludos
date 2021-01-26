@@ -55,48 +55,49 @@ export const initEvents = (): void => {
   });
 
   pushKeyHandler(async (ev: KeyboardEvent) => {
-    switch (ev.key) {
-      case 'ArrowUp': {
-        break;
-      }
-      case 'ArrowDown': {
-        break;
-      }
-      case 'ArrowLeft': {
-        break;
-      }
-      case 'ArrowRight': {
-        break;
-      }
-      case 'p':
-      case 'P': {
-        if (getIsPaused()) {
-          unpause();
-        } else {
-          pause();
-        }
-        break;
-      }
-      case 'x':
-      case 'X': {
-        const battle = getCurrentBattle();
-        const bCh = battle.allies[0];
-        const skill = battleCharacterGetSelectedSkill(bCh);
-        skill.cb(battle, bCh);
-        break;
-      }
-      case 'c': {
-        if (getKeyUpdateEnabled()) {
-          console.log('DISABLE KEYS');
-          disableKeyUpdate();
-          // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-          await callScript(getCurrentScene(), 'test-setConversation');
-          showSection(AppSection.Debug, true);
-          console.log('ENABLE KEYS');
-          enableKeyUpdate();
-        }
-      }
-    }
+    // this doesn't do anything lol
+    // switch (ev.key) {
+    //   case 'ArrowUp': {
+    //     break;
+    //   }
+    //   case 'ArrowDown': {
+    //     break;
+    //   }
+    //   case 'ArrowLeft': {
+    //     break;
+    //   }
+    //   case 'ArrowRight': {
+    //     break;
+    //   }
+    //   case 'p':
+    //   case 'P': {
+    //     if (getIsPaused()) {
+    //       unpause();
+    //     } else {
+    //       pause();
+    //     }
+    //     break;
+    //   }
+    //   case 'x':
+    //   case 'X': {
+    //     const battle = getCurrentBattle();
+    //     const bCh = battle.allies[0];
+    //     const skill = battleCharacterGetSelectedSkill(bCh);
+    //     skill.cb(battle, bCh);
+    //     break;
+    //   }
+    //   case 'c': {
+    //     if (getKeyUpdateEnabled()) {
+    //       console.log('DISABLE KEYS');
+    //       disableKeyUpdate();
+    //       // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+    //       await callScript(getCurrentScene(), 'test-spawnDespawnCharacter');
+    //       showSection(AppSection.Debug, true);
+    //       console.log('ENABLE KEYS');
+    //       enableKeyUpdate();
+    //     }
+    //   }
+    // }
   });
 };
 
