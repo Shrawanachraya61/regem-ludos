@@ -3,8 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "floor1-outside.tmx",
     "expandedProjectPaths": [
+        "D:/progs/regem-ludos",
+        "."
     ],
     "exportAsImage.drawTileGrid": false,
     "exportAsImage.includeBackgroundColor": false,
@@ -13,7 +15,8 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "D:/progs/gloriam/src/db/map/rooms/tmx/readyroom3.tmx": {
             "scale": 4,
@@ -193,6 +196,12 @@
                 "y": 512.4516318729785
             }
         },
+        "D:/progs/sadelica-new-world/scratch/control.tsx": {
+            "scaleInDock": 1.5
+        },
+        "D:/progs/sadelica-new-world/scratch/floors.tsx": {
+            "scaleInDock": 1.5
+        },
         "D:/progs/sadelica-new-world/scratch/map.tmx": {
             "scale": 1.5,
             "selectedLayer": 1,
@@ -207,30 +216,228 @@
         "D:/progs/sadelica-new-world/scratch/map.tmx#terrain": {
             "scaleInDock": 1
         },
+        "D:/progs/sadelica-new-world/scratch/props-dynamic.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/progs/sadelica-new-world/scratch/props.tsx": {
+            "scaleInDock": 1
+        },
         "D:/progs/sadelica-new-world/scratch/terrain.tsx": {
             "scaleInDock": 1.5,
             "scaleInEditor": 5.5
+        },
+        "D:/progs/sadelica-new-world/scratch/walls.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
         },
         "battle.tmx": {
             "scale": 2.2080078125,
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 256.33967271118973,
-                "y": 120.01769128704112
+                "y": 120.47058823529412
             }
         },
         "battle.tmx#battle-terrain1": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
         },
         "battle.tmx#props": {
+            "dynamicWrapping": true,
             "scaleInDock": 1
         },
-        "test.tmx": {
+        "floor1-atrium.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 464,
+                "y": 266.5
+            }
+        },
+        "floor1-atrium.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor1-atrium.tmx#floors": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-atrium.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor1-atrium.tmx#walls": {
+            "scaleInDock": 0.75
+        },
+        "floor1-atrium.tmx#walls128": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-bowlingalley.tmx": {
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1065,
-                "y": 172.5
+                "x": 311.25,
+                "y": 137.75
+            }
+        },
+        "floor1-bowlingalley.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor1-bowlingalley.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor1-bowlingalley.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor1-bowlingalley.tmx#walls": {
+            "scaleInDock": 1
+        },
+        "floor1-outside.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 529.5,
+                "y": 218
+            }
+        },
+        "floor1-outside.tmx#control": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-outside.tmx#floors": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-outside.tmx#props": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-outside.tmx#walls": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75
+        },
+        "floor1-outside.tmx#walls128": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "floor1-outside.tmx#walls256": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "floor2-cafeteria.tmx": {
+            "scale": 1.2405776515151514,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 528.3828861493836,
+                "y": 232.55295599404602
+            }
+        },
+        "floor2-cafeteria.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor2-cafeteria.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor2-cafeteria.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor2-cafeteria.tmx#walls": {
+            "scaleInDock": 1
+        },
+        "floor2-entrance.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 611.25,
+                "y": 307.75
+            }
+        },
+        "floor2-entrance.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor2-entrance.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor2-entrance.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor2-entrance.tmx#walls": {
+            "scaleInDock": 0.75
+        },
+        "floor2-north.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 331.75,
+                "y": 216.25
+            }
+        },
+        "floor2-north.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor2-north.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor2-north.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor2-north.tmx#walls": {
+            "scaleInDock": 0.75
+        },
+        "floor2-preproom.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 350.25,
+                "y": 188.75
+            }
+        },
+        "floor2-preproom.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor2-preproom.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor2-preproom.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor2-preproom.tmx#walls": {
+            "scaleInDock": 0.75
+        },
+        "floor2-south.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 645,
+                "y": 316
+            }
+        },
+        "floor2-south.tmx#control": {
+            "scaleInDock": 1
+        },
+        "floor2-south.tmx#floors": {
+            "scaleInDock": 1
+        },
+        "floor2-south.tmx#props": {
+            "scaleInDock": 1
+        },
+        "floor2-south.tmx#walls": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75
+        },
+        "props-dynamic.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "test.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1102,
+                "y": 288.66666666666663
             }
         },
         "test.tmx#battle-terrain1": {
@@ -252,8 +459,8 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 934,
-                "y": 129
+                "x": 626,
+                "y": 225
             }
         },
         "test2.tmx#control": {
@@ -278,19 +485,31 @@
     "map.tileWidth": 16,
     "map.width": 64,
     "openFiles": [
+        "floor1-outside.tmx",
+        "floor1-atrium.tmx",
+        "floor2-south.tmx",
+        "props-dynamic.tsx"
     ],
     "project": "regem-ludos.tiled-project",
     "recentFiles": [
+        "props-dynamic.tsx",
+        "floor2-south.tmx",
+        "floor1-atrium.tmx",
+        "floor1-outside.tmx",
+        "battle.tmx",
+        "D:/progs/sadelica-new-world/scratch/props-dynamic.tsx",
+        "test2.tmx",
+        "test.tmx",
+        "D:/progs/sadelica-new-world/scratch/walls.tsx",
         "D:/progs/sadelica-new-world/scratch/map.tmx",
         "D:/progs/sadelica-new-world/scratch/terrain.tsx",
-        "D:/progs/js13k-2020/scratch/map.tmx",
-        "D:/progs/js13k-2020/scratch/map3.tmx"
+        "D:/progs/js13k-2020/scratch/map.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.margin": 0,
     "tileset.spacing": 0,
     "tileset.tileSize": {
-        "height": 64,
+        "height": 256,
         "width": 32
     },
     "tileset.transparentColor": "#ff00ff",

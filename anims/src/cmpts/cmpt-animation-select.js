@@ -7,6 +7,44 @@ import display from 'content/display';
 import Animation from 'content/animation';
 import { colors } from 'utils';
 
+const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
+  const [selectedSpritesheet, setSelectedSpritesheet] = React.useState('');
+
+  const validate = value => {
+    return value === '';
+  };
+
+  const onConfirm = async () => {
+    const value = selectedSpritesheet;
+    if (!validate(value)) {
+      // do something
+    }
+  };
+
+  return (
+    <Dialog
+      open={!!open}
+      title="Duplicate Animation"
+      onConfirm={onConfirm}
+      onCancel={() => {
+        setOpen(false);
+      }}
+      content={
+        <>
+          <div style={{ margin: '5px' }}>
+            <div> Select Spritesheet </div>
+            <select
+              onChange={ev => {
+                setSelectedSpritesheet(ev.target.value);
+              }}
+            ></select>
+          </div>
+        </>
+      }
+    />
+  );
+};
+
 const RenameDialog = ({ open, setOpen, appInterface }) => {
   const animName = open;
   const [newAnimName, setNewAnimName] = React.useState(animName);
@@ -189,6 +227,7 @@ const AnimationItem = ({
   appInterface,
   setDeleteConfirmOpen,
   setRenameAnimDialogOpen,
+  setDuplicateDialogOpen,
 }) => {
   const ref = React.useRef(null);
   const spriteName = anim.getFirstSpriteName();
@@ -221,7 +260,7 @@ const AnimationItem = ({
         appInterface.clearMarkedFrames();
       }}
       style={{
-        height: 64,
+        // height: 64,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -266,15 +305,15 @@ const AnimationItem = ({
           style={{
             display: 'flex',
             justifyContent: 'flex-start',
-            alignItems: 'center',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
           }}
         >
           <div
             style={{
               display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              alignItems: 'center',
+              justifyContent: 'space-between',
+              // width: '164px',
             }}
           >
             <Button
@@ -292,6 +331,32 @@ const AnimationItem = ({
               Move UP
             </Button>
             <Button
+              style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+              type="cancel"
+              onClick={() => {
+                setDeleteConfirmOpen(anim.name);
+              }}
+            >
+              Delete
+            </Button>
+            <Button
+              style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+              type="secondary"
+              onClick={() => {
+                setRenameAnimDialogOpen(anim.name);
+              }}
+            >
+              Rename
+            </Button>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              // width: '164px',
+            }}
+          >
+            <Button
               style={{
                 margin: '2px',
                 fontSize: '10px',
@@ -305,34 +370,6 @@ const AnimationItem = ({
             >
               Move DN
             </Button>
-          </div>
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100px',
-              }}
-            >
-              <Button
-                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-                type="cancel"
-                onClick={() => {
-                  setDeleteConfirmOpen(anim.name);
-                }}
-              >
-                Delete
-              </Button>
-              <Button
-                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-                type="secondary"
-                onClick={() => {
-                  setRenameAnimDialogOpen(anim.name);
-                }}
-              >
-                Rename
-              </Button>
-            </div>
             <Button
               style={{
                 margin: '2px',
@@ -371,7 +408,6 @@ const AnimationItem = ({
 
                 const { loop, isCadence } = anim;
                 const sprites = anim.sprites.slice(0);
-                console.log('DUPLICATE', sprites);
                 display.createAnimation(
                   animName,
                   appInterface.imageName,
@@ -398,6 +434,28 @@ const AnimationItem = ({
               Duplicate
             </Button>
           </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              // width: '120px',
+            }}
+          >
+            <Button
+              style={{
+                margin: '2px',
+                fontSize: '10px',
+                padding: '2px',
+                width: '80px',
+              }}
+              type="secondary"
+              onClick={() => {
+                setDuplicateDialogOpen(true);
+              }}
+            >
+              Cp To Other
+            </Button>
+          </div>
         </div>
       </div>
       <canvas
@@ -414,6 +472,7 @@ const AnimationSelect = ({ appInterface }) => {
   const [createAnimDialogOpen, setCreateAnimDialogOpen] = React.useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [renameAnimDialogOpen, setRenameAnimDialogOpen] = React.useState(false);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = React.useState(false);
   const { imageName } = appInterface;
   const { animations } = display.pictures[imageName] || { animations: [] };
   const anims = animations.map(animName => display.getAnimation(animName));
@@ -496,6 +555,7 @@ const AnimationSelect = ({ appInterface }) => {
               appInterface={appInterface}
               setDeleteConfirmOpen={setDeleteConfirmOpen}
               setRenameAnimDialogOpen={setRenameAnimDialogOpen}
+              setDuplicateDialogOpen={setDuplicateDialogOpen}
             />
           );
         })}
@@ -509,6 +569,11 @@ const AnimationSelect = ({ appInterface }) => {
       <RenameDialog
         open={renameAnimDialogOpen}
         setOpen={setRenameAnimDialogOpen}
+        appInterface={appInterface}
+      />
+      <DuplicateToOtherDialog
+        open={duplicateDialogOpen}
+        setOpen={setDuplicateDialogOpen}
         appInterface={appInterface}
       />
     </div>

@@ -1,4 +1,4 @@
-import { loadImageAsSprite, getSprite } from 'model/sprite';
+import { createSprite, loadImageAsSprite, Sprite } from 'model/sprite';
 import {
   removeFileExtension,
   Point,
@@ -8,17 +8,22 @@ import {
 import {
   Character,
   characterSetPos,
-  characterGetPos,
   characterCreateFromTemplate,
 } from 'model/character';
 import { Particle } from 'model/particle';
 import { get as getCharacter } from 'db/characters';
-import { Polygon } from 'view/draw';
-import { Animation } from 'model/animation';
-
+import { Polygon, drawSprite } from 'view/draw';
 import { getTrigger } from 'lib/rpgscript';
 import { getReplacementTemplate } from 'db/tiles';
 import { createAnimation } from 'model/animation';
+import {
+  RenderObject,
+  createPropRenderObject,
+  createMarkerRenderObject,
+  createTriggerActivatorRenderObject,
+  createTileRenderObject,
+} from 'model/render-object';
+import { createCanvas } from 'model/canvas';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -38,28 +43,14 @@ export interface Room {
   heightPx: number;
   props: Prop[];
   tiles: Tile[];
+  defaultFloorSprite: string;
   characters: Character[];
   particles: Particle[];
   renderObjects: RenderObject[];
+  floorTileObjects: RenderObject[];
+  floor?: Sprite;
   markers: Record<string, Marker>;
   triggerActivators: TriggerActivator[];
-}
-
-export interface RenderObject {
-  name?: string;
-  sprite?: string;
-  character?: Character;
-  particle?: Particle;
-  origPy?: number;
-  highlighted?: boolean;
-  px?: number;
-  py?: number;
-  polygon?: Polygon;
-  isMarker?: boolean;
-  isTrigger?: boolean;
-  anim?: Animation;
-  sortY: number;
-  visible: boolean;
 }
 
 export interface Prop {
@@ -69,40 +60,12 @@ export interface Prop {
   ro?: RenderObject;
 }
 
-export const createPropRenderObject = (prop: Prop): RenderObject => {
-  let [px, py] = isoToPixelCoords(prop.x, prop.y);
-  const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
-  px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
-  py = py - spriteHeight + TILE_HEIGHT / 2;
-  return {
-    sprite: prop.sprite,
-    px,
-    py,
-    sortY: py + spriteHeight,
-    visible: true,
-  };
-};
-
 export interface Marker {
   name: string;
   x: number;
   y: number;
   ro?: RenderObject;
 }
-
-export const createMarkerRenderObject = (marker: Marker): RenderObject => {
-  const { x, y } = marker;
-  const [px, py] = isoToPixelCoords(x, y, 0);
-  return {
-    name: marker.name,
-    sprite: 'control_1',
-    px,
-    py,
-    sortY: py + 32, // because all markers are 32 px tall (right now)
-    visible: true,
-    isMarker: true,
-  };
-};
 
 export interface TriggerActivator {
   name: string;
@@ -113,32 +76,6 @@ export interface TriggerActivator {
   polygon?: Polygon;
   ro?: RenderObject;
 }
-
-export const createTriggerActivatorRenderObject = (
-  trigger: TriggerActivator
-): RenderObject => {
-  if (trigger.polygon) {
-    return {
-      name: trigger.name,
-      polygon: trigger.polygon,
-      sortY: Infinity,
-      visible: true,
-      isTrigger: true,
-    };
-  } else {
-    const { x, y } = trigger;
-    const [px, py] = isoToPixelCoords(x, y, 0);
-    return {
-      name: trigger.name,
-      sprite: 'control_2',
-      px,
-      py,
-      sortY: py + 32, // because all sprite trigger activators are 32 px tall (right now)
-      visible: true,
-      isTrigger: true,
-    };
-  }
-};
 
 export interface Tile {
   sprite: string;
@@ -152,25 +89,6 @@ export interface Tile {
   highlighted: boolean;
   ro?: RenderObject;
 }
-
-export const createTileRenderObject = (tile: Tile): RenderObject => {
-  let [px, py] = isoToPixelCoords(
-    (tile.x * TILE_WIDTH) / 2,
-    (tile.y * TILE_HEIGHT) / 2
-  );
-  const origPy = py;
-  py -= tile.tileHeight - 32;
-  return {
-    sprite: tile.sprite,
-    origPy,
-    px,
-    py,
-    highlighted: tile.highlighted,
-    // corrects for the tile height, which can be any height
-    sortY: py + (tile.tileHeight - 32) + (tile.tileHeight > 32 ? 16 + 4 : 16),
-    visible: true,
-  };
-};
 
 interface TiledObject {
   x: number;
@@ -247,12 +165,16 @@ export const createRoom = async (
   const { tiles: propsTilesets, firstgid: propsTilesetsFirstGid } =
     tiledJson.tilesets.find((tileSet: any) => tileSet.name === 'props') || {};
 
+  const widthPx = width * TILE_WIDTH;
+  const heightPx = (height * TILE_HEIGHT) / 2;
+  const [floorCanvas, floorCtx] = createCanvas(widthPx, heightPx);
+
   const room: Room = {
     tiledJson,
     width,
     height,
-    widthPx: width * TILE_WIDTH,
-    heightPx: (height * TILE_HEIGHT) / 2,
+    widthPx,
+    heightPx,
     props: [] as Prop[],
     tiles: [] as Tile[],
     characters: [] as Character[],
@@ -260,6 +182,9 @@ export const createRoom = async (
     markers: {} as Record<string, Marker>,
     triggerActivators: [] as TriggerActivator[],
     renderObjects: [] as RenderObject[],
+    floorTileObjects: [] as RenderObject[],
+    floor: createSprite(floorCanvas),
+    defaultFloorSprite: 'floors_1',
   };
 
   console.log(
@@ -291,7 +216,11 @@ export const createRoom = async (
     } as Tile;
     room.tiles.push(tile);
     const ro = createTileRenderObject(tile);
-    room.renderObjects.push(ro);
+    if (ro.isFloor) {
+      room.floorTileObjects.push(ro);
+    } else {
+      room.renderObjects.push(ro);
+    }
     tile.ro = ro;
     const tileTemplate = getReplacementTemplate(tile.sprite);
     if (tileTemplate) {
@@ -442,10 +371,20 @@ export const createRoom = async (
         addMarker(object);
       } else if (isTrigger) {
         addTrigger(object);
-      } else {
+      } else if (object.name) {
         addCharacter(object);
+      } else {
+        console.error('Skipped loading unnamed tiled object', object);
       }
     });
+  }
+
+  // draw the floor to the floor canvas
+  for (let i = 0; i < room.floorTileObjects.length; i++) {
+    const { sprite, px, py } = room.floorTileObjects[i];
+    if (sprite) {
+      drawSprite(sprite, px as number + room.widthPx / 2, py as number, 1, floorCtx);
+    }
   }
 
   await Promise.all(promises);

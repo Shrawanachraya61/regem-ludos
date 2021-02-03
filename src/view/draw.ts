@@ -250,6 +250,10 @@ export const drawRoom = (
     return a.sortY < b.sortY ? -1 : 1;
   });
 
+  if (room.floor) {
+    drawSprite(room.floor, -room.widthPx / 2, 0);
+  }
+
   for (let i = 0; i < room.renderObjects.length; i++) {
     const {
       name,

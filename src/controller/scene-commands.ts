@@ -115,6 +115,15 @@ export const setConversation2 = (
   actorNameLeft: string,
   actorNameRight: string
 ) => {
+  if (!actorNameLeft) {
+    console.error('No left actor specified.');
+    return;
+  }
+  if (!actorNameRight) {
+    console.error('No right actor specified.');
+    return;
+  }
+
   startConversation2(
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
@@ -173,9 +182,9 @@ export const endConversation = (ms?: number) => {
 };
 
 /**
- * This sets which portrait is rendered as "active".  For example, this moves the portrait
- * on the left to the forefront and with 100% opacity, pushing all other portraits away
- * and setting their opacity to be semi-transparent.
+ * This sets which portrait is rendered as "active".  During a conversation2,
+ * this moves the portrait on the left to the forefront and with 100% opacity
+ * pushing all other portraits away, and setting their opacity to be semi-transparent.
  *
  * Values for the speaker can be one of the following:
  *
@@ -193,7 +202,13 @@ export const endConversation = (ms?: number) => {
  *
  * ![Example Image](../res/docs/setSpeakerLeftExample.png)
  *
- * This pushes every other portrait to the side, setting their opacity to be semi-transparent.
+ * Direct calling of this function is mostly useful for moving the portraits around
+ * a little more manually than the automatic way.
+ *
+ * The following code contains a line with `Other:` which implicitly has a `setConversationSpeaker`
+ * call to 'none'.  This pushes every other portrait to the side, setting their opacity to
+ * be semi-transparent and simulating a situation where neither character in a conversation2
+ * is speaking; somebody else is.
  *
  * ```
  * @test-setConversationSpeaker
@@ -529,7 +544,7 @@ export const setCharacterAt = (
 
 /**
  * Starts the given character moving towards a marker.  They will move in a straight line
- * directly at the marker until the reach it. Specifically this means that their FEET will
+ * directly at the marker until they reach it. Specifically this means that their FEET will
  * be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
  * destination, the next line in the script is invoked.
  *
@@ -539,7 +554,7 @@ export const setCharacterAt = (
  *
  * Optional params (xOffset, yOffset) can be provided to change the final destination of
  * the character.  This is useful for telling multiple characters to walk towards a marker
- * but don't want them all standing in exactly the same spot.
+ * but you don't want them all standing in exactly the same spot.
  *
  * Optional param skipWait may be set to `true` if the cutscene should set the character
  * to walk towards the marker, but not wait for that character to reach their destination
@@ -595,7 +610,7 @@ export const walkToMarker = (
 /**
  * Starts the given character moving towards the point (xOffset, yOffset) specified
  * relative to that character's current position.  They will move in a straight line
- * directly at the target until the reach it. Specifically this means that their FEET will
+ * directly at the target until they reach it. Specifically this means that their FEET will
  * be within a 4 pixel radius at the bottom of the marker. Once that character reaches the
  * destination, the next line in the script is invoked.
  *
@@ -605,7 +620,7 @@ export const walkToMarker = (
  *
  * ```
  * // Have Conscience walk one tile to the right and one tile downwards (she will walk
- * // diagonally.
+ * // diagonally.)
  * +walkToOffset('Conscience', 16, 16)
  * ```
  *
@@ -867,6 +882,30 @@ export const despawnCharacter = (chName: string) => {
   roomRemoveCharacter(room, ch);
 };
 
+export const fadeOut = (ms?: number, skipWait?: boolean) => {
+  const localMs = ms ?? 750;
+  const canvasContainer = document.getElementById('fade');
+  if (canvasContainer) {
+    canvasContainer.style.transition = `background-color ${localMs}ms`;
+    canvasContainer.style['background-color'] = 'rgba(0, 0, 0, 255)';
+  }
+  if (!skipWait) {
+    return waitMS(localMs);
+  }
+};
+
+export const fadeIn = (ms?: number, skipWait?: boolean) => {
+  const localMs = ms ?? 1000;
+  const canvasContainer = document.getElementById('fade');
+  if (canvasContainer) {
+    canvasContainer.style.transition = `background-color ${localMs}ms`;
+    canvasContainer.style['background-color'] = 'rgba(0, 0, 0, 0)';
+  }
+  if (!skipWait) {
+    return waitMS(localMs);
+  }
+};
+
 const commands = {
   playDialogue,
   setConversation2,
@@ -892,6 +931,8 @@ const commands = {
   spawnCharacterAtCharacter,
   spawnCharacterAtMarker,
   despawnCharacter,
+  fadeOut,
+  fadeIn,
 };
 
 export default commands;

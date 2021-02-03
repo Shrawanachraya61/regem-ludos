@@ -27,10 +27,10 @@ import {
   roomGetTileBelow,
   roomGetTileAt,
   Tile,
-  RenderObject,
   TILE_HEIGHT_WORLD,
   TILE_WIDTH_WORLD,
 } from 'model/room';
+import { RenderObject } from 'model/render-object';
 import { getCtx } from './canvas';
 import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';

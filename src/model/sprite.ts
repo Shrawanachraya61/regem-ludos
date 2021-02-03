@@ -14,14 +14,14 @@ type SpriteCollection = { [key: string]: Sprite };
 const loadedSprites: SpriteCollection = {};
 (window as any).sprites = loadedSprites;
 
-const createSprite = (
+export const createSprite = (
   img: HTMLCanvasElement | HTMLImageElement,
-  x: number,
-  y: number,
-  w: number,
-  h: number
+  x?: number,
+  y?: number,
+  w?: number,
+  h?: number
 ): Sprite => {
-  return [img, x, y, w, h];
+  return [img, x ?? 0, y ?? 0, w ?? img.width, h ?? img.height];
 };
 
 export const loadImage = async (

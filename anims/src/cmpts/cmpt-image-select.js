@@ -6,11 +6,21 @@ const THUMB_HEIGHT = 64;
 
 const ImageButton = ({ appInterface, imageName }) => {
   const ref = React.useRef(null);
-  const { spriteWidth } = display.pictures[imageName];
+  const { spriteWidth, img } = display.pictures[imageName];
   React.useEffect(() => {
+    const scale = spriteWidth > 64 ? 0.25 : 1;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    // this basically means: "is this a spritesheet or a picture"
+    if (spriteWidth >= img.width) {
+      offsetX = THUMB_WIDTH / 2 - scale * (img.width / 2);
+      offsetY = THUMB_HEIGHT / 2 - scale * (img.height / 2);
+    }
     display.setCanvas(ref.current);
-    display.drawSprite(imageName, 0, 0, {
-      scale: spriteWidth > 64 ? 0.25 : 1,
+    display.clearScreen();
+    display.drawSprite(imageName, offsetX, offsetY, {
+      scale,
     });
     display.restoreCanvas();
   });

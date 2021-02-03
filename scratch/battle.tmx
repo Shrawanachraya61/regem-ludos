@@ -6,21 +6,7 @@
  <tileset firstgid="1" name="battle-terrain1" tilewidth="32" tileheight="32" tilecount="16" columns="4">
   <image source="../res/battle-terrain1.png" width="128" height="128"/>
  </tileset>
- <tileset firstgid="17" name="props" tilewidth="96" tileheight="64" tilecount="4" columns="0">
-  <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image width="32" height="64" source="../res/tree1.png"/>
-  </tile>
-  <tile id="1">
-   <image width="32" height="32" source="../res/markerGreen.png"/>
-  </tile>
-  <tile id="2">
-   <image width="32" height="32" source="../res/markerOrange.png"/>
-  </tile>
-  <tile id="3">
-   <image width="96" height="32" source="../res/test-prop.png"/>
-  </tile>
- </tileset>
+ <tileset firstgid="17" source="../../sadelica-new-world/scratch/props-dynamic.tsx"/>
  <layer id="1" name="Tiles" width="16" height="16">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
