@@ -119,7 +119,7 @@ Ada: "After this dialog, Conscience shall appear."
 +spawnCharacterAtCharacter("Conscience", "Ada");
 +walkToOffset("Conscience", 16, 16);
 +lookAtEachOther("Ada", "Conscience");
-+setConversation2('Ada', 'Conscience');
++setConversation2("Ada", "Conscience");
 Conscience: "Hi there!"
 Ada: "As you can see, Conscience has popped into existence."
 Conscience: "Oh, you know, I'm always around!"
@@ -146,4 +146,16 @@ Ada: "Yes, you are quite talented."
 Conscience: "The test will now conclude."
 Conscience: "See ya next time!"
 +despawnCharacter("Conscience");
++endConversation();
+
+@test-fade
++setConversation("Conscience");
+Conscience: "This script tests fadeIn and fadeOut."
+Conscience: "The screen will now do both of those things!"
++fadeOut();
+Conscience: "Whoah, it's dark now!"
+Conscience: "Let's fix that."
++fadeIn();
+Conscience: "Much better."
+Conscience: "The test will now conclude."
 +endConversation();
