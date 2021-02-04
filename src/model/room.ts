@@ -57,6 +57,8 @@ export interface Prop {
   sprite: string;
   x: number;
   y: number;
+  isDynamic: boolean;
+  isFront: boolean;
   ro?: RenderObject;
 }
 
@@ -152,22 +154,58 @@ const gidToTileSpriteAndSize = (
   throw new Error('Could not determine sprite from gid:' + gid);
 };
 
+let dynamicPropsTileset: null | string[] = null;
+const loadDynamicPropsTileset = async () => {
+  const xml = await fetch('res/props-dynamic.tiled-sheet.tsx').then(result =>
+    result.text()
+  );
+
+  if (xml) {
+    dynamicPropsTileset =
+      xml
+        .match(/source="(.*)\.[\w]+"/g)
+        ?.map(str =>
+          str.slice(str.indexOf('"') + 1, str.lastIndexOf('"') - 4)
+        ) ?? null;
+  }
+};
+
 export const createRoom = async (
   name: string,
   tiledJson: any
 ): Promise<Room> => {
+  // const t
+  if (!dynamicPropsTileset) {
+    await loadDynamicPropsTileset();
+  }
+
   const { width, height, data } = tiledJson.layers[0];
   const { objects: props } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
   const { objects } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Objects') ||
     {};
-  const { tiles: propsTilesets, firstgid: propsTilesetsFirstGid } =
-    tiledJson.tilesets.find((tileSet: any) => tileSet.name === 'props') || {};
+  const { firstgid: propsTilesetsFirstGid } = tiledJson.tilesets.find(
+    (tileSet: any) => {
+      return (
+        tileSet.name === 'props-dynamic' ||
+        (tileSet.source ?? '').indexOf('props-dynamic') > -1
+      );
+    }
+  ) || { firstGid: -9999999 };
+
+  console.log(
+    'PROPS TILESETS',
+    tiledJson.name,
+    tiledJson.tilesets,
+    dynamicPropsTileset,
+    propsTilesetsFirstGid
+  );
 
   const widthPx = width * TILE_WIDTH;
   const heightPx = (height * TILE_HEIGHT) / 2;
-  const [floorCanvas, floorCtx] = createCanvas(widthPx, heightPx);
+  // not sure why the +TILE_HEIGHT is required.  Maybe it's a rounding thing.
+  const [floorCanvas, floorCtx] = createCanvas(widthPx, heightPx + TILE_HEIGHT);
 
   const room: Room = {
     tiledJson,
@@ -234,40 +272,46 @@ export const createRoom = async (
     }
   });
 
-  if (props) {
-    props.forEach((tiledProp: any, i: number) => {
-      const x: number = tiledProp.x;
-      const y: number = tiledProp.y;
-      const gid: number = tiledProp.gid;
+  const addProp = (tiledProp: any) => {
+    const x: number = tiledProp.x;
+    const y: number = tiledProp.y;
+    const gid: number = tiledProp.gid;
 
-      const propIndex = gid - propsTilesetsFirstGid;
-      const tilesetTile = propsTilesets[propIndex];
-      if (!tilesetTile) {
-        throw new Error(
-          `Could not load prop '${i}' in room definition '${name}', the propIndex '${propIndex}' has no associated tilesetTile. (gid=${gid} startingGid=${propsTilesetsFirstGid})`
+    const isDynamicProp =
+      gid >= propsTilesetsFirstGid &&
+      gid < propsTilesetsFirstGid + dynamicPropsTileset?.length;
+    const propIndex = gid - propsTilesetsFirstGid;
+
+    if (isDynamicProp) {
+      if (dynamicPropsTileset) {
+        const pictureName = dynamicPropsTileset[propIndex];
+        console.log('Add dynamic prop', tiledProp, pictureName);
+        if (!pictureName) {
+          throw new Error(
+            `Could not load prop in room definition '${name}', the propIndex '${propIndex}' has no associated tilesetTile. (gid=${gid} startingGid=${propsTilesetsFirstGid})`
+          );
+        }
+        promises.push(
+          new Promise<void>(async resolve => {
+            await loadImageAsSprite(
+              pictureName,
+              removeFileExtension(pictureName)
+            );
+            const prop = {
+              x,
+              y,
+              sprite: pictureName,
+              isDynamic: true,
+              isFront: tiledProp.type === 'front',
+            };
+            room.props.push(prop);
+            room.renderObjects.push(createPropRenderObject(prop));
+            resolve();
+          })
         );
       }
-      const pictureName = tilesetTile.image.slice(
-        tilesetTile.image.lastIndexOf('/') + 1
-      );
-      promises.push(
-        new Promise<void>(async resolve => {
-          await loadImageAsSprite(
-            pictureName,
-            removeFileExtension(pictureName)
-          );
-          const prop = {
-            x,
-            y,
-            sprite: pictureName.slice(0, -4),
-          };
-          room.props.push(prop);
-          room.renderObjects.push(createPropRenderObject(prop));
-          resolve();
-        })
-      );
-    });
-  }
+    }
+  };
 
   const addCharacter = (tiledObject: TiledObject) => {
     console.log('Tiled addCharacter', tiledObject);
@@ -362,6 +406,10 @@ export const createRoom = async (
     }
   };
 
+  if (props) {
+    props.forEach(addProp);
+  }
+
   if (objects) {
     objects.forEach((object: TiledObject) => {
       const isMarker = object.name.toLowerCase().indexOf('marker') > -1;
@@ -374,7 +422,8 @@ export const createRoom = async (
       } else if (object.name) {
         addCharacter(object);
       } else {
-        console.error('Skipped loading unnamed tiled object', object);
+        addProp(object);
+        // console.error('Skipped loading unnamed tiled object', object);
       }
     });
   }
@@ -383,7 +432,13 @@ export const createRoom = async (
   for (let i = 0; i < room.floorTileObjects.length; i++) {
     const { sprite, px, py } = room.floorTileObjects[i];
     if (sprite) {
-      drawSprite(sprite, px as number + room.widthPx / 2, py as number, 1, floorCtx);
+      drawSprite(
+        sprite,
+        (px as number) + room.widthPx / 2,
+        py as number,
+        1,
+        floorCtx
+      );
     }
   }
 

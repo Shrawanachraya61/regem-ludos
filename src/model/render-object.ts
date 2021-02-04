@@ -32,17 +32,32 @@ export interface RenderObject {
 }
 
 export const createPropRenderObject = (prop: Prop): RenderObject => {
-  let [px, py] = isoToPixelCoords(prop.x, prop.y);
-  const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
-  px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
-  py = py - spriteHeight + TILE_HEIGHT / 2;
-  return {
-    sprite: prop.sprite,
-    px,
-    py,
-    sortY: py + spriteHeight,
-    visible: true,
-  };
+  if (prop.isDynamic) {
+    const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
+    let [px, py] = isoToPixelCoords(prop.x, prop.y);
+    // EWW, EWW GET IT OFF, WHY ARE THESE SO ARBITRARY?
+    py = py - spriteHeight + 16 + 4;
+    px = px - spriteWidth / 2 + 16 + 4;
+    return {
+      sprite: prop.sprite,
+      px,
+      py,
+      sortY: prop.isFront ? Infinity : py + spriteHeight,
+      visible: true,
+    };
+  } else {
+    let [px, py] = isoToPixelCoords(prop.x, prop.y);
+    const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
+    px -= px - spriteWidth / 2 + TILE_WIDTH / 2;
+    py = py - spriteHeight + TILE_HEIGHT / 2;
+    return {
+      sprite: prop.sprite,
+      px,
+      py,
+      sortY: py + spriteHeight,
+      visible: true,
+    };
+  }
 };
 
 export const createMarkerRenderObject = (marker: Marker): RenderObject => {

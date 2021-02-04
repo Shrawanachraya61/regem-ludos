@@ -25,12 +25,18 @@ import {
   roomGetTileBelow,
   roomRemoveCharacter,
 } from 'model/room';
-import { getCurrentScene, getCurrentRoom } from 'model/generics';
+import {
+  getCurrentScene,
+  getCurrentRoom,
+  getCurrentPlayer,
+} from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
+import { createAnimation } from 'model/animation';
+import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
-import { createAnimation } from 'model/animation';
+import { getIfExists as getOverworld } from 'db/overworlds';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -882,6 +888,11 @@ export const despawnCharacter = (chName: string) => {
   roomRemoveCharacter(room, ch);
 };
 
+/**
+ * Fade the world screen to black.  Optional ms can be specified for how long the fade
+ * takes.  Optional skipWait can be specified to not wait for this command to finish
+ * before executing the next one.
+ */
 export const fadeOut = (ms?: number, skipWait?: boolean) => {
   const localMs = ms ?? 750;
   const canvasContainer = document.getElementById('fade');
@@ -894,6 +905,11 @@ export const fadeOut = (ms?: number, skipWait?: boolean) => {
   }
 };
 
+/**
+ * Fade the world screen back in.  Optional ms can be specified for how long the fade
+ * takes.  Optional skipWait can be specified to not wait for this command to finish
+ * before executing the next one.
+ */
 export const fadeIn = (ms?: number, skipWait?: boolean) => {
   const localMs = ms ?? 1000;
   const canvasContainer = document.getElementById('fade');
@@ -904,6 +920,20 @@ export const fadeIn = (ms?: number, skipWait?: boolean) => {
   if (!skipWait) {
     return waitMS(localMs);
   }
+};
+
+export const changeRoom = (roomName: string) => {
+  const player = getCurrentPlayer();
+  const overworldTemplate = getOverworld(roomName);
+  if (!player) {
+    console.error('Player has not been initialized.');
+    return;
+  }
+  if (!overworldTemplate) {
+    console.error('No overworld template exists with name:', roomName);
+    return;
+  }
+  initiateOverworld(player, overworldTemplate);
 };
 
 const commands = {
@@ -933,6 +963,7 @@ const commands = {
   despawnCharacter,
   fadeOut,
   fadeIn,
+  changeRoom,
 };
 
 export default commands;

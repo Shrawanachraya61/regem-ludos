@@ -11,6 +11,7 @@ import {
   getCurrentPlayer,
   getCurrentOverworld,
   getCurrentScene,
+  getRenderBackgroundColor,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -104,7 +105,13 @@ export const runMainLoop = async (): Promise<void> => {
 
     clearScreen();
     clearScreen(getCtx('outer'));
-    drawRect(0, 0, getScreenSize(), getScreenSize(), 'black');
+    drawRect(
+      0,
+      0,
+      getScreenSize(),
+      getScreenSize(),
+      getRenderBackgroundColor()
+    );
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();

@@ -18,6 +18,7 @@ import {
   enableKeyUpdate,
   disableKeyUpdate,
   getCurrentOverworld,
+  setRenderBackgroundColor,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
@@ -39,6 +40,7 @@ import {
   characterCollidesWithRect,
 } from 'model/character';
 import { invokeTrigger, callScript } from 'controller/scene-management';
+import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
 import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
@@ -75,17 +77,18 @@ export const initiateOverworld = (
   setCurrentRoom(room);
   setCurrentPlayer(player);
   setCurrentOverworld(overworld);
+  setRenderBackgroundColor(template.backgroundColor);
 
-  // if (playerPos) {
-  //   characterSetPos(leader, playerPos);
-  // } else {
-  //   const marker = room.markers.MarkerPlayer;
-  //   if (marker) {
-  //     setCharacterAtMarker(leader.name, 'MarkerPlayer');
-  //   } else {
-  //     characterSetPos(leader, [0, 0, 0]);
-  //   }
-  // }
+  if (playerPos) {
+    characterSetPos(leader, playerPos);
+  } else {
+    const marker = room.markers.MarkerPlayer;
+    if (marker) {
+      setCharacterAtMarker(leader.name, 'MarkerPlayer');
+    } else {
+      characterSetPos(leader, [0, 0, 0]);
+    }
+  }
 
   pushKeyHandler(overworldKeyHandler);
 

@@ -22,6 +22,7 @@ export interface OverworldCharacter {
 
 export interface OverworldTemplate {
   roomName: string;
+  backgroundColor: string;
   loadTriggerName?: string;
 }
 

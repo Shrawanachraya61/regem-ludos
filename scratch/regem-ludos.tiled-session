@@ -196,6 +196,9 @@
                 "y": 512.4516318729785
             }
         },
+        "D:/progs/regem-ludos/res/props-dynamic.tiled-sheet.tsx": {
+            "dynamicWrapping": true
+        },
         "D:/progs/sadelica-new-world/scratch/control.tsx": {
             "scaleInDock": 1.5
         },
@@ -249,11 +252,11 @@
             "scaleInDock": 1
         },
         "floor1-atrium.tmx": {
-            "scale": 2,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 464,
-                "y": 266.5
+                "x": 568.3333333333334,
+                "y": 247.33333333333337
             }
         },
         "floor1-atrium.tmx#control": {
@@ -297,8 +300,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 529.5,
-                "y": 218
+                "x": 637.25,
+                "y": 177.5
             }
         },
         "floor1-outside.tmx#control": {
@@ -312,6 +315,9 @@
         "floor1-outside.tmx#props": {
             "dynamicWrapping": false,
             "scaleInDock": 1
+        },
+        "floor1-outside.tmx#props-dynamic": {
+            "dynamicWrapping": true
         },
         "floor1-outside.tmx#walls": {
             "dynamicWrapping": false,
@@ -410,8 +416,8 @@
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 645,
-                "y": 316
+                "x": 640.5,
+                "y": 315
             }
         },
         "floor2-south.tmx#control": {
@@ -492,11 +498,11 @@
     ],
     "project": "regem-ludos.tiled-project",
     "recentFiles": [
-        "props-dynamic.tsx",
-        "floor2-south.tmx",
         "floor1-atrium.tmx",
-        "floor1-outside.tmx",
+        "floor2-south.tmx",
+        "props-dynamic.tsx",
         "battle.tmx",
+        "floor1-outside.tmx",
         "D:/progs/sadelica-new-world/scratch/props-dynamic.tsx",
         "test2.tmx",
         "test.tmx",

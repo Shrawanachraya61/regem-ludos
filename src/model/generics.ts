@@ -106,3 +106,8 @@ let markersVisible = true;
 export const getMarkersVisible = (): boolean => markersVisible;
 export const showMarkers = () => (markersVisible = true);
 export const hideMarkers = () => (markersVisible = false);
+
+let renderBackgroundColor = 'black';
+export const getRenderBackgroundColor = (): string => renderBackgroundColor;
+export const setRenderBackgroundColor = (color: string) =>
+  (renderBackgroundColor = color);
