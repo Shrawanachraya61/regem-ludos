@@ -179,6 +179,12 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
     display.restoreCanvas();
   }, [spriteName, ref]);
 
+  React.useEffect(() => {
+    if (durationMs !== duration) {
+      setDuration(durationMs);
+    }
+  }, [duration, durationMs]);
+
   return (
     <div style={{ display: 'inline-block' }}>
       <div

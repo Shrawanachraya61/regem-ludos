@@ -7,19 +7,59 @@ import display from 'content/display';
 import Animation from 'content/animation';
 import { colors } from 'utils';
 
-const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
+const DuplicateToOtherDialog = ({ open, setOpen, appInterface, anim }) => {
   const [selectedSpritesheet, setSelectedSpritesheet] = React.useState('');
+  const [errorText, setErrorText] = React.useState('');
+  const [newAnimName, setNewAnimName] = React.useState('');
 
   const validate = value => {
+    const hasAnim = value && display.hasAnimation(value);
+    if (hasAnim) {
+      setErrorText('An animation with that name already exists.');
+    } else {
+      setErrorText('');
+    }
     return value === '';
   };
 
   const onConfirm = async () => {
     const value = selectedSpritesheet;
     if (!validate(value)) {
-      // do something
+      appInterface.clearMarkedFrames();
+      setOpen(false);
+      display.createAnimation(newAnimName, selectedSpritesheet, () => {
+        let a = new Animation(true, display);
+        a.name = newAnimName;
+        a.isCadence = anim.isCadence;
+        anim.sprites.forEach(obj => {
+          const origSpriteIndex = obj.name.slice(obj.name.lastIndexOf('_') + 1);
+          a.addSprite({
+            name: selectedSpritesheet + '_' + origSpriteIndex,
+            duration: obj.durationMs,
+            opacity: obj.opacity,
+            offsetX: obj.offsetX,
+            offsetY: obj.offsetY,
+          });
+        });
+        return a;
+      });
+      appInterface.setImageName(selectedSpritesheet);
+      appInterface.setAnimation(display.getAnimation(newAnimName));
     }
   };
+
+  const options = Object.keys(display.pictures)
+    .filter(imageName => {
+      return imageName !== 'invisible';
+    })
+    .sort((a, b) => {
+      return a.toUpperCase() < b.toUpperCase() ? -1 : 1;
+    })
+    .map(imageName => (
+      <option key={imageName} value={imageName}>
+        {imageName}
+      </option>
+    ));
 
   return (
     <Dialog
@@ -35,9 +75,57 @@ const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
             <div> Select Spritesheet </div>
             <select
               onChange={ev => {
+                const selectedSpritesheet = ev.target.value;
                 setSelectedSpritesheet(ev.target.value);
+                let newName = anim.name;
+                const oldAnimNamePrefixInd = anim.name.indexOf(
+                  appInterface.imageName
+                );
+                console.log(
+                  'FIND OLD IMAGE NAME',
+                  anim,
+                  oldAnimNamePrefixInd,
+                  anim.imageName
+                );
+                if (oldAnimNamePrefixInd > -1) {
+                  newName = newName.slice(
+                    oldAnimNamePrefixInd + appInterface.imageName.length
+                  );
+                  console.log(
+                    'slice',
+                    newName,
+                    oldAnimNamePrefixInd + appInterface.imageName.length
+                  );
+                  if (newName[0] === '_') {
+                    newName = newName.slice(1);
+                  }
+                }
+                newName = selectedSpritesheet + '_' + newName;
+                setNewAnimName(newName);
+                console.log('Set new anim name', newName);
+                validate(newName);
               }}
-            ></select>
+            >
+              {options}
+            </select>
+            <Input
+              focus={true}
+              width="300"
+              name="animationName"
+              label="Animation Name"
+              errorText={errorText}
+              value={newAnimName}
+              onKeyDown={ev => {
+                if (ev.which === 13) {
+                  onConfirm();
+                } else if (ev.which === 27) {
+                  setOpen(false);
+                }
+              }}
+              onChange={ev => {
+                setNewAnimName(ev.target.value);
+              }}
+            />
           </div>
         </>
       }
@@ -227,7 +315,6 @@ const AnimationItem = ({
   appInterface,
   setDeleteConfirmOpen,
   setRenameAnimDialogOpen,
-  setDuplicateDialogOpen,
 }) => {
   const ref = React.useRef(null);
   const spriteName = anim.getFirstSpriteName();
@@ -236,6 +323,7 @@ const AnimationItem = ({
     : false;
   const { imageName } = appInterface;
   const { animations } = display.pictures[imageName] || { animations: [] };
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = React.useState(false);
   React.useEffect(() => {
     if (spriteName) {
       display.setCanvas(ref.current);
@@ -249,222 +337,235 @@ const AnimationItem = ({
     }
   }, [spriteName]);
   return (
-    <div
-      className="button"
-      onClick={() => {
-        if (isSelected) {
-          appInterface.setAnimation(null);
-        } else {
-          appInterface.setAnimation(anim);
-        }
-        appInterface.clearMarkedFrames();
-      }}
-      style={{
-        // height: 64,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        margin: '5px',
-        backgroundColor: isSelected
-          ? anim.isCadence
-            ? colors.darkPurple
-            : colors.darkGreen
-          : anim.isCadence
-          ? colors.darkerPurple
-          : null,
-        borderColor: isSelected ? colors.green : null,
-      }}
-    >
+    <>
       <div
+        className="button"
+        onClick={() => {
+          if (isSelected) {
+            appInterface.setAnimation(null);
+          } else {
+            appInterface.setAnimation(anim);
+          }
+          appInterface.clearMarkedFrames();
+        }}
         style={{
-          width: '90%',
-          overflow: 'hidden',
-          whiteSpace: 'pre-wrap',
-          textOverflow: 'ellipsis',
-          textAlign: 'left',
+          // height: 64,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          margin: '5px',
+          backgroundColor: isSelected
+            ? anim.isCadence
+              ? colors.darkPurple
+              : colors.darkGreen
+            : anim.isCadence
+            ? colors.darkerPurple
+            : null,
+          borderColor: isSelected ? colors.green : null,
         }}
       >
-        <Text
-          type="body-ellipsis"
-          noSelect={true}
-          ownLine={true}
-          lineHeight={5}
-          style={{
-            padding: '5px',
-            overflow: 'hidden',
-            direction: 'rtl',
-            textAlign: 'left',
-            textOverflow: 'ellipsis',
-            wordBreak: 'break-all',
-            whiteSpace: 'pre',
-          }}
-        >
-          {anim.name}
-        </Text>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
+            width: '90%',
+            overflow: 'hidden',
+            whiteSpace: 'pre-wrap',
+            textOverflow: 'ellipsis',
+            textAlign: 'left',
           }}
         >
+          <Text
+            type="body-ellipsis"
+            noSelect={true}
+            ownLine={true}
+            lineHeight={5}
+            style={{
+              padding: '5px',
+              overflow: 'hidden',
+              direction: 'rtl',
+              textAlign: 'left',
+              textOverflow: 'ellipsis',
+              wordBreak: 'break-all',
+              whiteSpace: 'pre',
+            }}
+          >
+            {anim.name}
+          </Text>
           <div
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
-              // width: '164px',
+              justifyContent: 'flex-start',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
             }}
           >
-            <Button
+            <div
               style={{
-                margin: '2px',
-                fontSize: '10px',
-                padding: '2px',
-              }}
-              type="primary"
-              onClick={() => {
-                display.changeAnimationOrder(animations, i, 'up');
-                appInterface.render();
+                display: 'flex',
+                justifyContent: 'space-between',
+                // width: '164px',
               }}
             >
-              Move UP
-            </Button>
-            <Button
-              style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-              type="cancel"
-              onClick={() => {
-                setDeleteConfirmOpen(anim.name);
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
-              type="secondary"
-              onClick={() => {
-                setRenameAnimDialogOpen(anim.name);
-              }}
-            >
-              Rename
-            </Button>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              // width: '164px',
-            }}
-          >
-            <Button
+              <Button
+                style={{
+                  margin: '2px',
+                  fontSize: '10px',
+                  padding: '2px',
+                }}
+                type="primary"
+                onClick={() => {
+                  display.changeAnimationOrder(animations, i, 'up');
+                  appInterface.render();
+                }}
+              >
+                Move UP
+              </Button>
+              <Button
+                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+                type="cancel"
+                onClick={() => {
+                  setDeleteConfirmOpen(anim.name);
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                style={{ margin: '2px', fontSize: '10px', padding: '2px' }}
+                type="secondary"
+                onClick={() => {
+                  setRenameAnimDialogOpen(anim.name);
+                }}
+              >
+                Rename
+              </Button>
+            </div>
+            <div
               style={{
-                margin: '2px',
-                fontSize: '10px',
-                padding: '2px',
-              }}
-              type="primary"
-              onClick={() => {
-                display.changeAnimationOrder(animations, i, 'dn');
-                appInterface.render();
+                display: 'flex',
+                justifyContent: 'space-between',
+                // width: '164px',
               }}
             >
-              Move DN
-            </Button>
-            <Button
-              style={{
-                margin: '2px',
-                fontSize: '10px',
-                padding: '2px',
-                width: '60px',
-                float: 'left',
-              }}
-              type={anim.isCadence ? 'secondary' : 'cadence'}
-              onClick={() => {
-                if (anim.sprites.length !== 3) {
-                } else {
-                  anim.isCadence = !anim.isCadence;
-                  display.updateAnimation(anim, null, anim.loop, anim.sprites);
-                  appInterface.setAnimation(display.getAnimation(anim.name));
-                }
-              }}
-            >
-              {anim.isCadence ? 'To Anim' : 'To Cade'}
-            </Button>
-            <Button
-              style={{
-                margin: '2px',
-                fontSize: '10px',
-                padding: '2px',
-                width: '60px',
-                float: 'left',
-              }}
-              type="secondary"
-              onClick={() => {
-                let animName = anim.name;
-                do {
-                  animName += '_copy';
-                } while (display.hasAnimation(animName));
-                appInterface.clearMarkedFrames();
-
-                const { loop, isCadence } = anim;
-                const sprites = anim.sprites.slice(0);
-                display.createAnimation(
-                  animName,
-                  appInterface.imageName,
-                  () => {
-                    let a = new Animation(loop, display);
-                    a.name = animName;
-                    a.isCadence = isCadence;
-                    sprites.forEach(obj => {
-                      a.addSprite({
-                        name: obj.name,
-                        duration: obj.durationMs,
-                        opacity: obj.opacity,
-                        offsetX: obj.offsetX,
-                        offsetY: obj.offsetY,
-                      });
-                    });
-                    return a;
+              <Button
+                style={{
+                  margin: '2px',
+                  fontSize: '10px',
+                  padding: '2px',
+                }}
+                type="primary"
+                onClick={() => {
+                  display.changeAnimationOrder(animations, i, 'dn');
+                  appInterface.render();
+                }}
+              >
+                Move DN
+              </Button>
+              <Button
+                style={{
+                  margin: '2px',
+                  fontSize: '10px',
+                  padding: '2px',
+                  width: '60px',
+                  float: 'left',
+                }}
+                type={anim.isCadence ? 'secondary' : 'cadence'}
+                onClick={() => {
+                  if (anim.sprites.length !== 3) {
+                  } else {
+                    anim.isCadence = !anim.isCadence;
+                    display.updateAnimation(
+                      anim,
+                      null,
+                      anim.loop,
+                      anim.sprites
+                    );
+                    appInterface.setAnimation(display.getAnimation(anim.name));
                   }
-                );
+                }}
+              >
+                {anim.isCadence ? 'To Anim' : 'To Cade'}
+              </Button>
+              <Button
+                style={{
+                  margin: '2px',
+                  fontSize: '10px',
+                  padding: '2px',
+                  width: '60px',
+                  float: 'left',
+                }}
+                type="secondary"
+                onClick={() => {
+                  let animName = anim.name;
+                  do {
+                    animName += '_copy';
+                  } while (display.hasAnimation(animName));
+                  appInterface.clearMarkedFrames();
 
-                // appInterface.setAnimation(display.getAnimation(animName));
-              }}
-            >
-              Duplicate
-            </Button>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              // width: '120px',
-            }}
-          >
-            <Button
+                  const { loop, isCadence } = anim;
+                  const sprites = anim.sprites.slice(0);
+                  display.createAnimation(
+                    animName,
+                    appInterface.imageName,
+                    () => {
+                      let a = new Animation(loop, display);
+                      a.name = animName;
+                      a.isCadence = isCadence;
+                      sprites.forEach(obj => {
+                        a.addSprite({
+                          name: obj.name,
+                          duration: obj.durationMs,
+                          opacity: obj.opacity,
+                          offsetX: obj.offsetX,
+                          offsetY: obj.offsetY,
+                        });
+                      });
+                      return a;
+                    }
+                  );
+
+                  // appInterface.setAnimation(display.getAnimation(animName));
+                }}
+              >
+                Duplicate
+              </Button>
+            </div>
+            <div
               style={{
-                margin: '2px',
-                fontSize: '10px',
-                padding: '2px',
-                width: '80px',
-              }}
-              type="secondary"
-              onClick={() => {
-                setDuplicateDialogOpen(true);
+                display: 'flex',
+                justifyContent: 'space-between',
+                // width: '120px',
               }}
             >
-              Cp To Other
-            </Button>
+              <Button
+                style={{
+                  margin: '2px',
+                  fontSize: '10px',
+                  padding: '2px',
+                  width: '80px',
+                }}
+                type="secondary"
+                onClick={() => {
+                  setDuplicateDialogOpen(true);
+                }}
+              >
+                Cp To Other
+              </Button>
+            </div>
           </div>
         </div>
+        <canvas
+          style={{ margin: '5px' }}
+          ref={ref}
+          width={64}
+          height={64}
+        ></canvas>
       </div>
-      <canvas
-        style={{ margin: '5px' }}
-        ref={ref}
-        width={64}
-        height={64}
-      ></canvas>
-    </div>
+      <DuplicateToOtherDialog
+        open={duplicateDialogOpen}
+        setOpen={setDuplicateDialogOpen}
+        appInterface={appInterface}
+        anim={anim}
+      />
+    </>
   );
 };
 
@@ -472,7 +573,6 @@ const AnimationSelect = ({ appInterface }) => {
   const [createAnimDialogOpen, setCreateAnimDialogOpen] = React.useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [renameAnimDialogOpen, setRenameAnimDialogOpen] = React.useState(false);
-  const [duplicateDialogOpen, setDuplicateDialogOpen] = React.useState(false);
   const { imageName } = appInterface;
   const { animations } = display.pictures[imageName] || { animations: [] };
   const anims = animations.map(animName => display.getAnimation(animName));
@@ -555,7 +655,6 @@ const AnimationSelect = ({ appInterface }) => {
               appInterface={appInterface}
               setDeleteConfirmOpen={setDeleteConfirmOpen}
               setRenameAnimDialogOpen={setRenameAnimDialogOpen}
-              setDuplicateDialogOpen={setDuplicateDialogOpen}
             />
           );
         })}
@@ -569,11 +668,6 @@ const AnimationSelect = ({ appInterface }) => {
       <RenameDialog
         open={renameAnimDialogOpen}
         setOpen={setRenameAnimDialogOpen}
-        appInterface={appInterface}
-      />
-      <DuplicateToOtherDialog
-        open={duplicateDialogOpen}
-        setOpen={setDuplicateDialogOpen}
         appInterface={appInterface}
       />
     </div>

@@ -159,3 +159,8 @@ Conscience: "Let's fix that."
 Conscience: "Much better."
 Conscience: "The test will now conclude."
 +endConversation();
+
+@test-vivi
++setConversation2("Vivi", "Sigma");
+Vivi: "Hmm.  She's almost as tall as I am.  Maybe we would get along well..."
++endConversation();

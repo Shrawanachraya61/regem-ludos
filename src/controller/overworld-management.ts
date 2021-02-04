@@ -168,7 +168,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-fade');
+        await callScript(getCurrentScene(), 'test-vivi');
         showSection(AppSection.Debug, true);
         console.log('ENABLE KEYS');
         enableKeyUpdate();

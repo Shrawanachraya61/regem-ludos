@@ -5,6 +5,69 @@ import Button from 'elements/button';
 import Input from 'elements/input';
 import display from 'content/display';
 import { addSpriteAtIndex } from 'cmpts/cmpt-frames-area';
+import Dialog from 'elements/dialog';
+
+const SetDurationDialog = ({ open, setOpen, appInterface, anim }) => {
+  const [duration, setDuration] = React.useState(100);
+
+  const validate = value => {
+    return value === '';
+  };
+
+  const onConfirm = async () => {
+    const value = duration;
+    if (!validate(value)) {
+      appInterface.getMarkedFrames().forEach(spriteIndex => {
+        anim.sprites[spriteIndex].durationMs = Number(duration);
+      });
+      display.updateAnimation(anim, null, anim.loop, anim.sprites);
+      anim.remakeMS();
+      appInterface.setAnimation(display.getAnimation(anim.name));
+      setOpen(false);
+      appInterface.render();
+    }
+  };
+
+  return (
+    <Dialog
+      open={!!open}
+      title="Set Duration"
+      onConfirm={onConfirm}
+      onCancel={() => {
+        setOpen(false);
+      }}
+      content={
+        <>
+          <div style={{ margin: '5px' }}>
+            <div> Duration (MS) </div>
+            <Input
+              type="number"
+              onChange={ev => {
+                setDuration(ev.target.value);
+              }}
+              value={duration}
+            ></Input>
+          </div>
+        </>
+      }
+    />
+  );
+};
+
+const ButtonRow = props => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginTop: '7px',
+      }}
+    >
+      {props.children}
+    </div>
+  );
+};
 
 const AnimationPreview = ({ anim, appInterface }) => {
   const [scale, setScale] = React.useState(2);
@@ -145,9 +208,34 @@ const AnimationTxt = ({ anim, appInterface }) => {
 
 const AnimationArea = ({ appInterface }) => {
   const [defaultDuration, setDefaultDuration] = React.useState(100);
+  const [
+    markedDurationDialogOpen,
+    setMarkedDurationDialogOpen,
+  ] = React.useState(false);
   const imageName = appInterface.imageName;
   const anim = appInterface.animation;
   const { totalSprites } = display.pictures[appInterface.imageName] || {};
+
+  const reverseFrames = indexes => {
+    const reversedSprites = anim.sprites
+      .filter((_, i) => {
+        return indexes.includes(i);
+      })
+      .reverse();
+    const newSprites = [];
+    let ctr = 0;
+    for (let i = 0; i < anim.sprites.length; i++) {
+      if (indexes.includes(i)) {
+        newSprites.push(reversedSprites[ctr]);
+        ctr++;
+      } else {
+        newSprites.push(anim.sprites[i]);
+      }
+    }
+    display.updateAnimation(anim, imageName, anim.loop, newSprites);
+    appInterface.setAnimation(display.getAnimation(anim.name));
+  };
+
   return (
     <div>
       <div
@@ -214,13 +302,7 @@ const AnimationArea = ({ appInterface }) => {
           >
             Spritesheet Helpers
           </div>
-          <div
-            style={{
-              display: 'flex',
-              marginTop: '7px',
-              justifyContent: 'space-around',
-            }}
-          >
+          <ButtonRow>
             <Button
               type="primary"
               margin={2}
@@ -282,26 +364,22 @@ const AnimationArea = ({ appInterface }) => {
             >
               + Invisible
             </Button>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              marginTop: '7px',
-              justifyContent: 'flex-start',
-            }}
-          >
+          </ButtonRow>
+          <ButtonRow>
             <Button
               type="secondary"
               margin={2}
               onClick={() => {
-                const sprites = anim.sprites.reverse();
-                display.updateAnimation(anim, imageName, anim.loop, sprites);
-                appInterface.setAnimation(display.getAnimation(anim.name));
+                const indexes = [];
+                for (let i = 0; i < anim.sprites.length; i++) {
+                  indexes.push(i);
+                }
+                reverseFrames(indexes);
               }}
             >
               Reverse All
             </Button>
-          </div>
+          </ButtonRow>
           <div
             style={{
               fontSize: '18px',
@@ -313,13 +391,7 @@ const AnimationArea = ({ appInterface }) => {
           >
             Marked Frames
           </div>
-          <div
-            style={{
-              display: 'flex',
-              marginTop: '7px',
-              justifyContent: 'space-around',
-            }}
-          >
+          <ButtonRow>
             <Button
               type="primary"
               margin={2}
@@ -338,19 +410,13 @@ const AnimationArea = ({ appInterface }) => {
             >
               UnMark All
             </Button>
+          </ButtonRow>
+          <ButtonRow>
             <Button
               type="cadence"
               margin={2}
               onClick={() => {
                 appInterface.getMarkedFrames().forEach(frameIndex => {
-                  console.log(
-                    'add sprite at index',
-                    frameIndex,
-                    anim,
-                    anim.sprites[frameIndex].name,
-                    anim.sprites.length,
-                    defaultDuration
-                  );
                   addSpriteAtIndex(
                     anim,
                     anim.sprites[frameIndex].name,
@@ -361,11 +427,35 @@ const AnimationArea = ({ appInterface }) => {
                 appInterface.setAnimation(display.getAnimation(anim.name));
               }}
             >
-              + Clone Marked
+              + Clone
             </Button>
-          </div>
+            <Button
+              type="secondary"
+              margin={2}
+              onClick={() => {
+                reverseFrames(appInterface.getMarkedFrames());
+              }}
+            >
+              Reverse
+            </Button>
+            <Button
+              type="secondary"
+              margin={2}
+              onClick={() => {
+                setMarkedDurationDialogOpen(true);
+              }}
+            >
+              Set Duration
+            </Button>
+          </ButtonRow>
         </div>
       )}
+      <SetDurationDialog
+        open={markedDurationDialogOpen}
+        setOpen={setMarkedDurationDialogOpen}
+        appInterface={appInterface}
+        anim={anim}
+      />
     </div>
   );
 };
