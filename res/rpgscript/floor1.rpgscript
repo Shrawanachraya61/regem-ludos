@@ -187,6 +187,25 @@ step,this
 #floor1-openDoorB
 step,this
 @this
-@this
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);
+
+#test-rho
+action,this
+@this
++lookAtEachOther('Ada','Rho');
++setConversation2('Ada','Rho');
+Rho: "..."
++setConversationSpeaker(none);
++waitMS(1000)
+Rho: "Hey! Excuse me. Do you know what this place is?"
+Ada: "I am not too sure.  I have been here for a while now, wandering in circles. Not much seems to exist save for this floor."
+Rho: "That's a little disconcerting.  How are we suppose to leave?"
+Ada: "I do no believe anyone is leaving anytime soon.  You should probably find somehwere comfortable to persist."
+Rho: "Ugh..." 
++endConversation();
+
+#rho-look-area
+step,this
+@this
++lookAtCharacter('Rho','Ada')

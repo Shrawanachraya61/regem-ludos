@@ -45,4 +45,20 @@ export const init = () => {
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
   };
+
+  exp.Rho = {
+    name: 'Rho',
+    spriteBase: 'rho',
+    talkTrigger: 'test-rho',
+    facing: Facing.DOWN,
+    animationState: AnimationState.IDLE,
+  };
+
+  exp.Sigma = {
+    name: 'Sigma',
+    spriteBase: 'sigma',
+    talkTrigger: 'test-sigma',
+    facing: Facing.LEFT,
+    animationState: AnimationState.IDLE,
+  };
 };
