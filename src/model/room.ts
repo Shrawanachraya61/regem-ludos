@@ -194,14 +194,6 @@ export const createRoom = async (
     }
   ) || { firstGid: -9999999 };
 
-  console.log(
-    'PROPS TILESETS',
-    tiledJson.name,
-    tiledJson.tilesets,
-    dynamicPropsTileset,
-    propsTilesetsFirstGid
-  );
-
   const widthPx = width * TILE_WIDTH;
   const heightPx = (height * TILE_HEIGHT) / 2;
   // not sure why the +TILE_HEIGHT is required.  Maybe it's a rounding thing.
@@ -242,11 +234,14 @@ export const createRoom = async (
       tiledJson.tilesets,
       tiledTileId
     );
+
+    const isWallTileset = sprite.indexOf('wall') > -1;
+    const isPropTileset = sprite.indexOf('props') > -1;
     const tile = {
       sprite,
       tileWidth,
       tileHeight,
-      isWall: sprite.indexOf('wall') > -1 || sprite.indexOf('prop') > -1,
+      isWall: isWallTileset || isPropTileset,
       id: tiledTileId - 1,
       x: i % width,
       y: Math.floor(i / width),
@@ -257,6 +252,35 @@ export const createRoom = async (
     if (ro.isFloor) {
       room.floorTileObjects.push(ro);
     } else {
+      if (isWallTileset) {
+        const floorTile = {
+          ...tile,
+          tileWidth: 32,
+          tileHeight: 32,
+          sprite: 'floors_1', //TODO make this a room param
+          id: 1,
+        } as Tile;
+        const roFloor = createTileRenderObject(floorTile);
+        room.floorTileObjects.push(roFloor);
+      } else if (isPropTileset) {
+        const floorTile = {
+          ...tile,
+          tileWidth: 32,
+          tileHeight: 32,
+          sprite: 'floors_1', //TODO make this a room param
+          id: 1,
+          x: tile.x + 1,
+          y: tile.y,
+        } as Tile;
+        const floorTile2 = {
+          ...floorTile,
+          x: tile.x,
+          y: tile.y + 1,
+        } as Tile;
+        const roFloor = createTileRenderObject(floorTile);
+        const roFloor2 = createTileRenderObject(floorTile2);
+        room.renderObjects.push(roFloor, roFloor2);
+      }
       room.renderObjects.push(ro);
     }
     tile.ro = ro;
@@ -429,6 +453,9 @@ export const createRoom = async (
   }
 
   // draw the floor to the floor canvas
+  room.floorTileObjects = room.floorTileObjects.sort((a, b) => {
+    return a.sortY < b.sortY ? -1 : 1;
+  });
   for (let i = 0; i < room.floorTileObjects.length; i++) {
     const { sprite, px, py } = room.floorTileObjects[i];
     if (sprite) {
