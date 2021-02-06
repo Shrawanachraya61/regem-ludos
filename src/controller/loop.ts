@@ -165,21 +165,22 @@ export const runMainLoop = async (): Promise<void> => {
         }
       }
 
-      const [mouseX, mouseY] = getMousePos();
-      const [worldX, worldY] = pixelToIsoCoords(
-        mouseX / getDrawScale() - roomXOffset - TILE_WIDTH / 2,
-        mouseY / getDrawScale() - roomYOffset - TILE_HEIGHT / 2
-      );
-      const tileX = Math.floor((worldX / TILE_WIDTH) * 2);
-      const tileY = Math.floor((worldY / TILE_HEIGHT) * 2);
-      const tile = roomGetTileAt(room, tileX, tileY);
+      // const [mouseX, mouseY] = getMousePos();
+      // const [worldX, worldY] = pixelToIsoCoords(
+      //   mouseX / getDrawScale() - roomXOffset - TILE_WIDTH / 2,
+      //   mouseY / getDrawScale() - roomYOffset - TILE_HEIGHT / 2
+      // );
+      // const tileX = Math.floor((worldX / TILE_WIDTH) * 2);
+      // const tileY = Math.floor((worldY / TILE_HEIGHT) * 2);
+      // const tile = roomGetTileAt(room, tileX, tileY);
       // if (lastHighlightedTile !== tile && lastHighlightedTile) {
       //   lastHighlightedTile.highlighted = false;
       // }
-      if (tile) {
-        tile.highlighted = true;
-      }
+      // if (tile) {
+      //   tile.highlighted = true;
+      // }
 
+      // console.log('OFFSET', roomXOffset, roomYOffset);
       drawRoom(room, [roomXOffset, roomYOffset]);
     }
 
@@ -190,7 +191,7 @@ export const runMainLoop = async (): Promise<void> => {
     }
 
     if ((window as any).running) requestAnimationFrame(loop);
-    // if ((window as any).running) setTimeout(() => loop(performance.now()), 100); // for debugging
+    // if ((window as any).running) setTimeout(() => loop(performance.now()), 33); // for debugging
   };
   loop(startTime);
 };

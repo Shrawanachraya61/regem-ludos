@@ -86,7 +86,7 @@ const App = () => {
     }
   };
 
-  console.log('render app', appState);
+  // console.log('render app', appState);
   const scale = getDrawScale();
   return (
     <div

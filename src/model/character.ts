@@ -447,8 +447,8 @@ export const characterUpdate = (ch: Character): void => {
 
   if (ch.vx !== 0 || ch.vy !== 0) {
     const [newVx, newVy] = getNormalizedVec(ch.vx, ch.vy);
-    const finalVx = parseFloat((newVx * frameMult * ch.speed).toFixed(2));
-    const finalVy = parseFloat((newVy * frameMult * ch.speed).toFixed(2));
+    const finalVx = newVx * frameMult * ch.speed;
+    const finalVy = newVy * frameMult * ch.speed;
     ch.x += finalVx;
     ch.y += finalVy;
 
@@ -491,8 +491,8 @@ export const characterUpdate = (ch: Character): void => {
       ch.x -= finalVx;
       ch.y -= finalVy;
     }
-    ch.x = parseFloat(ch.x.toFixed(2));
-    ch.y = parseFloat(ch.y.toFixed(2));
+    // ch.x = parseFloat(ch.x.toFixed(2));
+    // ch.y = parseFloat(ch.y.toFixed(2));
     ch.vx = 0;
     ch.vy = 0;
   }

@@ -32,10 +32,10 @@ export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
     let cmd: Command | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
-      console.log('EVAL', cmd.conditional);
+      // console.log('EVAL', cmd.conditional);
       if (evalCondition(scene, cmd.conditional)) {
         const commands = sceneGetCommands(scene);
-        console.log('next cmd', cmd.type, cmd.args);
+        // console.log('next cmd', cmd.type, cmd.args);
         const command = commands[cmd.type];
         if (!command) {
           throw new Error(
@@ -48,9 +48,9 @@ export const updateScene = (scene: Scene): void => {
       }
     }
     if (cmd === null) {
-      console.log(
-        `Completed Script '${scene.currentScript.name}' stackLength='${scene.scriptStack.length}'`
-      );
+      // console.log(
+      //   `Completed Script '${scene.currentScript.name}' stackLength='${scene.scriptStack.length}'`
+      // );
       if (scene.onScriptCompleted) {
         scene.onScriptCompleted();
       }

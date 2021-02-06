@@ -51,7 +51,7 @@ export const drawRect = (
   ctx = ctx || getCtx();
   ctx.lineWidth = 1;
   ctx[stroke ? 'strokeStyle' : 'fillStyle'] = color;
-  ctx[stroke ? 'strokeRect' : 'fillRect'](x, y, w, h);
+  ctx[stroke ? 'strokeRect' : 'fillRect'](Math.floor(x), Math.floor(y), w, h);
 };
 
 export const measureText = (
@@ -92,7 +92,7 @@ export const drawText = (
   if (strokeColor) {
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 0.5;
-    ctx.strokeText(text, x, y);
+    ctx.strokeText(text, Math.floor(x), Math.floor(y));
   }
 };
 
@@ -118,8 +118,8 @@ export const drawSprite = (
       sprY,
       sprW,
       sprH,
-      x,
-      y,
+      Math.floor(x),
+      Math.floor(y),
       sprW * scale,
       sprH * scale
     );
@@ -153,8 +153,8 @@ export const drawAnimation = (
       sprY,
       sprW,
       sprH,
-      x,
-      y,
+      Math.floor(x),
+      Math.floor(y),
       sprW * scale,
       sprH * scale
     );
@@ -245,7 +245,7 @@ export const drawRoom = (
 
   ctx = ctx || getCtx();
   ctx.save();
-  ctx.translate(offsetX, offsetY);
+  ctx.translate(Math.floor(offsetX), Math.floor(offsetY));
   room.renderObjects = room.renderObjects.sort((a, b) => {
     return a.sortY < b.sortY ? -1 : 1;
   });
