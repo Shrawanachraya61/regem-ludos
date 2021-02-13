@@ -7,45 +7,68 @@ import display from 'content/display';
 import Animation from 'content/animation';
 import { colors } from 'utils';
 
-const DuplicateToOtherDialog = ({ open, setOpen, appInterface, anim }) => {
+const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
   const [selectedSpritesheet, setSelectedSpritesheet] = React.useState('');
-  const [errorText, setErrorText] = React.useState('');
-  const [newAnimName, setNewAnimName] = React.useState('');
+  const [completedArr, setCompletedArr] = React.useState(null);
+  const onConfirm = async () => {
+    const { animations } = display.pictures[appInterface.imageName] || {
+      animations: [],
+    };
 
-  const validate = value => {
-    const hasAnim = value && display.hasAnimation(value);
-    if (hasAnim) {
-      setErrorText('An animation with that name already exists.');
-    } else {
-      setErrorText('');
-    }
-    return value === '';
+    const {
+      spriteWidth: origSpriteWidth,
+      spriteHeight: origSpriteHeight,
+    } = display.pictures[appInterface.imageName];
+
+    display.updatePictureSpriteSize(
+      selectedSpritesheet,
+      origSpriteWidth,
+      origSpriteHeight
+    );
+
+    const copied = [];
+    animations.forEach(animName => {
+      const anim = display.getAnimation(animName);
+      const newAnimName = getNewAnimName(anim.name);
+      if (!display.hasAnimation(newAnimName)) {
+        copied.push(newAnimName);
+        display.createAnimation(newAnimName, selectedSpritesheet, () => {
+          let a = new Animation(true, display);
+          a.name = newAnimName;
+          a.isCadence = anim.isCadence;
+          anim.sprites.forEach(obj => {
+            const origSpriteIndex = obj.name.slice(
+              obj.name.lastIndexOf('_') + 1
+            );
+            a.addSprite({
+              name: selectedSpritesheet + '_' + origSpriteIndex,
+              duration: obj.durationMs,
+              opacity: obj.opacity,
+              offsetX: obj.offsetX,
+              offsetY: obj.offsetY,
+            });
+          });
+          return a;
+        });
+      }
+    });
+    console.log('COPIED!', copied);
+    setCompletedArr(copied);
   };
 
-  const onConfirm = async () => {
-    const value = selectedSpritesheet;
-    if (!validate(value)) {
-      appInterface.clearMarkedFrames();
-      setOpen(false);
-      display.createAnimation(newAnimName, selectedSpritesheet, () => {
-        let a = new Animation(true, display);
-        a.name = newAnimName;
-        a.isCadence = anim.isCadence;
-        anim.sprites.forEach(obj => {
-          const origSpriteIndex = obj.name.slice(obj.name.lastIndexOf('_') + 1);
-          a.addSprite({
-            name: selectedSpritesheet + '_' + origSpriteIndex,
-            duration: obj.durationMs,
-            opacity: obj.opacity,
-            offsetX: obj.offsetX,
-            offsetY: obj.offsetY,
-          });
-        });
-        return a;
-      });
-      appInterface.setImageName(selectedSpritesheet);
-      appInterface.setAnimation(display.getAnimation(newAnimName));
+  const getNewAnimName = oldName => {
+    let newName = '';
+    const oldAnimNamePrefixInd = oldName.indexOf(appInterface.imageName);
+    if (oldAnimNamePrefixInd > -1) {
+      newName = oldName.slice(
+        oldAnimNamePrefixInd + appInterface.imageName.length
+      );
+      while (newName[0] === '_') {
+        newName = newName.slice(1);
+      }
     }
+    newName = selectedSpritesheet + '_' + newName;
+    return newName;
   };
 
   const options = Object.keys(display.pictures)
@@ -64,69 +87,48 @@ const DuplicateToOtherDialog = ({ open, setOpen, appInterface, anim }) => {
   return (
     <Dialog
       open={!!open}
-      title="Duplicate Animation"
-      onConfirm={onConfirm}
-      onCancel={() => {
-        setOpen(false);
+      title="Duplicate Animations"
+      onConfirm={() => {
+        if (completedArr) {
+          setCompletedArr(null);
+          setOpen(false);
+          appInterface.setAnimation(null);
+          appInterface.setImageName(selectedSpritesheet);
+        } else {
+          onConfirm();
+        }
       }}
+      onCancel={
+        completedArr
+          ? undefined
+          : () => {
+              setCompletedArr(null);
+              setOpen(false);
+            }
+      }
       content={
         <>
-          <div style={{ margin: '5px' }}>
-            <div> Select Spritesheet </div>
-            <select
-              onChange={ev => {
-                const selectedSpritesheet = ev.target.value;
-                setSelectedSpritesheet(ev.target.value);
-                let newName = anim.name;
-                const oldAnimNamePrefixInd = anim.name.indexOf(
-                  appInterface.imageName
-                );
-                console.log(
-                  'FIND OLD IMAGE NAME',
-                  anim,
-                  oldAnimNamePrefixInd,
-                  anim.imageName
-                );
-                if (oldAnimNamePrefixInd > -1) {
-                  newName = newName.slice(
-                    oldAnimNamePrefixInd + appInterface.imageName.length
-                  );
-                  console.log(
-                    'slice',
-                    newName,
-                    oldAnimNamePrefixInd + appInterface.imageName.length
-                  );
-                  if (newName[0] === '_') {
-                    newName = newName.slice(1);
-                  }
-                }
-                newName = selectedSpritesheet + '_' + newName;
-                setNewAnimName(newName);
-                console.log('Set new anim name', newName);
-                validate(newName);
-              }}
-            >
-              {options}
-            </select>
-            <Input
-              focus={true}
-              width="300"
-              name="animationName"
-              label="Animation Name"
-              errorText={errorText}
-              value={newAnimName}
-              onKeyDown={ev => {
-                if (ev.which === 13) {
-                  onConfirm();
-                } else if (ev.which === 27) {
-                  setOpen(false);
-                }
-              }}
-              onChange={ev => {
-                setNewAnimName(ev.target.value);
-              }}
-            />
-          </div>
+          {completedArr ? (
+            <div>
+              <div>Copied The Following:</div>
+              {completedArr.map(name => {
+                return <div key={name}>- {name}</div>;
+              })}
+              {completedArr.length === 0 ? 'No animations were copied.' : null}
+            </div>
+          ) : null}
+          {!completedArr ? (
+            <div style={{ margin: '5px' }}>
+              <div> Select Spritesheet </div>
+              <select
+                onChange={ev => {
+                  setSelectedSpritesheet(ev.target.value);
+                }}
+              >
+                {options}
+              </select>
+            </div>
+          ) : null}
         </>
       }
     />
@@ -323,7 +325,6 @@ const AnimationItem = ({
     : false;
   const { imageName } = appInterface;
   const { animations } = display.pictures[imageName] || { animations: [] };
-  const [duplicateDialogOpen, setDuplicateDialogOpen] = React.useState(false);
   React.useEffect(() => {
     if (spriteName) {
       display.setCanvas(ref.current);
@@ -342,11 +343,11 @@ const AnimationItem = ({
         className="button"
         onClick={() => {
           if (isSelected) {
-            appInterface.setAnimation(null);
+            // appInterface.setAnimation(null);
           } else {
             appInterface.setAnimation(anim);
+            appInterface.clearMarkedFrames();
           }
-          appInterface.clearMarkedFrames();
         }}
         style={{
           // height: 64,
@@ -528,28 +529,6 @@ const AnimationItem = ({
                 Duplicate
               </Button>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                // width: '120px',
-              }}
-            >
-              <Button
-                style={{
-                  margin: '2px',
-                  fontSize: '10px',
-                  padding: '2px',
-                  width: '80px',
-                }}
-                type="secondary"
-                onClick={() => {
-                  setDuplicateDialogOpen(true);
-                }}
-              >
-                Cp To Other
-              </Button>
-            </div>
           </div>
         </div>
         <canvas
@@ -559,12 +538,6 @@ const AnimationItem = ({
           height={64}
         ></canvas>
       </div>
-      <DuplicateToOtherDialog
-        open={duplicateDialogOpen}
-        setOpen={setDuplicateDialogOpen}
-        appInterface={appInterface}
-        anim={anim}
-      />
     </>
   );
 };
@@ -573,6 +546,7 @@ const AnimationSelect = ({ appInterface }) => {
   const [createAnimDialogOpen, setCreateAnimDialogOpen] = React.useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
   const [renameAnimDialogOpen, setRenameAnimDialogOpen] = React.useState(false);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = React.useState(false);
   const { imageName } = appInterface;
   const { animations } = display.pictures[imageName] || { animations: [] };
   const anims = animations.map(animName => display.getAnimation(animName));
@@ -606,6 +580,14 @@ const AnimationSelect = ({ appInterface }) => {
             }}
           >
             + Anim
+          </Button>
+          <Button
+            type="cadence"
+            onClick={() => {
+              setDuplicateDialogOpen(true);
+            }}
+          >
+            Cp Other
           </Button>
           <Button
             type="secondary"
@@ -668,6 +650,11 @@ const AnimationSelect = ({ appInterface }) => {
       <RenameDialog
         open={renameAnimDialogOpen}
         setOpen={setRenameAnimDialogOpen}
+        appInterface={appInterface}
+      />
+      <DuplicateToOtherDialog
+        open={duplicateDialogOpen}
+        setOpen={setDuplicateDialogOpen}
         appInterface={appInterface}
       />
     </div>

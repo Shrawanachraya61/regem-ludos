@@ -1,0 +1,7 @@
+#example
+action,?gt(gold, 1):this
+@this
+Shopkeeper: "Welcome to my store!"
++?is(discount):{
+  Shopkeeper: "You get a store discount!"
+}

@@ -68,9 +68,9 @@ class AssetLoader {
 
     const _Animation = function(line, currentAnim) {
       const animName = line[1];
-      const loop = line[2];
+      const loop = line[2].trim();
       currentAnim.name = animName;
-      currentAnim.loop = loop === 'true' ? true : false;
+      currentAnim.loop = loop.indexOf('true') >= 0 ? true : false;
     };
 
     const _AnimSprite = function(line, currentAnim) {
