@@ -52,7 +52,6 @@ const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
         });
       }
     });
-    console.log('COPIED!', copied);
     setCompletedArr(copied);
   };
 

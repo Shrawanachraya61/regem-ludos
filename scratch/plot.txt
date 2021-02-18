@@ -223,9 +223,17 @@ Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
 
 1-Offs
 
+Narrator: 
+
 Boy: This ice cream cup says it contains no artificial growth hormones.
 Girl: That's good to know!
 Boy: Yeah, but sometimes I wish it would also have a label indicating that it was made without hot sauce.
 Boy: I hate hot sauce.
 Girl: That would totally put my mind at ease.
+
+Girl: So do you have any special skills?
+Boy: Of course I do!
+Boy: I close my eyes, and you put any number of coffee filters in my hands...
+Boy: I'll tell you exactly how many there are.
+Girl: Thats impressive!
 

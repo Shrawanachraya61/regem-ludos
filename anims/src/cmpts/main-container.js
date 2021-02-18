@@ -4,7 +4,7 @@ import ImageSelect from 'cmpts/cmpt-image-select';
 import AnimationArea from 'cmpts/cmpt-animation-area';
 import AnimationSelect from 'cmpts/cmpt-animation-select';
 import Spritesheet from 'cmpts/cmpt-spritesheet';
-import FramesArea, { addSpriteAtIndex } from 'cmpts/cmpt-frames-area';
+import FramesArea from 'cmpts/cmpt-frames-area';
 import { useWindowDimensions } from 'hooks';
 import { colors } from 'utils';
 
