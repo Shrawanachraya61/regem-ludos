@@ -110,6 +110,8 @@ export const drawSprite = (
   }
 
   try {
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'black';
     const [image, sprX, sprY, sprW, sprH] =
       typeof sprite === 'string' ? getSprite(sprite) : sprite;
     ctx.drawImage(
@@ -145,6 +147,8 @@ export const drawAnimation = (
     throw new Error(`Cannot draw animation that did not provide a sprite.`);
   }
   try {
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'black';
     const [image, sprX, sprY, sprW, sprH] =
       typeof sprite === 'string' ? getSprite(sprite) : sprite;
     ctx.drawImage(
@@ -250,9 +254,9 @@ export const drawRoom = (
     return a.sortY < b.sortY ? -1 : 1;
   });
 
-  if (room.floor) {
-    drawSprite(room.floor, -room.widthPx / 2, 0);
-  }
+  // if (room.floor) {
+  //   drawSprite(room.floor, -room.widthPx / 2, 0);
+  // }
 
   for (let i = 0; i < room.renderObjects.length; i++) {
     const {

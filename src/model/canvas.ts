@@ -1,3 +1,5 @@
+import WebGL2D from 'lib/webgl-canvas';
+
 export const SCREEN_WIDTH = 512;
 export const CANVAS_ID = 'canv';
 export const CANVAS_ID_OUTER = 'canv-outer';
@@ -10,17 +12,20 @@ let drawScale = 1;
 // canvas, the rendering context, width, and height
 export const createCanvas = (
   width: number,
-  height: number
+  height: number,
+  isGL?: boolean
 ): [HTMLCanvasElement, CanvasRenderingContext2D, number, number] => {
   const canvas = document.createElement('canvas');
   canvas.width = width || 1;
   canvas.height = height || 1;
-  return [
-    canvas,
-    canvas.getContext('2d') as CanvasRenderingContext2D,
-    width,
-    height,
-  ];
+  let context: any;
+  if (isGL) {
+    WebGL2D.enable(canvas);
+    context = canvas.getContext('webgl-2d');
+  } else {
+    context = canvas.getContext('2d');
+  }
+  return [canvas, context as CanvasRenderingContext2D, width, height];
 };
 
 // get a reference to the current canvas.  If it has not been made yet, then create it,
@@ -34,7 +39,7 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
   if (mainCanvas) {
     return mainCanvas as HTMLCanvasElement;
   } else {
-    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH);
+    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH, true);
     canvas.id = CANVAS_ID;
     ctx.imageSmoothingEnabled = false;
     const div = document.getElementById('canvas-container');
@@ -54,7 +59,9 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
 
 // get a reference to the current rendering context
 export const getCtx = (type?: string): CanvasRenderingContext2D => {
-  return getCanvas(type).getContext('2d') as CanvasRenderingContext2D;
+  const canvas = getCanvas(type);
+  return (canvas.getContext('2d') ??
+    canvas.getContext('webgl-2d')) as CanvasRenderingContext2D;
 };
 
 const setDrawScaleCanvas = (canvas: HTMLCanvasElement, s: number) => {

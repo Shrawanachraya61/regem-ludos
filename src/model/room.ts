@@ -250,7 +250,8 @@ export const createRoom = async (
     room.tiles.push(tile);
     const ro = createTileRenderObject(tile);
     if (ro.isFloor) {
-      room.floorTileObjects.push(ro);
+      // room.floorTileObjects.push(ro);
+      room.renderObjects.push(ro);
     } else {
       if (isWallTileset) {
         const floorTile = {
@@ -260,8 +261,8 @@ export const createRoom = async (
           sprite: 'floors_1', //TODO make this a room param
           id: 1,
         } as Tile;
-        const roFloor = createTileRenderObject(floorTile);
-        room.floorTileObjects.push(roFloor);
+        // const roFloor = createTileRenderObject(floorTile);
+        // room.floorTileObjects.push(roFloor);
       } else if (isPropTileset) {
         const floorTile = {
           ...tile,

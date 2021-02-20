@@ -21,7 +21,13 @@ import {
   roomGetTileBelow,
 } from 'model/room';
 import { pixelToIsoCoords, isoToPixelCoords } from 'utils';
-import { clearScreen, drawAnimation, drawRoom, drawRect } from 'view/draw';
+import {
+  clearScreen,
+  drawAnimation,
+  drawRoom,
+  drawRect,
+  drawSprite,
+} from 'view/draw';
 import { Character, characterUpdate } from 'model/character';
 import { particleUpdate } from 'model/particle';
 import { BattleCharacter } from 'model/battle';
@@ -103,15 +109,15 @@ export const runMainLoop = async (): Promise<void> => {
       return;
     }
 
-    clearScreen();
-    clearScreen(getCtx('outer'));
-    drawRect(
-      0,
-      0,
-      getScreenSize(),
-      getScreenSize(),
-      getRenderBackgroundColor()
-    );
+    // clearScreen();
+    // clearScreen(getCtx('outer'));
+    // drawRect(
+    //   0,
+    //   0,
+    //   getScreenSize(),
+    //   getScreenSize(),
+    //   getRenderBackgroundColor()
+    // );
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();
@@ -182,6 +188,8 @@ export const runMainLoop = async (): Promise<void> => {
 
       // console.log('OFFSET', roomXOffset, roomYOffset);
       drawRoom(room, [roomXOffset, roomYOffset]);
+
+      // drawSprite('ada_0', 100, 100, 1);
     }
 
     const renderables = getRenderables();
