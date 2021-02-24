@@ -7,12 +7,15 @@ import {
 } from 'model/character';
 import { Trigger } from 'lib/rpgscript';
 import { invokeTrigger } from 'controller/scene-management';
+import { Timer } from './utility';
+import { getRoom } from 'db/overworlds';
 
 export interface Overworld {
   room: Room;
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
   loadTriggerName?: string;
+  timers: Timer[];
   // triggers: Trigger
 }
 
@@ -25,6 +28,28 @@ export interface OverworldTemplate {
   backgroundColor: string;
   loadTriggerName?: string;
 }
+
+export const createOverworldFromTemplate = (
+  template: OverworldTemplate
+): Overworld | null => {
+  const room = getRoom(template.roomName);
+  if (!room) {
+    console.error(
+      'Cannot initiate overworld, no room exists with name: ',
+      template.roomName
+    );
+    return null;
+  }
+
+  const overworld: Overworld = {
+    room,
+    triggersEnabled: true,
+    characterCollisionEnabled: true,
+    loadTriggerName: template.loadTriggerName,
+    timers: [] as Timer[],
+  };
+  return overworld;
+};
 
 export const overworldDisableTriggers = (overworld: Overworld) => {
   overworld.triggersEnabled = false;

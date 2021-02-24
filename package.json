@@ -11,7 +11,7 @@
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
-    "watch": "concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
+    "watch": "tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {
@@ -25,6 +25,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "html-minifier": "^4.0.0",
     "http-server": "^0.12.3",
+    "hud-gamepad": "^0.5.9",
     "prettier": "^2.2.1",
     "terser": "^4.6.11",
     "typedoc": "^0.20.16",

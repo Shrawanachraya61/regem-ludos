@@ -100,7 +100,10 @@ export const createTriggerActivatorRenderObject = (
   }
 };
 
-export const createTileRenderObject = (tile: Tile): RenderObject => {
+export const createTileRenderObject = (
+  tile: Tile,
+  sortYOffset?: number
+): RenderObject => {
   let [px, py] = isoToPixelCoords(
     (tile.x * TILE_WIDTH) / 2,
     (tile.y * TILE_HEIGHT) / 2
@@ -115,7 +118,11 @@ export const createTileRenderObject = (tile: Tile): RenderObject => {
     highlighted: tile.highlighted,
     isFloor: tile.sprite.indexOf('floors') > -1,
     // corrects for the tile height, which can be any height
-    sortY: py + (tile.tileHeight - 32) + (tile.tileHeight > 32 ? 16 + 4 : 16),
+    sortY:
+      py +
+      (tile.tileHeight - 32) +
+      (tile.tileHeight > 32 ? 16 + 4 : 16) +
+      (sortYOffset ?? 0),
     visible: true,
   };
 };

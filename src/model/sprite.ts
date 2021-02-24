@@ -133,10 +133,11 @@ const loadSpritesFromImage = (
       spriteHeight
     );
 
+    // TODO Add this back if necessary, but I think it
     // create rotated sprites:<baseSpriteName>_rN
-    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 1);
-    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 2);
-    addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 3);
+    // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 1);
+    // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 2);
+    // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 3);
 
     // create flipped sprite: <baseSpriteName>_f
     addSprite(
@@ -159,6 +160,7 @@ const loadSpritesFromImage = (
       if (
         numColumns === 1 &&
         numRows === 1 &&
+        // HACK: Makes 512 portraits retain their _0 for some ui purposes
         !baseSpriteName.includes('512')
       ) {
         baseSpriteName = spritePrefix;

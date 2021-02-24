@@ -35,6 +35,25 @@ export const tilePosToWorldPos = (x: number, y: number): Point => {
   return [(x * TILE_WIDTH) / 2, (y * TILE_HEIGHT) / 2];
 };
 
+const isWallProp = (sprite: string) => {
+  const wallProps = [
+    'props_0',
+    'props_1',
+    'props_2',
+    'props_3',
+    'props_4',
+    'props_5',
+    'props_6',
+    'props_8',
+    'props_9',
+    'props_10',
+    'props_11',
+    'props_12',
+    'props_13',
+  ];
+  return wallProps.includes(sprite);
+};
+
 export interface Room {
   tiledJson: any;
   width: number;
@@ -86,6 +105,7 @@ export interface Tile {
   x: number;
   y: number;
   isWall: boolean;
+  isProp: boolean;
   tileWidth: number;
   tileHeight: number;
   highlighted: boolean;
@@ -242,45 +262,43 @@ export const createRoom = async (
       tileWidth,
       tileHeight,
       isWall: isWallTileset || isPropTileset,
+      // y sorting and collisions are different if something is classified as a prop.
+      // certain props are big enough to be considered walls
+      isProp: isPropTileset && !isWallProp(sprite),
       id: tiledTileId - 1,
       x: i % width,
       y: Math.floor(i / width),
       highlighted: false,
     } as Tile;
+
     room.tiles.push(tile);
     const ro = createTileRenderObject(tile);
     if (ro.isFloor) {
-      // room.floorTileObjects.push(ro);
       room.renderObjects.push(ro);
     } else {
-      if (isWallTileset) {
+      if (tile.isWall && !tile.isProp) {
         const floorTile = {
           ...tile,
           tileWidth: 32,
           tileHeight: 32,
           sprite: 'floors_1', //TODO make this a room param
           id: 1,
-        } as Tile;
-        // const roFloor = createTileRenderObject(floorTile);
-        // room.floorTileObjects.push(roFloor);
-      } else if (isPropTileset) {
-        const floorTile = {
-          ...tile,
-          tileWidth: 32,
-          tileHeight: 32,
-          sprite: 'floors_1', //TODO make this a room param
-          id: 1,
-          x: tile.x + 1,
-          y: tile.y,
-        } as Tile;
-        const floorTile2 = {
-          ...floorTile,
-          x: tile.x,
-          y: tile.y + 1,
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
-        const roFloor2 = createTileRenderObject(floorTile2);
-        room.renderObjects.push(roFloor, roFloor2);
+        room.renderObjects.push(roFloor);
+      } else {
+        ro.sortY += 8;
+        const floorTile = {
+          ...tile,
+          tileWidth: 32,
+          tileHeight: 32,
+          sprite: 'floors_1', //TODO make this a room param
+          id: 1,
+          x: tile.x,
+          y: tile.y,
+        } as Tile;
+        const roFloor = createTileRenderObject(floorTile);
+        room.renderObjects.push(roFloor);
       }
       room.renderObjects.push(ro);
     }

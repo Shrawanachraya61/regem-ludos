@@ -40,10 +40,12 @@ export const init = () => {
 
   exp.Roger = {
     name: 'Roger',
-    spriteBase: 'guy',
+    spriteBase: 'guy2',
     talkTrigger: 'test-roger',
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
+    tags: ['A'],
+    overworldAi: 'WALK_BETWEEN_MARKERS_ABC',
   };
 
   exp.Rho = {

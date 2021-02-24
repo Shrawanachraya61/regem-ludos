@@ -17,7 +17,11 @@ import {
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
 import { colors } from './style';
-import { getMarkersVisible, getTriggersVisible } from 'model/generics';
+import {
+  getMarkersVisible,
+  getTriggersVisible,
+  getCurrentPlayer,
+} from 'model/generics';
 
 export interface DrawTextParams {
   font?: string;
@@ -167,6 +171,42 @@ export const drawAnimation = (
   }
 };
 
+export const drawAnimationNF = (
+  anim: Animation,
+  x: number,
+  y: number,
+  scale?: number,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  scale = scale || 1;
+  ctx = ctx || getCtx();
+  anim.update();
+  const sprite = anim.getSprite();
+  if (!sprite) {
+    console.error(anim);
+    throw new Error(`Cannot draw animation that did not provide a sprite.`);
+  }
+  try {
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'black';
+    const [image, sprX, sprY, sprW, sprH] =
+      typeof sprite === 'string' ? getSprite(sprite) : sprite;
+    ctx.drawImage(
+      image,
+      sprX,
+      sprY,
+      sprW,
+      sprH,
+      x,
+      y,
+      sprW * scale,
+      sprH * scale
+    );
+  } catch (e) {
+    throw new Error(`Error attempting to draw animation sprite: "${sprite}"`);
+  }
+};
+
 export type Polygon = Point[];
 
 export const drawPolygon = (
@@ -205,8 +245,8 @@ export const drawCharacter = (
   const anim = characterGetAnimation(ch);
   // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
   const [px, py] = isoToPixelCoords(x, y, z);
+  ctx = ctx || getCtx();
   drawAnimation(anim, px, py, scale, ctx);
-
   // {
   //   const [x, y] = characterGetPosBottom(ch);
   //   const [px, py] = isoToPixelCoords(x, y, z);
@@ -318,6 +358,14 @@ export const drawRoom = (
       drawCharacter(character);
     }
   }
+
+  const player = getCurrentPlayer();
+  const leader = player.leader;
+  ctx.globalAlpha = 0.25;
+  ctx.globalCompositeOperation = 'luminosity';
+  drawCharacter(leader);
+  ctx.globalAlpha = 1.0;
+  ctx.globalCompositeOperation = 'source-over';
 
   for (let i = 0; i < particles.length; i++) {
     const p = particles[i];

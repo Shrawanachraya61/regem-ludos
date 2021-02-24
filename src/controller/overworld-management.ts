@@ -27,6 +27,7 @@ import {
   overworldDisableTriggers,
   overworldEnableTriggers,
   OverworldTemplate,
+  createOverworldFromTemplate,
 } from 'model/overworld';
 import { Point3d } from 'utils';
 import {
@@ -45,58 +46,45 @@ import { TriggerType } from 'lib/rpgscript';
 import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pushKeyHandler } from 'controller/events';
-import { getRoom } from 'db/overworlds';
+import HudGamepad from 'lib/hud-gamepad';
 
 export const initiateOverworld = (
   player: Player,
   template: OverworldTemplate,
   playerPos?: Point3d
-): Overworld => {
-  const room = getRoom(template.roomName);
-  if (!room) {
-    console.error(
-      'Cannot initiate overworld, no room exists with name: ',
-      template.roomName
-    );
-  }
+): Overworld | null => {
+  const overworld = createOverworldFromTemplate(template);
 
-  const leader = player.leader;
-  const oChLeader: OverworldCharacter = {
-    ch: leader,
-  };
+  if (overworld) {
+    const room = overworld.room;
+    const leader = player.leader;
+    roomAddCharacter(room, leader);
 
-  roomAddCharacter(room, leader);
+    setCurrentRoom(room);
+    setCurrentPlayer(player);
+    setCurrentOverworld(overworld);
+    setRenderBackgroundColor(template.backgroundColor);
 
-  const overworld: Overworld = {
-    room,
-    triggersEnabled: true,
-    characterCollisionEnabled: true,
-    loadTriggerName: template.loadTriggerName,
-  };
-
-  setCurrentRoom(room);
-  setCurrentPlayer(player);
-  setCurrentOverworld(overworld);
-  setRenderBackgroundColor(template.backgroundColor);
-
-  if (playerPos) {
-    characterSetPos(leader, playerPos);
-  } else {
-    const marker = room.markers.MarkerPlayer;
-    if (marker) {
-      setCharacterAtMarker(leader.name, 'MarkerPlayer');
+    if (playerPos) {
+      characterSetPos(leader, playerPos);
     } else {
-      characterSetPos(leader, [0, 0, 0]);
+      const marker = room.markers.MarkerPlayer;
+      if (marker) {
+        setCharacterAtMarker(leader.name, 'MarkerPlayer');
+      } else {
+        characterSetPos(leader, [0, 0, 0]);
+      }
     }
+
+    pushKeyHandler(overworldKeyHandler);
+
+    if (overworld.loadTriggerName) {
+      callTrigger(overworld.loadTriggerName, TriggerType.ACTION);
+    }
+
+    return overworld;
   }
-
-  pushKeyHandler(overworldKeyHandler);
-
-  if (overworld.loadTriggerName) {
-    callTrigger(overworld.loadTriggerName, TriggerType.ACTION);
-  }
-
-  return overworld;
+  return null;
 };
 
 const callTrigger = async (triggerName: string, triggerType: TriggerType) => {
@@ -207,24 +195,26 @@ export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
   const leader = player.leader;
 
+  const { "x-dir": xDir, "y-dir": yDir } = HudGamepad.GamePad.observe();
+
   let isMoving = false;
   let vx = 0;
   let vy = 0;
   if (getKeyUpdateEnabled()) {
-    if (isKeyDown('ArrowLeft')) {
+    if (isKeyDown('ArrowLeft') || xDir < 0) {
       isMoving = true;
       vx -= 1;
       vy += 1;
-    } else if (isKeyDown('ArrowRight')) {
+    } else if (isKeyDown('ArrowRight') || xDir > 0) {
       isMoving = true;
       vx += 1;
       vy -= 1;
     }
-    if (isKeyDown('ArrowUp')) {
+    if (isKeyDown('ArrowUp') || yDir < 0) {
       isMoving = true;
       vx -= 1;
       vy -= 1;
-    } else if (isKeyDown('ArrowDown')) {
+    } else if (isKeyDown('ArrowDown') ||  yDir > 0) {
       isMoving = true;
       vx += 1;
       vy += 1;
@@ -242,4 +232,17 @@ export const updateOverworld = (overworld: Overworld): void => {
   if (overworld.triggersEnabled) {
     checkAndCallTriggerOfType(TriggerType.STEP);
   }
+
+  overworld.room.characters.forEach(ch => {
+    ch.timers = ch.timers.filter(timer => {
+      timer.update();
+      if (timer.isComplete()) {
+        timer.shouldRemove = true;
+        return false;
+      }
+      return true;
+    });
+
+    ch.overworldAi.update(ch);
+  });
 };

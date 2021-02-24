@@ -39,7 +39,7 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
   if (mainCanvas) {
     return mainCanvas as HTMLCanvasElement;
   } else {
-    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH, true);
+    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH);
     canvas.id = CANVAS_ID;
     ctx.imageSmoothingEnabled = false;
     const div = document.getElementById('canvas-container');

@@ -758,6 +758,11 @@ http-server@^0.12.3:
     secure-compare "3.0.1"
     union "~0.5.0"
 
+hud-gamepad@^0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/hud-gamepad/-/hud-gamepad-0.5.9.tgz#8d7da523c352d955ca6a05f9aa711382365f902b"
+  integrity sha512-y7eFoCdGg9EC7oj0ZXqLqdT2EbUshc4aDgMhMa+I7HKvENfJ6OX1pHG+/vsPwJ5C61ntmIYZZnRlC6Qzn5hjdg==
+
 iconv-lite@^0.4.24:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"

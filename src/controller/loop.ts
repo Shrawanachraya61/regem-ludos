@@ -93,13 +93,13 @@ export const unpause = () => {
 export const runMainLoop = async (): Promise<void> => {
   const startTime = performance.now();
   let prevNow = startTime;
-  const sixtyFpsMs = 13;
+  const sixtyFpsMs = 16;
   (window as any).running = true;
 
   const loop = (now: number) => {
     const dt = now - prevNow;
     const fm = dt / sixtyFpsMs;
-    setFrameMultiplier(fm > 2 ? 2 : fm);
+    setFrameMultiplier(fm > 4 ? 4 : fm);
     setDeltaT(dt);
     prevNow = now;
     setNow(now);
@@ -109,15 +109,15 @@ export const runMainLoop = async (): Promise<void> => {
       return;
     }
 
-    // clearScreen();
-    // clearScreen(getCtx('outer'));
-    // drawRect(
-    //   0,
-    //   0,
-    //   getScreenSize(),
-    //   getScreenSize(),
-    //   getRenderBackgroundColor()
-    // );
+    clearScreen();
+    clearScreen(getCtx('outer'));
+    drawRect(
+      0,
+      0,
+      getScreenSize(),
+      getScreenSize(),
+      getRenderBackgroundColor()
+    );
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();
@@ -199,7 +199,7 @@ export const runMainLoop = async (): Promise<void> => {
     }
 
     if ((window as any).running) requestAnimationFrame(loop);
-    // if ((window as any).running) setTimeout(() => loop(performance.now()), 33); // for debugging
+    // if ((window as any).running) setTimeout(() => loop(performance.now()), 100); // for debugging
   };
   loop(startTime);
 };

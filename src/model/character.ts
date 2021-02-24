@@ -1,6 +1,6 @@
 import { createAnimation, Animation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
-import { Transform } from 'model/utility';
+import { Transform, Timer } from 'model/utility';
 import {
   Point,
   Point3d,
@@ -34,8 +34,9 @@ import { RenderObject } from 'model/render-object';
 import { getCtx } from './canvas';
 import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
+import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 
-export const DEFAULT_SPEED = 1;
+export const DEFAULT_SPEED = 0.5;
 
 const DEBUG_drawRectPoint = (point: Point, color: string) => {
   const player = getCurrentPlayer();
@@ -122,6 +123,10 @@ export interface Character {
   walkRetries: number;
   onReachWalkTarget: null | (() => void);
   talkTrigger: string;
+  tags: string[];
+  aiState: Record<string, string | number | boolean>;
+  overworldAi: OverworldAI;
+  timers: Timer[];
   ro?: RenderObject;
 }
 
@@ -133,6 +138,8 @@ export interface CharacterTemplate {
   facing?: Facing;
   animationState?: AnimationState;
   skills?: BattleAction[];
+  tags?: string[];
+  overworldAi?: string;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -160,6 +167,10 @@ export const characterCreate = (name: string): Character => {
     walkRetries: 0,
     onReachWalkTarget: null,
     talkTrigger: '',
+    aiState: {},
+    overworldAi: getOverworldAi('DO_NOTHING'),
+    timers: [] as Timer[],
+    tags: [] as string[],
   };
   ch.ro = {
     character: ch,
@@ -184,6 +195,13 @@ export const characterCreateFromTemplate = (
   };
   ch.skills = template.skills || ch.skills;
   ch.talkTrigger = template.talkTrigger ?? '';
+  ch.tags = template.tags || ([] as string[]);
+  if (template.overworldAi) {
+    ch.overworldAi = getOverworldAi(template.overworldAi);
+  }
+  if (ch.overworldAi.onCreate) {
+    ch.overworldAi.onCreate(ch);
+  }
   return ch;
 };
 
@@ -392,6 +410,40 @@ export const characterCollidesWithRect = (ch: Character, r: Rect) => {
   return circleRectCollision(myself, r) !== 'none';
 };
 
+export const characterAddTag = (ch: Character, tag: string) => {
+  if (!characterHasTag(ch, tag)) {
+    ch.tags.push(tag);
+  }
+};
+
+export const characterRemoveTag = (ch: Character, tag: string) => {
+  const i = ch.tags.indexOf(tag);
+  if (i > -1) {
+    ch.tags.splice(i, 1);
+  }
+};
+
+export const characterHasTag = (ch: Character, tag: string) => {
+  return ch.tags.includes(tag);
+};
+
+export const characterAddTimer = (ch: Character, timer: Timer) => {
+  if (!characterHasTimer(ch, timer)) {
+    ch.timers.push(timer);
+  }
+};
+
+export const characterRemoveTimer = (ch: Character, timer: Timer) => {
+  const i = ch.timers.indexOf(timer);
+  if (i > -1) {
+    ch.timers.splice(i, 1);
+  }
+};
+
+export const characterHasTimer = (ch: Character, timer: Timer) => {
+  return ch.timers.includes(timer);
+};
+
 export const characterUpdate = (ch: Character): void => {
   const room = getCurrentRoom();
   const frameMult = getFrameMultiplier();
@@ -449,6 +501,8 @@ export const characterUpdate = (ch: Character): void => {
     const [newVx, newVy] = getNormalizedVec(ch.vx, ch.vy);
     const finalVx = newVx * frameMult * ch.speed;
     const finalVy = newVy * frameMult * ch.speed;
+    const { x: prevX, y: prevY } = ch;
+
     ch.x += finalVx;
     ch.y += finalVy;
 
@@ -483,13 +537,15 @@ export const characterUpdate = (ch: Character): void => {
         tile.y
       );
     }
-    if (tile?.isWall || tileBelowY1?.isWall || tileBelowX1?.isWall) {
+    const isObstructedByWall =
+      isPrimaryWall(tileBelowY1) || isPrimaryWall(tileBelowX1);
+    if (tile?.isWall || isObstructedByWall) {
       // if (tile && tileBelowY1) {
       //   tile.highlighted = true;
       //   tileBelowY1.highlighted = true;
       // }
-      ch.x -= finalVx;
-      ch.y -= finalVy;
+      ch.x = prevX;
+      ch.y = prevY;
     }
     // ch.x = parseFloat(ch.x.toFixed(2));
     // ch.y = parseFloat(ch.y.toFixed(2));
@@ -502,4 +558,8 @@ export const characterUpdate = (ch: Character): void => {
   if (ch.ro) {
     ch.ro.sortY = py + 32;
   }
+};
+
+const isPrimaryWall = (tile: Tile | null) => {
+  return tile?.isWall && !tile?.isProp;
 };
