@@ -22,6 +22,11 @@
         flex-direction: column;
         height: 100%;
       }
+      #controls {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+      }
     </style>
     <title>Regem Ludos</title>
     <link rel=stylesheet href=styles.css>
@@ -40,6 +45,10 @@
         <div id=fade style="position: absolute; width: 100%; height: 100%; top: 0"></div>
         <div id=ui></div>
       </div>
+    </div>
+    <div>
+      <canvas id=controls width=1000 height=1000></canvas>
+      <div class=touch></div>
     </div>
   </body>
   <footer>
