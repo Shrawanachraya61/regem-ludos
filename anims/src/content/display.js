@@ -544,7 +544,11 @@ display.getFormattedTxtForAnimation = function(animation) {
 };
 
 display.getFormattedTxtForImage = function(imageName) {
-  const { spriteWidth, spriteHeight, animations } = display.pictures[imageName];
+  const picture = display.pictures[imageName];
+  if (!picture) {
+    return '';
+  }
+  const { spriteWidth, spriteHeight, animations } = picture;
   let txt = `Picture,${imageName},${imageName}.png,${spriteWidth},${spriteHeight}\n`;
   for (let i in animations) {
     const animName = animations[i];

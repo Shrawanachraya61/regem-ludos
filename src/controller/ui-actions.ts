@@ -158,18 +158,21 @@ export const startConversation2 = (
       portraitRight2Emotion: '',
       portraitCenterEmotion: '',
       speaker: CutsceneSpeaker.None,
+      speakerName: '',
       visible: true,
     } as Partial<ICutsceneAppState>,
   });
 };
 
-export const setCutsceneText = (text: string, speaker?: CutsceneSpeaker) => {
+export const setCutsceneText = (text: string, speaker?: CutsceneSpeaker, actorName?: string) => {
   const payload = {
     text,
     visible: true,
+    speakerName: '',
   } as Partial<ICutsceneAppState>;
   if (speaker) {
     payload.speaker = speaker;
+    payload.speakerName = actorName;
   }
   getUiInterface().dispatch({
     action: 'setCutsceneState',

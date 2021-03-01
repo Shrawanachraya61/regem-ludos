@@ -18,6 +18,7 @@ export enum CutsceneSpeaker {
 export interface ICutsceneAppState {
   text: string;
   speaker: CutsceneSpeaker;
+  speakerName: string;
   visible: boolean;
   portraitLeft: string;
   portraitLeftEmotion: string;
@@ -44,6 +45,7 @@ export const AppStateInitial: AppState = {
   cutscene: {
     text: '',
     speaker: CutsceneSpeaker.None,
+    speakerName: '',
     visible: true,
     portraitLeft: '',
     portraitLeftEmotion: '',

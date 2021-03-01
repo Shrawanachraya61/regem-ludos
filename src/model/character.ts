@@ -125,7 +125,9 @@ export interface Character {
   talkTrigger: string;
   tags: string[];
   aiState: Record<string, string | number | boolean>;
+  aiEnabled: boolean;
   overworldAi: OverworldAI;
+  storedState: Record<string, any>;
   timers: Timer[];
   ro?: RenderObject;
 }
@@ -168,7 +170,9 @@ export const characterCreate = (name: string): Character => {
     onReachWalkTarget: null,
     talkTrigger: '',
     aiState: {},
+    aiEnabled: true,
     overworldAi: getOverworldAi('DO_NOTHING'),
+    storedState: {},
     timers: [] as Timer[],
     tags: [] as string[],
   };
@@ -440,8 +444,29 @@ export const characterRemoveTimer = (ch: Character, timer: Timer) => {
   }
 };
 
+export const characterStopAi = (ch: Character) => {
+  characterStoreState(ch);
+  ch.aiEnabled = false;
+  characterSetAnimationState(ch, AnimationState.IDLE);
+};
+
+export const characterStartAi = (ch: Character) => {
+  ch.aiEnabled = true;
+  characterRestoreState(ch);
+};
+
 export const characterHasTimer = (ch: Character, timer: Timer) => {
   return ch.timers.includes(timer);
+};
+
+export const characterStoreState = (ch: Character) => {
+  ch.storedState.facing = ch.facing;
+};
+
+export const characterRestoreState = (ch: Character) => {
+  if (ch.storedState.facing) {
+    characterSetFacing(ch, ch.storedState.facing);
+  }
 };
 
 export const characterUpdate = (ch: Character): void => {

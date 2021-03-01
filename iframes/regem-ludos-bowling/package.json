@@ -1,0 +1,27 @@
+{
+  "name": "regem-ludos-bowling",
+  "version": "1.0",
+  "license": "MIT",
+  "main": "regem-ludos-bowling.min.js",
+  "module": "regem-ludos-bowling.es5.js",
+  "scripts": {
+    "build": "yarn tsc && rollup -c rollup.config.ts",
+    "watch": "yarn tsc && concurrently -n 1,2 \"http-server -p 8091 -o index.html\" \"rollup -c rollup.config.ts -w\"",
+    "tsc": "tsc --module commonjs",
+    "mv": "mkdir -p dist && cp -t dist/ favicon.png -v",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "matter-js": "^0.16.1"
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.0",
+    "rollup": "^2.40.0",
+    "rollup-plugin-babel-minify": "^10.0.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "typescript": "^4.2.2"
+  }
+}

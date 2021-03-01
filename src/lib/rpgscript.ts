@@ -492,16 +492,6 @@ export class ScriptParser {
               return;
             }
           }
-          let commandSrc = commandContents.substr(endIndex);
-          if (commandSrc[0] === '+') {
-            commandSrc = commandSrc.slice(1);
-          }
-
-          const { type, args } = this.parseCommand(
-            commandSrc,
-            lineNum,
-            currentScript
-          );
 
           let block: CommandBlock | null = null;
           if (isCodeBlock) {
@@ -514,6 +504,23 @@ export class ScriptParser {
             block = currentBlock = currentScript.addCommandBlock();
             block.conditional = conditional;
           }
+
+          let commandSrc = commandContents.substr(endIndex);
+          const isDialog = /(.*): "(.*)"/.test(commandSrc);
+          // console.log('is dialog', isDialog, commandSrc);
+          if (commandSrc[0] === '+') {
+            commandSrc = commandSrc.slice(1);
+          } else if (isDialog) {
+            const command = this.createDialogCommand(commandSrc, currentScript);
+            block.commands.push(command);
+            return;
+          }
+
+          const { type, args } = this.parseCommand(
+            commandSrc,
+            lineNum,
+            currentScript
+          );
           const command = {
             type,
             args,

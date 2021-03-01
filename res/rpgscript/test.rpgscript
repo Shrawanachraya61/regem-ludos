@@ -164,3 +164,25 @@ Conscience: "The test will now conclude."
 +setConversation2("Vivi", "Sigma");
 Vivi: "Hmm.  She's almost as tall as I am.  Maybe we would get along well..."
 +endConversation();
+
+@test-narrator-label
++setConversation("Ada");
+Ada: "I am speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Ada: "I am speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Ada: "I am speaking now."
+Narrator: "The narrator is speaking now."
+Other: "Somebody else is speaking now."
+
+@test-jump
++setConversation("Ada");
+Ada: "I will now jump."
++setConversationSpeaker(none);
++jump("Ada");
+Ada: "I have jumped."
++endConversation();

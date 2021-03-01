@@ -17,6 +17,8 @@ import {
   characterSetFacingFromAngle,
   characterSetPos,
   characterSetWalkTarget,
+  characterGetPos,
+  characterSetTransform,
   Facing,
 } from 'model/character';
 import {
@@ -37,6 +39,13 @@ import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { getIfExists as getOverworld } from 'db/overworlds';
+import {
+  playerAddItem,
+  playerRemoveItem,
+  playerModifyTokens,
+  playerModifyTickets,
+} from 'model/player';
+import { Transform, TransformEase } from 'model/utility';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -66,19 +75,25 @@ export const playDialogue = (
 ) => {
   const { cutscene } = getUiInterface().appState;
   let speaker = CutsceneSpeaker.None;
-  actorName = actorName.toLowerCase();
-  if (cutscene.portraitLeft === actorName) {
+  const actorNameLower = actorName.toLowerCase();
+  if (cutscene.portraitLeft === actorNameLower) {
     speaker = CutsceneSpeaker.Left;
-  } else if (cutscene.portraitLeft2 === actorName) {
+  } else if (cutscene.portraitLeft2 === actorNameLower) {
     speaker = CutsceneSpeaker.Left2;
-  } else if (cutscene.portraitRight === actorName) {
+  } else if (cutscene.portraitRight === actorNameLower) {
     speaker = CutsceneSpeaker.Right;
-  } else if (cutscene.portraitRight2 === actorName) {
+  } else if (cutscene.portraitRight2 === actorNameLower) {
     speaker = CutsceneSpeaker.Right2;
-  } else if (cutscene.portraitCenter === actorName) {
+  } else if (cutscene.portraitCenter === actorNameLower) {
     speaker = CutsceneSpeaker.Center;
   }
-  setCutsceneText(text, speaker);
+
+  setCutsceneText(
+    text,
+    speaker,
+    actorNameLower !== 'narrator' ? actorName : ''
+  );
+
   return waitForUserInput();
 };
 
@@ -922,7 +937,13 @@ export const fadeIn = (ms?: number, skipWait?: boolean) => {
   }
 };
 
-export const changeRoom = (roomName: string) => {
+/**
+ * Change the room and put the player at the given markerName in the next room.  If not
+ * specified, the player is put at MarkerPlayer or if that does not exist (0, 0).
+ *
+ * When using a marker, the player will be facing a direction depending on the marker type.
+ */
+export const changeRoom = (roomName: string, nextRoomMarkerName?: string) => {
   const player = getCurrentPlayer();
   const overworldTemplate = getOverworld(roomName);
   if (!player) {
@@ -933,7 +954,122 @@ export const changeRoom = (roomName: string) => {
     console.error('No overworld template exists with name:', roomName);
     return;
   }
-  initiateOverworld(player, overworldTemplate);
+
+  // TODO Make this use the nextRoomMarkerName & fade
+  initiateOverworld(player, overworldTemplate, nextRoomMarkerName);
+};
+
+/**
+ * Give an item to the player.  Dialogue will play indicating the item that was given,
+ * or this text can be overridden by optional itemText param.
+ */
+export const acquireItem = (itemName: string, itemText?: string) => {
+  const player = getCurrentPlayer();
+  if (playerAddItem(player, itemName)) {
+    return playDialogue('Narrator', itemText ?? `Acquired: ${itemName}`);
+  }
+};
+
+/**
+ * Remove an item from the player.  Dialogue will play indicating the item that was removed,
+ * or this text can be overridden by optional itemText param.
+ */
+export const removeItem = (itemName: string, itemText?: string) => {
+  const player = getCurrentPlayer();
+  if (playerRemoveItem(player, itemName)) {
+    return playDialogue('Narrator', itemText ?? `Removed: ${itemName}`);
+  }
+};
+
+/**
+ * Add/remove Tokens from the player, and show a dialogue indicating how much was gained/lost.
+ */
+export const modifyTokens = (amount: number) => {
+  const player = getCurrentPlayer();
+  playerModifyTokens(player, amount);
+  if (amount > 0) {
+    return playDialogue('Narrator', `Gained ${amount} Regem Ludos Tokens.`);
+  } else {
+    return playDialogue('Narrator', `Removed ${-amount} Regem Ludos Tokens.`);
+  }
+};
+
+/**
+ * Add/remove Tickets from the player, and show a dialogue indicating how much was gained/lost.
+ */
+export const modifyTickets = (amount: number) => {
+  const player = getCurrentPlayer();
+  playerModifyTickets(player, amount);
+  if (amount > 0) {
+    return playDialogue('Narrator', `Gained ${amount} Prize Tickets.`);
+  } else {
+    return playDialogue('Narrator', `Removed ${-amount} Prize Tickets.`);
+  }
+};
+
+/**
+ * Make the given character jump into the air and come back down.
+ */
+export const jump = (chName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  const jumpAsync = (height: number): Promise<void> => {
+    return new Promise(resolve => {
+      waitMS(33, () => {
+        const pos = characterGetPos(ch);
+        pos[2] = height;
+        characterSetPos(ch, pos);
+        resolve();
+      });
+    });
+  };
+
+  const performJump = async () => {
+    await jumpAsync(8);
+    await jumpAsync(16);
+    await jumpAsync(20);
+    await jumpAsync(22);
+    await jumpAsync(20);
+    await jumpAsync(16);
+    await jumpAsync(8);
+    await jumpAsync(0);
+    waitMS(500);
+  };
+  performJump();
+  return true;
+};
+
+export const applyZTransform = (chName: string, z: number, ms?: number) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  const startPoint = characterGetPos(ch);
+  const endPoint = [...startPoint] as Point3d;
+  endPoint[2] = z;
+  const msTime = ms ?? 1000;
+
+  const transform = new Transform(
+    startPoint,
+    endPoint,
+    msTime,
+    TransformEase.LINEAR
+  );
+  characterSetTransform(ch, transform);
+  return waitMS(msTime, () => {
+    characterSetPos(ch, endPoint);
+    ch.transform = null;
+  });
 };
 
 const commands = {
@@ -964,6 +1100,12 @@ const commands = {
   fadeOut,
   fadeIn,
   changeRoom,
+  acquireItem,
+  removeItem,
+  modifyTokens,
+  modifyTickets,
+  jump,
+  applyZTransform,
 };
 
 export default commands;

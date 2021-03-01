@@ -102,27 +102,31 @@ const TextBoxWrapper = style(
     const hOffset = '6.25%';
     let left =
       props.align === 'left' ? hOffset : `calc(100% - ${hOffset} - 50%)`;
-    let height = '20%';
-    let transition = 'height 0.1s, left 0.1s, transform 0.25s ease-in';
+    let height = '25%';
+    let width = '50%';
+    let transition = 'height 0.1s, left 0.1s, transform 0.1s ease-in';
     if (props.align === 'center') {
-      left = '25%';
+      left = '20%';
+      width = '60%';
       height = '75%';
-      transition = 'height 0.25s, left 0.25s, transform 0.25s ease-in';
+      transition = 'height 0.1s, left 0.25s, transform 0.1s ease-in';
     } else if (props.align === 'center-low') {
-      left = '25%';
       height = '35%';
+      left = '20%';
+      width = '60%';
     } else if (!props.visible) {
       transition = '';
     }
 
     return {
       position: 'absolute',
-      width: '50%',
+      width,
       height,
       left,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection: 'column',
       transition,
       bottom: '0px',
       transform: props.visible ? 'scale(1)' : 'scale(0)',
@@ -132,7 +136,10 @@ const TextBoxWrapper = style(
 
 const TextBox = style(
   'div',
-  (props: { align: 'right' | 'left' | 'center' | 'center-low' }) => {
+  (props: {
+    align: 'right' | 'left' | 'center' | 'center-low';
+    isNarration: boolean;
+  }) => {
     let borderBottomLeftRadius = 'unset';
     let borderBottomRightRadius = 'unset';
     let borderLeft = 'solid';
@@ -155,7 +162,7 @@ const TextBox = style(
 
     return {
       border: '2px solid ' + colors.WHITE,
-      background: colors.BLACK,
+      background: props.isNarration ? colors.DARKBLUE : colors.BLACK,
       boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
       boxSizing: 'border-box',
       width: '100%',
@@ -163,7 +170,7 @@ const TextBox = style(
       color: colors.WHITE,
       fontSize: '24px',
       textAlign: 'left',
-      transition: 'height 0.25s, width 0.25s',
+      transition: 'height 0.1s, width 0.1s',
       borderBottomLeftRadius,
       borderBottomRightRadius,
       borderLeft,
@@ -186,6 +193,37 @@ const PortraitWrapper = style('div', (props: { visible: boolean }) => {
     height: '100%',
     transform: props.visible ? 'translateY(0%)' : 'translateY(55%)',
     transition: 'transform 0.15s',
+  };
+});
+
+const NameLabelWrapper = style(
+  'div',
+  (props: { visible: boolean; align: string }) => {
+    return {
+      width: props.visible ? '100%' : '0px',
+      display: 'flex',
+      marginBottom: '16px',
+      opacity: props.visible ? '100%' : '0%',
+      justifyContent: props.align === 'right' ? 'flex-end' : 'flex-start',
+      //transition: 'opacity 0.1s linear, width 0.1s',
+    };
+  }
+);
+
+const NameLabel = style('div', (props: {}) => {
+  return {
+    color: colors.BLACK,
+    padding: '8px',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
+    background: colors.WHITE,
+    border: '2px solid black',
+    borderTopRightRadius: '8px',
+    borderTopLeftRadius: '8px',
+    minWidth: '64px',
+    textAlign: 'center',
+    textTransform: 'uppercase',
   };
 });
 
@@ -294,7 +332,13 @@ const CutsceneSection = () => {
         visible={barsVisible && cutscene.text.length > 0}
         align={textBoxAlign}
       >
-        <TextBox align={textBoxAlign}>
+        <NameLabelWrapper
+          visible={!!cutscene.speakerName}
+          align={cutscene.speaker === CutsceneSpeaker.Right ? 'right' : 'left'}
+        >
+          <NameLabel>{cutscene.speakerName}</NameLabel>
+        </NameLabelWrapper>
+        <TextBox align={textBoxAlign} isNarration={!cutscene.speakerName}>
           <span
             style={{
               opacity: '0',

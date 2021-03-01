@@ -63,4 +63,21 @@ export const init = () => {
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
   };
+
+  // Floor1 ------------------------------------------------------------------------------
+  exp.Floor1AtriumDeskEmployee = {
+    name: 'Atrium Desk Employee',
+    spriteBase: 'employee-girl',
+    talkTrigger: 'floor1-atrium-desk-employee',
+    facing: Facing.RIGHT_UP,
+    animationState: AnimationState.IDLE,
+  };
+
+  exp.Floor1AtriumElevatorEmployee = {
+    name: 'Atrium Elevator Employee',
+    spriteBase: 'employee-guy',
+    talkTrigger: 'floor1-atrium-elevator-employee',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
 };

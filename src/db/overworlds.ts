@@ -8,10 +8,10 @@ import * as test2Json from 'map/test2.json';
 import * as floor1Outside from 'map/floor1-outside.json';
 import * as floor1Atrium from 'map/floor1-atrium.json';
 import * as floor1Bowling from 'map/floor1-bowlingalley.json';
-import * as floor2Entrance from 'map/floor2-entrance.json';
+import * as floor2South from 'map/floor2-south.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
 import * as floor2North from 'map/floor2-north.json';
-import * as floor2preproom from 'map/floor2-preproom.json';
+import * as floor2PrepRoom from 'map/floor2-preproom.json';
 
 const rooms: Record<string, Room> = ((window as any).rooms = {});
 
@@ -19,10 +19,10 @@ const overworldToRoom = {
   floor1Outside,
   floor1Atrium,
   floor1Bowling,
-  floor2Entrance,
+  floor2South,
   floor2Cafeteria,
   floor2North,
-  floor2preproom,
+  floor2PrepRoom,
 };
 
 const loadRoom = async (roomName: string, json: any) => {

@@ -11,7 +11,11 @@ import {
   getTrigger,
 } from 'lib/rpgscript';
 import { Scene, sceneIsWaiting, sceneGetCommands } from 'model/scene';
-import { getCurrentOverworld, getCurrentRoom } from 'model/generics';
+import {
+  getCurrentOverworld,
+  getCurrentPlayer,
+  getCurrentRoom,
+} from 'model/generics';
 import { getUiInterface } from 'view/ui';
 import {
   setCutsceneText,
@@ -27,6 +31,7 @@ import { popKeyHandler, pushKeyHandler } from 'controller/events';
 import { characterSetFacing, Facing } from 'model/character';
 import { roomGetCharacterByName } from 'model/room';
 import sceneCommands from './scene-commands';
+import { playerHasItem } from 'model/player';
 
 export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
@@ -101,12 +106,12 @@ export const evalCondition = (
       }
     });
     if (type === 'is') {
-      return !!args[0];
+      return !!scene.storage[args[0]];
     } else if (type === 'isnot') {
       if (typeof args[0] == 'object') {
         return !evalCondition(scene, args[0]);
       } else {
-        return !args[0];
+        return !scene.storage[args[0]];
       }
     } else if (type === 'gt') {
       return args[0] > args[1];
@@ -135,7 +140,7 @@ export const evalCondition = (
       return false;
     } else if (type === 'once') {
       const arg =
-        args[0] ||
+        args[0] ??
         (scene.currentScript || scene.currentTrigger)?.name + '-once';
       if (scene.storageOnceKeys[arg]) {
         return false;
@@ -143,8 +148,9 @@ export const evalCondition = (
       scene.storageOnceKeys[arg] = true;
       return true;
     } else if (type === 'with') {
-      console.error('conditional "with" is not defined for this scene.');
-      return false;
+      const itemName = args[0] ?? '';
+      const player = getCurrentPlayer();
+      return itemName && playerHasItem(player, itemName);
     }
     return false;
   }
@@ -157,19 +163,22 @@ export const invokeTrigger = (
 ): null | (() => Promise<void>) => {
   const trigger = getTrigger(triggerName);
   if (!scene.currentScript && trigger) {
-    // console.log('INVOKE TRIGGER', trigger);
+    type !== 'step' && console.log('INVOKE TRIGGER', trigger);
     for (let i = 0; i < trigger.scriptCalls.length; i++) {
       const scriptCall = trigger.scriptCalls[i];
-      scene.currentTrigger = trigger;
-      const c = evalCondition(scene, scriptCall.condition);
-      // console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
-      if (scriptCall.type === type && c) {
-        return async () => {
-          await callScript(scene, scriptCall.scriptName);
-          scene.storage[trigger.name] = true;
-        };
-      } else {
-        scene.currentTrigger = null;
+      if (scriptCall.type === type) {
+        scene.currentTrigger = trigger;
+        const c = evalCondition(scene, scriptCall.condition);
+        type !== 'step' &&
+          console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
+        if (c) {
+          return async () => {
+            await callScript(scene, scriptCall.scriptName);
+            scene.storage[trigger.name] = true;
+          };
+        } else {
+          scene.currentTrigger = null;
+        }
       }
     }
   }

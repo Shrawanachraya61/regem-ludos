@@ -39,6 +39,8 @@ import {
   characterGetPosBottom,
   characterCollidesWithPoint,
   characterCollidesWithRect,
+  characterStopAi,
+  characterStartAi,
 } from 'model/character';
 import { invokeTrigger, callScript } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
@@ -51,7 +53,7 @@ import HudGamepad from 'lib/hud-gamepad';
 export const initiateOverworld = (
   player: Player,
   template: OverworldTemplate,
-  playerPos?: Point3d
+  markerName?: string
 ): Overworld | null => {
   const overworld = createOverworldFromTemplate(template);
 
@@ -65,8 +67,12 @@ export const initiateOverworld = (
     setCurrentOverworld(overworld);
     setRenderBackgroundColor(template.backgroundColor);
 
-    if (playerPos) {
-      characterSetPos(leader, playerPos);
+    let markerForPos = markerName ? room.markers[markerName] : null;
+
+    console.log('MARKER FOR POS', markerName, markerForPos);
+
+    if (markerForPos) {
+      characterSetPos(leader, [markerForPos.x, markerForPos.y, 0]);
     } else {
       const marker = room.markers.MarkerPlayer;
       if (marker) {
@@ -79,7 +85,14 @@ export const initiateOverworld = (
     pushKeyHandler(overworldKeyHandler);
 
     if (overworld.loadTriggerName) {
-      callTrigger(overworld.loadTriggerName, TriggerType.ACTION);
+      const scriptCaller = invokeTrigger(
+        getCurrentScene(),
+        overworld.loadTriggerName,
+        TriggerType.ACTION
+      );
+      if (scriptCaller !== null) {
+        callTriggerScriptCaller(scriptCaller);
+      }
     }
 
     return overworld;
@@ -87,21 +100,14 @@ export const initiateOverworld = (
   return null;
 };
 
-const callTrigger = async (triggerName: string, triggerType: TriggerType) => {
+const callTriggerScriptCaller = async (scriptCaller: () => Promise<void>) => {
   const overworld = getCurrentOverworld();
-  const scriptCaller = invokeTrigger(
-    getCurrentScene(),
-    triggerName,
-    triggerType
-  );
-  if (scriptCaller !== null) {
-    overworldDisableTriggers(overworld);
-    disableKeyUpdate();
-    await scriptCaller();
-    overworldEnableTriggers(overworld);
-    enableKeyUpdate();
-    showSection(AppSection.Debug, true);
-  }
+  overworldDisableTriggers(overworld);
+  disableKeyUpdate();
+  await scriptCaller();
+  overworldEnableTriggers(overworld);
+  enableKeyUpdate();
+  showSection(AppSection.Debug, true);
 };
 
 const checkAndCallTriggerOfType = async (
@@ -119,7 +125,7 @@ const checkAndCallTriggerOfType = async (
         if (type === TriggerType.ACTION) {
           characterSetAnimationState(leader, AnimationState.IDLE);
         }
-        await callTrigger(ta.name, type);
+        await callTriggerScriptCaller(scriptCaller);
         return true;
       }
     }
@@ -136,8 +142,18 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
     const ch = room.characters[i];
     const [chX, chY] = characterGetPosBottom(ch);
     if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 25])) {
-      await callTrigger(ch.talkTrigger, TriggerType.ACTION);
-      return true;
+      const scriptCaller = invokeTrigger(
+        getCurrentScene(),
+        ch.talkTrigger,
+        TriggerType.ACTION
+      );
+      if (scriptCaller !== null) {
+        characterStopAi(ch);
+        characterSetAnimationState(player.leader, AnimationState.IDLE);
+        await callTriggerScriptCaller(scriptCaller);
+        characterStartAi(ch);
+        return true;
+      }
     }
   }
   return false;
@@ -149,6 +165,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     case ' ': {
       if (overworld.triggersEnabled) {
         if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
+          console.log('CALL TALK TRIGGER!');
           checkAndCallTalkTrigger();
         }
       }
@@ -159,7 +176,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-vivi');
+        await callScript(getCurrentScene(), 'test-jump');
         showSection(AppSection.Debug, true);
         console.log('ENABLE KEYS');
         enableKeyUpdate();
@@ -195,7 +212,7 @@ export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
   const leader = player.leader;
 
-  const { "x-dir": xDir, "y-dir": yDir } = HudGamepad.GamePad.observe();
+  const { 'x-dir': xDir, 'y-dir': yDir } = HudGamepad.GamePad.observe();
 
   let isMoving = false;
   let vx = 0;
@@ -214,7 +231,7 @@ export const updateOverworld = (overworld: Overworld): void => {
       isMoving = true;
       vx -= 1;
       vy -= 1;
-    } else if (isKeyDown('ArrowDown') ||  yDir > 0) {
+    } else if (isKeyDown('ArrowDown') || yDir > 0) {
       isMoving = true;
       vx += 1;
       vy += 1;
@@ -234,15 +251,17 @@ export const updateOverworld = (overworld: Overworld): void => {
   }
 
   overworld.room.characters.forEach(ch => {
-    ch.timers = ch.timers.filter(timer => {
-      timer.update();
-      if (timer.isComplete()) {
-        timer.shouldRemove = true;
-        return false;
-      }
-      return true;
-    });
+    if (ch.aiEnabled) {
+      ch.timers = ch.timers.filter(timer => {
+        timer.update();
+        if (timer.isComplete()) {
+          timer.shouldRemove = true;
+          return false;
+        }
+        return true;
+      });
 
-    ch.overworldAi.update(ch);
+      ch.overworldAi.update(ch);
+    }
   });
 };

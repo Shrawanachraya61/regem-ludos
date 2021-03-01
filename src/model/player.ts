@@ -8,14 +8,20 @@ import { removeIfPresent, isoToPixelCoords, Point } from 'utils';
 
 export interface Player {
   leader: Character;
+  tokens: number;
+  tickets: number;
+  backpack: string[];
   party: Character[];
-  battlePositions: { [key: string]: Character[] };
+  battlePositions: Record<string, Character[]>;
 }
 
 export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
   const leader = characterCreateFromTemplate(leaderTemplate);
-  const player = {
+  const player: Player = {
     leader,
+    tokens: 0,
+    tickets: 0,
+    backpack: ['Haptic Bracer'],
     party: [leader],
     battlePositions: {
       [BattlePosition.FRONT]: [leader],
@@ -71,4 +77,40 @@ export const playerGetCameraOffset = (player: Player): Point => {
   const roomXOffset = 512 / 2 - x - 16;
   const roomYOffset = 512 / 2 - y;
   return [roomXOffset, roomYOffset];
+};
+
+export const playerAddItem = (player: Player, itemName: string): boolean => {
+  player.backpack.push(itemName);
+  return true;
+};
+
+export const playerRemoveItem = (player: Player, itemName: string): boolean => {
+  const ind = player.backpack.indexOf(itemName);
+  if (ind > -1) {
+    player.backpack.splice(ind, 1);
+    return true;
+  }
+  return false;
+};
+
+export const playerHasItem = (player: Player, itemName: string): boolean => {
+  const ind = player.backpack.indexOf(itemName);
+  if (ind > -1) {
+    return true;
+  }
+  return false;
+};
+
+export const playerModifyTokens = (player: Player, amount: number) => {
+  player.tokens += amount;
+  if (player.tokens < 0) {
+    player.tokens = 0;
+  }
+};
+
+export const playerModifyTickets = (player: Player, amount: number) => {
+  player.tickets += amount;
+  if (player.tickets < 0) {
+    player.tickets = 0;
+  }
 };

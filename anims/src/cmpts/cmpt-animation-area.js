@@ -124,7 +124,7 @@ const AnimationPreview = ({ anim, appInterface }) => {
             style={{
               margin: '5px',
               border: '1px solid ' + colors.white,
-              backgroundColor: 'black',
+              backgroundColor: 'darkgreen',
             }}
             ref={ref}
             width={canvasWidth}

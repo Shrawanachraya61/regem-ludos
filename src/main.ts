@@ -59,6 +59,8 @@ export const main = async (): Promise<void> => {
   await loadRPGScript('floor1', scene);
   await loadRPGScript('test', scene);
   await loadRPGScript('example', scene);
+  await loadRPGScript('utils', scene);
+  await loadRPGScript('floor1-atrium', scene);
 
   console.log('load res');
   await loadRes();

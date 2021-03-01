@@ -1,0 +1,12 @@
+@utils-start-Conscience-dialogue
++setFacing('Ada', down);
++waitMS(250);
++spawnCharacterAtCharacter('Conscience', 'Ada');
++walkToOffset('Conscience', 16, 16);
++lookAtEachOther('Ada', 'Conscience');
+
+@utils-stop-Conscience-dialogue
++setConversationSpeaker("none");
++walkToOffset("Conscience", -16, -16);
++despawnCharacter("Conscience");
++waitMS(1000);

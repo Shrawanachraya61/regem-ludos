@@ -39,7 +39,11 @@ class AssetLoader {
         return;
       }
       display.updatePictureSpriteSize(pictureName, spriteWidth, spriteHeight);
-      const { img } = display.pictures[pictureName];
+      const picture = display.pictures[pictureName];
+      if (!picture) {
+        return null;
+      }
+      const { img } = picture;
       return img;
     };
 
