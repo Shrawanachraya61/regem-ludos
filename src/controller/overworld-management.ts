@@ -107,7 +107,9 @@ const callTriggerScriptCaller = async (scriptCaller: () => Promise<void>) => {
   await scriptCaller();
   overworldEnableTriggers(overworld);
   enableKeyUpdate();
-  showSection(AppSection.Debug, true);
+  if (overworld.visible) {
+    showSection(AppSection.Debug, true);
+  }
 };
 
 const checkAndCallTriggerOfType = async (
@@ -211,6 +213,10 @@ const getFacingFromKeyState = (): Facing => {
 export const updateOverworld = (overworld: Overworld): void => {
   const player = getCurrentPlayer();
   const leader = player.leader;
+
+  if (!overworld.visible) {
+    return;
+  }
 
   const { 'x-dir': xDir, 'y-dir': yDir } = HudGamepad.GamePad.observe();
 

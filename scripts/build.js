@@ -28,7 +28,7 @@ const build = async () => {
     .readFileSync(`${__dirname}/../index.html`)
     .toString()
     .replace('src/main.js', 'main.js');
-  const mainFile =
+  const mainFile = (
     CLIENT_FILES.reduce((prev, curr) => {
       return (
         prev +
@@ -37,7 +37,11 @@ const build = async () => {
           .readFileSync(__dirname + '/../' + outputDirName + '/' + curr)
           .toString()
       );
-    }, '(() => {\n') + '\n})()';
+    }, '(() => {\n') + '\n})()'
+  ).replace(
+    /RPGSCRIPT_LOAD_DIR = '(.*)'/,
+    `RPGSCRIPT_LOAD_DIR = 'res/rpgscript'`
+  );
 
   await execAsync(
     `rm -rf ${__dirname}/../.build ${__dirname}/../${outputDirName}.zip`

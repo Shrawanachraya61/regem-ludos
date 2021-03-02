@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":168,
-                 "y":132
+                 "x":96,
+                 "y":232
                 }, 
                 {
                  "gid":200,
@@ -157,6 +157,90 @@
                  "width":32,
                  "x":96,
                  "y":96
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":52,
+                 "name":"MarkerNPCWalkA",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":348,
+                 "y":144
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":53,
+                 "name":"MarkerNPCWalkB",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":312,
+                 "y":84
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":54,
+                 "name":"MarkerNPCWalkC",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":84,
+                 "y":144
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":55,
+                 "name":"MarkerNPCWalkD",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":76,
+                 "y":92
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":56,
+                 "name":"Floor1AtriumTicTacToeGirl",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":56,
+                 "y":208
+                }, 
+                {
+                 "gid":195,
+                 "height":32,
+                 "id":57,
+                 "name":"#floor1-atrium-TicTacToeMachine",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":60,
+                 "y":252
+                }, 
+                {
+                 "gid":195,
+                 "height":32,
+                 "id":58,
+                 "name":"#floor1-atrium-TicTacToeMachine",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":60,
+                 "y":284
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -165,7 +249,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":52,
+ "nextobjectid":59,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",

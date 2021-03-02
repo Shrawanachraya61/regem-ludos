@@ -16,30 +16,7 @@ import Button, { ButtonType } from 'view/elements/Button';
 import IframeShim from 'view/elements/IframeShim';
 import Arrow from 'view/icons/Arrow';
 import Help from 'view/icons/Help';
-
-enum SDLKeyID {
-  Enter = 13,
-  Space = 32,
-  Left = 1073741904,
-  Right = 1073741903,
-}
-
-const buttonHandlers = (key: SDLKeyID) => {
-  return {
-    onMouseDown: () => {
-      setButtonDown(key);
-    },
-    onMouseUp: () => {
-      setButtonUp(key);
-    },
-    onTouchStart: () => {
-      setButtonDown(key);
-    },
-    onTouchEnd: () => {
-      setButtonUp(key);
-    },
-  };
-};
+import { hideArcadeGame } from 'controller/ui-actions';
 
 export enum ArcadeGamePath {
   PRESIDENT = 'iframes/president/president.html',
@@ -47,7 +24,14 @@ export enum ArcadeGamePath {
   INVADERZ = 'iframes/invaderz/Invaderz.html',
   ELASTICITY = 'iframes/elasticity/elasticity.html',
 }
+
 const ArcadeGamePathMeta = {
+  default: {
+    title: 'No Game Specified',
+    controls: () => {
+      return <div></div>;
+    },
+  },
   [ArcadeGamePath.PRESIDENT]: {
     title: 'President',
     controls: () => {
@@ -139,12 +123,37 @@ const ArcadeGamePathMeta = {
   },
 };
 
+enum SDLKeyID {
+  Enter = 13,
+  Space = 32,
+  Left = 1073741904,
+  Right = 1073741903,
+}
+
+const buttonHandlers = (key: SDLKeyID) => {
+  return {
+    onMouseDown: () => {
+      setButtonDown(key);
+    },
+    onMouseUp: () => {
+      setButtonUp(key);
+    },
+    onTouchStart: () => {
+      setButtonDown(key);
+    },
+    onTouchEnd: () => {
+      setButtonUp(key);
+    },
+  };
+};
+
 interface IArcadeCabinetProps {
-  game: ArcadeGamePath;
+  game: ArcadeGamePath | '';
 }
 
 const CabinetWrapper = style('div', () => {
   return {
+    background: colors.BGGREY,
     position: 'fixed',
     left: '0px',
     top: '0px',
@@ -265,12 +274,15 @@ const CabinetControlButton = style(
 const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(false);
-  const meta = ArcadeGamePathMeta[props.game];
+  const meta = ArcadeGamePathMeta[props.game] ?? ArcadeGamePathMeta.default;
   return (
     <CabinetWrapper>
       <CabinetHeader>
         <Button
           type={ButtonType.CANCEL}
+          onClick={() => {
+            hideArcadeGame();
+          }}
           style={{
             marginRight: '1rem',
           }}
@@ -326,15 +338,21 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
         >
           {expanded ? null : <CabinetImage />}
         </div>
-        <IframeShim
-          id="arcade-iframe"
-          src={props.game + '?cabinet=true&mute=true'}
-          width={expanded ? '100%' : 512 + 'px'}
-          height={expanded ? '100%' : 512 + 'px'}
-          expanded={expanded}
-        ></IframeShim>
+        {props.game ? (
+          <IframeShim
+            id="arcade-iframe"
+            src={props.game + '?cabinet=true&mute=true'}
+            width={expanded ? '100%' : 512 + 'px'}
+            height={expanded ? '100%' : 512 + 'px'}
+            expanded={expanded}
+          ></IframeShim>
+        ) : (
+          <div>No game was specified.</div>
+        )}
         {expanded ? null : (
-          <CabinetControls id="controls">{meta.controls()}</CabinetControls>
+          <CabinetControls id="controls-arcade">
+            {meta.controls()}
+          </CabinetControls>
         )}
       </CabinetInnerWrapper>
     </CabinetWrapper>

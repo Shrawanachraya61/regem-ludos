@@ -6,6 +6,7 @@ import {
   startConversation,
   hideConversation,
   showConversation,
+  showArcadeGame,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -31,6 +32,7 @@ import {
   getCurrentScene,
   getCurrentRoom,
   getCurrentPlayer,
+  getCurrentOverworld,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
@@ -46,6 +48,8 @@ import {
   playerModifyTickets,
 } from 'model/player';
 import { Transform, TransformEase } from 'model/utility';
+import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
+import { overworldHide } from 'model/overworld';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -74,6 +78,16 @@ export const playDialogue = (
   soundName?: string
 ) => {
   const { cutscene } = getUiInterface().appState;
+
+  if (!cutscene.visible) {
+    console.error(
+      'Tried to play dialog while cutscene was not visible',
+      actorName,
+      text
+    );
+    return;
+  }
+
   let speaker = CutsceneSpeaker.None;
   const actorNameLower = actorName.toLowerCase();
   if (cutscene.portraitLeft === actorNameLower) {
@@ -88,10 +102,18 @@ export const playDialogue = (
     speaker = CutsceneSpeaker.Center;
   }
 
+  let nameLabel = actorName;
+
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, actorName);
+  if (ch) {
+    nameLabel = ch.nameLabel;
+  }
+
   setCutsceneText(
     text,
     speaker,
-    actorNameLower !== 'narrator' ? actorName : ''
+    actorNameLower !== 'narrator' ? nameLabel : ''
   );
 
   return waitForUserInput();
@@ -1056,7 +1078,7 @@ export const applyZTransform = (chName: string, z: number, ms?: number) => {
 
   const startPoint = characterGetPos(ch);
   const endPoint = [...startPoint] as Point3d;
-  endPoint[2] = z;
+  endPoint[2] += z;
   const msTime = ms ?? 1000;
 
   const transform = new Transform(
@@ -1070,6 +1092,17 @@ export const applyZTransform = (chName: string, z: number, ms?: number) => {
     characterSetPos(ch, endPoint);
     ch.transform = null;
   });
+};
+
+export const runArcadeCabinetGame = (gameName: string) => {
+  const gamePath = ArcadeGamePath[gameName];
+  if (!gamePath) {
+    console.error('No game exists with name:', gameName);
+    return;
+  }
+
+  overworldHide(getCurrentOverworld());
+  showArcadeGame(gamePath);
 };
 
 const commands = {
@@ -1106,6 +1139,7 @@ const commands = {
   modifyTickets,
   jump,
   applyZTransform,
+  runArcadeCabinetGame,
 };
 
 export default commands;

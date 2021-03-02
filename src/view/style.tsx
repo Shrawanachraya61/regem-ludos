@@ -7,6 +7,7 @@ export const colors = {
   WHITE: '#F8F8F8',
   GREY: '#999',
   DARKGREY: '#2E3740',
+  BGGREY: '#333',
   RED: '#BE2633',
   PINK: '#FFAEB6',
   GREEN: '#44891A',
@@ -20,7 +21,13 @@ export const colors = {
 
 export const MEDIA_QUERY_PHONE_WIDTH = '@media (max-width: 850px)';
 
-type IntrinsicElement = JSX.Element | JSX.Element[] | string | number | null | undefined;
+type IntrinsicElement =
+  | JSX.Element
+  | JSX.Element[]
+  | string
+  | number
+  | null
+  | undefined;
 
 interface IntrinsicProps {
   id?: string;

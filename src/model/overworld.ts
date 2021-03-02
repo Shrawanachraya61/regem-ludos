@@ -1,4 +1,4 @@
-import { Room } from 'model/room';
+import { Room, roomShow, roomHide } from 'model/room';
 import {
   AnimationState,
   Character,
@@ -12,6 +12,7 @@ import { getRoom } from 'db/overworlds';
 
 export interface Overworld {
   room: Room;
+  visible: boolean;
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
   loadTriggerName?: string;
@@ -43,6 +44,7 @@ export const createOverworldFromTemplate = (
 
   const overworld: Overworld = {
     room,
+    visible: true,
     triggersEnabled: true,
     characterCollisionEnabled: true,
     loadTriggerName: template.loadTriggerName,
@@ -67,4 +69,14 @@ export const overworldCharacterCreate = (
   };
 
   return oCh;
+};
+
+export const overworldShow = (overworld: Overworld) => {
+  overworld.visible = true;
+  roomShow(overworld.room);
+};
+
+export const overworldHide = (overworld: Overworld) => {
+  overworld.visible = false;
+  roomHide(overworld.room);
 };

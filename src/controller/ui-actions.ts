@@ -4,7 +4,11 @@ import {
   AppSection,
   ICutsceneAppState,
   CutsceneSpeaker,
+  IArcadeCabinetState,
 } from 'model/store';
+import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
+import { getCurrentOverworld } from 'model/generics';
+import { overworldShow } from 'model/overworld';
 
 export interface ReducerAction<T> {
   action: string;
@@ -34,6 +38,12 @@ const mutations: { [key: string]: MutationFunction } = {
     payload: Partial<ICutsceneAppState>
   ) => {
     Object.assign(newState.cutscene, payload);
+  },
+  setArcadeGameState: (
+    newState: AppState,
+    payload: Partial<IArcadeCabinetState>
+  ) => {
+    Object.assign(newState.arcadeGame, payload);
   },
 };
 
@@ -164,7 +174,11 @@ export const startConversation2 = (
   });
 };
 
-export const setCutsceneText = (text: string, speaker?: CutsceneSpeaker, actorName?: string) => {
+export const setCutsceneText = (
+  text: string,
+  speaker?: CutsceneSpeaker,
+  actorName?: string
+) => {
   const payload = {
     text,
     visible: true,
@@ -178,4 +192,29 @@ export const setCutsceneText = (text: string, speaker?: CutsceneSpeaker, actorNa
     action: 'setCutsceneState',
     payload,
   });
+};
+
+export const showArcadeGame = (path: ArcadeGamePath) => {
+  const payload = {
+    path,
+  };
+  getUiInterface().dispatch({
+    action: 'setArcadeGameState',
+    payload,
+  });
+  showSection(AppSection.ArcadeCabinet, true);
+};
+
+export const hideArcadeGame = () => {
+  const payload = {
+    path: '',
+  };
+  getUiInterface().dispatch({
+    action: 'setArcadeGameState',
+    payload,
+  });
+  showSection(AppSection.Debug, true);
+
+  const overworld = getCurrentOverworld();
+  overworldShow(overworld);
 };

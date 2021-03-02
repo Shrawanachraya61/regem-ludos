@@ -6,11 +6,13 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server ./dist -o index.html -g -p 8081",
-    "build": "yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main",
+    "build": "cross-env NODE_ENV=production yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript",
     "build:setup": "mkdir -p dist",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
+    "build:rpgscript": "cp -r src/rpgscript/* res/rpgscript/",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
+    "tsc": "tsc -v",
     "watch": "tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
@@ -19,6 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^3.1.0",
     "@typescript-eslint/parser": "^3.1.0",
     "concurrently": "^5.3.0",
+    "cross-env": "^7.0.3",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-babel": "^5.3.0",
@@ -28,6 +31,8 @@
     "hud-gamepad": "^0.5.9",
     "prettier": "^2.2.1",
     "terser": "^4.6.11",
+    "ts-transform-node-env-inline": "^1.0.3",
+    "ttypescript": "^1.5.12",
     "typedoc": "^0.20.16",
     "typescript": "^4.1.3",
     "uglifycss": "0.0.29"

@@ -31,10 +31,10 @@ __MY_CONSTANT \= (\b[a-z][a-z0-9]*)
 __LOGICKEYWORD \= (\?)
 __LOGIC \= (\b(isnot|gt|lt|is|all|one|as|once|eq|this|with))
 __TRIGGERNAME \= (^#(.)+$)
-__SCENENAME \= (^@(.)+$)
-__INLINE \= (^\+(.)+$)
-__DIALOG \= ((^[\w \w]*:)|(^(\s)+(\w)+:))
-__TRIGGERTYPE \= (^(action|step|item),)
+__SCENENAME \= (^(\s)*@(.)+$)
+__INLINE \= (^(\s)*\+(.)+$)
+__DIALOG \= ((^(\s)*[\w \w]*:)|(^(\s)+(\w)+:))
+__TRIGGERTYPE \= (^(\s)*(action|step|item),)
 
 ################################################################
 ## Styles

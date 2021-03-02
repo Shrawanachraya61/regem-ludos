@@ -1,5 +1,7 @@
 import { Scene, sceneHasCommand } from 'model/scene';
 
+const RPGSCRIPT_LOAD_DIR = 'src/rpgscript';
+
 function splitNotInParens(str: string, spl: string) {
   const ret: string[] = [];
   let agg = '';
@@ -624,7 +626,7 @@ const scripts: Record<string, Script> = ((window as any).scripts = {});
 const triggers: Record<string, Trigger> = ((window as any).triggers = {});
 
 export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
-  const url = `res/rpgscript/${scriptFileName}.rpgscript`;
+  const url = `${RPGSCRIPT_LOAD_DIR}/${scriptFileName}.rpgscript`;
   console.log('Loading script', url);
   const src = await (await fetch(url)).text();
   const parser = new ScriptParser(scriptFileName);

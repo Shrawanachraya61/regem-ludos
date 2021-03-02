@@ -1,9 +1,12 @@
+import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
+
 export enum AppSection {
   BattleUI = 'battleMenu',
   BattleVictory = 'battleVictory',
   BattleDefeated = 'battleDefeated',
   Cutscene = 'cutscene',
   Debug = 'debug',
+  ArcadeCabinet = 'arcadeCabinet',
 }
 
 export enum CutsceneSpeaker {
@@ -32,12 +35,17 @@ export interface ICutsceneAppState {
   portraitCenterEmotion: string;
 }
 
+export interface IArcadeCabinetState {
+  path: ArcadeGamePath | '';
+}
+
 export interface AppState {
   sections: AppSection[];
   cutscene: ICutsceneAppState;
   battle: {
     chButtonsEnabled: boolean;
   };
+  arcadeGame: IArcadeCabinetState;
 }
 
 export const AppStateInitial: AppState = {
@@ -60,5 +68,8 @@ export const AppStateInitial: AppState = {
   },
   battle: {
     chButtonsEnabled: true,
+  },
+  arcadeGame: {
+    path: '',
   },
 };

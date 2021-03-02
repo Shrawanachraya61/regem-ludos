@@ -128,6 +128,8 @@ export const runMainLoop = async (): Promise<void> => {
     }
 
     if (room) {
+      const roomVisible = room.visible;
+
       for (let i = 0; i < room.tiles.length; i++) {
         room.tiles[i].highlighted = false;
       }
@@ -187,7 +189,9 @@ export const runMainLoop = async (): Promise<void> => {
       // }
 
       // console.log('OFFSET', roomXOffset, roomYOffset);
-      drawRoom(room, [roomXOffset, roomYOffset]);
+      if (roomVisible) {
+        drawRoom(room, [roomXOffset, roomYOffset]);
+      }
 
       // drawSprite('ada_0', 100, 100, 1);
     }

@@ -97,6 +97,7 @@ export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
 
 export interface Character {
   name: string;
+  nameLabel: string;
   spriteBase: string;
   x: number;
   y: number;
@@ -134,6 +135,7 @@ export interface Character {
 
 export interface CharacterTemplate {
   name: string;
+  nameLabel?: string;
   spriteBase: string;
   talkTrigger?: string;
   stats?: BattleStats;
@@ -147,6 +149,7 @@ export interface CharacterTemplate {
 export const characterCreate = (name: string): Character => {
   const ch: Character = {
     name,
+    nameLabel: name,
     spriteBase: 'ada',
     x: 0,
     y: 0,
@@ -205,6 +208,9 @@ export const characterCreateFromTemplate = (
   }
   if (ch.overworldAi.onCreate) {
     ch.overworldAi.onCreate(ch);
+  }
+  if (template.nameLabel) {
+    ch.nameLabel = template.nameLabel;
   }
   return ch;
 };

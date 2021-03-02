@@ -1,3 +1,5 @@
+var startButtonEnabled = true;
+
 var soundEnabled = true;
 function toggleSound() {
   if (soundEnabled) {
@@ -107,6 +109,7 @@ var Module = {
     showError();
   },
   totalDependencies: 0,
+  ccall: function () {},
 };
 // required by the wasm, called when the game ends and there was a high score
 var notifyHighScore = function (n) {
@@ -169,12 +172,18 @@ var params = new URLSearchParams(queryString);
 var expand = params.get('cabinet');
 if (expand === 'true') {
   shouldShowControls = true;
-  toggleControls();
-  toggleScale();
-  var toggleScaleElem = document.getElementById('toggle-scale');
-  if (toggleScaleElem) toggleScaleElem.style.display = 'none';
-  var toggleSoundElem = document.getElementById('toggle-sound');
-  if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+  const startButton = document.getElementById('start');
+  startButtonEnabled = false;
+  if (startButton) startButton.style.display = 'none';
+  window.addEventListener('load', () => {
+    console.log('loaded iframe lib');
+    toggleControls();
+    toggleScale();
+    var toggleScaleElem = document.getElementById('toggle-scale');
+    if (toggleScaleElem) toggleScaleElem.style.display = 'none';
+    var toggleSoundElem = document.getElementById('toggle-sound');
+    if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+  });
 }
 
 var tapToStart = params.get('tap');
@@ -191,7 +200,7 @@ if (tapToStart === 'true') {
     div.style.display = 'none';
     localInit();
   };
-  div.innerHTML = 'tap to start';
+  div.innerHTML = 'Tap to Start';
   div.className = 'tap-to-start';
   div.onclick = window.onTapToStart;
   document.body.appendChild(div);

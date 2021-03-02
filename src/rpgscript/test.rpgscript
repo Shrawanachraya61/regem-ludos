@@ -1,0 +1,188 @@
+@test-callScript
++setConversation('Conscience');
+Conscience: "This script tests `callScript`."
+Conscience: "After this dialog, a call will be made to another script where Ada will pop in, then I shall return!"
++endConversation();
++callScript('test-callScript2');
++setConversation('Conscience');
+Conscience: "Hey again!"
+Conscience: "The test will now conclude."
++endConversation();
+
+@test-callScript2
++setConversation('Ada');
+Ada: "Okay, I am here now."
+Ada: "I suppose that means the test is working."
+Ada: "You may now see Conscience again."
++endConversation();
+
+@test-setConversation
++setConversation('Ada');
+Ada: "This script tests `setConversation`."
+Ada: "Only one person should be speaking now."
+Ada: "The conversation will now end, then start again."
++endConversation();
++setConversation('Conscience');
+Conscience: "Tadaa!  It's me now!"
+Conscience: "The test will now conclude."
++endConversation();
+
+@test-setConversation2
++setConversation2('Ada', 'Conscience');
+Ada: "This script tests `setConversation2`."
+Ada: "Conscience and I should be speaking now."
+Conscience: "Well... not at the same time, but you should see both of us at least."
+Ada: "The conversation will now end, then start again."
++endConversation();
++setConversation2('Conscience', 'Ada');
+Conscience: "Tadaa!  We're back!"
+Ada: "And it appears we have switched places."
+Conscience: "Weird."
+Conscience: "The test will now conclude."
++endConversation();
+
+@test-setConversationSpeaker
++setConversation2('Ada', 'Conscience');
+Ada: "This script tests `setConversationSpeaker`."
+Conscience: "We are both speaking now, but after this dialog, a spooky disembodied voice will say something!"
+// Note: specifying 'Other' as the speaker implicitly calls setConversationSpeaker('none')
+Other: "WELL. WELL. WELL.  WHAT DO WE HAVE HERE?"
+// Note: calling setConversationSpeaker directly will remove the dialog box.
++setConversationSpeaker('none');
++waitMS(1500);
++setConversationSpeaker('left');
++waitMS(1000);
+Ada: "Who was that?"
+Conscience: "I don't know!  Is this part of the test?"
+Ada: "Perhaps we should... abort the sequence.  Now!"
+Conscience: "The test w-w-w-ill now conclude!!"
++endConversation();
+
+@test-waitMSPreemptible
++setConversation('Conscience');
+Conscience: "This script tests waitMSPreemptible."
+Conscience: "I will now stare awkwardly for 10 seconds.  At any time you may interrupt me and I will resume my normal, suave functionality."
++setConversationSpeaker('center');
++waitMSPreemptible(10000);
+Conscience: "Boom!  I'm back."
+Conscience: "The test will now conclude."
++endConversation();
+
+@test-lookAtCharacter
++setConversation2('Ada', 'Conscience');
++setFacing("Ada", "left");
++setFacing("Conscience", "rightdown");
+Ada: "This script tests lookAtCharacter, and perhaps incidentally setFacing."
+Ada: "I will now look at Conscience."
++setConversationSpeaker("none");
++lookAtCharacter("Ada", "Conscience");
++waitMS(1000);
+Ada: "Okay.  I am now looking at Conscience."
+Conscience: "I will now look at Ada."
++setConversationSpeaker("none");
++lookAtCharacter("Conscience", "Ada");
++waitMS(1000);
+Conscience: "Ada and I are now gazing wonderously at each other."
+Ada: "Please refrain from wording it like that."
+Conscience: "Teehee!"
+Conscience: "The test will now conclude!"
++endConversation();
++setFacing("Ada", "down");
+
+@test-walkToMarker
++setConversation2('Ada', 'Conscience');
+Ada: "This script tests walkToMarker."
+Ada: "After this dialog, Conscience and I shall walk, one at a time, to a designated marker in this room."
++setConversationSpeaker("none");
++walkToMarker("Ada", "MarkerWalkTest1", 0, 0);
++walkToMarker("Conscience", "MarkerWalkTest1", 16, 0);
++lookAtEachOther("Ada", "Conscience");
+Ada: "Okay.  Conscience and I have arrived at the marker."
+Conscience: "Now let's walk at the same time!"
+Ada: "Fine.  Let us walk to another designated marker, together this time."
++setConversationSpeaker("none");
++walkToMarker("Ada", "MarkerWalkTest2", 0, 0, true);
++walkToMarker("Conscience", "MarkerWalkTest2", 16, 0);
++waitMS(100);
++lookAtEachOther("Ada", "Conscience");
+Ada: "We have arrived at our destination."
+Conscience: "The test will now conclude."
++endConversation();
++setFacing("Ada", "down");
+
+@test-spawnDespawnCharacter
++setConversation("Ada");
+Ada: "This script tests spawnCharacter; both spawnCharacterAtCharacter and spawnCharacterAtMarker."
+Ada: "Also, for soon-to-be obvious reasons, this tests despawnCharacter as well."
+Ada: "After this dialog, Conscience shall appear."
++endConversation();
++spawnCharacterAtCharacter("Conscience", "Ada");
++walkToOffset("Conscience", 16, 16);
++lookAtEachOther("Ada", "Conscience");
++setConversation2("Ada", "Conscience");
+Conscience: "Hi there!"
+Ada: "As you can see, Conscience has popped into existence."
+Conscience: "Oh, you know, I'm always around!"
+Ada: "Conscience shall now disappear."
++setConversationSpeaker("none");
++endConversation();
++walkToOffset("Conscience", -16, -16);
++despawnCharacter("Conscience");
++waitMS(1000);
++setConversation("Ada");
+Ada: "See, it is actually rather easy to be rid of her."
+Conscience: "I heard that!"
+Ada: "..."
+Ada: "Anyway, Conscience shall now reappear at a designated marker."
++setConversationSpeaker("none");
++spawnCharacterAtMarker("Conscience", "MarkerSpawnAtMarker");
++waitMS(500);
++lookAtEachOther("Ada", "Conscience");
++waitMS(500)
++setConversation2('Ada', 'Conscience');
+Conscience: "Hi again!  I'm over here now!"
+Conscience: "Isn't that sweet."
+Ada: "Yes, you are quite talented."
+Conscience: "The test will now conclude."
+Conscience: "See ya next time!"
++despawnCharacter("Conscience");
++endConversation();
+
+@test-fade
++setConversation("Conscience");
+Conscience: "This script tests fadeIn and fadeOut."
+Conscience: "The screen will now do both of those things!"
++fadeOut();
+Conscience: "Whoah, it's dark now!"
+Conscience: "Let's fix that."
++fadeIn();
+Conscience: "Much better."
+Conscience: "The test will now conclude."
++endConversation();
+
+@test-vivi
++setConversation2("Vivi", "Sigma");
+Vivi: "Hmm.  She's almost as tall as I am.  Maybe we would get along well..."
++endConversation();
+
+@test-narrator-label
++setConversation("Ada");
+Ada: "I am speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Ada: "I am speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Other: "Somebody else is speaking now."
+Narrator: "The narrator is speaking now."
+Ada: "I am speaking now."
+Narrator: "The narrator is speaking now."
+Other: "Somebody else is speaking now."
+
+@test-jump
++setConversation("Ada");
+Ada: "I will now jump."
++setConversationSpeaker(none);
++jump("Ada");
+Ada: "I have jumped."
++endConversation();

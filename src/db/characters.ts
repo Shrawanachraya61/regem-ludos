@@ -80,4 +80,13 @@ export const init = () => {
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
   };
+
+  exp.Floor1AtriumTicTacToeGirl = {
+    name: 'Tic Tac Toe Girl',
+    nameLabel: 'Girl',
+    spriteBase: 'girl',
+    talkTrigger: 'floor1-atrium-TicTacToeGirl',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
 };

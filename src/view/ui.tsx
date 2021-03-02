@@ -14,6 +14,7 @@ import BattleUISection from './components/BattleUISection';
 import CutsceneSection from './components/CutsceneSection';
 
 import { AppSection } from 'model/store';
+import ArcadeCabinet from './components/ArcadeCabinet';
 
 interface UIInterface {
   appState: AppState;
@@ -76,6 +77,9 @@ const App = () => {
       }
       case AppSection.Cutscene: {
         return <CutsceneSection key={key} />;
+      }
+      case AppSection.ArcadeCabinet: {
+        return <ArcadeCabinet game={appState.arcadeGame.path} />;
       }
       case AppSection.Debug: {
         return <Debug />;

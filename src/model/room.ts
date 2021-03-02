@@ -70,6 +70,7 @@ export interface Room {
   floor?: Sprite;
   markers: Record<string, Marker>;
   triggerActivators: TriggerActivator[];
+  visible: boolean;
 }
 
 export interface Prop {
@@ -234,7 +235,8 @@ export const createRoom = async (
     renderObjects: [] as RenderObject[],
     floorTileObjects: [] as RenderObject[],
     floor: createSprite(floorCanvas),
-    defaultFloorSprite: 'floors_1',
+    defaultFloorSprite: 'floors_1', //TODO make this a room param
+    visible: true,
   };
 
   console.log(
@@ -281,7 +283,7 @@ export const createRoom = async (
           ...tile,
           tileWidth: 32,
           tileHeight: 32,
-          sprite: 'floors_1', //TODO make this a room param
+          sprite: room.defaultFloorSprite,
           id: 1,
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
@@ -292,7 +294,7 @@ export const createRoom = async (
           ...tile,
           tileWidth: 32,
           tileHeight: 32,
-          sprite: 'floors_1', //TODO make this a room param
+          sprite: room.defaultFloorSprite,
           id: 1,
           x: tile.x,
           y: tile.y,
@@ -546,4 +548,12 @@ export const roomRemoveCharacter = (room: Room, ch: Character) => {
       room.renderObjects.splice(roInd, 1);
     }
   }
+};
+
+export const roomShow = (room: Room) => {
+  room.visible = true;
+};
+
+export const roomHide = (room: Room) => {
+  room.visible = false;
 };
