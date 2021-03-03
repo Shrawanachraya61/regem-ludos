@@ -171,6 +171,7 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
   const [isDraggingOver, setIsDraggingOver] = React.useState(false);
   const ref = React.useRef();
   const [duration, setDuration] = React.useState(durationMs);
+  const [setup, setSetup] = React.useState(false);
 
   React.useEffect(() => {
     display.setCanvas(ref.current);
@@ -180,10 +181,11 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
   }, [spriteName, ref]);
 
   React.useEffect(() => {
-    if (durationMs !== duration) {
+    if (!setup && durationMs !== duration) {
       setDuration(durationMs);
+      setSetup(true);
     }
-  }, [duration, durationMs]);
+  }, [duration, durationMs, setup]);
 
   return (
     <div style={{ display: 'inline-block' }}>
@@ -314,7 +316,10 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               label="Duration"
               width={60}
               value={duration}
-              onChange={ev => setDuration(ev.target.value)}
+              onChange={ev => {
+                console.log('SET DURATION', ev.target.value);
+                setDuration(ev.target.value);
+              }}
               onBlur={() => {
                 anim.sprites[spriteIndex].durationMs = Number(duration);
                 display.updateAnimation(anim, null, anim.loop, anim.sprites);

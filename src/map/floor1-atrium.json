@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":96,
-                 "y":232
+                 "x":100,
+                 "y":224
                 }, 
                 {
                  "gid":200,
@@ -215,7 +215,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":56,
+                 "x":52,
                  "y":208
                 }, 
                 {
@@ -241,6 +241,17 @@
                  "width":32,
                  "x":60,
                  "y":284
+                }, 
+                {
+                 "height":16,
+                 "id":59,
+                 "name":"#floor1-atrium-elevator-employee",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":52,
+                 "x":72,
+                 "y":76
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -249,7 +260,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":59,
+ "nextobjectid":60,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",

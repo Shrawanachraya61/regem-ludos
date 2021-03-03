@@ -1,4 +1,4 @@
-import { h, Fragment } from 'preact';
+import { h, Fragment, JSX } from 'preact';
 import { useState } from 'preact/hooks';
 import { colors, style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 import {
@@ -10,6 +10,7 @@ import {
   setScaleWindow,
   setButtonDown,
   setButtonUp,
+  beginCurrentArcadeGame,
 } from 'controller/arcade-iframe-actions';
 
 import Button, { ButtonType } from 'view/elements/Button';
@@ -17,6 +18,8 @@ import IframeShim from 'view/elements/IframeShim';
 import Arrow from 'view/icons/Arrow';
 import Help from 'view/icons/Help';
 import { hideArcadeGame } from 'controller/ui-actions';
+import { getCurrentPlayer } from 'model/generics';
+import { getUiInterface, uiInterface } from 'view/ui';
 
 export enum ArcadeGamePath {
   PRESIDENT = 'iframes/president/president.html',
@@ -25,38 +28,80 @@ export enum ArcadeGamePath {
   ELASTICITY = 'iframes/elasticity/elasticity.html',
 }
 
-const ArcadeGamePathMeta = {
+interface IControlsProps {
+  setHelpDialogOpen: (v: boolean) => void;
+}
+
+interface IHelpProps {
+  setHelpDialogOpen: (v: boolean) => void;
+}
+
+interface IArcadeGameMeta {
+  title: string;
+  tokensRequired: number;
+  controls: (props: IControlsProps) => h.JSX.Element;
+  help?: (props: IHelpProps) => h.JSX.Element;
+}
+
+const ArcadeGamePathMeta: Record<string, IArcadeGameMeta> = {
   default: {
     title: 'No Game Specified',
+    tokensRequired: 99,
     controls: () => {
       return <div></div>;
     },
   },
   [ArcadeGamePath.PRESIDENT]: {
     title: 'President',
+    tokensRequired: 1,
     controls: () => {
       return <div></div>;
     },
   },
   [ArcadeGamePath.TIC_TAC_TOE]: {
     title: 'Tic Tac Toe',
-    controls: () => {
+    tokensRequired: 1,
+    controls: (props: IControlsProps) => {
       return (
         <>
           <CabinetControlButton
             width="48px"
             height="48px"
             type="text"
-            {...buttonHandlers(SDLKeyID.Enter)}
+            onClick={() => {
+              props.setHelpDialogOpen(true);
+            }}
           >
             <Help color={colors.YELLOW} />
           </CabinetControlButton>
         </>
       );
     },
+    help: (props: IHelpProps) => {
+      return (
+        <HelpDialog setOpen={props.setHelpDialogOpen} title="Tic Tac Toe Help">
+          <p>On this machine you can play Tic Tac Toe.</p>
+          <p>Insert a Token to start: 1 token = 5 games</p>
+          <p>You are the 'X' player for each game.</p>
+          <p>
+            Place an 'X' by tapping/clicking the grid area where you wish to
+            play.
+          </p>
+          <p>
+            Place three 'X' in a row to win the game. You lose if there are
+            three 'O' in a row.
+          </p>
+          <p>
+            Tickets are awarded based off of the number of times you beat the
+            AI.
+          </p>
+        </HelpDialog>
+      );
+    },
   },
   [ArcadeGamePath.INVADERZ]: {
     title: 'INVADERZ',
+    tokensRequired: 1,
     controls: () => (
       <>
         <CabinetControlButton
@@ -94,6 +139,7 @@ const ArcadeGamePathMeta = {
   },
   [ArcadeGamePath.ELASTICITY]: {
     title: 'ELASTICITY',
+    tokensRequired: 2,
     controls: () => (
       <>
         <CabinetControlButton
@@ -147,6 +193,85 @@ const buttonHandlers = (key: SDLKeyID) => {
   };
 };
 
+const HelpDialogWrapper = style('div', () => {
+  return {
+    background: 'rgba(0, 0, 0, 0.5)',
+    position: 'fixed',
+    left: '0px',
+    top: '0px',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: '2',
+    pointerEvents: 'all',
+  };
+});
+const HelpDialogContainer = style('div', () => {
+  return {
+    margin: '4px',
+    padding: '4px',
+    minWidth: '50%',
+    maxWidth: '90%',
+    border: `2px solid ${colors.BLUE}`,
+    background: colors.BGGREY,
+    color: colors.WHITE,
+  };
+});
+const HelpDialogTitle = style('div', () => {
+  return {
+    margin: '8px',
+    padding: '8px',
+    fontSize: '32px',
+    textTransform: 'uppercase',
+    borderBottom: `2px solid ${colors.BLACK}`,
+  };
+});
+const HelpDialogContent = style('div', () => {
+  return {
+    margin: '8px',
+    padding: '8px',
+    fontSize: '16px',
+  };
+});
+const HelpDialogActionButtons = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '8px',
+    margin: '8px',
+  };
+});
+interface IHelpDialogProps {
+  title: string;
+  setOpen: (v: boolean) => void;
+  children?: any;
+}
+const HelpDialog = (props: IHelpDialogProps) => {
+  return (
+    <HelpDialogWrapper>
+      <HelpDialogContainer>
+        <HelpDialogTitle>{props.title}</HelpDialogTitle>
+        <HelpDialogContent>{props.children}</HelpDialogContent>
+        <HelpDialogActionButtons>
+          <Button
+            type={ButtonType.PRIMARY}
+            style={{
+              marginRight: '1rem',
+            }}
+            onClick={() => {
+              props.setOpen(false);
+            }}
+          >
+            Close
+          </Button>
+        </HelpDialogActionButtons>
+      </HelpDialogContainer>
+    </HelpDialogWrapper>
+  );
+};
+
 interface IArcadeCabinetProps {
   game: ArcadeGamePath | '';
 }
@@ -176,6 +301,33 @@ const CabinetHeader = style('div', (props: {}) => {
     [MEDIA_QUERY_PHONE_WIDTH]: {
       padding: '2rem',
     },
+  };
+});
+
+const CabinetHeaderContainer = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+  };
+});
+
+const CabinetHeaderButtonsContainer = style('div', () => {
+  return {
+    display: 'flex',
+  };
+});
+
+const CabinetHeaderTicketsTokens = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+});
+
+const CabinetHeaderTicketsTokensItem = style('div', () => {
+  return {
+    padding: '0px 8px',
   };
 });
 
@@ -274,57 +426,115 @@ const CabinetControlButton = style(
 const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(false);
-  const meta = ArcadeGamePathMeta[props.game] ?? ArcadeGamePathMeta.default;
+  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
+  const [tokensInserted, setTokensInserted] = useState(0);
+  const meta: IArcadeGameMeta =
+    ArcadeGamePathMeta[props.game] ?? ArcadeGamePathMeta.default;
+  const tokens = getCurrentPlayer().tokens;
+  const tickets = getCurrentPlayer().tickets;
+  const tokensRequired = meta.tokensRequired;
+  const isGameRunning = getUiInterface().appState.arcadeGame.isGameRunning;
+
   return (
     <CabinetWrapper>
       <CabinetHeader>
-        <Button
-          type={ButtonType.CANCEL}
-          onClick={() => {
-            hideArcadeGame();
-          }}
-          style={{
-            marginRight: '1rem',
-          }}
-        >
-          Back
-        </Button>
-        <Button
-          type={ButtonType.PRIMARY}
-          style={{
-            marginRight: '1rem',
-          }}
-          onClick={() => {
-            const nextExpanded = !expanded;
-            setExpanded(nextExpanded);
-            if (nextExpanded) {
-              showControls();
-              setScaleWindow();
-            } else {
-              hideControls();
-              setScaleOriginal();
-            }
-          }}
-        >
-          {expanded ? 'Contract' : 'Expand'}
-        </Button>
-        <Button
-          type={ButtonType.PRIMARY}
-          style={{
-            marginRight: '1rem',
-          }}
-          onClick={() => {
-            const nextMuted = !muted;
-            setMuted(nextMuted);
-            if (nextMuted) {
-              muteAudio();
-            } else {
-              unmuteAudio();
-            }
-          }}
-        >
-          {muted ? 'Unmute' : 'Mute'}
-        </Button>
+        <CabinetHeaderContainer>
+          <CabinetHeaderButtonsContainer>
+            <Button
+              type={ButtonType.CANCEL}
+              onClick={() => {
+                hideArcadeGame();
+              }}
+              style={{
+                marginRight: '1rem',
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              type={ButtonType.PRIMARY}
+              style={{
+                marginRight: '1rem',
+              }}
+              onClick={() => {
+                const nextExpanded = !expanded;
+                setExpanded(nextExpanded);
+                if (nextExpanded) {
+                  showControls();
+                  setScaleWindow();
+                } else {
+                  hideControls();
+                  setScaleOriginal();
+                }
+              }}
+            >
+              {expanded ? 'Contract' : 'Expand'}
+            </Button>
+            <Button
+              type={ButtonType.PRIMARY}
+              style={{
+                marginRight: '1rem',
+              }}
+              onClick={() => {
+                const nextMuted = !muted;
+                setMuted(nextMuted);
+                if (nextMuted) {
+                  muteAudio();
+                } else {
+                  unmuteAudio();
+                }
+              }}
+            >
+              {muted ? 'Unmute' : 'Mute'}
+            </Button>
+          </CabinetHeaderButtonsContainer>
+          <CabinetHeaderTicketsTokens>
+            <CabinetHeaderTicketsTokensItem>
+              TOKENS: {tokens - tokensInserted}
+            </CabinetHeaderTicketsTokensItem>
+            <CabinetHeaderTicketsTokensItem>
+              TICKETS: {tickets}
+            </CabinetHeaderTicketsTokensItem>
+            <CabinetHeaderTicketsTokensItem>
+              <Button
+                disabled={isGameRunning || tokens <= 0}
+                style={{
+                  width: '140px',
+                }}
+                type={
+                  tokensInserted === tokensRequired
+                    ? ButtonType.PRIMARY
+                    : ButtonType.TOKEN
+                }
+                onClick={() => {
+                  if (tokensInserted === tokensRequired) {
+                    setTokensInserted(0);
+                    beginCurrentArcadeGame();
+                  } else {
+                    setTokensInserted(tokensInserted + 1);
+                  }
+                }}
+              >
+                {tokensInserted === tokensRequired ? 'PLAY' : 'Insert Token'}
+              </Button>
+            </CabinetHeaderTicketsTokensItem>
+            <CabinetHeaderTicketsTokensItem>
+              <Button
+                disabled={tokensInserted === 0}
+                type={ButtonType.CANCEL}
+                onClick={() => {
+                  console.log('eject token');
+                  setTokensInserted(0);
+                }}
+              >
+                Eject Tokens
+              </Button>
+            </CabinetHeaderTicketsTokensItem>
+            <CabinetHeaderTicketsTokensItem>
+              TOKENS INSERTED: {tokensInserted}/{tokensRequired}
+            </CabinetHeaderTicketsTokensItem>
+          </CabinetHeaderTicketsTokens>
+        </CabinetHeaderContainer>
       </CabinetHeader>
       <CabinetInnerWrapper>
         {expanded ? null : <CabinetTitle>{meta.title}</CabinetTitle>}
@@ -351,9 +561,12 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
         )}
         {expanded ? null : (
           <CabinetControls id="controls-arcade">
-            {meta.controls()}
+            <meta.controls setHelpDialogOpen={setHelpDialogOpen} />
           </CabinetControls>
         )}
+        {meta?.help && helpDialogOpen ? (
+          <meta.help setHelpDialogOpen={setHelpDialogOpen} />
+        ) : null}
       </CabinetInnerWrapper>
     </CabinetWrapper>
   );

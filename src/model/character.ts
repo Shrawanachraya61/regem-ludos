@@ -81,6 +81,7 @@ export enum Facing {
 }
 
 export enum AnimationState {
+  OVERRIDDEN = 'overridden',
   IDLE = 'idle',
   WALK = 'walk',
   BATTLE_IDLE = 'battle_idle',
@@ -112,6 +113,7 @@ export interface Character {
   skillIndex: number;
   facing: Facing;
   animationState: AnimationState;
+  animationOverride: Animation | null;
   animationKey: string;
   animationPromise?: {
     resolve: () => void;
@@ -165,6 +167,7 @@ export const characterCreate = (name: string): Character => {
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     animationKey: '',
+    animationOverride: null,
     storedAnimations: {},
     walkTarget: null,
     walkAngle: 0,
@@ -228,6 +231,16 @@ export const characterGetAnimKey = (ch: Character): string => {
 
 export const characterGetAnimation = (ch: Character): Animation => {
   const { storedAnimations } = ch;
+
+  if (ch.animationState === AnimationState.OVERRIDDEN) {
+    const anim = ch.animationOverride;
+    if (anim) {
+      return anim;
+    } else {
+      throw new Error('Null overridden animation.');
+    }
+  }
+
   const animStr = characterGetAnimKey(ch);
   const anim = storedAnimations[animStr];
   if (anim) {
@@ -250,11 +263,34 @@ export const characterSetAnimationState = (
       ch.animationPromise.reject();
       ch.animationPromise = undefined;
     }
+
+    if (ch.animationState === AnimationState.OVERRIDDEN) {
+      return;
+    }
+
     ch.animationKey = newAnimKey;
     const anim = characterGetAnimation(ch);
     anim.reset();
     anim.start();
   }
+};
+
+export const characterOverrideAnimation = (
+  ch: Character,
+  animation: Animation,
+  cb?: () => void
+) => {
+  characterSetAnimationState(ch, AnimationState.OVERRIDDEN);
+  ch.animationOverride = animation;
+  if (cb) {
+    if (animation.loop) {
+      animation;
+    } else {
+      animation.awaits.push(cb);
+    }
+  }
+  animation.reset();
+  animation.start();
 };
 
 export const characterSetPos = (ch: Character, pt: Point3d): void => {

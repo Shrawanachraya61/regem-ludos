@@ -245,16 +245,22 @@ window.newGame = () => {
 window.end = () => {
   const wins = getScore(PLAYER);
   const losses = getScore(CPU);
+  let score = 0;
   if (losses >= 3) {
-    window.notifyHighScore(-1);
+    score = -1;
   } else {
-    window.notifyHighScore(wins.length);
+    score = wins.length;
   }
+  // Tells lib.js the game is done
+  window.notifyGameCompleted(score);
   window.menu();
 };
 
 let menuFlashInterval = 0;
 window.start = () => {
+  // Tells lib.js the game is running
+  window.notifyGameStarted();
+
   clear();
   clearInterval(menuFlashInterval);
   isPlaying = true;

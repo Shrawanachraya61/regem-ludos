@@ -49,6 +49,13 @@ import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pushKeyHandler } from 'controller/events';
 import HudGamepad from 'lib/hud-gamepad';
+import {
+  getTriggersVisible,
+  hideMarkers,
+  hideTriggers,
+  showMarkers,
+  showTriggers,
+} from 'model/generics';
 
 export const initiateOverworld = (
   player: Player,
@@ -167,9 +174,18 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     case ' ': {
       if (overworld.triggersEnabled) {
         if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
-          console.log('CALL TALK TRIGGER!');
           checkAndCallTalkTrigger();
         }
+      }
+      break;
+    }
+    case 'd': {
+      if (getTriggersVisible()) {
+        hideTriggers();
+        hideMarkers();
+      } else {
+        showTriggers();
+        showMarkers();
       }
       break;
     }

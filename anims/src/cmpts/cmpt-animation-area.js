@@ -8,7 +8,18 @@ import { addSpriteAtIndex } from 'cmpts/cmpt-frames-area';
 import Dialog from 'elements/dialog';
 
 const SetDurationDialog = ({ open, setOpen, appInterface, anim }) => {
-  const [duration, setDuration] = React.useState(100);
+  const [duration, setDuration] = React.useState(
+    appInterface
+      .getMarkedFrames()
+      .map(spriteIndex => anim.sprites[spriteIndex])?.[0]?.durationMs ?? 100
+  );
+
+  console.log(
+    'MARKED FRAME',
+    appInterface
+      .getMarkedFrames()
+      .map(spriteIndex => anim.sprites[spriteIndex])?.[0]?.durationMs
+  );
 
   const validate = value => {
     return value === '';
@@ -45,6 +56,12 @@ const SetDurationDialog = ({ open, setOpen, appInterface, anim }) => {
               onChange={ev => {
                 setDuration(ev.target.value);
               }}
+              onKeyDown={ev => {
+                if (ev.key === 'Enter') {
+                  onConfirm();
+                }
+              }}
+              focus
               value={duration}
             ></Input>
           </div>
@@ -69,6 +86,9 @@ const ButtonRow = props => {
   );
 };
 
+let previousKeydownListener = function() {};
+window.addEventListener('keydown', previousKeydownListener);
+
 const AnimationPreview = ({ anim, appInterface }) => {
   const [scale, setScale] = React.useState(2);
   const ref = React.useRef(null);
@@ -86,6 +106,17 @@ const AnimationPreview = ({ anim, appInterface }) => {
       }
       display.restoreCanvas();
     });
+
+    window.removeEventListener('keydown', previousKeydownListener);
+    previousKeydownListener = ev => {
+      if (ev.key === ' ') {
+        if (anim) {
+          anim.reset();
+          anim.start();
+        }
+      }
+    };
+    window.addEventListener('keydown', previousKeydownListener);
   }, [anim, scale]);
 
   return (
@@ -450,12 +481,14 @@ const AnimationArea = ({ appInterface }) => {
           </ButtonRow>
         </div>
       )}
-      <SetDurationDialog
-        open={markedDurationDialogOpen}
-        setOpen={setMarkedDurationDialogOpen}
-        appInterface={appInterface}
-        anim={anim}
-      />
+      {markedDurationDialogOpen ? (
+        <SetDurationDialog
+          open={markedDurationDialogOpen}
+          setOpen={setMarkedDurationDialogOpen}
+          appInterface={appInterface}
+          anim={anim}
+        />
+      ) : null}
     </div>
   );
 };

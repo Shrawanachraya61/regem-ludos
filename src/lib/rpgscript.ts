@@ -509,7 +509,17 @@ export class ScriptParser {
 
           let commandSrc = commandContents.substr(endIndex);
           const isDialog = /(.*): "(.*)"/.test(commandSrc);
-          // console.log('is dialog', isDialog, commandSrc);
+          if (commandSrc[0] === '?') {
+            this.throwParsingError(
+              `Invalid conditional, did you forget '+' at the start?`,
+              lineNum,
+              line
+            );
+            return;
+          }
+
+          console.log('COMMAND SRC', commandSrc);
+
           if (commandSrc[0] === '+') {
             commandSrc = commandSrc.slice(1);
           } else if (isDialog) {
@@ -606,6 +616,15 @@ export class ScriptParser {
       } else {
         isTrigger = false;
         if (currentScript) {
+          if (line[0] === '?') {
+            this.throwParsingError(
+              `Invalid conditional, did you forget '+' at the start?`,
+              lineNum,
+              line
+            );
+            return;
+          }
+
           const block = currentScript.addCommandBlock();
           const command = this.createDialogCommand(line, currentScript);
           block.commands.push(command);

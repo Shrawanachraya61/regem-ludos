@@ -21,6 +21,10 @@ import {
   characterGetPos,
   characterSetTransform,
   Facing,
+  characterOverrideAnimation,
+  AnimationState,
+  characterSetAnimationState,
+  characterStartAi,
 } from 'model/character';
 import {
   roomAddCharacter,
@@ -36,7 +40,7 @@ import {
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
-import { createAnimation } from 'model/animation';
+import { createAnimation, hasAnimation } from 'model/animation';
 import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
@@ -1094,6 +1098,10 @@ export const applyZTransform = (chName: string, z: number, ms?: number) => {
   });
 };
 
+/**
+ * Show the ArcadeCabinet component and run the given game inside it.  The gameName is the
+ * string key for the enum of games in that component.  NOTE: Also pauses the overworld.
+ */
 export const runArcadeCabinetGame = (gameName: string) => {
   const gamePath = ArcadeGamePath[gameName];
   if (!gamePath) {
@@ -1104,6 +1112,87 @@ export const runArcadeCabinetGame = (gameName: string) => {
   overworldHide(getCurrentOverworld());
   showArcadeGame(gamePath);
 };
+
+/**
+ * Override a character's animation with the given animName, and wait for it to finish.
+ * If the animation is looped this will return immediately.  msOffset is the time offset
+ * from the end of the animation in milliseconds to stop waiting.  When it is over, the
+ * animation state is set to IDLE.
+ */
+export const setAnimationAndWait = (
+  chName: string,
+  animName: string,
+  msOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  if (!hasAnimation(animName)) {
+    console.error('Could not find animation with name: ' + animName);
+    return;
+  }
+
+  const anim = createAnimation(animName);
+  characterOverrideAnimation(ch, anim);
+  const ms = anim.getDurationMs();
+  return waitMS(ms + (msOffset ?? 0), () => {
+    setAnimationState(chName, AnimationState.IDLE);
+  });
+};
+
+/**
+ * Override a character's animation with the given animName.
+ */
+export const setAnimation = (chName: string, animName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  if (!hasAnimation(animName)) {
+    console.error('Could not find animation with name: ' + animName);
+    return;
+  }
+
+  const anim = createAnimation(animName);
+  characterOverrideAnimation(ch, anim);
+};
+
+/**
+ * Set the Animation State of a character.  These states - like 'idle','walk' etc -
+ * are defined in model/Character as an enum.
+ */
+export const setAnimationState = (chName: string, state: AnimationState) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  characterSetAnimationState(ch, state);
+};
+
+export const resetAi = (chName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  characterStartAi(ch);
+}
 
 const commands = {
   playDialogue,
@@ -1140,6 +1229,9 @@ const commands = {
   jump,
   applyZTransform,
   runArcadeCabinetGame,
+  setAnimationAndWait,
+  setAnimation,
+  setAnimationState,
 };
 
 export default commands;

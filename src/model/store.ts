@@ -37,6 +37,7 @@ export interface ICutsceneAppState {
 
 export interface IArcadeCabinetState {
   path: ArcadeGamePath | '';
+  isGameRunning: boolean;
 }
 
 export interface AppState {
@@ -71,5 +72,6 @@ export const AppStateInitial: AppState = {
   },
   arcadeGame: {
     path: '',
+    isGameRunning: false,
   },
 };

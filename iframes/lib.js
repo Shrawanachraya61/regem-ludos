@@ -75,6 +75,7 @@ var Module = {
     function () {
       hideLoading();
       clearTimeout(window.loadTimeout);
+      notifyGameReady();
     },
   ],
   postRun: [
@@ -111,10 +112,7 @@ var Module = {
   totalDependencies: 0,
   ccall: function () {},
 };
-// required by the wasm, called when the game ends and there was a high score
-var notifyHighScore = function (n) {
-  console.log('Got notified of high score', n);
-};
+
 window.addEventListener(
   'keydown',
   ev => {
@@ -124,6 +122,36 @@ window.addEventListener(
   },
   true
 );
+
+function notifyParentFrame(action, payload) {
+  if (window.parent) {
+    window.parent.postMessage(
+      JSON.stringify({
+        action,
+        payload,
+      })
+    );
+  } else {
+    console.log('[IFRAME] No parent to notify', TYPE);
+  }
+}
+
+function notifyGameReady() {
+  notifyParentFrame('GAME_READY', {});
+}
+
+function notifyGameStarted() {
+  notifyParentFrame('GAME_STARTED', {});
+}
+
+function notifyGameCompleted(score) {
+  notifyParentFrame('GAME_CONCLUDED', { score });
+}
+
+function notifyGameCancelled() {
+  notifyParentFrame('GAME_CANCELLED', {});
+}
+
 window.addEventListener('message', event => {
   try {
     const data = JSON.parse(event.data);
@@ -149,6 +177,14 @@ window.addEventListener('message', event => {
       handleButtonDown(data.payload);
     } else if (data.action === 'BUTTON_UP') {
       handleButtonUp(data.payload);
+    } else if (data.action === 'BEGIN_GAME') {
+      if (window.start) {
+        window.start();
+      } else {
+        console.error(
+          'Error, cannot BEGIN_GAME no "start" function found on window'
+        );
+      }
     }
   } catch (e) {
     console.warn('[IFRAME] Error on postMessage handler', e, event.data);
@@ -205,12 +241,11 @@ if (tapToStart === 'true') {
   div.onclick = window.onTapToStart;
   document.body.appendChild(div);
 } else {
-  //must be defined inside the html file
   try {
     localInit();
   } catch (e) {
     console.error(
-      '[IFRAME] Error calling init function, is it defined for this program?'
+      '[IFRAME] Error calling window.init function, is it defined for this program?'
     );
     throw e;
   }

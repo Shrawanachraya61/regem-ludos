@@ -19,8 +19,8 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
   const leader = characterCreateFromTemplate(leaderTemplate);
   const player: Player = {
     leader,
-    tokens: 0,
-    tickets: 0,
+    tokens: 99,
+    tickets: 99,
     backpack: [],
     party: [leader],
     battlePositions: {

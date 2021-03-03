@@ -197,6 +197,7 @@ export const setCutsceneText = (
 export const showArcadeGame = (path: ArcadeGamePath) => {
   const payload = {
     path,
+    isGameRunning: false,
   };
   getUiInterface().dispatch({
     action: 'setArcadeGameState',
@@ -205,9 +206,20 @@ export const showArcadeGame = (path: ArcadeGamePath) => {
   showSection(AppSection.ArcadeCabinet, true);
 };
 
+export const setArcadeGameRunning = (v: boolean) => {
+  const payload = {
+    isGameRunning: v,
+  };
+  getUiInterface().dispatch({
+    action: 'setArcadeGameState',
+    payload,
+  });
+};
+
 export const hideArcadeGame = () => {
   const payload = {
     path: '',
+    isGameRunning: false,
   };
   getUiInterface().dispatch({
     action: 'setArcadeGameState',

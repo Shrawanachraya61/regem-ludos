@@ -2,7 +2,13 @@ import { h, Fragment } from 'preact';
 import { style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
 import { pause, unpause } from 'controller/loop';
-import { getTriggersVisible, hideMarkers, hideTriggers, showMarkers, showTriggers } from 'model/generics';
+import {
+  getTriggersVisible,
+  hideMarkers,
+  hideTriggers,
+  showMarkers,
+  showTriggers,
+} from 'model/generics';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -14,15 +20,20 @@ const ArcadeUISection = () => {
   return (
     <>
       <TopBarWrapper>
-        <Button type={ButtonType.PRIMARY} onClick={() => {
-          if (getTriggersVisible()) {
-            hideTriggers();
-            hideMarkers();
-          } else {
-            showTriggers();
-            showMarkers();
-          }
-        }}>Toggle Debug</Button>
+        <Button
+          type={ButtonType.PRIMARY}
+          onClick={() => {
+            if (getTriggersVisible()) {
+              hideTriggers();
+              hideMarkers();
+            } else {
+              showTriggers();
+              showMarkers();
+            }
+          }}
+        >
+          Toggle Debug
+        </Button>
       </TopBarWrapper>
     </>
   );

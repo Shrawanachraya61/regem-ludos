@@ -143,6 +143,14 @@ export const createAnimationBuilder = (
   animationBuilders[name] = builder;
 };
 
+export const hasAnimation = (animName: string): boolean => {
+  if (animationBuilders[animName]) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const createAnimation = (animName: string): Animation => {
   const builder = animationBuilders[animName];
   if (builder) {

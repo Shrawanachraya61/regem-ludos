@@ -1,4 +1,5 @@
 import { timeoutPromise } from 'utils';
+import { setArcadeGameRunning } from './ui-actions';
 
 enum ArcadeIframeMessage {
   HIDE_CONTROLS = 'HIDE_CONTROLS',
@@ -9,10 +10,40 @@ enum ArcadeIframeMessage {
   BUTTON_UP = 'BUTTON_UP',
   SCALE_ORIGINAL = 'SCALE_ORIGINAL',
   SCALE_WINDOW = 'SCALE_WINDOW',
+  BEGIN_GAME = 'BEGIN_GAME',
+}
+
+enum ArcadeIframeResponseMessage {
+  GAME_READY = 'GAME_READY',
+  GAME_STARTED = 'GAME_STARTED',
+  GAME_CONCLUDED = 'GAME_CONCLUDED',
+  GAME_CANCELLED = 'GAME_CANCELLED',
 }
 
 const arcadeIframeId = 'arcade-iframe';
 const origin = window.location.origin;
+
+window.addEventListener('message', event => {
+  try {
+    console.log('got message', event);
+    const data = JSON.parse(event.data);
+
+    if (data.action === ArcadeIframeResponseMessage.GAME_READY) {
+      console.log('game ready');
+    } else if (data.action === ArcadeIframeResponseMessage.GAME_STARTED) {
+      setArcadeGameRunning(true);
+      console.log('game started');
+    } else if (data.action === ArcadeIframeResponseMessage.GAME_CONCLUDED) {
+      console.log('game concluded');
+      setArcadeGameRunning(false);
+    } else if (data.action === ArcadeIframeResponseMessage.GAME_CANCELLED) {
+      console.log('game cancelled');
+      setArcadeGameRunning(false);
+    }
+  } catch (e) {
+    console.warn('Error on postMessage handler', e, event.data);
+  }
+});
 
 const getIframeWindow = async () => {
   const elem = document.getElementById(arcadeIframeId);
@@ -109,6 +140,15 @@ export const setScaleWindow = async () => {
   if (contentWindow) {
     postMessage(contentWindow, {
       action: ArcadeIframeMessage.SCALE_WINDOW,
+    });
+  }
+};
+
+export const beginCurrentArcadeGame = async () => {
+  const contentWindow = await getIframeWindow();
+  if (contentWindow) {
+    postMessage(contentWindow, {
+      action: ArcadeIframeMessage.BEGIN_GAME,
     });
   }
 };

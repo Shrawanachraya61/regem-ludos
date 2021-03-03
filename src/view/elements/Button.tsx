@@ -4,16 +4,19 @@ export enum ButtonType {
   PRIMARY,
   SECONDARY,
   CANCEL,
+  TOKEN,
 }
 
 interface IButtonProps {
   type: ButtonType;
+  disabled?: boolean;
 }
 
 const ButtonTypeToColor = {
   [ButtonType.PRIMARY]: colors.GREEN,
   [ButtonType.SECONDARY]: colors.GREY,
   [ButtonType.CANCEL]: colors.RED,
+  [ButtonType.TOKEN]: colors.ORANGE,
 };
 
 const Button = style('div', (props: IButtonProps) => ({
@@ -21,18 +24,19 @@ const Button = style('div', (props: IButtonProps) => ({
   borderRadius: '0.25rem',
   padding: '0.5rem',
   fontSize: '1rem',
-  background: ButtonTypeToColor[props.type],
-  cursor: 'pointer',
+  background: props.disabled ? colors.DARKGREY : ButtonTypeToColor[props.type],
+  cursor: props.disabled ? 'default' : 'pointer',
+  pointerEvents: props.disabled ? 'none' : 'all',
   '&:hover': {
-    filter: 'brightness(120%)',
+    filter: props.disabled ? 'unset' : 'brightness(120%)',
   },
   '&:active': {
-    filter: 'brightness(80%)',
+    filter: props.disabled ? 'unset' : 'brightness(80%)',
   },
-  [MEDIA_QUERY_PHONE_WIDTH]: {
-    padding: '0.75rem',
-    fontSize: '2rem',
-  },
+  // [MEDIA_QUERY_PHONE_WIDTH]: {
+  //   padding: '0.75rem',
+  //   fontSize: '2rem',
+  // },
 }));
 
 export default Button;

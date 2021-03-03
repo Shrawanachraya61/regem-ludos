@@ -12,11 +12,19 @@
   +setConversation('Ada');
   Atrium Desk Employee: "Hello and welcome to the Regem Ludos Arcade!"
   Atrium Desk Employee: "Have you been here before?"
+  +setConversationSpeaker(none);
+  +setAnimationAndWait('Ada', 'ada_shake_head_down');
+  +lookAtEachOther('Ada','Atrium Desk Employee');
+  +waitMS(100);
   Ada: "I have not."
   Atrium Desk Employee: "A newcomer?  Wonderful!  Please allow me to give you the rundown of the place."
   Atrium Desk Employee: "To start, we have a wide variety of arcade games for you to enjoy.  Each of these machines requires some number of Regem Ludos Tokens to play."
   Ada: "Where can I obtain these Regem Ludos Tokens?"
+  +setConversationSpeaker(none);
+  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
   Atrium Desk Employee: "Since you are new, I am happily able to provide you with a courtesy starter pack of 10 Tokens."
+  +setConversationSpeaker(none);
+  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_gesture_rightup);
   +modifyTokens(10);
   Atrium Desk Employee: "Use those to play one of our many arcade games!"
   Atrium Desk Employee: "Each game you play will award you Prize Tickets depending on how well you played it."
@@ -25,6 +33,8 @@
   Ada: "Okay.  Straightforward enough.  What else?"
   Atrium Desk Employee: "The Regem Ludos Arcade is a very large facility.  It extends a whopping ten stories underground.  Each odd-numbered floor - save for floor 1 - is VR Floor."
   Ada: "VR Floor?"
+  +setConversationSpeaker(none);
+  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
   Atrium Desk Employee: "Yes!  The VR Floors are a primary reason why we are one of the most advanced arcades in the world!"
   Atrium Desk Employee: "On these floors we are able to create a truly astounding variety of different places and things - all in virtual space!"
   Atrium Desk Employee: "But be wary!  Many monsters roam these floors.  To proceed further into the arcade, you'll need to fight your way through these monsters!"
@@ -33,20 +43,30 @@
   Atrium Desk Employee: "Go and speak with Instructor Jason over in the area to the east of this room.  He is standing outside of a VR Practice area.  He will be able to give you Haptic Bracer and can provide a full rundown of how to interact with our VR Floors."
   Atrium Desk Employee: "He can also teach you some helpful tips on how to battle some of the monsters in there."
   Ada: "Okay, got it.  I can go see Jason."
+  +setConversationSpeaker(none);
+  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
   Atrium Desk Employee: "Great!  That's about it for the rundown.  If you have further questions, don't hesitate to ask!"
   Atrium Desk Employee: "Have a wonderful time here at the Regem Ludos Arcade!"
-  +setConversationSpeaker('none');
+  +setConversationSpeaker(none);
   +setFacing('Atrium Desk Employee', rightup);
   +walkToMarker('Ada', MarkerDeskEmployeeWalk);
   +callScript('utils-start-Conscience-dialogue');
   +setFacing('Conscience', 'down');
   +waitMS(500);
+  +setFacing('Conscience', 'rightdown');
+  +waitMS(100);
   +setFacing('Conscience', 'right');
   +waitMS(500);
+  +setFacing('Conscience', 'rightdown');
+  +waitMS(100);
   +setFacing('Conscience', 'down');
+  +waitMS(500);
+  +setFacing('Conscience', 'leftdown');
   +waitMS(100);
   +setFacing('Conscience', 'left');
   +waitMS(500);
+  +setFacing('Conscience', 'leftdown');
+  +waitMS(100);
   +setFacing('Conscience', 'down');
   +endConversation(100);
   +setConversation2('Ada', 'Conscience');
@@ -134,10 +154,11 @@
 @floor1-atrium-TicTacToeGirl-first
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
-  Tic Tac Toe Girl: "The machines over to the left aren't very exciting.  You can only play Tic-Tac-Toe on them."
+  Tic Tac Toe Girl: "The machines over here aren't very exciting.  You can only play Tic-Tac-Toe on them."
   Tic Tac Toe Girl: "Not that the game is stupid or anything, but it's just SO EASY to beat the AI."
   Tic Tac Toe Girl: "Honestly, I feel kinda bad for it.  I wonder if it feels sad to lose all the time."
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
+  +setFacing('Tic Tac Toe Girl', rightdown);
   +endConversation();
 @floor1-atrium-TicTacToeGirl-complete
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
@@ -157,7 +178,18 @@
   action,this
   @this
   +setFacing(Ada, leftup);
+  // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
+  // +?isnot(floor1-atrium-TicTacToeGirl):{
+  //   +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+  //   +setConversation('Ada');
+  //   Tic Tac Toe Girl: "Hey, you looking to play a game?"
+  //   +callScript(floor1-atrium-TicTacToeGirl-first);
+  //   +setStorage(floor1-atrium-TicTacToeGirl);
+  //   +setConversation('Ada');
+  //   Ada: "Okay..."
+  //   +setFacing(Ada, leftup);
+  //   +endConversation(1000);
+  // }
   +fadeOut(100);
   +runArcadeCabinetGame(TIC_TAC_TOE);
-  // +runArcadeCabinetGame(PRESIDENT);
   +fadeIn(50);
