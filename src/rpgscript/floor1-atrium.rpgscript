@@ -179,17 +179,17 @@
   @this
   +setFacing(Ada, leftup);
   // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
-  // +?isnot(floor1-atrium-TicTacToeGirl):{
-  //   +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
-  //   +setConversation('Ada');
-  //   Tic Tac Toe Girl: "Hey, you looking to play a game?"
-  //   +callScript(floor1-atrium-TicTacToeGirl-first);
-  //   +setStorage(floor1-atrium-TicTacToeGirl);
-  //   +setConversation('Ada');
-  //   Ada: "Okay..."
-  //   +setFacing(Ada, leftup);
-  //   +endConversation(1000);
-  // }
+  +?isnot(floor1-atrium-TicTacToeGirl):{
+    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+    +setConversation('Ada');
+    Tic Tac Toe Girl: "Hey, you looking to play a game?"
+    +callScript(floor1-atrium-TicTacToeGirl-first);
+    +setStorage(floor1-atrium-TicTacToeGirl);
+    +setConversation('Ada');
+    Ada: "Okay..."
+    +setFacing(Ada, leftup);
+    +endConversation(1000);
+  }
   +fadeOut(100);
   +runArcadeCabinetGame(TIC_TAC_TOE);
   +fadeIn(50);
