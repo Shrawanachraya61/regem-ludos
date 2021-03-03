@@ -1,3 +1,5 @@
+var startButtonEnabled = true;
+
 var soundEnabled = true;
 function toggleSound() {
   if (soundEnabled) {
@@ -73,6 +75,7 @@ var Module = {
     function () {
       hideLoading();
       clearTimeout(window.loadTimeout);
+      notifyGameReady();
     },
   ],
   postRun: [
@@ -107,11 +110,9 @@ var Module = {
     showError();
   },
   totalDependencies: 0,
+  ccall: function () {},
 };
-// required by the wasm, called when the game ends and there was a high score
-var notifyHighScore = function (n) {
-  console.log('Got notified of high score', n);
-};
+
 window.addEventListener(
   'keydown',
   ev => {
@@ -121,6 +122,36 @@ window.addEventListener(
   },
   true
 );
+
+function notifyParentFrame(action, payload) {
+  if (window.parent) {
+    window.parent.postMessage(
+      JSON.stringify({
+        action,
+        payload,
+      })
+    );
+  } else {
+    console.log('[IFRAME] No parent to notify', TYPE);
+  }
+}
+
+function notifyGameReady() {
+  notifyParentFrame('GAME_READY', {});
+}
+
+function notifyGameStarted() {
+  notifyParentFrame('GAME_STARTED', {});
+}
+
+function notifyGameCompleted(score) {
+  notifyParentFrame('GAME_CONCLUDED', { score });
+}
+
+function notifyGameCancelled() {
+  notifyParentFrame('GAME_CANCELLED', {});
+}
+
 window.addEventListener('message', event => {
   try {
     const data = JSON.parse(event.data);
@@ -146,6 +177,14 @@ window.addEventListener('message', event => {
       handleButtonDown(data.payload);
     } else if (data.action === 'BUTTON_UP') {
       handleButtonUp(data.payload);
+    } else if (data.action === 'BEGIN_GAME') {
+      if (window.start) {
+        window.start();
+      } else {
+        console.error(
+          'Error, cannot BEGIN_GAME no "start" function found on window'
+        );
+      }
     }
   } catch (e) {
     console.warn('[IFRAME] Error on postMessage handler', e, event.data);
@@ -169,12 +208,18 @@ var params = new URLSearchParams(queryString);
 var expand = params.get('cabinet');
 if (expand === 'true') {
   shouldShowControls = true;
-  toggleControls();
-  toggleScale();
-  var toggleScaleElem = document.getElementById('toggle-scale');
-  if (toggleScaleElem) toggleScaleElem.style.display = 'none';
-  var toggleSoundElem = document.getElementById('toggle-sound');
-  if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+  const startButton = document.getElementById('start');
+  startButtonEnabled = false;
+  if (startButton) startButton.style.display = 'none';
+  window.addEventListener('load', () => {
+    console.log('loaded iframe lib');
+    toggleControls();
+    toggleScale();
+    var toggleScaleElem = document.getElementById('toggle-scale');
+    if (toggleScaleElem) toggleScaleElem.style.display = 'none';
+    var toggleSoundElem = document.getElementById('toggle-sound');
+    if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+  });
 }
 
 var tapToStart = params.get('tap');
@@ -191,17 +236,16 @@ if (tapToStart === 'true') {
     div.style.display = 'none';
     localInit();
   };
-  div.innerHTML = 'tap to start';
+  div.innerHTML = 'Tap to Start';
   div.className = 'tap-to-start';
   div.onclick = window.onTapToStart;
   document.body.appendChild(div);
 } else {
-  //must be defined inside the html file
   try {
     localInit();
   } catch (e) {
     console.error(
-      '[IFRAME] Error calling init function, is it defined for this program?'
+      '[IFRAME] Error calling window.init function, is it defined for this program?'
     );
     throw e;
   }
