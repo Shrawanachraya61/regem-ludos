@@ -3,7 +3,7 @@ const PLAYER = 1;
 const CPU = 2;
 const SCREEN_SIZE = 388;
 const BOX_SIZE = Math.floor(SCREEN_SIZE / 3);
-const MAX_GAMES_PLAYED = 5;
+const MAX_GAMES_PLAYED = 3;
 
 let canvas = null;
 let ctx = null;
@@ -150,7 +150,7 @@ const getGameResult = board => {
 const getRandomPassiveAggressiveWinningPhrase = () => {
   const phrases = [
     'You win... Nice job?',
-    'You must be so smart to be good at this game.',
+    'You must be sooo smart.',
     'You win.  No need to gloat.',
     'You are a "winner"',
     'You have somehow won.',
@@ -164,7 +164,7 @@ const getGloatingPhrase = i => {
   const phrases = [
     'HAHAHA YOU ACTUALLY LOST!',
     'AHAHAHA HOW CAN YOU BE THIS BAD?',
-    'MUAHAHAHA PLEASE STOP! PLEASE STOP!!!',
+    'MUAHAHAHA EMBARRASSING!',
   ];
   return phrases[i] || phrases[0];
 };
@@ -175,22 +175,38 @@ const onGameOver = result => {
   let tag = 'marquee';
   let innerHTML = `<div>`;
   if (result === NONE) {
+    if (numGamesPlayed < MAX_GAMES_PLAYED) {
+      window.Lib.playSoundName('game-tie');
+    }
     innerHTML += `<${tag}>TIE...</${tag}>`;
   } else if (result === PLAYER) {
+    if (numGamesPlayed < MAX_GAMES_PLAYED) {
+      window.Lib.playSoundName('game-win');
+    }
     innerHTML += `<${tag}>${getRandomPassiveAggressiveWinningPhrase()}</${tag}>`;
     setScore(PLAYER, getScore(PLAYER) + 1);
   } else {
+    window.Lib.playSoundName(`ai-laugh${getScore(CPU)}`);
     innerHTML += `<${tag}>${getGloatingPhrase(getScore(CPU))}</${tag}>`;
     setScore(CPU, getScore(CPU) + 1);
   }
 
   if (numGamesPlayed === MAX_GAMES_PLAYED || getScore(CPU) >= 3) {
+    if (getScore(CPU) >= 3) {
+      // window.Lib.playSoundName('game-win');
+    } else {
+      window.Lib.playSoundName('match-win');
+    }
+
     setTimeout(() => {
-      window.end();
-    }, 6000);
+      end();
+    }, 5000);
+    innerHTML +=
+      '<div style="display:flex; justify-content: center">GAME OVER</div>';
+    innerHTML += '</div>';
   } else {
     innerHTML +=
-      '<div style="display:flex; justify-content: center"><button onclick="newGame()"> Next Game! </button></div>';
+      '<div style="display:flex; justify-content: center"><button onclick="newGameFromButton()"> Next Game! </button></div>';
     innerHTML += '</div>';
   }
   innerHTML += `<div>Game ${numGamesPlayed}/${MAX_GAMES_PLAYED}</div>`;
@@ -221,7 +237,12 @@ const onPositionSelected = i => {
   }
 };
 
-window.newGame = () => {
+window.newGameFromButton = function () {
+  window.Lib.playSoundName('next-game');
+  newGame();
+};
+
+const newGame = () => {
   board = [];
   for (let i = 0; i < 9; i++) {
     board.push(NONE);
@@ -242,48 +263,27 @@ window.newGame = () => {
   draw(board);
 };
 
-window.end = () => {
+const end = (window.end = () => {
   const wins = getScore(PLAYER);
   const losses = getScore(CPU);
   let score = 0;
   if (losses >= 3) {
     score = -1;
   } else {
-    score = wins.length;
+    score = wins;
   }
-  // Tells lib.js the game is done
-  window.notifyGameCompleted(score);
-  window.menu();
-};
+  // Tells Lib the game is done
+  window.Lib.notifyGameCompleted(-1);
+  menu();
+});
 
-let menuFlashInterval = 0;
-window.start = () => {
-  // Tells lib.js the game is running
-  window.notifyGameStarted();
-
-  clear();
-  clearInterval(menuFlashInterval);
-  isPlaying = true;
-  numGamesPlayed = 0;
-
-  document.getElementById('score-area').style.display = 'flex';
-  if (window.startButtonEnabled) {
-    const startButton = document.getElementById('start');
-    if (startButton) startButton.style.display = 'none';
-  }
-
-  setScore(PLAYER, 0);
-  setScore(CPU, 0);
-  window.newGame();
-};
-
-window.menu = () => {
+const menu = () => {
   clear();
   clearInterval(menuFlashInterval);
   isPlaying = true;
 
   document.getElementById('score-area').style.display = 'none';
-  if (window.startButtonEnabled) {
+  if (window.Lib.getConfig().startButtonEnabled) {
     const startButton = document.getElementById('start');
     if (startButton) startButton.style.display = 'block';
   }
@@ -310,7 +310,7 @@ window.menu = () => {
       canvas.height / 2 + 94
     );
     ctx.fillText(
-      '1 Token = 5 Games',
+      `1 Token = ${MAX_GAMES_PLAYED} Games`,
       canvas.width / 2,
       canvas.height / 2 + 94 + 32
     );
@@ -325,10 +325,50 @@ window.menu = () => {
   drawMenu();
 };
 
-window.init = () => {
+const loading = () => {};
+
+// exports -------------------------------------------------------------------------------
+
+let menuFlashInterval = 0;
+const start = () => {
+  // Tells lib.js the game is running
+  window.Lib.notifyGameStarted();
+
+  window.Lib.playSoundName('game-start');
+
+  clear();
+  clearInterval(menuFlashInterval);
+  isPlaying = true;
+  numGamesPlayed = 0;
+
+  document.getElementById('score-area').style.display = 'flex';
+  if (window.Lib.getConfig().startButtonEnabled) {
+    const startButton = document.getElementById('start');
+    if (startButton) startButton.style.display = 'none';
+  }
+
+  setScore(PLAYER, 0);
+  setScore(CPU, 0);
+  newGame();
+};
+
+const init = async () => {
+  loading();
+  await Promise.all([
+    window.Lib.loadSound('game-start', 'tic-tac-toe-game-start.mp3'),
+    window.Lib.loadSound('game-win', 'tic-tac-toe-game-win.mp3'),
+    window.Lib.loadSound('game-tie', 'tic-tac-toe-game-tie.mp3'),
+    window.Lib.loadSound('next-game', 'tic-tac-toe-next-game.mp3'),
+    window.Lib.loadSound('match-win', 'tic-tac-toe-match-win.mp3'),
+    window.Lib.loadSound('ai-laugh0', 'tic-tac-toe-ai-laugh1.mp3'),
+    window.Lib.loadSound('ai-laugh1', 'tic-tac-toe-ai-laugh2.mp3'),
+    window.Lib.loadSound('ai-laugh2', 'tic-tac-toe-ai-laugh3.mp3'),
+  ]);
+
   // need this to prevent load timeout in lib.js
-  Module.jsLoaded();
+  window.Module.jsLoaded();
   document.getElementById('game').style.display = 'flex';
+  window.Lib.notifyGameReady();
 
   // need this so font doesn't pop into view jarringly
   setTimeout(function () {
@@ -374,3 +414,6 @@ window.init = () => {
     }
   });
 };
+
+window.init = init;
+window.start = start;

@@ -21,26 +21,26 @@
         <canvas id="canvas" width="512" height="512"></canvas>
       </div>
       <div id="top-bar-controls" class="top-bar-controls">
-        <button id="toggle-sound" onclick="toggleSound()">Toggle Sound</button>
-        <button id="toggle-scale" onclick="toggleScale()">Toggle Scale</button>
+        <button id="toggle-sound" onclick="Lib.toggleSound()">Toggle Sound</button>
+        <button id="toggle-scale" onclick="Lib.toggleScale()">Toggle Scale</button>
         <!-- <button onclick="toggleControls()">Toggle Controls</button> -->
       </div>
       <div id="on-screen-controls" class="on-screen-controls">
         <div
           class="on-screen-control-button"
-          onmousedown="handleButtonDown(1073741904)"
-          onmouseup="handleButtonUp(1073741904)"
-          ontouchstart="handleButtonDown(1073741904)"
-          ontouchend="handleButtonUp(1073741904)"
+          onmousedown="Lib.handleButtonDown(1073741904)"
+          onmouseup="Lib.handleButtonUp(1073741904)"
+          ontouchstart="Lib.handleButtonDown(1073741904)"
+          ontouchend="Lib.handleButtonUp(1073741904)"
         >
           <=
         </div>
         <div
           class="on-screen-control-button"
-          onmousedown="handleButtonDown(1073741903)"
-          onmouseup="handleButtonUp(1073741903)"
-          ontouchstart="handleButtonDown(1073741903)"
-          ontouchend="handleButtonUp(1073741903)"
+          onmousedown="Lib.handleButtonDown(1073741903)"
+          onmouseup="Lib.handleButtonUp(1073741903)"
+          ontouchstart="Lib.handleButtonDown(1073741903)"
+          ontouchend="Lib.handleButtonUp(1073741903)"
         >
           =>
         </div>
@@ -57,10 +57,10 @@
         <div
           class="on-screen-control-button"
           style="background: #00b"
-          onmousedown="handleButtonDown(13)"
-          onmouseup="handleButtonUp(13)"
-          ontouchstart="handleButtonDown(13)"
-          ontouchend="handleButtonUp(13)"
+          onmousedown="Lib.handleButtonDown(13)"
+          onmouseup="Lib.handleButtonUp(13)"
+          ontouchstart="Lib.handleButtonDown(13)"
+          ontouchend="Lib.handleButtonUp(13)"
         >
           Start
         </div>
@@ -76,6 +76,16 @@
       script.setAttribute('src', 'elasticity.js');
       document.body.appendChild(script);
     }
+    function start() {
+        Lib.enableModuleControls();
+        Lib.handleButtonDown(13);
+        setTimeout(() => {
+          Lib.handleButtonUp(13);
+        }, 1);
+      }
+      function end() {
+        Lib.disableModuleControls();
+      }
     </script>
     <script type="text/javascript" src="../lib.js"></script>
   </footer>

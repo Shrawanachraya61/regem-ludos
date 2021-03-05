@@ -518,8 +518,6 @@ export class ScriptParser {
             return;
           }
 
-          console.log('COMMAND SRC', commandSrc);
-
           if (commandSrc[0] === '+') {
             commandSrc = commandSrc.slice(1);
           } else if (isDialog) {
@@ -648,14 +646,28 @@ export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
   const url = `${RPGSCRIPT_LOAD_DIR}/${scriptFileName}.rpgscript`;
   console.log('Loading script', url);
   const src = await (await fetch(url)).text();
-  const parser = new ScriptParser(scriptFileName);
+  parseRPGScript(src, scene);
+};
+
+export const parseRPGScript = (scriptSrc: string, scene: Scene) => {
+  const parser = new ScriptParser(scriptSrc);
   const { triggers: localTriggers, scripts: localScripts } = parser.parse(
-    src,
+    scriptSrc,
     scene
   );
 
   Object.assign(scripts, localScripts);
   Object.assign(triggers, localTriggers);
+};
+
+export const parseSingleScript = (
+  scriptSrc: string,
+  scene: Scene
+): Record<string, Script> => {
+  const parser = new ScriptParser(scriptSrc);
+  const { scripts: localScripts } = parser.parse(scriptSrc, scene);
+
+  return localScripts;
 };
 
 export const getScript = (scriptName: string): Script => {

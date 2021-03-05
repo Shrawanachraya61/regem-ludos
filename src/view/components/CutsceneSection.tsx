@@ -30,12 +30,15 @@ const determinePortraitAnim = (
   return animStr;
 };
 
-const Root = style('div', {
-  position: 'absolute',
-  top: '0px',
-  overflow: 'hidden',
-  width: '100%',
-  height: '100%',
+const Root = style('div', (props: { fixed: boolean }) => {
+  return {
+    position: props.fixed ? 'fixed' : 'absolute',
+    top: '0px',
+    left: '0px',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
+  };
 });
 
 const TopBarWrapper = style('div', (props: { visible: boolean }) => ({
@@ -267,7 +270,7 @@ const CutsceneSection = () => {
   }
 
   return (
-    <Root>
+    <Root fixed={!!getUiInterface().appState.arcadeGame.path}>
       <TopBarWrapper visible={cutscene.visible && barsVisible}></TopBarWrapper>
       <BottomBarWrapper
         visible={cutscene.visible && barsVisible}

@@ -599,9 +599,13 @@ const newGame = () => {
   drawUi();
 };
 
+window.start = () => {};
+
 window.init = () => {
   // need this to prevent load timeout
-  Module.jsLoaded();
+  window.Module.jsLoaded();
+  document.getElementById('game').style.display = 'flex';
+  window.Lib.notifyGameReady();
 
   deck.length = 0;
   players.length = 0;

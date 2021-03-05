@@ -1,5 +1,9 @@
+import { getCurrentScene } from 'model/generics';
 import { timeoutPromise } from 'utils';
-import { setArcadeGameRunning } from './ui-actions';
+import { getUiInterface } from 'view/ui';
+import { createAndCallScript } from './scene-management';
+import { setArcadeGameReady, setArcadeGameRunning } from './ui-actions';
+import { getArcadeGamePathMeta } from 'view/components/ArcadeCabinet';
 
 enum ArcadeIframeMessage {
   HIDE_CONTROLS = 'HIDE_CONTROLS',
@@ -23,18 +27,26 @@ enum ArcadeIframeResponseMessage {
 const arcadeIframeId = 'arcade-iframe';
 const origin = window.location.origin;
 
-window.addEventListener('message', event => {
+window.addEventListener('message', async event => {
   try {
-    console.log('got message', event);
     const data = JSON.parse(event.data);
 
     if (data.action === ArcadeIframeResponseMessage.GAME_READY) {
       console.log('game ready');
+      setArcadeGameReady(true);
     } else if (data.action === ArcadeIframeResponseMessage.GAME_STARTED) {
       setArcadeGameRunning(true);
       console.log('game started');
     } else if (data.action === ArcadeIframeResponseMessage.GAME_CONCLUDED) {
-      console.log('game concluded');
+      console.log('game concluded', data.payload);
+      window.focus();
+      const path = getUiInterface().appState.arcadeGame.path;
+      if (path) {
+        const meta = getArcadeGamePathMeta(path);
+        if (meta?.onGameCompleted) {
+          await meta?.onGameCompleted(data.payload);
+        }
+      }
       setArcadeGameRunning(false);
     } else if (data.action === ArcadeIframeResponseMessage.GAME_CANCELLED) {
       console.log('game cancelled');

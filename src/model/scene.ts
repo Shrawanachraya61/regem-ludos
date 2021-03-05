@@ -8,7 +8,7 @@ interface IScriptStackItem {
 }
 
 export interface Scene {
-  storage: Record<string, string | boolean>;
+  storage: Record<string, string | boolean | number>;
   storageOnce: Record<string, string | boolean>;
   storageOnceKeys: Record<string, boolean>;
   commands: Record<string, any>;
@@ -50,6 +50,10 @@ export const sceneIsWaiting = (scene: Scene): boolean => {
     scene.isWaitingForTime ||
     scene.isWaitingForAnimation
   );
+};
+
+export const sceneStopWaitingUntil = (scene: Scene) => {
+  scene.isWaitingForTime = false;
 };
 
 export const sceneHasCommand = (scene: Scene, commandName: string): boolean => {

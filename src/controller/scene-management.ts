@@ -5,6 +5,7 @@ import {
   Command,
   Conditional,
   ScriptCall,
+  parseSingleScript,
   TriggerType,
   formatArgs,
   getScript,
@@ -118,7 +119,13 @@ export const evalCondition = (
     } else if (type === 'lt') {
       return args[0] < args[1];
     } else if (type === 'eq') {
-      return args[0] === args[1];
+      // intentional double equal
+      return (
+        args[0] === args[1] ||
+        scene.storage[args[0]] === args[1] ||
+        scene.storage[args[1]] === args[0] ||
+        scene.storage[args[0]] === scene.storage[args[1]]
+      );
     } else if (type === 'any') {
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
@@ -201,19 +208,22 @@ export const callScript = async (scene: Scene, scriptName: string) => {
   });
 };
 
-export const createAndCallScript = (scene: Scene, scriptName: string) => {
-  const commands = scene.commands;
-  const script = new Script(scriptName, 'internal', -1);
-  const block = script.addCommandBlock();
-  block.commands = commands.slice();
-  script.reset();
-  if (scene.currentScript) {
-    scene.scriptStack.unshift({
-      script: scene.currentScript,
-      onScriptCompleted: function () {},
-    });
-  }
-  scene.currentScript = script;
+export const createAndCallScript = (scene: Scene, src: string) => {
+  return new Promise<void>(resolve => {
+    src = '@tmp\n' + src;
+    const scripts = parseSingleScript(src, scene);
+    const script = scripts.tmp;
+    script.reset();
+    if (scene.currentScript) {
+      scene.scriptStack.unshift({
+        script: scene.currentScript,
+        onScriptCompleted: function () {},
+      });
+    }
+    scene.currentScript = script;
+    scene.onScriptCompleted = resolve;
+    updateScene(scene);
+  });
 };
 
 export const getSceneCommands = (scene: Scene): Record<string, any> => {

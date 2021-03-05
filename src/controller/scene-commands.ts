@@ -7,6 +7,7 @@ import {
   hideConversation,
   showConversation,
   showArcadeGame,
+  showChoices,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -54,6 +55,7 @@ import {
 import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
+import { playSoundName } from 'model/sound';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -114,13 +116,20 @@ export const playDialogue = (
     nameLabel = ch.nameLabel;
   }
 
+  if (
+    speaker !== cutscene.speaker &&
+    [CutsceneSpeaker.Left, CutsceneSpeaker.Right].includes(speaker)
+  ) {
+    playSoundName('dialog_woosh');
+  }
+
   setCutsceneText(
     text,
     speaker,
     actorNameLower !== 'narrator' ? nameLabel : ''
   );
 
-  return waitForUserInput();
+  return waitForUserInputDialog();
 };
 
 /**
@@ -171,6 +180,8 @@ export const setConversation2 = (
     return;
   }
 
+  playSoundName('dialog_woosh');
+
   startConversation2(
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
@@ -213,6 +224,7 @@ export const setConversation2 = (
  */
 export const setConversation = (actorName: string) => {
   startConversation(`${actorName.toLowerCase()}`);
+  playSoundName('dialog_woosh');
   return waitMS(100);
 };
 
@@ -390,11 +402,46 @@ const waitForUserInput = (cb?: () => void) => {
 };
 
 /**
+ * (Internal use only.)
+ */
+const waitForUserInputDialog = (cb?: () => void) => {
+  const scene = getCurrentScene();
+  scene.isWaitingForInput = true;
+
+  const keyHandler = (ev: KeyboardEvent) => {
+    switch (ev.key) {
+      case 'Return':
+      case 'Enter':
+      case ' ': {
+        playSoundName('dialog_select');
+        setTimeout(() => {
+          clearTimeout(scene.waitTimeoutId);
+          popKeyHandler(keyHandler);
+          _cb();
+        }, 100);
+        break;
+      }
+    }
+  };
+  pushKeyHandler(keyHandler);
+  const _cb = () => {
+    scene.isWaitingForInput = false;
+    if (cb) {
+      cb();
+    }
+    popKeyHandler(keyHandler);
+  };
+
+  return _cb;
+};
+
+/**
  * Sets a key/value pair on a player's save file.  Useful setting variables.
  */
 export const setStorage = (key: string, value: string) => {
+  console.log('Set Storage', key, value ?? true);
   const scene = getCurrentScene();
-  scene[key] = value;
+  scene.storage[key] = value ?? true;
 };
 
 /**
@@ -1110,6 +1157,7 @@ export const runArcadeCabinetGame = (gameName: string) => {
   }
 
   overworldHide(getCurrentOverworld());
+  playSoundName('start_arcade_game');
   showArcadeGame(gamePath);
 };
 
@@ -1192,7 +1240,62 @@ export const resetAi = (chName: string) => {
   }
 
   characterStartAi(ch);
-}
+};
+
+/**
+ * Open/Close a set of doors at the marker.  The marker must be placed on the door above
+ * the other door (pixel above, not iso above.)
+ */
+export const setDoorStateAtMarker = (
+  markerName: string,
+  tileBase: string,
+  doorDirection: string | 'BCK' | 'FWD',
+  doorState: string | 'OPEN' | 'CLOSED'
+) => {
+  if (!['BCK', 'FWD'].includes(doorDirection)) {
+    console.error(
+      'Cannot setDoorStateAtMarker. Invalid door direction (needs BCK or FWD)'
+    );
+    return;
+  }
+  if (!['OPEN', 'CLOSED'].includes(doorState)) {
+    console.error(
+      'Cannot setDoorStateAtMarker. Invalid door state (needs OPEN or CLOSED)'
+    );
+    return;
+  }
+
+  if (doorDirection === 'BCK') {
+    changeTileAtMarker(
+      markerName,
+      `${tileBase}_${doorDirection}_${doorState}2`
+    );
+    changeTileAtMarker(
+      markerName,
+      `${tileBase}_${doorDirection}_${doorState}1`,
+      16,
+      0
+    );
+  } else {
+    changeTileAtMarker(
+      markerName,
+      `${tileBase}_${doorDirection}_${doorState}2`
+    );
+    changeTileAtMarker(
+      markerName,
+      `${tileBase}_${doorDirection}_${doorState}1`,
+      0,
+      16
+    );
+  }
+};
+
+export const awaitChoice = (...choices: string[]) => {
+  setTimeout(() => {
+    showChoices(choices);
+  }, 250);
+  return waitUntil();
+};
 
 const commands = {
   playDialogue,
@@ -1232,6 +1335,9 @@ const commands = {
   setAnimationAndWait,
   setAnimation,
   setAnimationState,
+  resetAi,
+  setDoorStateAtMarker,
+  awaitChoice,
 };
 
 export default commands;

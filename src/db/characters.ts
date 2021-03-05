@@ -89,4 +89,13 @@ export const init = () => {
     facing: Facing.RIGHT_DOWN,
     animationState: AnimationState.IDLE,
   };
+
+  exp.Floor1AtriumEmployeeJason = {
+    name: 'Atrium Employee Jason',
+    nameLabel: 'Employee Jason',
+    spriteBase: 'employee-guy2',
+    talkTrigger: 'floor1-atrium-employee-jason',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
 };

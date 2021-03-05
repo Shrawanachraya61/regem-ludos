@@ -7,5 +7,9 @@
     "clean": "rm -rf dist",
     "build:lib": "cp -t dist lib.js lib.css"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.21.0",
+    "eslint-plugin-preact": "^0.1.0"
+  }
 }

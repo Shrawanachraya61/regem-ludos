@@ -111,3 +111,7 @@ let renderBackgroundColor = 'black';
 export const getRenderBackgroundColor = (): string => renderBackgroundColor;
 export const setRenderBackgroundColor = (color: string) =>
   (renderBackgroundColor = color);
+
+let soundEnabled = true;
+export const getSoundEnabled = () => soundEnabled;
+export const setSoundEnabled = (v: boolean) => (soundEnabled = v);

@@ -20,163 +20,27 @@ import Help from 'view/icons/Help';
 import { hideArcadeGame } from 'controller/ui-actions';
 import { getCurrentPlayer } from 'model/generics';
 import { getUiInterface, uiInterface } from 'view/ui';
+import { playerModifyTokens } from 'model/player';
+import { playSoundName } from 'model/sound';
+import {
+  ArcadeGamePath,
+  ArcadeGamePathMeta,
+  IArcadeGameMeta,
+} from './ArcadeCabinetHelpers';
 
-export enum ArcadeGamePath {
-  PRESIDENT = 'iframes/president/president.html',
-  TIC_TAC_TOE = 'iframes/tic-tac-toe/tic-tac-toe.html',
-  INVADERZ = 'iframes/invaderz/Invaderz.html',
-  ELASTICITY = 'iframes/elasticity/elasticity.html',
-}
+import './GameTicTacToe';
+import './GamePresident';
+import './GameInvaderz';
+import './GameElasticity';
 
-interface IControlsProps {
-  setHelpDialogOpen: (v: boolean) => void;
-}
-
-interface IHelpProps {
-  setHelpDialogOpen: (v: boolean) => void;
-}
-
-interface IArcadeGameMeta {
-  title: string;
-  tokensRequired: number;
-  controls: (props: IControlsProps) => h.JSX.Element;
-  help?: (props: IHelpProps) => h.JSX.Element;
-}
-
-const ArcadeGamePathMeta: Record<string, IArcadeGameMeta> = {
-  default: {
-    title: 'No Game Specified',
-    tokensRequired: 99,
-    controls: () => {
-      return <div></div>;
-    },
-  },
-  [ArcadeGamePath.PRESIDENT]: {
-    title: 'President',
-    tokensRequired: 1,
-    controls: () => {
-      return <div></div>;
-    },
-  },
-  [ArcadeGamePath.TIC_TAC_TOE]: {
-    title: 'Tic Tac Toe',
-    tokensRequired: 1,
-    controls: (props: IControlsProps) => {
-      return (
-        <>
-          <CabinetControlButton
-            width="48px"
-            height="48px"
-            type="text"
-            onClick={() => {
-              props.setHelpDialogOpen(true);
-            }}
-          >
-            <Help color={colors.YELLOW} />
-          </CabinetControlButton>
-        </>
-      );
-    },
-    help: (props: IHelpProps) => {
-      return (
-        <HelpDialog setOpen={props.setHelpDialogOpen} title="Tic Tac Toe Help">
-          <p>On this machine you can play Tic Tac Toe.</p>
-          <p>Insert a Token to start: 1 token = 5 games</p>
-          <p>You are the 'X' player for each game.</p>
-          <p>
-            Place an 'X' by tapping/clicking the grid area where you wish to
-            play.
-          </p>
-          <p>
-            Place three 'X' in a row to win the game. You lose if there are
-            three 'O' in a row.
-          </p>
-          <p>
-            Tickets are awarded based off of the number of times you beat the
-            AI.
-          </p>
-        </HelpDialog>
-      );
-    },
-  },
-  [ArcadeGamePath.INVADERZ]: {
-    title: 'INVADERZ',
-    tokensRequired: 1,
-    controls: () => (
-      <>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          {...buttonHandlers(SDLKeyID.Left)}
-        >
-          <Arrow color={colors.GREEN} direction="left"></Arrow>
-        </CabinetControlButton>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          {...buttonHandlers(SDLKeyID.Right)}
-        >
-          <Arrow color={colors.GREEN} direction="right"></Arrow>
-        </CabinetControlButton>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          type="text"
-          {...buttonHandlers(SDLKeyID.Space)}
-        >
-          FIRE
-        </CabinetControlButton>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          type="text"
-          {...buttonHandlers(SDLKeyID.Enter)}
-        >
-          START
-        </CabinetControlButton>
-      </>
-    ),
-  },
-  [ArcadeGamePath.ELASTICITY]: {
-    title: 'ELASTICITY',
-    tokensRequired: 2,
-    controls: () => (
-      <>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          {...buttonHandlers(SDLKeyID.Left)}
-        >
-          <Arrow color={colors.GREEN} direction="left"></Arrow>
-        </CabinetControlButton>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          {...buttonHandlers(SDLKeyID.Right)}
-        >
-          <Arrow color={colors.GREEN} direction="right"></Arrow>
-        </CabinetControlButton>
-        <CabinetControlButton
-          width="48px"
-          height="48px"
-          type="text"
-          {...buttonHandlers(SDLKeyID.Enter)}
-        >
-          START
-        </CabinetControlButton>
-      </>
-    ),
-  },
-};
-
-enum SDLKeyID {
+export enum SDLKeyID {
   Enter = 13,
   Space = 32,
   Left = 1073741904,
   Right = 1073741903,
 }
 
-const buttonHandlers = (key: SDLKeyID) => {
+export const buttonHandlers = (key: SDLKeyID) => {
   return {
     onMouseDown: () => {
       setButtonDown(key);
@@ -191,85 +55,6 @@ const buttonHandlers = (key: SDLKeyID) => {
       setButtonUp(key);
     },
   };
-};
-
-const HelpDialogWrapper = style('div', () => {
-  return {
-    background: 'rgba(0, 0, 0, 0.5)',
-    position: 'fixed',
-    left: '0px',
-    top: '0px',
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: '2',
-    pointerEvents: 'all',
-  };
-});
-const HelpDialogContainer = style('div', () => {
-  return {
-    margin: '4px',
-    padding: '4px',
-    minWidth: '50%',
-    maxWidth: '90%',
-    border: `2px solid ${colors.BLUE}`,
-    background: colors.BGGREY,
-    color: colors.WHITE,
-  };
-});
-const HelpDialogTitle = style('div', () => {
-  return {
-    margin: '8px',
-    padding: '8px',
-    fontSize: '32px',
-    textTransform: 'uppercase',
-    borderBottom: `2px solid ${colors.BLACK}`,
-  };
-});
-const HelpDialogContent = style('div', () => {
-  return {
-    margin: '8px',
-    padding: '8px',
-    fontSize: '16px',
-  };
-});
-const HelpDialogActionButtons = style('div', () => {
-  return {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: '8px',
-    margin: '8px',
-  };
-});
-interface IHelpDialogProps {
-  title: string;
-  setOpen: (v: boolean) => void;
-  children?: any;
-}
-const HelpDialog = (props: IHelpDialogProps) => {
-  return (
-    <HelpDialogWrapper>
-      <HelpDialogContainer>
-        <HelpDialogTitle>{props.title}</HelpDialogTitle>
-        <HelpDialogContent>{props.children}</HelpDialogContent>
-        <HelpDialogActionButtons>
-          <Button
-            type={ButtonType.PRIMARY}
-            style={{
-              marginRight: '1rem',
-            }}
-            onClick={() => {
-              props.setOpen(false);
-            }}
-          >
-            Close
-          </Button>
-        </HelpDialogActionButtons>
-      </HelpDialogContainer>
-    </HelpDialogWrapper>
-  );
 };
 
 interface IArcadeCabinetProps {
@@ -434,6 +219,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const tickets = getCurrentPlayer().tickets;
   const tokensRequired = meta.tokensRequired;
   const isGameRunning = getUiInterface().appState.arcadeGame.isGameRunning;
+  const isGameReady = getUiInterface().appState.arcadeGame.isGameReady;
 
   return (
     <CabinetWrapper>
@@ -497,7 +283,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             </CabinetHeaderTicketsTokensItem>
             <CabinetHeaderTicketsTokensItem>
               <Button
-                disabled={isGameRunning || tokens <= 0}
+                disabled={!isGameReady || isGameRunning || tokens <= 0}
                 style={{
                   width: '140px',
                 }}
@@ -508,10 +294,17 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 }
                 onClick={() => {
                   if (tokensInserted === tokensRequired) {
+                    playerModifyTokens(getCurrentPlayer(), -tokensInserted);
                     setTokensInserted(0);
                     beginCurrentArcadeGame();
                   } else {
                     setTokensInserted(tokensInserted + 1);
+                    playSoundName('insert_token');
+                    if (tokensInserted + 1 === tokensRequired) {
+                      setTimeout(() => {
+                        playSoundName('ready_arcade_game');
+                      }, 250);
+                    }
                   }
                 }}
               >
@@ -523,8 +316,8 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 disabled={tokensInserted === 0}
                 type={ButtonType.CANCEL}
                 onClick={() => {
-                  console.log('eject token');
                   setTokensInserted(0);
+                  playSoundName('eject_tokens');
                 }}
               >
                 Eject Tokens
@@ -548,6 +341,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
         >
           {expanded ? null : <CabinetImage />}
         </div>
+
         {props.game ? (
           <IframeShim
             id="arcade-iframe"
@@ -555,6 +349,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             width={expanded ? '100%' : 512 + 'px'}
             height={expanded ? '100%' : 512 + 'px'}
             expanded={expanded}
+            loading={!isGameReady}
           ></IframeShim>
         ) : (
           <div>No game was specified.</div>

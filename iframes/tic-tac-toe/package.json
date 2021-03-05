@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "mkdir -p dist && ../../node_modules/.bin/terser tic-tac-toe.js --keep-fnames -o dist/tic-tac-toe.js && yarn mv",
-    "mv": "mkdir -p dist && cp -t dist/ tic-tac-toe.html favicon.png Retron2000.ttf -v",
+    "mv": "mkdir -p dist && cp -t dist/ tic-tac-toe.html favicon.png Retron2000.ttf *.mp3 -v",
     "clean": "rm -rf dist"
   },
   "dependencies": {}

@@ -1,14 +1,14 @@
 import { Animation, createAnimationBuilder } from 'model/animation';
 import { loadImageAsSpritesheet, SpriteModification } from 'model/sprite';
+import { loadSound } from 'model/sound';
 
 class AssetLoader {
   async processAssetFile(text: string): Promise<void> {
     const loadCbs = [] as any[];
 
     const _Sound = async function (line: any) {
-      // const [, soundName, soundUrl] = line;
-      throw new Error('cannot load sounds yet: ' + line);
-      // return display.loadSound(soundName, soundUrl);
+      const [, soundName, soundUrl] = line;
+      return loadSound(soundName, soundUrl);
     };
 
     const _Picture = async function (line: any) {
@@ -129,9 +129,9 @@ class AssetLoader {
   }
 }
 
-export const loadRes = async (): Promise<void> => {
+export const loadRes = async () => {
   const text = await (await fetch('res/res.txt')).text();
+  const foley = await (await fetch('res/res-foley.txt')).text();
   const loader = new AssetLoader();
-
-  return loader.loadAssets(text);
+  return Promise.all([loader.loadAssets(text), loader.loadAssets(foley)]);
 };

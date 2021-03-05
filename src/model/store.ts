@@ -7,6 +7,7 @@ export enum AppSection {
   Cutscene = 'cutscene',
   Debug = 'debug',
   ArcadeCabinet = 'arcadeCabinet',
+  Choices = 'choices',
 }
 
 export enum CutsceneSpeaker {
@@ -38,6 +39,11 @@ export interface ICutsceneAppState {
 export interface IArcadeCabinetState {
   path: ArcadeGamePath | '';
   isGameRunning: boolean;
+  isGameReady: boolean;
+}
+
+export interface IChoicesState {
+  choiceTexts: string[];
 }
 
 export interface AppState {
@@ -47,6 +53,7 @@ export interface AppState {
     chButtonsEnabled: boolean;
   };
   arcadeGame: IArcadeCabinetState;
+  choices: IChoicesState;
 }
 
 export const AppStateInitial: AppState = {
@@ -73,5 +80,9 @@ export const AppStateInitial: AppState = {
   arcadeGame: {
     path: '',
     isGameRunning: false,
+    isGameReady: false,
+  },
+  choices: {
+    choiceTexts: [],
   },
 };

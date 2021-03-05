@@ -186,3 +186,38 @@ Ada: "I will now jump."
 +jump("Ada");
 Ada: "I have jumped."
 +endConversation();
+
+@test-awaitChoice
++setConversation2("Ada", "Conscience");
+Ada: "This script tests awaitChoice."
+Conscience: "Which choice would you like to pick?"
+// +setConversationSpeaker(none);
++awaitChoice('This is choice 1', 'This is choice 2', 'This is choice 3');
++?eq(lastChoiceIndex, 0):{
+  Ada: "I have chosen the FIRST choice."
+}
++?eq(lastChoiceIndex, 1):{
+  Ada: "I have chosen the SECOND choice."
+}
++?eq(lastChoiceIndex, 2):{
+  Ada: "I have chosen the THIRD choice."
+}
+Ada: "Thus, I have chosen."
+// +setConversationSpeaker(none);
++endConversation(100);
++setConversation(Ada);
+Ada: "Now we will test a question asked by somebody else."
+Somebody Else: "What will you choose?"
++awaitChoice('This is choice 1', 'This is choice 2', 'This is choice 3');
++?eq(lastChoiceIndex, 0):{
+  Ada: "I have chosen the FIRST choice."
+}
++?eq(lastChoiceIndex, 1):{
+  Ada: "I have chosen the SECOND choice."
+}
++?eq(lastChoiceIndex, 2):{
+  Ada: "I have chosen the THIRD choice."
+}
+Ada: "Thus, I have chosen again."
+Ada: "The test will now conclude."
++endConversation();

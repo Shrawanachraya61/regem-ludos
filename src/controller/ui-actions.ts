@@ -5,10 +5,12 @@ import {
   ICutsceneAppState,
   CutsceneSpeaker,
   IArcadeCabinetState,
+  IChoicesState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
 import { overworldShow } from 'model/overworld';
+import { playSoundName } from 'model/sound';
 
 export interface ReducerAction<T> {
   action: string;
@@ -33,6 +35,10 @@ const mutations: { [key: string]: MutationFunction } = {
       newState.sections.push(payload);
     }
   },
+  hideSection: (newState: AppState, payload: AppSection) => {
+    const sections = newState.sections.filter(section => section !== payload);
+    newState.sections = sections;
+  },
   setCutsceneState: (
     newState: AppState,
     payload: Partial<ICutsceneAppState>
@@ -44,6 +50,9 @@ const mutations: { [key: string]: MutationFunction } = {
     payload: Partial<IArcadeCabinetState>
   ) => {
     Object.assign(newState.arcadeGame, payload);
+  },
+  setChoicesState: (newState: AppState, payload: Partial<IChoicesState>) => {
+    Object.assign(newState.choices, payload);
   },
 };
 
@@ -99,6 +108,14 @@ export const showSections = (sections: AppSection[], hideRest: boolean) => {
   });
 };
 
+export const hideSection = (section: AppSection) => {
+  const payload = section;
+  getUiInterface().dispatch({
+    action: 'hideSection',
+    payload,
+  });
+};
+
 export const hideConversation = () => {
   getUiInterface().dispatch({
     action: 'setCutsceneState',
@@ -129,7 +146,8 @@ export const showConversation = () => {
 };
 
 export const startConversation = (portrait: string) => {
-  showSection(AppSection.Cutscene, true);
+  hideSection(AppSection.Debug);
+  showSection(AppSection.Cutscene, false);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -153,7 +171,7 @@ export const startConversation2 = (
   portraitLeft: string,
   portraitRight: string
 ) => {
-  showSection(AppSection.Cutscene, true);
+  showSection(AppSection.Cutscene, false);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -198,6 +216,7 @@ export const showArcadeGame = (path: ArcadeGamePath) => {
   const payload = {
     path,
     isGameRunning: false,
+    isGameReady: false,
   };
   getUiInterface().dispatch({
     action: 'setArcadeGameState',
@@ -216,10 +235,21 @@ export const setArcadeGameRunning = (v: boolean) => {
   });
 };
 
+export const setArcadeGameReady = (v: boolean) => {
+  const payload = {
+    isGameReady: v,
+  };
+  getUiInterface().dispatch({
+    action: 'setArcadeGameState',
+    payload,
+  });
+};
+
 export const hideArcadeGame = () => {
   const payload = {
     path: '',
     isGameRunning: false,
+    isGameReady: false,
   };
   getUiInterface().dispatch({
     action: 'setArcadeGameState',
@@ -229,4 +259,24 @@ export const hideArcadeGame = () => {
 
   const overworld = getCurrentOverworld();
   overworldShow(overworld);
+};
+
+export const showChoices = (choices: string[]) => {
+  showSection(AppSection.Choices, false);
+  const payload = {
+    choiceTexts: choices,
+  };
+  getUiInterface().dispatch({
+    action: 'setChoicesState',
+    payload,
+  });
+  playSoundName('menu_choice_open');
+};
+
+export const hideChoices = () => {
+  const payload = AppSection.Choices;
+  getUiInterface().dispatch({
+    action: 'hideSection',
+    payload,
+  });
 };

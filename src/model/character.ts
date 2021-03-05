@@ -620,8 +620,10 @@ export const characterUpdate = (ch: Character): void => {
     ch.vy = 0;
   }
 
-  const [x, y, z] = characterGetPos(ch);
-  const [, py] = isoToPixelCoords(x, y, z);
+  const [x, y] = characterGetPos(ch);
+  // explicitly don't check z for sortY, otherwise the character may disappear behind
+  // walls behind them when rising/falling
+  const [, py] = isoToPixelCoords(x, y, 0);
   if (ch.ro) {
     ch.ro.sortY = py + 32;
   }

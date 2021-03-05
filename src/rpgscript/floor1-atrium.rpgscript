@@ -82,6 +82,7 @@
   Ada: "Very well."
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
+  +setStorage(quest_floor1-atrium_acquire-haptic-bracer);
 @floor1-atrium-desk-employee2
   +lookAtEachOther('Ada','Atrium Desk Employee');
   +setConversation('Ada');
@@ -113,6 +114,8 @@
     Atrium Elevator Employee: "Ah, you're new here huh?"
     Atrium Elevator Employee: "Go speak to whoever is running the reception desk, they can get you oriented."
   }
+  // this script might not get called from a talk trigger
+  +resetAi('Atrium Elevator Employee');
   +endConversation();
 @floor1-atrium-elevator-employee-with-bracer
   +lookAtEachOther('Ada', Atrium Elevator Employee);
@@ -120,7 +123,7 @@
   Atrium Elevator Employee: "Here to ride the elevator?  Can you show me your Haptic Bracer?"
   Atrium Elevator Employee: "Ah yes, I see you have one.  Go right ahead into the elevator; it'll take you to the next floor."
   +setConversationSpeaker(none);
-  +callScript(floor1-enter-elevator);
+  +callScript(floor1-atrium-enter-elevator);
   +callScript(floor1-atrium-sendElevatorUp);
   +fadeOut(1000);
   +endConversation();
@@ -134,7 +137,7 @@
 @floor1-atrium-close-elevator
   +changeTileAtMarker(MarkerDoorElevatorA, ELEVATOR_BCK_CLOSED2);
   +changeTileAtMarker(MarkerDoorElevatorA, ELEVATOR_BCK_CLOSED1, 16, 0);
-@floor1-enter-elevator
+@floor1-atrium-enter-elevator
   +callScript(floor1-atrium-open-elevator);
   +walkToMarker('Ada', MarkerElevatorOutside);
   +walkToMarker('Ada', MarkerElevatorInside);
@@ -143,9 +146,46 @@
   +callScript(floor1-atrium-close-elevator);
   +waitMS(500);
 
+#floor1-atrium-employee-jason
+  // haven't spoken to front desk yet
+  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
+  // don't have Haptic Bracer yet
+  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer-complete):floor1-atrium-employee-jason-haptic-bracer
+  action,floor1-atrium-employee-jason-default
+@floor1-atrium-employee-jason-haptic-bracer
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Hello! How may I help you today?"
+  Ada: "Do you happen to be Jason?  I am looking to acquire something called a 'Haptic Bracer'."
+  Atrium Employee Jason: "Ah yes.  I can help you with that."
+  Atrium Employee Jason: "Let me grab you one."
+  +setConversationSpeaker(none);
+  +walkToMarker(Atrium Employee Jason, MarkerJasonB);
+  +lookAtCharacter('Ada', 'Atrium Employee Jason');
+  +waitMS(1000);
+  +walkToMarker(Atrium Employee Jason, MarkerJasonA);
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
+  Atrium Employee Jason: "Here you are!"
+  +acquireItem('Haptic Bracer');
+  Atrium Employee Jason: "Would you like me to run you through how to use it? (Enters tutorial)"
+  +awaitChoice('Ada', 'Yes.', 'No.');
+  +endConversation();
+@floor1-atrium-employee-jason-quest-not-started
+  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Hello! How may I help you today?"
+  Ada: "Hello.  What is that room behind you?"
+  Atrium Employee Jason: "That's the VR training room!"
+  Ada: "VR?"
+  Atrium Employee Jason: "Oh you're new here?  Go speak with the person at the front desk.  She can get you set up."
+  Atrium Employee Jason: "Then you can come back over here."
+  +endConversation();
+  // +setDoorStateAtMarker(MarkerDoorVRPractice, RED_DOOR, BCK, OPEN);
+
 #floor1-atrium-TicTacToeGirl
-  action,?isnot(quest_floor1_tic-tac-toe):floor1-atrium-TicTacToeGirl-first
-  action,?all(is(quest_floor1_tic-tac-toe), once()):floor1-atrium-TicTacToeGirl-complete
+  // if you haven't beat the tic-tac-toe quest
+  action,?isnot(quest_floor1-atrium_tic-tac-toe-complete):floor1-atrium-TicTacToeGirl-first
+  // default
   action,this
 @this
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
@@ -160,18 +200,21 @@
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
   +setFacing('Tic Tac Toe Girl', rightdown);
   +endConversation();
+// Called from onGameComplete in the TicTacToe Arcade Cabinet Meta
 @floor1-atrium-TicTacToeGirl-complete
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
   Tic Tac Toe Girl: "You actually let it win, huh?  It seems pretty excited about that."
   Tic Tac Toe Girl: "Maybe a little too excited..."
   +setConversationSpeaker(none);
-  +setFacing('Girl', left);
+  +setFacing('Tic Tac Toe Girl', left);
   +waitMS(1000);
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +waitMS(1000);
   Tic Tac Toe Girl: "..."
   Tic Tac Toe Girl: "Well, I'm glad I wasn't the one who lost to it."
+  +setStorage(quest_floor1-atrium_tic-tac-toe-complete);
+  +resetAi('Tic Tac Toe Girl');
   +endConversation();
 
 #floor1-atrium-TicTacToeMachine
@@ -179,17 +222,17 @@
   @this
   +setFacing(Ada, leftup);
   // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
-  +?isnot(floor1-atrium-TicTacToeGirl):{
-    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
-    +setConversation('Ada');
-    Tic Tac Toe Girl: "Hey, you looking to play a game?"
-    +callScript(floor1-atrium-TicTacToeGirl-first);
-    +setStorage(floor1-atrium-TicTacToeGirl);
-    +setConversation('Ada');
-    Ada: "Okay..."
-    +setFacing(Ada, leftup);
-    +endConversation(1000);
-  }
+  // +?isnot(floor1-atrium-TicTacToeGirl):{
+  //   +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+  //   +setConversation('Ada');
+  //   Tic Tac Toe Girl: "Hey, you looking to play a game?"
+  //   +callScript(floor1-atrium-TicTacToeGirl-first);
+  //   +setStorage(floor1-atrium-TicTacToeGirl);
+  //   +setConversation('Ada');
+  //   Ada: "Okay..."
+  //   +setFacing(Ada, leftup);
+  //   +endConversation(1000);
+  // }
   +fadeOut(100);
   +runArcadeCabinetGame(TIC_TAC_TOE);
   +fadeIn(50);

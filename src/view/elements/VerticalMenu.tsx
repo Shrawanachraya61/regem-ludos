@@ -3,10 +3,12 @@ import { useState, useEffect, useReducer } from 'preact/hooks';
 import { style, colors, keyframes } from 'view/style';
 import CursorIcon from 'view/icons/Cursor';
 import CloseIcon from 'view/icons/Close';
+import { playSoundName } from 'model/sound';
 
 interface IVerticalMenuProps<T> {
   items: VerticalMenuItem<T>[];
   onItemClick: (value: T) => void;
+  onItemClickSound?: string;
   open: boolean;
   isInactive?: boolean;
   title?: string;
@@ -16,6 +18,7 @@ interface IVerticalMenuProps<T> {
   lineHeight?: MenuLineHeight;
   startingIndex?: number;
   width?: string;
+  style?: Record<string, string>;
 }
 
 interface VerticalMenuItem<T> {
@@ -253,6 +256,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
           nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
         } else if (ev.code === 'Enter') {
           dispatch({ type: 'Select' });
+          if (props.onItemClickSound) {
+            playSoundName(props.onItemClickSound);
+          }
         } else if (ev.code === 'Escape') {
           if (props.onClose) {
             props.onClose();
@@ -274,6 +280,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       borderColor={props.borderColor ?? colors.WHITE}
       width={props.width}
       open={props.open}
+      style={props.style}
     >
       <MenuItemWrapper key="title" borderColor={props.borderColor}>
         <MenuTitle
@@ -294,6 +301,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
               active={active && cursorIndex === i}
               onClick={() => {
                 dispatch({ type: 'Set', payload: i });
+                if (props.onItemClickSound) {
+                  playSoundName(props.onItemClickSound);
+                }
                 setTimeout(() => {
                   dispatch({ type: 'Select' });
                 });

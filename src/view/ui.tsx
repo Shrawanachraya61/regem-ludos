@@ -15,6 +15,7 @@ import CutsceneSection from './components/CutsceneSection';
 
 import { AppSection } from 'model/store';
 import ArcadeCabinet from './components/ArcadeCabinet';
+import CutsceneChoicesSection from './components/CutsceneChoicesSection';
 
 interface UIInterface {
   appState: AppState;
@@ -81,6 +82,9 @@ const App = () => {
       case AppSection.ArcadeCabinet: {
         return <ArcadeCabinet game={appState.arcadeGame.path} />;
       }
+      case AppSection.Choices: {
+        return <CutsceneChoicesSection key={key} />;
+      }
       case AppSection.Debug: {
         return <Debug />;
       }
@@ -101,13 +105,20 @@ const App = () => {
         height: 512 * (scale > 2 ? 2 : scale),
       }}
     >
-      <Root>
+      <Root id="ui-sections">
         {getIsPaused() ? (
           <PausedOverlay>
             <PausedText>PAUSED</PausedText>
           </PausedOverlay>
         ) : null}
-        {appState.sections.map(renderSection)}
+        {appState.sections
+          .sort((a, b) => {
+            if (a === 'arcadeCabinet' || b === 'arcadeCabinet') {
+              return -1;
+            }
+            return a < b ? -1 : 1;
+          })
+          .map(renderSection)}
       </Root>
     </div>
   );

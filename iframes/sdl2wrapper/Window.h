@@ -37,6 +37,7 @@ class Window {
   bool firstLoop;
   Uint64 lastFrameTime = 0;
   bool shouldRender = true;
+  bool isInputEnabled = true;
 
   static int instanceCount;
 

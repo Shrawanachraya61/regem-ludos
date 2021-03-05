@@ -7,6 +7,8 @@ interface IIframeShimProps {
   width: string;
   height: string;
   expanded: boolean;
+  loading: boolean;
+  style?: Record<string, string>;
   ref?: Ref<any>;
 }
 
@@ -46,6 +48,7 @@ const IframeShim = (props: IIframeShimProps) => {
       width={props.width}
       height={props.height}
     >
+      {props.loading ? <div id="iframe-loading">Loading</div> : null}
       <iframe
         id={props.id}
         ref={props.ref}
@@ -54,6 +57,8 @@ const IframeShim = (props: IIframeShimProps) => {
           border: '0px',
           width: props.width,
           height: props.height,
+          display: props.loading ? 'none' : 'block',
+          ...(props.style ?? {}),
         }}
       ></iframe>
     </IframeBorder>

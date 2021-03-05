@@ -42,7 +42,11 @@ import {
   characterStopAi,
   characterStartAi,
 } from 'model/character';
-import { invokeTrigger, callScript } from 'controller/scene-management';
+import {
+  invokeTrigger,
+  callScript,
+  createAndCallScript,
+} from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
 import { showSection } from 'controller/ui-actions';
@@ -179,6 +183,22 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
+    case 'p': {
+      disableKeyUpdate();
+      await createAndCallScript(
+        getCurrentScene(),
+        `
+        +setConversation('Ada');
+        Ada: "You are testing 'createAndCallScript'"
+        Ada: "Hopefully you can see me speaking."
+        Ada: "This text was not specified in an rpgscript file, but instead in the code directly."
+        Ada: "The test will now conclude."
+        +endConversation();
+      `
+      );
+      enableKeyUpdate();
+      break;
+    }
     case 'd': {
       if (getTriggersVisible()) {
         hideTriggers();
@@ -194,7 +214,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-jump');
+        await callScript(getCurrentScene(), 'test-awaitChoice');
         showSection(AppSection.Debug, true);
         console.log('ENABLE KEYS');
         enableKeyUpdate();

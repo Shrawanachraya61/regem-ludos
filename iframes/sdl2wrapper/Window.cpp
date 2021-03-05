@@ -41,6 +41,14 @@ void setKeyUp(int key) {
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
       << "External set key up: " << key << std::endl;
 }
+
+EMSCRIPTEN_KEEPALIVE
+void _setKeyStatus(int status) {
+  SDL2Wrapper::Window& window = SDL2Wrapper::Window::getGlobalWindow();
+  window.isInputEnabled = !!status;
+  SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
+      << "External set key status: " << key << std::endl;
+}
 }
 #endif
 
@@ -322,21 +330,31 @@ void Window::renderLoop() {
     } else if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
       break;
     } else if (e.type == SDL_KEYDOWN) {
-      events.keydown(e.key.keysym.sym);
+      if (isInputEnabled) {
+        events.keydown(e.key.keysym.sym);
+      }
     } else if (e.type == SDL_KEYUP) {
-      events.keyup(e.key.keysym.sym);
+      if (isInputEnabled) {
+        events.keyup(e.key.keysym.sym);
+      }
     } else if (e.type == SDL_MOUSEMOTION) {
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      events.mousemove(x, y);
+      if (isInputEnabled) {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        events.mousemove(x, y);
+      }
     } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      events.mousedown(x, y, (int)e.button.button);
+      if (isInputEnabled) {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        events.mousedown(x, y, (int)e.button.button);
+      }
     } else if (e.type == SDL_MOUSEBUTTONUP) {
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      events.mouseup(x, y, (int)e.button.button);
+      if (isInputEnabled) {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        events.mouseup(x, y, (int)e.button.button);
+      }
     }
   }
   if (!isLooping) {

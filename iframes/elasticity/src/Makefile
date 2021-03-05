@@ -5,7 +5,7 @@ SRC=$(CODE:.cpp=.o)
 SDL2_WRAPPER_SRC=$(SDL2_WRAPPER_CODE:.cpp=.o)
 FLAGS=-g -Wall -std=c++17
 EMCC_LIBS=-O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s ALLOW_MEMORY_GROWTH=1
-EMCC_EXPORTED=-s EXPORTED_FUNCTIONS='["_main", "_enableSound", "_disableSound","_setKeyDown", "_setKeyUp"]' -s EXPORTED_RUNTIME_METHODS=['ccall']  
+EMCC_EXPORTED=-s EXPORTED_FUNCTIONS='["_main", "_enableSound", "_disableSound","_setKeyDown", "_setKeyUp", "_setKeyStatus"]' -s EXPORTED_RUNTIME_METHODS=['ccall']  
 
 EXE=elasticity
 ifeq ($(OS),Windows_NT)

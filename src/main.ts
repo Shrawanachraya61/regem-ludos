@@ -56,6 +56,7 @@ export const main = async (): Promise<void> => {
   console.log('load rpgscript');
   initScene();
   const scene = getCurrentScene();
+  await loadRPGScript('quest', scene);
   await loadRPGScript('floor1', scene);
   await loadRPGScript('test', scene);
   await loadRPGScript('example', scene);

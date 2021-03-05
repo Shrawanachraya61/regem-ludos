@@ -330,7 +330,7 @@ export const createRoom = async (
     if (isDynamicProp) {
       if (dynamicPropsTileset) {
         const pictureName = dynamicPropsTileset[propIndex];
-        console.log('Add dynamic prop', tiledProp, pictureName);
+        // console.log('Add dynamic prop', tiledProp, pictureName);
         if (!pictureName) {
           throw new Error(
             `Could not load prop in room definition '${name}', the propIndex '${propIndex}' has no associated tilesetTile. (gid=${gid} startingGid=${propsTilesetsFirstGid})`
@@ -359,7 +359,7 @@ export const createRoom = async (
   };
 
   const addCharacter = (tiledObject: TiledObject) => {
-    console.log('Tiled addCharacter', tiledObject);
+    // console.log('Tiled addCharacter', tiledObject);
     const x = tiledObject.x;
     const y = tiledObject.y;
     // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
@@ -379,7 +379,7 @@ export const createRoom = async (
   };
 
   const addMarker = (tiledObject: TiledObject) => {
-    console.log('Tiled addMarker', tiledObject);
+    // console.log('Tiled addMarker', tiledObject);
     const x = tiledObject.x;
     const y = tiledObject.y;
     // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
@@ -400,7 +400,7 @@ export const createRoom = async (
   };
 
   const addTrigger = (tiledObject: TiledObject) => {
-    console.log('Tiled addTrigger', tiledObject);
+    // console.log('Tiled addTrigger', tiledObject);
     const x = tiledObject.x;
     const y = tiledObject.y;
     const width = tiledObject.width;
