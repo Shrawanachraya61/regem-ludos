@@ -198,6 +198,13 @@ function LIB() {
     soundObj.isPlaying = false;
   };
 
+  this.setVolume = function (v) {
+    for (let i in sounds) {
+      const { audio } = sounds[i];
+      audio.volume = v;
+    }
+  };
+
   this.getConfig = function () {
     return config;
   };
