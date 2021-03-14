@@ -1,6 +1,7 @@
+/* @jsx h */
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { BattleCharacter } from 'model/battle';
+import { BattleCharacter } from 'model/battle-character';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { colors, style } from 'view/style';
 import { battleSetChButtonsStatus } from 'controller/ui-actions';

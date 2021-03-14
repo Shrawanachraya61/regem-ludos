@@ -19,8 +19,11 @@ export const get = (key: string): CharacterTemplate => {
 export const init = () => {
   exp.ENEMY_GUY = {
     name: 'guy',
-    spriteBase: 'guy',
-    stats: battleStatsCreate(),
+    spriteBase: 'guy-battle',
+    stats: {
+      ...battleStatsCreate(),
+      HP: 1000,
+    },
     facing: Facing.LEFT,
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.SwingSlow],

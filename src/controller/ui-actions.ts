@@ -171,6 +171,7 @@ export const startConversation2 = (
   portraitLeft: string,
   portraitRight: string
 ) => {
+  hideSection(AppSection.Debug);
   showSection(AppSection.Cutscene, false);
   getUiInterface().dispatch({
     action: 'setCutsceneState',

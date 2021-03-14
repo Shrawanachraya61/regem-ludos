@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h } from 'preact';
 import { useRenderLoop } from 'view/hooks';
 import { style } from 'view/style';
@@ -11,6 +12,7 @@ interface IProgressBarProps {
 }
 
 interface IProgressBarRenderProps extends IProgressBarProps {
+  id?: string;
   renderKey: string;
   renderFunc: () => number;
 }

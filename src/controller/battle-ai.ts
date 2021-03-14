@@ -1,9 +1,9 @@
 import {
   Battle,
-  BattleCharacter,
-  battleGetAllegiance,
   battleGetNearestAttackable,
+  battleGetAllegiance,
 } from 'model/battle';
+import { BattleCharacter } from 'model/battle-character';
 import { BattleActions } from 'controller/battle-actions';
 
 export type BattleAI = (battle: Battle, bCh: BattleCharacter) => void;

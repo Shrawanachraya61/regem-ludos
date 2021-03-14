@@ -1,19 +1,20 @@
+/* @jsx h */
 import { h, render } from 'preact';
 import { useEffect, useState, useReducer } from 'preact/hooks';
 import { colors, style } from 'view/style';
 
 import { getIsPaused } from 'model/generics';
-import { AppState, AppStateInitial } from 'model/store';
+import { AppState, AppStateInitial, AppSection } from 'model/store';
 import { appReducer } from 'controller/ui-actions';
-import { getDrawScale } from 'model/canvas';
+import { getDrawScale, SCREEN_WIDTH, SCREEN_HEIGHT } from 'model/canvas';
 
 // sections
 import Debug from './components/Debug';
 import BattleConclusion from './components/BattleConclusion';
-import BattleUISection from './components/BattleUISection';
+// import BattleUISection from './components/BattleUISection';
+import BattleSection from './components/BattleSection';
 import CutsceneSection from './components/CutsceneSection';
 
-import { AppSection } from 'model/store';
 import ArcadeCabinet from './components/ArcadeCabinet';
 import CutsceneChoicesSection from './components/CutsceneChoicesSection';
 
@@ -74,7 +75,7 @@ const App = () => {
         return <BattleConclusion key={key} isVictory={false} />;
       }
       case AppSection.BattleUI: {
-        return <BattleUISection key={key} />;
+        return <BattleSection key={key} />;
       }
       case AppSection.Cutscene: {
         return <CutsceneSection key={key} />;
@@ -101,8 +102,8 @@ const App = () => {
       style={{
         position: 'absolute',
         top: '0px',
-        width: 512 * (scale > 2 ? 2 : scale),
-        height: 512 * (scale > 2 ? 2 : scale),
+        width: SCREEN_WIDTH * (scale > 2 ? 2 : scale),
+        height: SCREEN_HEIGHT * (scale > 2 ? 2 : scale),
       }}
     >
       <Root id="ui-sections">
@@ -112,12 +113,14 @@ const App = () => {
           </PausedOverlay>
         ) : null}
         {appState.sections
-          .sort((a, b) => {
-            if (a === 'arcadeCabinet' || b === 'arcadeCabinet') {
-              return -1;
-            }
-            return a < b ? -1 : 1;
-          })
+          // .sort((a, b) => {
+          //   if (a === 'arcadeCabinet' || b === 'arcadeCabinet') {
+          //     return -1;
+          //   } else if (a === 'debug' || b === 'debug') {
+          //     return -1;
+          //   }
+          //   return a < b ? -1 : 1;
+          // })
           .map(renderSection)}
       </Root>
     </div>
@@ -133,6 +136,14 @@ export const renderUi = (): void => {
 export const mountUi = () => {
   const dom = document.getElementById('ui');
   if (dom) {
+    const parent = document.getElementById('canvas-area-parent');
+    if (parent) {
+      const scale = 2;
+      console.log('MOUNT', scale);
+      parent.style['max-width'] = SCREEN_WIDTH * scale;
+      parent.style['max-height'] = SCREEN_HEIGHT * scale;
+    }
+
     render(<App />, dom);
   }
 };

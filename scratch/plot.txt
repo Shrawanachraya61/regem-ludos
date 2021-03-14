@@ -245,8 +245,9 @@ Narrator: Quite interesting indeed.
 
 Boy: This ice cream cup says it contains no artificial growth hormones.
 Girl: That's good to know!
-Boy: Yeah, but sometimes I wish it would also have a label indicating that it was made without hot sauce.
-Boy: I hate hot sauce.
+Boy: Yeah, but sometimes I wish it would also have a label indicating that it was made without other bad stuff too.
+Boy: Like hot sauce.
+Boy: I HATE hot sauce.
 Girl: That would totally put my mind at ease.
 
 Girl: So do you have any special skills?
@@ -255,3 +256,33 @@ Boy: I close my eyes, and you put any number of coffee filters in my hands...
 Boy: I'll tell you exactly how many there are.
 Girl: Thats impressive!
 
+BATTLE
+
+Mechanics:
+Stagger Gauge: when staggered, unit takes double damage from all sources, staggered after taking big damage or stagger damage.
+Armor: Prevents damage being taken, but can be removed by attacks hitting simultaneously.
+Dodge: Gives a chance to dodge non-magic attacks.
+Magic/Zoltan Shield: Prevents getting hit by magic attacks, removed by whacking it enough times with magic or staggering whoever has it.
+Damage Reduction: Flat reduces damage.
+Reserves: Casting a spell uses your reserves.  Reserves regenerate over a period of time.  Cooldowns do not reduce when a character has depleted reserves. Channeling is stopped with depleted reserves.
+Stance?: Modifies the above at some cost.
+Hidden?: Make character untargetable but can still be hit by AOE, which sparks them being unhidden.  Becomes unhidden for time after attacking.
+Channeling?: Characters who are channeling are usually charging an attack or maintaining a field.  Channelers are interrupted by stagger, but take double stagger damage.  Channelers cannot be hidden.
+
+Attacks: 
+Standard Attacks: Front line attack. Depending on skill with weapon, a character can jump to a target and attack multiple times doing reg + stagger damage
+Pierce Attacks: Front line attack. Hitting a pierce attack reduces armor without a simultaneous hit.
+Pin Attacks: Front line attack. If a character is staggered and somebody executes a Pin attack, that unit is Pinned: stunned for some amount of time.
+Crit attacks: If a character crits, they create an auto stagger, and sometimes and auto Pin.
+Finisher Attacks: A finisher attack only hits if a character is pinned.
+Bow/Ranged Attacks: Does regular damage, cannot crit, little stagger damage, useful for chip or extending a combo.  Can attach things to arrows to change their effects.  Can hit the back line.
+Magic Attacks: Various types of damage, but usually big damage on a long cooldown that might cause stagger or pin.  Must be maintained.
+
+Levers (Things player can improve):
+POW: Affects your damage output 
+RES: (reserves) How many reserves a unit has.
+ACC: Crit chance?
+FOR: Stagger health
+CON: More Con means you can wear better armor (Magic Shield/Armor/Damage Reduction/Max HP/Stance)
+SPD: Cooldown reduction
+EVA: Dodge

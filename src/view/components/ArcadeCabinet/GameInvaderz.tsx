@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Fragment } from 'preact';
 import { colors } from 'view/style';
 import { SDLKeyID, buttonHandlers } from './ArcadeCabinet';

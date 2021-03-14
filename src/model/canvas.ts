@@ -1,6 +1,7 @@
 import WebGL2D from 'lib/webgl-canvas';
 
-export const SCREEN_WIDTH = 512;
+export const SCREEN_HEIGHT = 512;
+export const SCREEN_WIDTH = 683;
 export const CANVAS_ID = 'canv';
 export const CANVAS_ID_OUTER = 'canv-outer';
 
@@ -39,13 +40,13 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
   if (mainCanvas) {
     return mainCanvas as HTMLCanvasElement;
   } else {
-    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH);
+    const [canvas, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
     canvas.id = CANVAS_ID;
     ctx.imageSmoothingEnabled = false;
     const div = document.getElementById('canvas-container');
     if (div) {
       div.appendChild(canvas);
-      const [canvasOuter, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_WIDTH);
+      const [canvasOuter, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
       canvasOuter.id = CANVAS_ID_OUTER;
       ctx.imageSmoothingEnabled = false;
       div.appendChild(canvasOuter);
@@ -68,7 +69,7 @@ const setDrawScaleCanvas = (canvas: HTMLCanvasElement, s: number) => {
   drawScale = s;
   if (canvas) {
     canvas.style.width = String(SCREEN_WIDTH * drawScale);
-    canvas.style.height = String(SCREEN_WIDTH * drawScale);
+    canvas.style.height = String(SCREEN_HEIGHT * drawScale);
 
     if (s > 2) {
       canvas.style.position = 'relative';
@@ -102,6 +103,6 @@ export const getDrawScale = (): number => {
   return drawScale;
 };
 
-export const getScreenSize = (): number => {
-  return SCREEN_WIDTH;
+export const getScreenSize = (): [number, number] => {
+  return [SCREEN_WIDTH, SCREEN_HEIGHT];
 };

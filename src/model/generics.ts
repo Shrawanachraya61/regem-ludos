@@ -77,7 +77,10 @@ export const setIsPaused = (n: boolean): void => {
   isPaused = n;
 };
 
-let renderables: Record<string, () => void> = {};
+const renderables: Record<
+  string,
+  () => void
+> = ((window as any).renderables = {});
 export const addRenderable = (name: string, cb: () => void): void => {
   renderables[name] = cb;
 };
@@ -97,12 +100,12 @@ export const disableKeyUpdate = (): void => {
   keyUpdateEnabled = false;
 };
 
-let triggersVisible = true;
+let triggersVisible = false;
 export const getTriggersVisible = (): boolean => triggersVisible;
 export const showTriggers = () => (triggersVisible = true);
 export const hideTriggers = () => (triggersVisible = false);
 
-let markersVisible = true;
+let markersVisible = false;
 export const getMarkersVisible = (): boolean => markersVisible;
 export const showMarkers = () => (markersVisible = true);
 export const hideMarkers = () => (markersVisible = false);

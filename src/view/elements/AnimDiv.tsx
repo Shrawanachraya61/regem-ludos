@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { drawAnimation } from 'view/draw';
@@ -5,6 +6,7 @@ import { createAnimation } from 'model/animation';
 
 interface IAnimDivProps {
   animName: string;
+  style?: Record<string, string>;
   scale?: number;
   width?: number;
   height?: number;
@@ -34,7 +36,7 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
   }, [s, width, height, animName, anim]);
   return (
     <div>
-      <canvas ref={canvasRef}></canvas>
+      <canvas style={props.style} ref={canvasRef}></canvas>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Fragment, JSX } from 'preact';
 import { useState } from 'preact/hooks';
 import { colors, style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';

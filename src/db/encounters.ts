@@ -29,6 +29,16 @@ export const get = (key: string) => {
   return result;
 };
 
+export const getIfExists = (key: string): BattleTemplate | null => {
+  const result = exp[key];
+  if (!result) {
+    return null;
+  }
+  return {
+    ...result,
+  };
+};
+
 export const init = () => {
   exp.ENCOUNTER_ONE_VS_ONE = {
     roomName: 'battle1',

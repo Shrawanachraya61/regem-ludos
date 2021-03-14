@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Fragment } from 'preact';
 import { colors } from 'view/style';
 import {
@@ -9,14 +10,13 @@ import {
 } from './ArcadeCabinetHelpers';
 import HelpDialog from './ArcadeCabinetHelpDialog';
 import Help from 'view/icons/Help';
-import { createAndCallScript } from 'controller/scene-management';
+import { createAndCallScript, callScript } from 'controller/scene-management';
 import {
   disableKeyUpdate,
   enableKeyUpdate,
   getCurrentScene,
 } from 'model/generics';
 import { modifyTickets } from 'controller/scene-commands';
-import { callScript } from 'controller/scene-management';
 import { hideArcadeGame, hideSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 

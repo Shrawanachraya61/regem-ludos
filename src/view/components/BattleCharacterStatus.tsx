@@ -1,17 +1,20 @@
+/* @jsx h */
 import { h } from 'preact';
+import { Battle } from 'model/battle';
 import {
-  Battle,
   BattleCharacter,
   battleCharacterCanAct,
   battleCharacterSetCanActCb,
   battleCharacterRemoveCanActCb,
-} from 'model/battle';
+  battleCharacterIsStaggered,
+} from 'model/battle-character';
 import { style, colors } from 'view/style';
 
 import AnimDiv from 'view/elements/AnimDiv';
 import { ProgressBarWithRender } from 'view/elements/ProgressBar';
 import { characterGetHpPct } from 'model/character';
 import { useRenderLoop } from 'view/hooks';
+import { hasAnimation } from 'model/animation';
 
 const PROGRESS_HP_COLOR = colors.GREEN;
 const PROGRESS_ACTION_COLOR = colors.BLUE;
@@ -65,6 +68,10 @@ const BattleCharacterStatus = (
     return `${props.bCh.ch.name}_${append}`;
   };
   const selectedAction = props.bCh.ch.skills[props.bCh.ch.skillIndex];
+  let portraitName = 'battlePortraits_' + props.bCh.ch.spriteBase;
+  if (!hasAnimation(portraitName)) {
+    portraitName = 'bartolo_portrait';
+  }
   return (
     <ButtonWrapper>
       <Bar top={true}>
@@ -81,19 +88,21 @@ const BattleCharacterStatus = (
         />
       </Bar>
       <AnimWrapper>
-        <AnimDiv
-          animName={'battlePortraits_' + props.bCh.ch.spriteBase}
-        ></AnimDiv>
+        <AnimDiv style={{ width: '64px' }} animName={portraitName}></AnimDiv>
         <NameLabel>{props.bCh.ch.name}</NameLabel>
       </AnimWrapper>
       <Bar top={true} omitBorder>
         <ProgressBarWithRender
           renderFunc={() => {
-            return props.bCh.isStaggered ? 1 : props.bCh.staggerGauge.getPct();
+            return battleCharacterIsStaggered(props.bCh)
+              ? 1
+              : props.bCh.staggerGauge.getPct();
           }}
           renderKey={createRenderKey('stagger')}
           backgroundColor={colors.BLACK}
-          color={props.bCh.isStaggered ? colors.WHITE : colors.ORANGE}
+          color={
+            battleCharacterIsStaggered(props.bCh) ? colors.WHITE : colors.ORANGE
+          }
           height={4}
           label=""
           // pct={props.bCh.isStaggered ? 1 : props.bCh.staggerGauge.getPct()}

@@ -38,11 +38,11 @@
   Atrium Desk Employee: "Yes!  The VR Floors are a primary reason why we are one of the most advanced arcades in the world!"
   Atrium Desk Employee: "On these floors we are able to create a truly astounding variety of different places and things - all in virtual space!"
   Atrium Desk Employee: "But be wary!  Many monsters roam these floors.  To proceed further into the arcade, you'll need to fight your way through these monsters!"
-  Atrium Desk Employee: "To get access you'll need a Haptic Bracer, a wearable which is capable of truly immersing you our intricately-constructed virtual environments."
+  Atrium Desk Employee: "To get access you'll need a Haptic Bracer, a wearable which is capable of truly immersing you in our intricately-constructed virtual environments."
   Ada: "Where can I get that?"
   Atrium Desk Employee: "Go and speak with Instructor Jason over in the area to the east of this room.  He is standing outside of a VR Practice area.  He will be able to give you Haptic Bracer and can provide a full rundown of how to interact with our VR Floors."
   Atrium Desk Employee: "He can also teach you some helpful tips on how to battle some of the monsters in there."
-  Ada: "Okay, got it.  I can go see Jason."
+  Ada: "Understood."
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
   Atrium Desk Employee: "Great!  That's about it for the rundown.  If you have further questions, don't hesitate to ask!"
@@ -79,7 +79,7 @@
   +waitMS(250);
   +jump('Conscience');
   Conscience: "I'm super exited!  I want to check out the VR floor before we go meet him.  Let's go talk to that Instructor Jason guy."
-  Ada: "Very well."
+  Ada: "A solid enough plan."
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);
@@ -167,8 +167,8 @@
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
   Atrium Employee Jason: "Here you are!"
   +acquireItem('Haptic Bracer');
-  Atrium Employee Jason: "Would you like me to run you through how to use it? (Enters tutorial)"
-  +awaitChoice('Ada', 'Yes.', 'No.');
+  Atrium Employee Jason: "Would you like me to run you through how to use it?"
+  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
   +endConversation();
 @floor1-atrium-employee-jason-quest-not-started
   +lookAtCharacter('Atrium Employee Jason', 'Ada');
@@ -189,6 +189,7 @@
   action,this
 @this
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
+  +setConversation('Ada');
   Tic Tac Toe Girl: "There probably are better games than Tic-Tac-Toe, but I kinda like its simplicity."
   +endConversation();
 @floor1-atrium-TicTacToeGirl-first
@@ -222,17 +223,37 @@
   @this
   +setFacing(Ada, leftup);
   // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
-  // +?isnot(floor1-atrium-TicTacToeGirl):{
-  //   +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
-  //   +setConversation('Ada');
-  //   Tic Tac Toe Girl: "Hey, you looking to play a game?"
-  //   +callScript(floor1-atrium-TicTacToeGirl-first);
-  //   +setStorage(floor1-atrium-TicTacToeGirl);
-  //   +setConversation('Ada');
-  //   Ada: "Okay..."
-  //   +setFacing(Ada, leftup);
-  //   +endConversation(1000);
-  // }
+  +?isnot(floor1-atrium-TicTacToeGirl):{
+    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+    +setConversation('Ada');
+    Tic Tac Toe Girl: "Hey, you looking to play a game?"
+    +callScript(floor1-atrium-TicTacToeGirl-first);
+    +setStorage(floor1-atrium-TicTacToeGirl);
+    +waitMS(1000);
+    +setFacing(Ada, leftup);
+    +waitMS(1000);
+  }
   +fadeOut(100);
   +runArcadeCabinetGame(TIC_TAC_TOE);
   +fadeIn(50);
+  +setAtMarker(Ada, MarkerMachine1);
+
+#floor1-atrium-TicTacToeMachine2
+  action,this
+  @this
+  +setFacing(Ada, leftup);
+  // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
+  +?isnot(floor1-atrium-TicTacToeGirl):{
+    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+    +setConversation('Ada');
+    Tic Tac Toe Girl: "Hey, you looking to play a game?"
+    +callScript(floor1-atrium-TicTacToeGirl-first);
+    +setStorage(floor1-atrium-TicTacToeGirl);
+    +waitMS(1000);
+    +setFacing(Ada, leftup);
+    +waitMS(1000);
+  }
+  +fadeOut(100);
+  +runArcadeCabinetGame(TIC_TAC_TOE);
+  +fadeIn(50);
+  +setAtMarker(Ada, MarkerMachine2);

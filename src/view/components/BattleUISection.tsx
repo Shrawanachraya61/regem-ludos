@@ -1,8 +1,9 @@
+/* @jsx h */
 import { h, Fragment } from 'preact';
 import { useState } from 'preact/hooks';
 import { style } from 'view/style';
 import BattleCharacterButton from 'view/components/BattleCharacterStatus';
-import { BattleCharacter } from 'model/battle';
+import { BattleCharacter } from 'model/battle-character';
 import BattleActionMenu from 'view/components/BattleActionMenu';
 import Button, { ButtonType } from 'view/elements/Button';
 import { battleSetChButtonsStatus } from 'controller/ui-actions';
@@ -59,7 +60,7 @@ const BattleUISection = () => {
               pause();
             }}
           >
-            Don't Click Me
+            PAUSE
           </Button>
         </PauseButtonWrapper>
       )}
@@ -67,7 +68,14 @@ const BattleUISection = () => {
         <CharacterButtonsWrapper>
           {battle.allies.map((ch: BattleCharacter) => {
             return (
-              <CharacterButtonDivider>
+              <CharacterButtonDivider key={ch.ch.name}>
+                <BattleCharacterButton battle={battle} bCh={ch} />
+              </CharacterButtonDivider>
+            );
+          })}
+          {battle.enemies.map((ch: BattleCharacter) => {
+            return (
+              <CharacterButtonDivider key={ch.ch.name}>
                 <BattleCharacterButton battle={battle} bCh={ch} />
               </CharacterButtonDivider>
             );

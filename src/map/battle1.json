@@ -11,7 +11,7 @@
  "infinite":false,
  "layers":[
         {
-         "data":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         "data":[29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 28, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 28, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29],
          "height":16,
          "id":1,
          "name":"Tiles",
@@ -25,49 +25,13 @@
         {
          "draworder":"topdown",
          "id":5,
-         "name":"Props",
+         "name":"Objects",
          "objects":[
                 {
-                 "gid":17,
-                 "height":64,
-                 "id":4,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":32,
-                 "y":96
-                }, 
-                {
-                 "gid":17,
-                 "height":64,
-                 "id":7,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":224,
-                 "y":240
-                }, 
-                {
-                 "gid":17,
-                 "height":64,
-                 "id":8,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":64,
-                 "y":32
-                }, 
-                {
-                 "gid":18,
+                 "gid":83,
                  "height":32,
-                 "id":9,
-                 "name":"1",
+                 "id":28,
+                 "name":"MarkerAlly0",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -76,34 +40,10 @@
                  "y":128
                 }, 
                 {
-                 "gid":18,
+                 "gid":83,
                  "height":32,
-                 "id":10,
-                 "name":"3",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":80,
-                 "y":240
-                }, 
-                {
-                 "gid":18,
-                 "height":32,
-                 "id":11,
-                 "name":"4",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":64,
-                 "y":160
-                }, 
-                {
-                 "gid":18,
-                 "height":32,
-                 "id":12,
-                 "name":"2",
+                 "id":29,
+                 "name":"MarkerAlly1",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -112,58 +52,22 @@
                  "y":176
                 }, 
                 {
-                 "gid":19,
+                 "gid":83,
                  "height":32,
-                 "id":13,
-                 "name":"2",
+                 "id":30,
+                 "name":"MarkerAlly2",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":160,
-                 "y":64
+                 "x":64,
+                 "y":160
                 }, 
                 {
-                 "gid":19,
+                 "gid":83,
                  "height":32,
-                 "id":14,
-                 "name":"4",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":192,
-                 "y":32
-                }, 
-                {
-                 "gid":19,
-                 "height":32,
-                 "id":15,
-                 "name":"1",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":176,
-                 "y":144
-                }, 
-                {
-                 "gid":19,
-                 "height":32,
-                 "id":16,
-                 "name":"3",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":128,
-                 "y":96
-                }, 
-                {
-                 "gid":18,
-                 "height":32,
-                 "id":24,
-                 "name":"4",
+                 "id":31,
+                 "name":"MarkerAlly3",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -172,22 +76,22 @@
                  "y":208
                 }, 
                 {
-                 "gid":18,
+                 "gid":83,
                  "height":32,
-                 "id":25,
-                 "name":"3",
+                 "id":36,
+                 "name":"MarkerEnemy2",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":32,
-                 "y":192
+                 "x":160,
+                 "y":64
                 }, 
                 {
-                 "gid":19,
+                 "gid":83,
                  "height":32,
-                 "id":26,
-                 "name":"2",
+                 "id":37,
+                 "name":"MarkerEnemy3",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -196,15 +100,63 @@
                  "y":112
                 }, 
                 {
-                 "gid":19,
+                 "gid":83,
                  "height":32,
-                 "id":27,
-                 "name":"4",
+                 "id":38,
+                 "name":"MarkerEnemy1",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":240,
+                 "x":176,
+                 "y":144
+                }, 
+                {
+                 "gid":83,
+                 "height":32,
+                 "id":39,
+                 "name":"MarkerEnemy0",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":128,
+                 "y":96
+                }, 
+                {
+                 "gid":81,
+                 "height":64,
+                 "id":40,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":52,
+                 "y":28
+                }, 
+                {
+                 "gid":81,
+                 "height":64,
+                 "id":41,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":236,
+                 "y":208
+                }, 
+                {
+                 "gid":81,
+                 "height":64,
+                 "id":42,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":36,
                  "y":80
                 }],
          "opacity":1,
@@ -214,7 +166,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":28,
+ "nextobjectid":43,
  "orientation":"isometric",
  "renderorder":"left-down",
  "tiledversion":"1.4.3",
@@ -234,45 +186,21 @@
          "tilewidth":32
         }, 
         {
-         "columns":0,
+         "columns":8,
          "firstgid":17,
-         "grid":
-            {
-             "height":1,
-             "orientation":"orthogonal",
-             "width":1
-            },
+         "image":"..\/..\/res\/floors.png",
+         "imageheight":256,
+         "imagewidth":256,
          "margin":0,
-         "name":"props-dynamic",
+         "name":"floors",
          "spacing":0,
-         "tilecount":4,
-         "tileheight":64,
-         "tiles":[
-                {
-                 "id":0,
-                 "image":"..\/..\/res\/tree1.png",
-                 "imageheight":64,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":1,
-                 "image":"..\/..\/res\/markerGreen.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":2,
-                 "image":"..\/..\/res\/markerOrange.png",
-                 "imageheight":32,
-                 "imagewidth":32
-                }, 
-                {
-                 "id":3,
-                 "image":"..\/..\/res\/test-prop.png",
-                 "imageheight":32,
-                 "imagewidth":96
-                }],
-         "tilewidth":96
+         "tilecount":64,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "firstgid":81,
+         "source":"..\/..\/res\/props-dynamic.tiled-sheet.tsx"
         }],
  "tilewidth":32,
  "type":"map",

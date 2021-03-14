@@ -221,3 +221,6 @@ Somebody Else: "What will you choose?"
 Ada: "Thus, I have chosen again."
 Ada: "The test will now conclude."
 +endConversation();
+
+@test-fight
++enterCombat(ENCOUNTER_ONE_VS_ONE);

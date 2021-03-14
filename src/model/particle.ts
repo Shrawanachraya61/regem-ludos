@@ -61,6 +61,41 @@ export const createDamageParticle = (
   return particle;
 };
 
+export const createStatusParticle = (
+  text: string,
+  x: number,
+  y: number,
+  color?: string
+): Particle => {
+  const duration = 1500;
+  const textParams: DrawTextParams = {
+    size: 16,
+    color: color ?? 'white',
+    align: 'center',
+    strokeColor: 'black',
+  };
+  // const [w, h] = measureText(text, textParams);
+  // const xPx = x - w / 2;
+  // const yPx = y - h / 2;
+  const particle: Particle = {
+    anim: undefined,
+    text,
+    textParams,
+    timer: new Timer(duration),
+    shouldRemove: false,
+    transform: new Transform(
+      [x, y, 0],
+      [x, y - TILE_HEIGHT, 0],
+      duration,
+      TransformEase.EASE_OUT
+    ),
+    x,
+    y,
+  };
+  particle.timer.start();
+  return particle;
+};
+
 export const particleCreateFromTemplate = (
   point: Point,
   template: ParticleTemplate

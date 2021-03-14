@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Fragment } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { style } from 'view/style';

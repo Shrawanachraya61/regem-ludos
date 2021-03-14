@@ -163,7 +163,7 @@ const getRandomPassiveAggressiveWinningPhrase = () => {
 const getGloatingPhrase = i => {
   const phrases = [
     'HAHAHA YOU ACTUALLY LOST!',
-    'AHAHAHA HOW CAN YOU BE THIS BAD?',
+    'HOW CAN YOU BE THIS BAD?',
     'MUAHAHAHA EMBARRASSING!',
   ];
   return phrases[i] || phrases[0];
@@ -273,7 +273,7 @@ const end = (window.end = () => {
     score = wins;
   }
   // Tells Lib the game is done
-  window.Lib.notifyGameCompleted(-1);
+  window.Lib.notifyGameCompleted(score);
   menu();
 });
 
@@ -364,6 +364,9 @@ const init = async () => {
     window.Lib.loadSound('ai-laugh1', 'tic-tac-toe-ai-laugh2.mp3'),
     window.Lib.loadSound('ai-laugh2', 'tic-tac-toe-ai-laugh3.mp3'),
   ]);
+
+  // accidentally exported all these sounds super loud
+  window.Lib.setVolume(0.5);
 
   // need this to prevent load timeout in lib.js
   window.Module.jsLoaded();

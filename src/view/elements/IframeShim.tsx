@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Ref } from 'preact';
 import { style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 

@@ -291,7 +291,7 @@ display.getSprite = function(k, suppressError) {
       return null;
     }
     console.error('[DISPLAY] No sprite named: ', k);
-    display.setError();
+    // display.setError();
     return null;
   }
 };

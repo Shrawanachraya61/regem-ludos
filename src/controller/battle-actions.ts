@@ -2,15 +2,17 @@ import {
   Battle,
   BattleAllegiance,
   battleGetAllegiance,
+  Status,
   battleGetNearestAttackable,
+} from 'model/battle';
+import {
   BattleCharacter,
   battleCharacterCanAct,
   battleCharacterAddStatus,
   battleCharacterRemoveStatus,
-  Status,
-  battleCharacterGetRow,
-  BattleRow,
-} from 'model/battle';
+  battleCharacterSetActonState,
+  BattleActionState,
+} from 'model/battle-character';
 import {
   AnimationState,
   characterGetAnimation,
@@ -20,7 +22,6 @@ import {
   characterGetPosCenterPx,
 } from 'model/character';
 import { roomAddParticle, TILE_WIDTH } from 'model/room';
-import { getRoom } from 'db/overworlds';
 import {
   Transform,
   TransformEase,
@@ -39,18 +40,24 @@ import {
   particleCreateFromTemplate,
   EFFECT_TEMPLATE_SWORD_LEFT,
   createDamageParticle,
+  createStatusParticle,
 } from 'model/particle';
 import {
   beginAction,
   endAction,
-  applyWeaponDamage,
+  applyStandardDamage,
   setCasting,
 } from 'controller/battle-management';
 import { h } from 'preact';
 import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
+import { getCurrentRoom } from 'model/generics';
 
 const assertMayAct = (battle: Battle, bCh: BattleCharacter): boolean => {
+  if (bCh.actionState === BattleActionState.ACTING_READY) {
+    return true;
+  }
+
   if (!battleCharacterCanAct(battle, bCh)) {
     console.log('cannot attack, battle character cannot act yet', bCh);
     return false;
@@ -66,6 +73,7 @@ export interface BattleAction {
   icon: (props: any) => h.JSX.Element;
 }
 
+// when jumping further distances, the character should jump higher
 const getTransformOffsetFunction = (distance: number) => {
   // 35 and 125 are distance between first column and last column
   if (distance < 45) {
@@ -105,11 +113,48 @@ const moveForward = async (
   return transform;
 };
 
+const jumpToTarget = async (
+  battle: Battle,
+  bCh: BattleCharacter,
+  target: BattleCharacter
+) => {
+  const ch = bCh.ch;
+  const allegiance = battleGetAllegiance(battle, ch);
+  // jump to one tile closer towards the center of target
+  const startPoint = characterGetPos(ch);
+  const endPoint = characterGetPos(target.ch);
+  if (allegiance === BattleAllegiance.ALLY) {
+    endPoint[0] -= TILE_WIDTH / 2;
+    // if (battleCharacterGetRow(bCh) === BattleRow.BOTTOM) {
+    //   endPoint[0] += TILE_WIDTH / 2;
+    //   endPoint[1] += TILE_WIDTH / 2;
+    // }
+  } else {
+    endPoint[0] += TILE_WIDTH / 2;
+    // if (battleCharacterGetRow(bCh) === BattleRow.TOP) {
+    //   endPoint[0] -= TILE_WIDTH / 2;
+    //   endPoint[1] -= TILE_WIDTH / 2;
+    // }
+  }
+  const distance = calculateDistance(startPoint, endPoint);
+  const transform = new Transform(
+    startPoint,
+    endPoint,
+    250 * normalize(distance, 35, 125, 1, 1.75),
+    TransformEase.LINEAR,
+    getTransformOffsetFunction(distance)
+  );
+  characterSetTransform(ch, transform);
+  characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
+  await transform.timer.onCompletion();
+  return transform;
+};
+
 export const BattleActions: { [key: string]: BattleAction } = {
   Swing: {
     name: 'Swing',
     description: 'Jump to target and swing your weapon.',
-    cooldown: 10000,
+    cooldown: 1000,
     icon: SwordIcon,
     cb: async (battle: Battle, bCh: BattleCharacter): Promise<void> => {
       if (!assertMayAct(battle, bCh)) {
@@ -117,65 +162,86 @@ export const BattleActions: { [key: string]: BattleAction } = {
       }
 
       const baseDamage = 1;
-      const baseStagger = 1;
+      const baseStagger = 10;
 
       const ch = bCh.ch;
       const allegiance = battleGetAllegiance(battle, ch);
       const target = battleGetNearestAttackable(battle, allegiance);
+      const actionStateIndex = bCh.actionStateIndex;
 
       if (target) {
-        beginAction(battle, bCh);
+        if (actionStateIndex === 0) {
+          await beginAction(bCh);
 
-        // jump to one tile closer towards the center of target
-        const startPoint = characterGetPos(ch);
-        const endPoint = characterGetPos(target.ch);
-        if (allegiance === BattleAllegiance.ALLY) {
-          endPoint[0] -= TILE_WIDTH / 2;
-          if (battleCharacterGetRow(bCh) === BattleRow.BOTTOM) {
-            endPoint[0] += TILE_WIDTH / 2;
-            endPoint[1] += TILE_WIDTH / 2;
-          }
-        } else {
-          endPoint[0] += TILE_WIDTH / 2;
-          if (battleCharacterGetRow(bCh) === BattleRow.TOP) {
-            endPoint[0] -= TILE_WIDTH / 2;
-            endPoint[1] -= TILE_WIDTH / 2;
-          }
+          bCh.actionReadyTimer.start();
+          await jumpToTarget(battle, bCh, target);
+
+          bCh.actionReadyTimer.start();
+          bCh.actionReadyTimer.pause();
+
+          // swing weapon and show effect particles
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+          timeoutPromise(300).then(() => {
+            const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
+            const particle = particleCreateFromTemplate(
+              [centerPx, centerPy],
+              EFFECT_TEMPLATE_SWORD_LEFT
+            );
+            roomAddParticle(battle.room, particle);
+            applyStandardDamage(battle, bCh, target, baseDamage, baseStagger);
+          });
+          characterSetAnimationState(ch, AnimationState.BATTLE_ATTACK);
+          const anim = characterGetAnimation(ch);
+          await anim.onCompletion();
+          await timeoutPromise(400);
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING_READY);
+          characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
+          bCh.actionReadyTimer.unpause();
+        } else if (actionStateIndex === 1) {
+          bCh.actionReadyTimer.start();
+          bCh.actionReadyTimer.pause();
+          // swing weapon and show effect particles
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+          timeoutPromise(300).then(() => {
+            const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
+            const particle = particleCreateFromTemplate(
+              [centerPx, centerPy],
+              EFFECT_TEMPLATE_SWORD_LEFT
+            );
+            roomAddParticle(battle.room, particle);
+            applyStandardDamage(battle, bCh, target, baseDamage, baseStagger);
+          });
+          characterSetAnimationState(ch, AnimationState.BATTLE_ATTACK);
+          const anim = characterGetAnimation(ch);
+          await anim.onCompletion();
+          await timeoutPromise(400);
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING_READY);
+          characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
+          bCh.actionReadyTimer.unpause();
+        } else if (actionStateIndex === 2) {
+          bCh.actionReadyTimer.start();
+          bCh.actionReadyTimer.pause();
+          // swing weapon and show effect particles
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+          timeoutPromise(300).then(() => {
+            const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
+            const particle = particleCreateFromTemplate(
+              [centerPx, centerPy],
+              EFFECT_TEMPLATE_SWORD_LEFT
+            );
+            roomAddParticle(battle.room, particle);
+            applyStandardDamage(battle, bCh, target, baseDamage, baseStagger);
+          });
+          characterSetAnimationState(ch, AnimationState.BATTLE_ATTACK);
+          const anim = characterGetAnimation(ch);
+          await anim.onCompletion();
+          await timeoutPromise(750);
+          battleCharacterSetActonState(bCh, BattleActionState.ACTING_READY);
+          characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
+          bCh.actionReadyTimer.unpause();
+          await endAction(bCh);
         }
-        const distance = calculateDistance(startPoint, endPoint);
-        const transform = new Transform(
-          startPoint,
-          endPoint,
-          250 * normalize(distance, 35, 125, 1, 1.75),
-          TransformEase.LINEAR,
-          getTransformOffsetFunction(distance)
-        );
-        characterSetTransform(ch, transform);
-        characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
-        await transform.timer.onCompletion();
-
-        // swing weapon and show effect particles
-        timeoutPromise(300).then(() => {
-          const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
-          const particle = particleCreateFromTemplate(
-            [centerPx, centerPy],
-            EFFECT_TEMPLATE_SWORD_LEFT
-          );
-          roomAddParticle(battle.room, particle);
-          applyWeaponDamage(battle, bCh, target, baseDamage, baseStagger);
-        });
-        characterSetAnimationState(ch, AnimationState.BATTLE_ATTACK);
-        const anim = characterGetAnimation(ch);
-        await anim.onCompletion();
-
-        // show damage particle and jump back to start
-        const inverseTransform = transform.createInverse();
-        characterSetTransform(ch, inverseTransform);
-        characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
-        await inverseTransform.timer.onCompletion();
-        inverseTransform.markForRemoval();
-        characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
-        endAction(battle, bCh);
+        bCh.actionStateIndex = (bCh.actionStateIndex + 1) % 3;
       }
     },
   },
@@ -199,7 +265,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
         return;
       }
 
-      beginAction(battle, bCh);
+      beginAction(bCh);
 
       const ch = bCh.ch;
       const transform = await moveForward(battle, bCh);
@@ -219,17 +285,45 @@ export const BattleActions: { [key: string]: BattleAction } = {
 
       setCasting(bCh, {
         castTime: 5000,
-        onCast: () => {
+        onCast: async () => {
           console.log('Defense completed');
           battleCharacterRemoveStatus(bCh, Status.DEFEND);
         },
-        onInterrupt: () => {
+        onInterrupt: async () => {
           console.log('Defense interrupted');
           battleCharacterRemoveStatus(bCh, Status.DEFEND);
         },
       });
 
-      endAction(battle, bCh);
+      endAction(bCh);
+    },
+  },
+  Fireball: {
+    name: 'Fireball',
+    description: 'Shoot a big fireball.',
+    cooldown: 1000,
+    icon: ShieldIcon,
+    cb: async (battle: Battle, bCh: BattleCharacter) => {
+      if (!assertMayAct(battle, bCh)) {
+        return;
+      }
+
+      await beginAction(bCh);
+      setCasting(bCh, {
+        castTime: 5000,
+        onCast: async () => {
+          await moveForward(battle, bCh);
+          const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+          roomAddParticle(
+            getCurrentRoom(),
+            createStatusParticle('Fireball!', centerPx, centerPy, 'red')
+          );
+          await timeoutPromise(150);
+          characterSetAnimationState(bCh.ch, AnimationState.BATTLE_SPELL);
+          await timeoutPromise(1000);
+        },
+        onInterrupt: async () => {},
+      });
     },
   },
 };

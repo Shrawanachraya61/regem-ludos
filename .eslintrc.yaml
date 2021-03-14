@@ -15,7 +15,6 @@ plugins:
 env:
   browser: true
   node: true
-  mocha: true
   es6: true
 
 ignorePatterns:
@@ -33,6 +32,25 @@ rules:
   no-console: 0
   no-case-declarations: 0
   no-fallthrough: 0
+  indent: 0
+  func-style: 0
+  react/jsx-index-props: 0
+  react/self-closing-comp: 0
+  react/jsx-indent-props: 0
+  react/jsx-no-bind: 0
+  react/display-name: 0
+  react/jsx-boolean-value: 0
+  brace-style: 0
+  comma-dangle: 0
   no-sparse-arrays: 0
+  arrow-body-style: 0
+  no-unused-vars: 1
+  no-else-return: 0
+  radix: 0
+  object-shorthand: 0
+  no-lonely-if: 0
+  '@typescript-eslint/no-empty-function': 0
   '@typescript-eslint/no-explicit-any': 0
   '@typescript-eslint/no-var-requires': 0
+  '@typescript-eslint/explicit-module-boundary-types': 0
+  '@typescript-eslint/ban-types': 0

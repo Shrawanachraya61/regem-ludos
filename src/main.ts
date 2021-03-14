@@ -12,6 +12,7 @@ import {
   disableKeyUpdate,
   enableKeyUpdate,
   getCurrentScene,
+  getCurrentPlayer,
 } from 'model/generics';
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
@@ -19,17 +20,20 @@ import OverworldSection from 'view/components/OverworldSection';
 
 import { get as getOverworld } from 'db/overworlds';
 import { initiateOverworld } from 'controller/overworld-management';
-import { getCurrentPlayer } from 'model/generics';
 import { playerCreate } from 'model/player';
 import {
   AnimationState,
   Facing,
   characterCreateFromTemplate,
+  characterCreate,
 } from 'model/character';
 import HudGamepad from 'lib/hud-gamepad';
 
 import { callScript } from 'controller/scene-management';
 import { getAngleTowards } from 'utils';
+import { battleStatsCreate } from 'model/battle';
+import { BattleActions } from 'controller/battle-actions';
+import { get as getCharacter } from 'db/characters';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -84,12 +88,19 @@ export const main = async (): Promise<void> => {
   const player = playerCreate({
     name: 'Ada',
     spriteBase: 'ada',
-    // stats: battleStatsCreate(),
+    stats: {
+      ...battleStatsCreate(),
+      HP: 100,
+    },
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
-    skills: [],
+    skills: [BattleActions.Swing],
   });
   player.leader.speed = 1;
+
+  const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
+  player.party.push(conscience);
+  player.battlePositions.push(conscience);
 
   const query = parseQuery(window.location.search);
   if (query.room) {

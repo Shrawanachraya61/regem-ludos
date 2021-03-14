@@ -89,6 +89,8 @@ export enum AnimationState {
   BATTLE_ATTACK = 'battle_attack',
   BATTLE_DAMAGED = 'battle_damaged',
   BATTLE_STAGGERED = 'battle_staggered',
+  BATTLE_CAST = 'battle_cast',
+  BATTLE_SPELL = 'battle_spell',
   BATTLE_ITEM = 'battle_item',
   BATTLE_FLOURISH = 'battle_flourish',
   BATTLE_DEFEATED = 'battle_defeated',
@@ -199,7 +201,7 @@ export const characterCreateFromTemplate = (
   ch.facing = template.facing || ch.facing;
   ch.animationState = template.animationState || ch.animationState;
   ch.animationKey = characterGetAnimKey(ch);
-  ch.hp = ch.stats.HP;
+  ch.hp = template?.stats?.HP ?? ch.stats.HP;
   ch.stats = {
     ...(template.stats || ch.stats),
   };
@@ -306,9 +308,24 @@ export const characterOnAnimationCompletion = (
   cb: () => void
 ): Promise<void> => {
   if (ch.animationPromise) {
+    console.log(
+      'overriding previous animation completion',
+      characterGetAnimation(ch).name
+    );
     ch.animationPromise.reject();
   }
   const anim = characterGetAnimation(ch);
+
+  if (anim.loop) {
+    console.error(
+      'Setting characterOnAnimationCompletion for an animation set with loop=true',
+      anim.name
+    );
+    return Promise.resolve();
+  }
+
+  const animState = ch.animationState;
+
   const newPromiseObj: any = {};
   const promise = new Promise<void>((resolve, reject) => {
     newPromiseObj.resolve = resolve;
@@ -324,7 +341,16 @@ export const characterOnAnimationCompletion = (
       cb();
     })
     .catch(e => {
-      console.log('animation was canceled:', anim.name, e);
+      if (animState === AnimationState.BATTLE_DEFEATED) {
+        console.log(
+          'defeated animation was canceled but is not cancellable:',
+          anim.name,
+          e
+        );
+        cb();
+      } else {
+        console.log('animation was canceled:', anim.name, e);
+      }
     });
 
   ch.animationPromise = newPromiseObj;

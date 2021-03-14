@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h } from 'preact';
 import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';

@@ -19,6 +19,11 @@ import {
   disableKeyUpdate,
   getCurrentOverworld,
   setRenderBackgroundColor,
+  getTriggersVisible,
+  hideMarkers,
+  hideTriggers,
+  showMarkers,
+  showTriggers,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
@@ -53,13 +58,6 @@ import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pushKeyHandler } from 'controller/events';
 import HudGamepad from 'lib/hud-gamepad';
-import {
-  getTriggersVisible,
-  hideMarkers,
-  hideTriggers,
-  showMarkers,
-  showTriggers,
-} from 'model/generics';
 
 export const initiateOverworld = (
   player: Player,
@@ -78,9 +76,7 @@ export const initiateOverworld = (
     setCurrentOverworld(overworld);
     setRenderBackgroundColor(template.backgroundColor);
 
-    let markerForPos = markerName ? room.markers[markerName] : null;
-
-    console.log('MARKER FOR POS', markerName, markerForPos);
+    const markerForPos = markerName ? room.markers[markerName] : null;
 
     if (markerForPos) {
       characterSetPos(leader, [markerForPos.x, markerForPos.y, 0]);
@@ -180,6 +176,20 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
           checkAndCallTalkTrigger();
         }
+      }
+      break;
+    }
+    case 'b': {
+      if (getKeyUpdateEnabled()) {
+        console.log('DISABLE KEYS');
+        disableKeyUpdate();
+        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        await callScript(getCurrentScene(), 'test-fight');
+        if (overworld.visible) {
+          showSection(AppSection.Debug, true);
+        }
+        console.log('ENABLE KEYS');
+        enableKeyUpdate();
       }
       break;
     }

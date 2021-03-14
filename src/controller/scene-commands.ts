@@ -46,6 +46,7 @@ import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { getIfExists as getOverworld } from 'db/overworlds';
+import { getIfExists as getEncounter } from 'db/encounters';
 import {
   playerAddItem,
   playerRemoveItem,
@@ -56,6 +57,7 @@ import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
 import { playSoundName } from 'model/sound';
+import { initiateBattle } from './battle-management';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -702,6 +704,38 @@ export const walkToMarker = (
 };
 
 /**
+ * Same as walkToMarker except instantly sets the character at the provided marker.
+ */
+export const setAtMarker = (
+  chName: string,
+  markerName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  const marker = room.markers[markerName];
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+
+  // this offset puts the character's feet on the bottom of the marker
+  const target = [
+    marker.x + (xOffset ?? 0),
+    marker.y + (yOffset ?? 0),
+    0,
+  ] as Point3d;
+
+  characterSetPos(ch, target);
+};
+
+/**
  * Starts the given character moving towards the point (xOffset, yOffset) specified
  * relative to that character's current position.  They will move in a straight line
  * directly at the target until they reach it. Specifically this means that their FEET will
@@ -1297,6 +1331,17 @@ export const awaitChoice = (...choices: string[]) => {
   return waitUntil();
 };
 
+export const enterCombat = (encounterName: string) => {
+  const encounter = getEncounter(encounterName);
+  if (!encounter) {
+    console.error('No encounter exists with name:', encounterName);
+    return;
+  }
+
+  overworldHide(getCurrentOverworld());
+  initiateBattle(getCurrentPlayer(), encounter);
+};
+
 const commands = {
   playDialogue,
   setConversation2,
@@ -1316,6 +1361,7 @@ const commands = {
   shakeScreen,
   setCharacterAt,
   walkToMarker,
+  setAtMarker,
   walkToOffset,
   setCharacterAtMarker,
   changeTileAtMarker,
@@ -1338,6 +1384,7 @@ const commands = {
   resetAi,
   setDoorStateAtMarker,
   awaitChoice,
+  enterCombat,
 };
 
 export default commands;

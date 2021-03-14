@@ -30,7 +30,7 @@ import {
 } from 'view/draw';
 import { Character, characterUpdate } from 'model/character';
 import { particleUpdate } from 'model/particle';
-import { BattleCharacter } from 'model/battle';
+import { BattleCharacter } from 'model/battle-character';
 import { renderUi } from 'view/ui';
 import { updateBattle } from 'controller/battle-management';
 import { updateOverworld } from 'controller/overworld-management';
@@ -111,13 +111,8 @@ export const runMainLoop = async (): Promise<void> => {
 
     clearScreen();
     clearScreen(getCtx('outer'));
-    drawRect(
-      0,
-      0,
-      getScreenSize(),
-      getScreenSize(),
-      getRenderBackgroundColor()
-    );
+    const [screenW, screenH] = getScreenSize();
+    drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();
@@ -162,8 +157,8 @@ export const runMainLoop = async (): Promise<void> => {
       let roomXOffset = 0;
       let roomYOffset = 0;
       if (battle) {
-        roomXOffset = 512 / 2 - 32 / 2;
-        roomYOffset = 50;
+        roomXOffset = screenW / 2 - 32 / 2;
+        roomYOffset = screenH / 4 - 13;
       } else {
         const player = getCurrentPlayer();
         if (player) {
@@ -197,7 +192,7 @@ export const runMainLoop = async (): Promise<void> => {
     }
 
     const renderables = getRenderables();
-    for (let i in renderables) {
+    for (const i in renderables) {
       const cb = renderables[i];
       cb();
     }

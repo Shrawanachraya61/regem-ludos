@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":100,
-                 "y":224
+                 "x":436,
+                 "y":88
                 }, 
                 {
                  "gid":200,
@@ -234,7 +234,7 @@
                  "gid":195,
                  "height":32,
                  "id":58,
-                 "name":"#floor1-atrium-TicTacToeMachine",
+                 "name":"#floor1-atrium-TicTacToeMachine2",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -300,6 +300,30 @@
                  "width":32,
                  "x":436,
                  "y":64
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":64,
+                 "name":"MarkerMachine1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":52,
+                 "y":244
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":65,
+                 "name":"MarkerMachine2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":52,
+                 "y":276
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -308,7 +332,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":64,
+ "nextobjectid":66,
  "orientation":"isometric",
  "properties":[
         {

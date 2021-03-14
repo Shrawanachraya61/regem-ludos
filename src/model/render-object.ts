@@ -35,9 +35,18 @@ export const createPropRenderObject = (prop: Prop): RenderObject => {
   if (prop.isDynamic) {
     const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
     let [px, py] = isoToPixelCoords(prop.x, prop.y);
+
     // EWW, EWW GET IT OFF, WHY ARE THESE SO ARBITRARY?
-    py = py - spriteHeight + 16 + 4;
-    px = px - spriteWidth / 2 + 16 + 4;
+    if (spriteWidth === 32 && spriteHeight === 32) {
+      // works for 32 x 32
+      py = py - spriteHeight + 16 + 4 - 4 + 1 - 1;
+      px = px - spriteWidth / 2 + 16 + 4 - 4 + 0;
+    } else {
+      // works for everything else??
+      py = py - spriteHeight + 16 + 4;
+      px = px - spriteWidth / 2 + 16 + 4;
+    }
+
     return {
       sprite: prop.sprite,
       px,

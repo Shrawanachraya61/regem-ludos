@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h, Fragment } from 'preact';
 import { style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';

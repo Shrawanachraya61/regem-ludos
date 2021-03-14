@@ -1,3 +1,4 @@
+/* @jsx h */
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { sceneStopWaitingUntil } from 'model/scene';

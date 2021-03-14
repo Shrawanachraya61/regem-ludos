@@ -1,3 +1,4 @@
+import { BattleActions } from 'controller/battle-actions';
 import { AnimationState, Facing, CharacterTemplate } from 'model/character';
 
 const exp = {} as { [key: string]: CharacterTemplate };
@@ -36,6 +37,7 @@ export const init = () => {
     talkTrigger: '',
     facing: Facing.LEFT_UP,
     animationState: AnimationState.IDLE,
+    skills: [BattleActions.Fireball],
   };
 
   exp.Roger = {

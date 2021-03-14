@@ -1,12 +1,20 @@
+/* @jsx h */
 import { h } from 'preact';
-import { BattleTemplate } from 'model/battle';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { colors, style } from 'view/style';
 
 import { setCurrentPlayer, setCurrentRoom } from 'model/generics';
 import { playerCreate, playerSetBattlePosition } from 'model/player';
-import { battleStatsCreate, BattlePosition } from 'model/battle';
-import { AnimationState, Facing, characterCreateFromTemplate } from 'model/character';
+import {
+  BattleTemplate,
+  battleStatsCreate,
+  BattlePosition,
+} from 'model/battle';
+import {
+  AnimationState,
+  Facing,
+  characterCreateFromTemplate,
+} from 'model/character';
 import { initiateBattle } from 'controller/battle-management';
 import { BattleActions } from 'controller/battle-actions';
 import { renderUi } from 'view/ui';
@@ -49,7 +57,7 @@ const beginBattle = (template: BattleTemplate) => {
     stats: battleStatsCreate(),
     facing: Facing.RIGHT,
     animationState: AnimationState.BATTLE_IDLE,
-    skills: [BattleActions.Swing, BattleActions.Defend],   
+    skills: [BattleActions.Swing, BattleActions.Defend],
   });
   player.party.push(conscience);
   playerSetBattlePosition(player, conscience, BattlePosition.BACK);

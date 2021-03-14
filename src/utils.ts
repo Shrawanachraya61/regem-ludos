@@ -39,6 +39,10 @@ function easeOut(t: number, b: number, c: number, d: number): number {
   return -c * t2 * (t2 - 2) + b;
 }
 
+export const randomId = () => {
+  return Math.random().toString(36).substr(2, 9);
+};
+
 export function normalize(
   x: number,
   a: number,
@@ -246,4 +250,4 @@ export const createPolygonFromRect = (r: Rect): Polygon => {
 
 export const toFixedPrecision = (n: number, precision: number): number => {
   return parseFloat(n.toFixed(precision));
-}
+};

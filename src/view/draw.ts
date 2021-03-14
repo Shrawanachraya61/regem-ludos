@@ -40,7 +40,8 @@ const DEFAULT_TEXT_PARAMS = {
 
 export const clearScreen = (ctx?: CanvasRenderingContext2D): void => {
   ctx = ctx || getCtx();
-  ctx.clearRect(0, 0, getScreenSize(), getScreenSize());
+  const [screenW, screenH] = getScreenSize();
+  ctx.clearRect(0, 0, screenW, screenH);
 };
 
 export const drawRect = (
