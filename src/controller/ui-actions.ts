@@ -1,4 +1,4 @@
-import { getUiInterface } from 'view/ui';
+import { getUiInterface, renderUi } from 'view/ui';
 import {
   AppState,
   AppSection,
@@ -6,11 +6,13 @@ import {
   CutsceneSpeaker,
   IArcadeCabinetState,
   IChoicesState,
+  IBattleUiState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
 import { overworldShow } from 'model/overworld';
 import { playSoundName } from 'model/sound';
+import { BattleCharacter } from 'model/battle-character';
 
 export interface ReducerAction<T> {
   action: string;
@@ -24,9 +26,6 @@ type MutationFunction = (
 ) => void;
 
 const mutations: { [key: string]: MutationFunction } = {
-  battleSetChButtonsStatus: (newState: AppState, payload: boolean) => {
-    newState.battle.chButtonsEnabled = payload;
-  },
   hideSections: (newState: AppState) => {
     newState.sections = [];
   },
@@ -51,6 +50,9 @@ const mutations: { [key: string]: MutationFunction } = {
   ) => {
     Object.assign(newState.arcadeGame, payload);
   },
+  setBattleState: (newState: AppState, payload: Partial<IBattleUiState>) => {
+    Object.assign(newState.battle, payload);
+  },
   setChoicesState: (newState: AppState, payload: Partial<IChoicesState>) => {
     Object.assign(newState.choices, payload);
   },
@@ -71,13 +73,6 @@ export const appReducer = function <T>(
     );
   }
   return newState;
-};
-
-export const battleSetChButtonsStatus = (status: boolean) => {
-  getUiInterface().dispatch({
-    action: 'battleSetChButtonsStatus',
-    payload: status,
-  });
 };
 
 export const hideSections = () => {
@@ -280,4 +275,22 @@ export const hideChoices = () => {
     action: 'hideSection',
     payload,
   });
+};
+
+export const setBattleCharacterIndexSelected = (ind: number) => {
+  const payload = {
+    characterIndexSelected: ind,
+  };
+  getUiInterface().dispatch({
+    action: 'setBattleState',
+    payload,
+  });
+};
+
+export const setBattleCharacterSelectedAction = (
+  bCh: BattleCharacter,
+  index: number
+) => {
+  bCh.ch.skillIndex = index;
+  renderUi();
 };

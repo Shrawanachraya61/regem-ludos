@@ -1,6 +1,6 @@
 import { Room } from 'model/room';
 import { BattleAI } from 'controller/battle-ai';
-import { BattleCharacter } from './battle-character';
+import { BattleCharacter, battleCharacterIsActing } from './battle-character';
 import { CharacterTemplate, Character } from './character';
 import { setAtMarker } from 'controller/scene-commands';
 import { getCurrentPlayer } from './generics';
@@ -11,6 +11,41 @@ export interface Battle {
   allies: BattleCharacter[];
   enemies: BattleCharacter[];
   defeated: BattleCharacter[];
+  subscriptions: IBattleSubscriptionHub;
+}
+
+export enum BattleEvent {
+  onCharacterDamaged = 'onCharacterDamaged',
+  onCharacterReady = 'onCharacterReady',
+  onCharacterStaggered = 'onCharacterStaggered',
+  onCharacterPinned = 'onCharacterPinned',
+  onCharacterRecovered = 'onCharacterRecovered',
+  onCharacterCasting = 'onCharacterCasting',
+  onCharacterSpell = 'onCharacterSpell',
+  onCharacterAction = 'onCharacterAction',
+  onCharacterInterrupted = 'onCharacterInterrupted',
+  onCharacterDefeated = 'onCharacterDefeated',
+  onMagicShieldDamaged = 'onMagicShieldDamaged',
+  onTurnStarted = 'onTurnStarted',
+  onTurnEnded = 'onTurnEnded',
+}
+
+export interface IBattleSubscriptionHub {
+  [BattleEvent.onCharacterDamaged]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterReady]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterStaggered]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterPinned]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterRecovered]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterSpell]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterCasting]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterAction]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterInterrupted]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterDefeated]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onMagicShieldDamaged]: ((
+    allegiance: BattleAllegiance
+  ) => void)[];
+  [BattleEvent.onTurnStarted]: ((allegiance: BattleAllegiance) => void)[];
+  [BattleEvent.onTurnEnded]: ((allegiance: BattleAllegiance) => void)[];
 }
 
 export interface BattleTemplateEnemy {
@@ -48,10 +83,11 @@ export enum Status {
 export interface BattleStats {
   POW: number;
   ACC: number;
+  FOR: number;
   CON: number;
   RES: number;
   SPD: number;
-  FOR: number;
+  EVA: number;
   HP: number;
   STAGGER: number; // stagger hp
 }
@@ -61,12 +97,29 @@ export const battleCreate = (
   allies: BattleCharacter[],
   enemies: BattleCharacter[]
 ): Battle => {
+  const subscriptions: IBattleSubscriptionHub = {
+    onCharacterDamaged: [],
+    onCharacterReady: [],
+    onCharacterStaggered: [],
+    onCharacterRecovered: [],
+    onCharacterPinned: [],
+    onCharacterSpell: [],
+    onCharacterCasting: [],
+    onCharacterAction: [],
+    onCharacterInterrupted: [],
+    onCharacterDefeated: [],
+    onMagicShieldDamaged: [],
+    onTurnStarted: [],
+    onTurnEnded: [],
+  };
+
   return {
     room,
     isCompleted: false,
     enemies,
     defeated: [] as BattleCharacter[],
     allies,
+    subscriptions,
   };
 };
 
@@ -78,6 +131,7 @@ export const battleStatsCreate = (): BattleStats => {
     CON: 1,
     RES: 1,
     SPD: 1,
+    EVA: 0,
     HP: 10,
     STAGGER: 5,
   };
@@ -185,4 +239,53 @@ export const battleGetNearestAttackable = (
     });
   }
   return target ?? null;
+};
+
+export const battleSubscribeEvent = (
+  battle: Battle,
+  eventName: BattleEvent,
+  cb: (arg: any) => void
+) => {
+  battle.subscriptions[eventName].push(cb);
+};
+
+export const battleUnsubscribeEvent = (
+  battle: Battle,
+  eventName: BattleEvent,
+  cb: (arg: any) => void
+) => {
+  const ind = battle.subscriptions[eventName].indexOf(cb);
+  if (ind > -1) {
+    battle.subscriptions[eventName].splice(ind, 1);
+  }
+};
+
+export const battleInvokeEvent = (
+  battle: Battle,
+  eventName: BattleEvent,
+  arg: any
+) => {
+  const events = battle.subscriptions[eventName];
+  events.forEach((cb: (arg: any) => void) => {
+    cb(arg);
+  });
+};
+
+export const battleGetActingAllegiance = (
+  battle: Battle
+): BattleAllegiance | null => {
+  const areAlliesActing = battle.allies.reduce((isActing, bCh) => {
+    return isActing || battleCharacterIsActing(bCh);
+  }, false);
+  if (areAlliesActing) {
+    return BattleAllegiance.ALLY;
+  }
+  const areEnemiesActing = battle.enemies.reduce((isActing, bCh) => {
+    return isActing || battleCharacterIsActing(bCh);
+  }, false);
+  if (areEnemiesActing) {
+    return BattleAllegiance.ALLY;
+  }
+
+  return null;
 };

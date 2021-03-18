@@ -4,7 +4,6 @@ import { useState } from 'preact/hooks';
 import { BattleCharacter } from 'model/battle-character';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { colors, style } from 'view/style';
-import { battleSetChButtonsStatus } from 'controller/ui-actions';
 import { BattleAction } from 'controller/battle-actions';
 import { pause, unpause } from 'controller/loop';
 

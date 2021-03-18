@@ -6,6 +6,10 @@ import {
   battleSetActorPositions,
   battleIsVictory,
   battleIsLoss,
+  BattleEvent,
+  battleInvokeEvent,
+  battleGetActingAllegiance,
+  battleGetAllegiance,
 } from 'model/battle';
 import {
   battleCharacterCreateEnemy,
@@ -55,11 +59,16 @@ import { Player, playerGetBattlePosition } from 'model/player';
 import { createDamageParticle, createStatusParticle } from 'model/particle';
 import { getRandBetween } from 'utils';
 import { AppSection } from 'model/store';
-import { hideSection, showSection } from 'controller/ui-actions';
-import { BattleActions } from 'controller/battle-actions';
+import {
+  hideSection,
+  setBattleCharacterIndexSelected,
+  showSection,
+} from 'controller/ui-actions';
+import { BattleAction, BattleActions } from 'controller/battle-actions';
 import { pause, unpause } from './loop';
 import { callScript } from 'controller/scene-management';
 import { popKeyHandler, pushKeyHandler } from './events';
+import { getUiInterface } from 'view/ui';
 
 export const initiateBattle = (
   player: Player,
@@ -105,10 +114,11 @@ export const initiateBattle = (
 
 export const battleKeyHandler = async (ev: KeyboardEvent) => {
   const battle = getCurrentBattle();
+  const isPaused = getIsPaused();
   switch (ev.key) {
     case 'p':
     case 'P': {
-      if (getIsPaused()) {
+      if (isPaused) {
         unpause();
       } else {
         pause();
@@ -127,29 +137,96 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
     }
     case 'x':
     case 'X': {
-      const bCh = battle.allies[0];
-      const skill = battleCharacterGetSelectedSkill(bCh);
-      skill.cb(battle, bCh);
+      if (!isPaused) {
+        const bCh = battle.allies[0];
+        const skill = battleCharacterGetSelectedSkill(bCh);
+        invokeSkill(bCh, skill);
+      }
       break;
     }
     case 'c':
     case 'C': {
-      const bCh = battle.allies[1];
-      const skill = battleCharacterGetSelectedSkill(bCh);
-      skill.cb(battle, bCh);
+      if (!isPaused) {
+        const bCh = battle.allies[1];
+        const skill = battleCharacterGetSelectedSkill(bCh);
+        invokeSkill(bCh, skill);
+      }
+      break;
+    }
+    case 'Tab': {
+      if (isPaused) {
+        const uiState = getUiInterface().appState.battle;
+        const battle = getCurrentBattle();
+        let nextIndex =
+          (uiState.characterIndexSelected + 1) % battle.allies.length;
+        if (nextIndex === -1) {
+          nextIndex = battle.allies.length - 1;
+        }
+        setBattleCharacterIndexSelected(nextIndex);
+        ev.preventDefault();
+      }
+      break;
+    }
+    case ' ': {
+      if (isPaused) {
+        unpause();
+      } else {
+        pause();
+      }
       break;
     }
   }
 };
 
+const assertMayAct = (battle: Battle, bCh: BattleCharacter): boolean => {
+  if (bCh.actionState === BattleActionState.ACTING_READY) {
+    return true;
+  }
+
+  // special case, battleCharacterCanAct returns true for the CASTING state, but that
+  // should not be the case here.
+  if (bCh.actionState === BattleActionState.CASTING) {
+    return false;
+  }
+
+  if (!battleCharacterCanAct(battle, bCh)) {
+    console.log('cannot attack, battle character cannot act yet', bCh);
+    return false;
+  }
+  return true;
+};
+
+export const invokeSkill = (bCh: BattleCharacter, skill: BattleAction) => {
+  const battle = getCurrentBattle();
+  if (!assertMayAct(battle, bCh)) {
+    return;
+  }
+
+  skill.cb(battle, bCh);
+};
+
 export const beginAction = async (bCh: BattleCharacter): Promise<void> => {
   console.log('begin action', bCh);
+  const battle = getCurrentBattle();
+
+  // no allegiance is acting
+  if (battleGetActingAllegiance(battle) === null) {
+    battleInvokeEvent(
+      battle,
+      BattleEvent.onTurnStarted,
+      battleGetAllegiance(battle, bCh.ch)
+    );
+  }
+
   battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterAction, bCh);
   bCh.actionTimer.start();
   bCh.actionTimer.pause();
 };
 export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   console.log('end action', bCh);
+  const battle = getCurrentBattle();
+
   battleCharacterSetActonState(bCh, BattleActionState.ACTING);
   const transform = bCh.ch.transform;
   if (transform) {
@@ -163,6 +240,17 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   battleCharacterSetActonState(bCh, BattleActionState.IDLE);
   resetCooldownTimer(bCh);
   bCh.actionTimer.unpause();
+
+  bCh.canActSignaled = false;
+
+  // no more allegiance is acting
+  if (battleGetActingAllegiance(battle) === null) {
+    battleInvokeEvent(
+      battle,
+      BattleEvent.onTurnEnded,
+      battleGetAllegiance(battle, bCh.ch)
+    );
+  }
 };
 
 export const applyStaggerDamage = (
@@ -176,6 +264,11 @@ export const applyStaggerDamage = (
     bCh.staggerGauge.fill(staggerDamage);
     if (bCh.staggerGauge.isFull()) {
       console.log('STAGGER!');
+      battleInvokeEvent(
+        getCurrentBattle(),
+        BattleEvent.onCharacterStaggered,
+        bCh
+      );
       battleCharacterSetActonState(bCh, BattleActionState.STAGGERED);
       bCh.staggerTimer.start();
       bCh.staggerGauge.empty();
@@ -300,6 +393,11 @@ export const setCasting = (
 export const interruptCast = (bCh: BattleCharacter) => {
   if (battleCharacterIsCasting(bCh)) {
     battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+    battleInvokeEvent(
+      getCurrentBattle(),
+      BattleEvent.onCharacterInterrupted,
+      bCh
+    );
     bCh.onCastInterrupted();
     const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
     roomAddParticle(
@@ -312,6 +410,7 @@ export const interruptCast = (bCh: BattleCharacter) => {
 export const completeCast = async (bCh: BattleCharacter) => {
   if (battleCharacterCanAct(getCurrentBattle(), bCh)) {
     await beginAction(bCh);
+    battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterSpell, bCh);
     await bCh.onCast();
     await endAction(bCh);
   }
@@ -336,6 +435,7 @@ export const applyDamage = (
   );
   characterModifyHp(bCh.ch, -dmg);
   battleCharacterSetAnimationStateAfterTakingDamage(bCh);
+  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterDamaged, bCh);
 };
 
 export const updateBattle = (battle: Battle): void => {

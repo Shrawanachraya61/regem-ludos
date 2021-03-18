@@ -46,12 +46,17 @@ export interface IChoicesState {
   choiceTexts: string[];
 }
 
+export interface IBattleUiState {
+  disabled: boolean;
+  paused: boolean;
+  characterIndexSelected: number;
+  targetIndexSelected: number;
+}
+
 export interface AppState {
   sections: AppSection[];
   cutscene: ICutsceneAppState;
-  battle: {
-    chButtonsEnabled: boolean;
-  };
+  battle: IBattleUiState;
   arcadeGame: IArcadeCabinetState;
   choices: IChoicesState;
 }
@@ -75,7 +80,10 @@ export const AppStateInitial: AppState = {
     portraitCenterEmotion: '',
   },
   battle: {
-    chButtonsEnabled: true,
+    characterIndexSelected: 0,
+    targetIndexSelected: 0,
+    disabled: false,
+    paused: false,
   },
   arcadeGame: {
     path: '',

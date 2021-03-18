@@ -53,18 +53,6 @@ import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
 import { getCurrentRoom } from 'model/generics';
 
-const assertMayAct = (battle: Battle, bCh: BattleCharacter): boolean => {
-  if (bCh.actionState === BattleActionState.ACTING_READY) {
-    return true;
-  }
-
-  if (!battleCharacterCanAct(battle, bCh)) {
-    console.log('cannot attack, battle character cannot act yet', bCh);
-    return false;
-  }
-  return true;
-};
-
 export interface BattleAction {
   name: string;
   description: string;
@@ -157,10 +145,6 @@ export const BattleActions: { [key: string]: BattleAction } = {
     cooldown: 1000,
     icon: SwordIcon,
     cb: async (battle: Battle, bCh: BattleCharacter): Promise<void> => {
-      if (!assertMayAct(battle, bCh)) {
-        return;
-      }
-
       const baseDamage = 1;
       const baseStagger = 10;
 
@@ -254,6 +238,16 @@ export const BattleActions: { [key: string]: BattleAction } = {
       return BattleActions.Swing.cb(battle, bCh);
     },
   },
+  SwingWithLongDescription: {
+    name: 'Swing LD',
+    description:
+      'This version of Swing is identical to Swing, except it kind of has a super duper long description.  This is done so that it can be TESTED.',
+    cooldown: 100000,
+    icon: SwordIcon,
+    cb: async (battle: Battle, bCh: BattleCharacter) => {
+      return BattleActions.Swing.cb(battle, bCh);
+    },
+  },
   Defend: {
     name: 'Defend',
     description:
@@ -261,10 +255,6 @@ export const BattleActions: { [key: string]: BattleAction } = {
     cooldown: 5000,
     icon: ShieldIcon,
     cb: async (battle: Battle, bCh: BattleCharacter) => {
-      if (!assertMayAct(battle, bCh)) {
-        return;
-      }
-
       beginAction(bCh);
 
       const ch = bCh.ch;
@@ -304,10 +294,6 @@ export const BattleActions: { [key: string]: BattleAction } = {
     cooldown: 1000,
     icon: ShieldIcon,
     cb: async (battle: Battle, bCh: BattleCharacter) => {
-      if (!assertMayAct(battle, bCh)) {
-        return;
-      }
-
       await beginAction(bCh);
       setCasting(bCh, {
         castTime: 5000,

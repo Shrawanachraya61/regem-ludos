@@ -12,6 +12,7 @@ import {
   getCurrentOverworld,
   getCurrentScene,
   getRenderBackgroundColor,
+  setCameraDrawOffset,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -167,6 +168,7 @@ export const runMainLoop = async (): Promise<void> => {
           roomYOffset = oY;
         }
       }
+      setCameraDrawOffset([roomXOffset, roomYOffset]);
 
       // const [mouseX, mouseY] = getMousePos();
       // const [worldX, worldY] = pixelToIsoCoords(
@@ -176,10 +178,12 @@ export const runMainLoop = async (): Promise<void> => {
       // const tileX = Math.floor((worldX / TILE_WIDTH) * 2);
       // const tileY = Math.floor((worldY / TILE_HEIGHT) * 2);
       // const tile = roomGetTileAt(room, tileX, tileY);
-      // if (lastHighlightedTile !== tile && lastHighlightedTile) {
-      //   lastHighlightedTile.highlighted = false;
-      // }
+
+      // // if (lastHighlightedTile !== tile && lastHighlightedTile) {
+      // //   lastHighlightedTile.highlighted = false;
+      // // }
       // if (tile) {
+      //   // console.log('highlight tile', tile.x, tile.y);
       //   tile.highlighted = true;
       // }
 

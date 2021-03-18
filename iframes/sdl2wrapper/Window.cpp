@@ -43,11 +43,11 @@ void setKeyUp(int key) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-void _setKeyStatus(int status) {
+void setKeyStatus(int status) {
   SDL2Wrapper::Window& window = SDL2Wrapper::Window::getGlobalWindow();
   window.isInputEnabled = !!status;
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
-      << "External set key status: " << key << std::endl;
+      << "External set key status: " << window.isInputEnabled << std::endl;
 }
 }
 #endif

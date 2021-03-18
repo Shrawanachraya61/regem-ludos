@@ -95,7 +95,6 @@ const App = () => {
     }
   };
 
-  // console.log('render app', appState);
   const scale = getDrawScale();
   return (
     <div
@@ -112,16 +111,7 @@ const App = () => {
             <PausedText>PAUSED</PausedText>
           </PausedOverlay>
         ) : null}
-        {appState.sections
-          // .sort((a, b) => {
-          //   if (a === 'arcadeCabinet' || b === 'arcadeCabinet') {
-          //     return -1;
-          //   } else if (a === 'debug' || b === 'debug') {
-          //     return -1;
-          //   }
-          //   return a < b ? -1 : 1;
-          // })
-          .map(renderSection)}
+        {appState.sections.map(renderSection)}
       </Root>
     </div>
   );

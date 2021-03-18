@@ -6,7 +6,6 @@ import BattleCharacterButton from 'view/components/BattleCharacterStatus';
 import { BattleCharacter } from 'model/battle-character';
 import BattleActionMenu from 'view/components/BattleActionMenu';
 import Button, { ButtonType } from 'view/elements/Button';
-import { battleSetChButtonsStatus } from 'controller/ui-actions';
 import { BattleAction } from 'controller/battle-actions';
 import { pause, unpause } from 'controller/loop';
 import { getCurrentBattle } from 'model/generics';
@@ -46,7 +45,6 @@ const BattleUISection = () => {
 
   const closeMenu = () => {
     unpause();
-    battleSetChButtonsStatus(true);
     setMenuVisible(false);
   };
   return (

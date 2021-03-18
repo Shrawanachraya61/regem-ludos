@@ -21,6 +21,8 @@ import {
   battleGetCharactersOfAllegiance,
   battleGetOppositeAllegiance,
   battleGetAllegiance,
+  battleInvokeEvent,
+  BattleEvent,
 } from './battle';
 
 export enum BattleActionState {
@@ -45,6 +47,7 @@ export interface BattleCharacter {
   actionState: BattleActionState;
   actionStateIndex: number;
   statuses: Status[];
+  canActSignaled: boolean;
   onCanActCb: () => Promise<void>;
   onCast: () => Promise<void>;
   onCastInterrupted: () => Promise<void>;
@@ -71,6 +74,7 @@ const battleCharacterCreate = (
     actionState: BattleActionState.IDLE,
     actionStateIndex: 0,
     statuses: [] as Status[],
+    canActSignaled: false,
     onCanActCb: async function () {},
     onCast: async function () {},
     onCastInterrupted: async function () {},
@@ -235,6 +239,7 @@ export const updateBattleCharacter = (
     if (bCh.staggerTimer.isComplete()) {
       battleCharacterSetActonState(bCh, BattleActionState.IDLE);
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+      battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
     }
   }
   if (battleCharacterIsCasting(bCh)) {
@@ -252,6 +257,11 @@ export const updateBattleCharacter = (
 
   if (!battleCharacterIsActing(bCh)) {
     if (battleCharacterCanAct(battle, bCh)) {
+      if (!bCh.canActSignaled) {
+        bCh.canActSignaled = true;
+        battleInvokeEvent(battle, BattleEvent.onCharacterReady, bCh);
+      }
+
       bCh.onCanActCb();
       if (bCh.ai) {
         bCh.ai(battle, bCh);

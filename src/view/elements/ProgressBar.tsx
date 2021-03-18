@@ -29,19 +29,17 @@ const Outer = style(
   }
 );
 
-const Inner = style(
-  'div',
-  (props: { backgroundColor: string; pct: number }) => {
-    return {
-      background: props.backgroundColor,
-      position: 'absolute',
-      left: '0',
-      top: '0',
-      width: props.pct + '%',
-      height: '100%',
-    };
-  }
-);
+const Inner = style('div', (props: { backgroundColor: string }) => {
+  return {
+    background: props.backgroundColor,
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: '100%',
+    height: '100%',
+    transformOrigin: 'top left',
+  };
+});
 
 const Label = style('div', {
   textAlign: 'center',
@@ -56,7 +54,12 @@ const Label = style('div', {
 const ProgressBar = (props: IProgressBarProps): h.JSX.Element => {
   return (
     <Outer backgroundColor={props.backgroundColor} height={props.height}>
-      <Inner pct={(props.pct ?? 0) * 100} backgroundColor={props.color}></Inner>
+      <Inner
+        backgroundColor={props.color}
+        style={{
+          transform: `scaleX(${props.pct ?? 0})`,
+        }}
+      ></Inner>
       <Label>{props.label}</Label>
     </Outer>
   );

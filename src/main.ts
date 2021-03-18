@@ -94,7 +94,12 @@ export const main = async (): Promise<void> => {
     },
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
-    skills: [BattleActions.Swing],
+    skills: [
+      BattleActions.Swing,
+      BattleActions.SwingSlow,
+      BattleActions.SwingWithLongDescription,
+      BattleActions.Defend,
+    ],
   });
   player.leader.speed = 1;
 

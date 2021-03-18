@@ -9,8 +9,10 @@ export const colors = {
   DARKGREY: '#2E3740',
   BGGREY: '#333',
   RED: '#BE2633',
+  DARKRED: '#5E3643',
   PINK: '#FFAEB6',
   GREEN: '#44891A',
+  DARKGREEN: '#005F1B',
   BROWN: '#A46422',
   ORANGE: '#FAB40B',
   PURPLE: '#9964F9',
@@ -29,7 +31,7 @@ type IntrinsicElement =
   | null
   | undefined;
 
-interface IntrinsicProps {
+export interface IntrinsicProps {
   id?: string;
   children?: never[] | IntrinsicElement[] | IntrinsicElement;
   style?: string | h.JSX.CSSProperties;

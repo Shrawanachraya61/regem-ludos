@@ -118,3 +118,7 @@ export const setRenderBackgroundColor = (color: string) =>
 let soundEnabled = true;
 export const getSoundEnabled = () => soundEnabled;
 export const setSoundEnabled = (v: boolean) => (soundEnabled = v);
+
+let cameraDrawOffset: Point = [0, 0];
+export const getCameraDrawOffset = () => cameraDrawOffset;
+export const setCameraDrawOffset = (p: Point) => (cameraDrawOffset = p);
