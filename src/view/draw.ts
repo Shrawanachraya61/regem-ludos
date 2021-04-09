@@ -14,6 +14,8 @@ import {
   characterGetAnimation,
   characterGetPos,
   characterGetPosBottom,
+  characterGetPosTopLeft,
+  characterGetSize,
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
 import { colors } from './style';
@@ -172,6 +174,7 @@ export const drawAnimation = (
   }
 };
 
+// NF = no Math.floor
 export const drawAnimationNF = (
   anim: Animation,
   x: number,
@@ -242,12 +245,33 @@ export const drawCharacter = (
   scale?: number,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const [x, y, z] = characterGetPos(ch);
+  const [x, y, z] = characterGetPosTopLeft(ch);
   const anim = characterGetAnimation(ch);
-  // const [, , , spriteWidth, spriteHeight] = getSprite(anim.getSprite());
   const [px, py] = isoToPixelCoords(x, y, z);
   ctx = ctx || getCtx();
-  drawAnimation(anim, px, py, scale, ctx);
+
+  if (anim.isPaused) {
+    const sprite = anim.getSprite();
+    if (!sprite) {
+      console.error(anim);
+      throw new Error(
+        `Cannot draw paused character that did not provide a sprite.`
+      );
+    }
+    drawSprite(sprite, px, py, scale, ctx);
+    if (ch.highlighted) {
+      ctx.globalCompositeOperation = 'multiply';
+      drawSprite(sprite, px, py, scale, ctx);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  } else {
+    drawAnimation(anim, px, py, scale, ctx);
+    if (ch.highlighted) {
+      ctx.globalCompositeOperation = 'multiply';
+      drawAnimation(anim, px, py, scale, ctx);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  }
   // {
   //   const [x, y] = characterGetPosBottom(ch);
   //   const [px, py] = isoToPixelCoords(x, y, z);
@@ -271,19 +295,29 @@ export const drawParticle = (
   ctx?: CanvasRenderingContext2D
 ): void => {
   const [px, py] = particleGetPos(particle);
-  const { anim, text, textParams } = particle;
+  const { anim, text, textParams, opacity } = particle;
+  ctx = ctx ?? getCtx();
+  ctx.globalAlpha = opacity ?? 1;
   if (anim) {
-    drawAnimation(anim, px, py, scale, ctx);
+    drawAnimation(
+      anim,
+      px,
+      py,
+      scale ? scale * particle.scale : particle.scale,
+      ctx
+    );
   }
   if (text && textParams) {
     drawText(text, px, py, textParams);
   }
+  ctx.globalAlpha = 1;
 };
 
 export const drawRoom = (
   room: Room,
   offset: Point,
-  ctx?: CanvasRenderingContext2D
+  ctx?: CanvasRenderingContext2D,
+  isPaused?: boolean
 ): void => {
   const { particles } = room;
   const [offsetX, offsetY] = offset;
@@ -294,6 +328,14 @@ export const drawRoom = (
   room.renderObjects = room.renderObjects.sort((a, b) => {
     return a.sortY < b.sortY ? -1 : 1;
   });
+
+  // if (!isPaused) {
+  //   for (let i = 0; i < particles.length; i++) {
+  //     const p = particles[i];
+  //     if (p
+  //     drawParticle(p);
+  //   }
+  // }
 
   // if (room.floor) {
   //   drawSprite(room.floor, -room.widthPx / 2, 0);
@@ -318,45 +360,51 @@ export const drawRoom = (
       continue;
     }
 
-    if (isMarker) {
-      if (getMarkersVisible()) {
-        drawText(name || '', (px as number) + 16, py as number, {
-          align: 'center',
-          color: colors.WHITE,
-          size: 12,
-        });
-        drawSprite(sprite as string, px as number, py as number);
+    if (isPaused) {
+      if (character) {
+        drawCharacter(character);
       }
-    } else if (isTrigger) {
-      if (getTriggersVisible()) {
-        if (polygon) {
-          const point = polygon[0];
-          const [x, y] = point;
-          const [px, py] = isoToPixelCoords(x, y, 0);
-          drawPolygon(polygon, 'rgba(0, 0, 0, 0.5)');
-          drawText(name || '', px, py, {
-            align: 'center',
-            color: colors.PINK,
-            size: 12,
-          });
-        } else {
-          drawSprite(sprite as string, px as number, py as number);
+    } else {
+      if (isMarker) {
+        if (getMarkersVisible()) {
           drawText(name || '', (px as number) + 16, py as number, {
             align: 'center',
-            color: colors.PINK,
+            color: colors.WHITE,
             size: 12,
           });
+          drawSprite(sprite as string, px as number, py as number);
         }
+      } else if (isTrigger) {
+        if (getTriggersVisible()) {
+          if (polygon) {
+            const point = polygon[0];
+            const [x, y] = point;
+            const [px, py] = isoToPixelCoords(x, y, 0);
+            drawPolygon(polygon, 'rgba(0, 0, 0, 0.5)');
+            drawText(name || '', px, py, {
+              align: 'center',
+              color: colors.PINK,
+              size: 12,
+            });
+          } else {
+            drawSprite(sprite as string, px as number, py as number);
+            drawText(name || '', (px as number) + 16, py as number, {
+              align: 'center',
+              color: colors.PINK,
+              size: 12,
+            });
+          }
+        }
+      } else if (anim) {
+        drawAnimation(anim, px as number, py as number);
+      } else if (sprite) {
+        drawSprite(sprite, px as number, py as number);
+        if (highlighted) {
+          drawSprite('indicator', px as number, (origPy as number) - 3);
+        }
+      } else if (character) {
+        drawCharacter(character);
       }
-    } else if (anim) {
-      drawAnimation(anim, px as number, py as number);
-    } else if (sprite) {
-      drawSprite(sprite, px as number, py as number);
-      if (highlighted) {
-        drawSprite('indicator', px as number, (origPy as number) - 3);
-      }
-    } else if (character) {
-      drawCharacter(character);
     }
   }
 
@@ -368,9 +416,11 @@ export const drawRoom = (
   ctx.globalAlpha = 1.0;
   ctx.globalCompositeOperation = 'source-over';
 
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i];
-    drawParticle(p);
+  if (!isPaused) {
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      drawParticle(p);
+    }
   }
 
   ctx.restore();

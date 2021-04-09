@@ -12,17 +12,22 @@ export interface Battle {
   enemies: BattleCharacter[];
   defeated: BattleCharacter[];
   subscriptions: IBattleSubscriptionHub;
+  targetedEnemyIndex: number;
 }
 
 export enum BattleEvent {
   onCharacterDamaged = 'onCharacterDamaged',
   onCharacterReady = 'onCharacterReady',
+  onCharacterActionStarted = 'onCharacterActionStarted',
+  onCharacterAction = 'onCharacterAction',
+  onCharacterActionReady = 'onCharacterActionReady',
+  onCharacterActionButtonPressed = 'onCharacterActionButtonPressed',
+  onCharacterActionEnded = 'onCharacterActionEnded',
   onCharacterStaggered = 'onCharacterStaggered',
   onCharacterPinned = 'onCharacterPinned',
   onCharacterRecovered = 'onCharacterRecovered',
   onCharacterCasting = 'onCharacterCasting',
   onCharacterSpell = 'onCharacterSpell',
-  onCharacterAction = 'onCharacterAction',
   onCharacterInterrupted = 'onCharacterInterrupted',
   onCharacterDefeated = 'onCharacterDefeated',
   onMagicShieldDamaged = 'onMagicShieldDamaged',
@@ -33,12 +38,18 @@ export enum BattleEvent {
 export interface IBattleSubscriptionHub {
   [BattleEvent.onCharacterDamaged]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterReady]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterActionStarted]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterAction]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterActionReady]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterActionButtonPressed]: ((
+    bCh: BattleCharacter
+  ) => void)[];
+  [BattleEvent.onCharacterActionEnded]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterStaggered]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterPinned]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterRecovered]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterSpell]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterCasting]: ((bCh: BattleCharacter) => void)[];
-  [BattleEvent.onCharacterAction]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterInterrupted]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterDefeated]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onMagicShieldDamaged]: ((
@@ -52,6 +63,7 @@ export interface BattleTemplateEnemy {
   chTemplate: CharacterTemplate;
   position: BattlePosition;
   ai?: BattleAI;
+  armor?: number;
 }
 
 export interface BattleTemplate {
@@ -100,12 +112,16 @@ export const battleCreate = (
   const subscriptions: IBattleSubscriptionHub = {
     onCharacterDamaged: [],
     onCharacterReady: [],
+    onCharacterActionStarted: [],
+    onCharacterAction: [],
+    onCharacterActionReady: [],
+    onCharacterActionButtonPressed: [],
+    onCharacterActionEnded: [],
     onCharacterStaggered: [],
     onCharacterRecovered: [],
     onCharacterPinned: [],
     onCharacterSpell: [],
     onCharacterCasting: [],
-    onCharacterAction: [],
     onCharacterInterrupted: [],
     onCharacterDefeated: [],
     onMagicShieldDamaged: [],
@@ -120,6 +136,7 @@ export const battleCreate = (
     defeated: [] as BattleCharacter[],
     allies,
     subscriptions,
+    targetedEnemyIndex: 0,
   };
 };
 
@@ -133,7 +150,7 @@ export const battleStatsCreate = (): BattleStats => {
     SPD: 1,
     EVA: 0,
     HP: 10,
-    STAGGER: 5,
+    STAGGER: 10,
   };
 };
 
@@ -284,8 +301,25 @@ export const battleGetActingAllegiance = (
     return isActing || battleCharacterIsActing(bCh);
   }, false);
   if (areEnemiesActing) {
-    return BattleAllegiance.ALLY;
+    return BattleAllegiance.ENEMY;
   }
 
   return null;
+};
+
+export const battleSetEnemyTargetIndex = (battle: Battle, i: number) => {
+  if (battleGetActingAllegiance(battle) === BattleAllegiance.ENEMY) {
+    console.log('Cannot set battle target index during enemy acting phase.');
+    return;
+  }
+
+  if (i < battle.enemies.length) {
+    battle.targetedEnemyIndex = i;
+  }
+};
+
+export const battleGetTargetedEnemy = (
+  battle: Battle
+): BattleCharacter | null => {
+  return battle.enemies[battle.targetedEnemyIndex] ?? null;
 };

@@ -4,6 +4,7 @@ import { Player } from 'model/player';
 import { Battle } from 'model/battle';
 import { Overworld } from 'model/overworld';
 import { Scene } from 'model/scene';
+import { Timer } from './utility';
 
 let currentRoom: Room | null = ((window as any).room = null);
 export const getCurrentRoom = (): Room => currentRoom as Room;
@@ -122,3 +123,21 @@ export const setSoundEnabled = (v: boolean) => (soundEnabled = v);
 let cameraDrawOffset: Point = [0, 0];
 export const getCameraDrawOffset = () => cameraDrawOffset;
 export const setCameraDrawOffset = (p: Point) => (cameraDrawOffset = p);
+
+const timers: Timer[] = [];
+export const addTimer = (...timersToAdd: Timer[]) => {
+  timersToAdd.forEach(t => {
+    if (timers.indexOf(t) === -1) {
+      timers.push(t);
+    }
+  });
+};
+export const removeTimer = (...timersToRemove: Timer[]) => {
+  timersToRemove.forEach(t => {
+    const ind = timers.indexOf(t);
+    if (ind > -1) {
+      timers.splice(ind, 1);
+    }
+  });
+};
+export const getAllTimers = () => timers;

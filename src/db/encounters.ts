@@ -87,6 +87,64 @@ export const init = () => {
       },
     ],
   };
+
+  exp.ENCOUNTER_TUT1 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE_STAGGERABLE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
+  exp.ENCOUNTER_TUT2 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE_SPEEDY'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
+  exp.ENCOUNTER_TUT4 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_ARMORED'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
+  exp.ENCOUNTER_TUT_BOSS = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_BOSS'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
+  // exp.ENCOUNTER_TUT1 = {
+
+  // }
 };
 
 export default exp;

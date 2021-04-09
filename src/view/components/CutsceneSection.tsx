@@ -103,11 +103,11 @@ const TextBoxWrapper = style(
     align: 'left' | 'right' | 'center' | 'center-low';
     visible: boolean;
   }) => {
-    const hOffset = '6.25%';
+    const hOffset = '29%';
+    let width = '40%';
     let left =
-      props.align === 'left' ? hOffset : `calc(100% - ${hOffset} - 50%)`;
+      props.align === 'left' ? hOffset : `calc(100% - ${hOffset} - ${width})`;
     let height = '25%';
-    let width = '50%';
     let transition = 'height 0.1s, left 0.1s, transform 0.1s ease-in';
     if (props.align === 'center') {
       left = '20%';

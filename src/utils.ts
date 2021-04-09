@@ -1,4 +1,7 @@
 import { Polygon } from 'view/draw';
+import { addTimer, getCameraDrawOffset, removeTimer } from 'model/generics';
+import { getDrawScale } from 'model/canvas';
+import { Timer } from 'model/utility';
 
 export const isoToPixelCoords = (
   x: number,
@@ -10,6 +13,22 @@ export const isoToPixelCoords = (
 
 export const pixelToIsoCoords = (x: number, y: number): [number, number] => {
   return [(2 * y + x) / 2, (2 * y - x) / 2];
+};
+
+export const worldToCanvasCoords4by3 = (
+  x: number,
+  y: number,
+  z: number
+): [number, number] => {
+  const [px, py] = isoToPixelCoords(x, y, z);
+  const [roomXOffset, roomYOffset] = getCameraDrawOffset();
+  const scale = getDrawScale();
+
+  // HACK for scale of 4 at 4:3 resolution.  Adjusts for the top left of the canvas going
+  // negative behind the div showing it.
+  const resultX = (px + roomXOffset) * scale - (scale >= 4 ? 638 + 48 : 0);
+  const resultY = (py + roomYOffset) * scale - (scale >= 4 ? 512 : 0);
+  return [resultX, resultY];
 };
 
 export const removeFileExtension = (fileName: string): string => {
@@ -99,10 +118,12 @@ export function normalizeEaseOutClamp(
   return easeOut(t, c, d - c, 1);
 }
 
-export const timeoutPromise = (ms: number): Promise<void> => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
+export const timeoutPromise = async (ms: number): Promise<void> => {
+  const t = new Timer(ms);
+  addTimer(t);
+  t.start();
+  await t.onCompletion();
+  removeTimer(t);
 };
 
 export const getRandBetween = (a: number, b: number): number => {

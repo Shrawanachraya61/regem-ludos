@@ -1,0 +1,137 @@
+N = normal
+P = pierce -> EVA doubled for pierce attacks?
+K = knockdown -> ineffective if not staggered
+F = finisher -> ineffective if not knocked down
+C = crit
+
+Skills Required For Implementation
+
+Swing Normal (NN)
+Swing Pierce (P)
+Swing Finisher (NF)
+
+Cast Fire Snap
+Cast Armorify
+Cast Magma
+Range Harass
+
+AI Cast Black Fire Snap
+AI Channel Magic Shield
+AI Swing Normal (NN)
+AI Swing Speedy (N)
+AI Swing Normal Armored (NK)
+AI Swing Pierce (P)
+AI Ranged Normal (NN)
+
+Boss Swing NNN
+Boss Swing PKN
+
+Boss Cast (Instant): Revive Add
+Boss Cast: EMP
+Boss Cast: Mega Armorify
+
+Battle Enemies:
+
+Robot Staggerable (AI Swing Normal) has low stagger hp
+Robot Standard (AI Swing Normal | AI Swing Pierce (P))
+Robot Armored (AI Swing Normal Armored) 1 Armor
+Robot Speedy (AI Swing Speedy (NN))
+Robot Archer (AI Ranged Normal (NN))
+Robot Mage (AI Cast Black Fire Snap)
+Robot Channeler (AI Channel Magic Shield)
+Robot Tanky (AI Swing Normal Armored) 2 Armor, High HP
+Boss Tutorial Overseer (Boss abilities)
+
+Encounters
+
+TUT_Level1 (Robot Staggerable)
+TUT_Level2 (Robot Standard, Robot Speedy)
+TUT_Level3 (Robot Standard, Robot Mage)
+TUT_Level4 (Robot Armored)
+TUT_Level5 (2x Robot Standard, Robot Mage)
+TUT_Level6 (2x Robot Standard, Robot Mage)
+TUT_Level7 (Robot Standard, Robot Ranged, Robot Channeler)
+
+TUT_Level8_1 (Robot Armored, Robot Speedy)
+TUT_Level8_2 (Robot Armored, Robot Mage)
+TUT_Level8_3 (Robot Fast, Robot Fast, Robot Archer)
+TUT_Level8_4 (Robot Mage, Rot Mage, Robot Channeler, Robot Channeler)
+TUT_Level8_5 (Robot Fast, Robot Archer, Robot Archer)
+
+TUT_Boss (Boss Tutorial Overseer + Adds)
+
+Tutorial Fights
+
+Pick Weapons: Pragmatic Sword NN
+
+Ada Get Skill: Swing Normal
+
+1. Teach How To Attack + How to stagger
+  - Single Robot
+
+2. Teach That You Cannot Act When Enemy Is Acting
+  - Double Robot: 1 Fast 1 Slow
+
+Proceed to Next Room
+
+3. Teach that mages must cast before invoking a spell.  Teach that you cannot attack back line without killing front line
+  - Double Robot: 1 Front, 1 Mage /w Black Fire Snap
+
+Get Skill: Sword P - (slower than above weapon)
+
+Ada Get Skill: Swing Pierce (P)
+
+4. Teach How To Remove Armor with P
+  - Double Robot: 1 Front (Armored), 1 Mage /w Black Fire Snap
+
+Proceed to Next Room, Conscience joins and picks up a Pragmatic Fire Wand.
+
+Conscience Get Skill: Fire Snap (single target mage spell after channel)
+Conscience Get Skill: Armorify
+
+5. Teach how to cast and defend your caster
+  - Triple Robot: 2 Front, 1 Mage /w Black Fire Snap
+
+Ada Get Skill: Swing Finisher (NF)
+
+6. Teach how to stagger -> knockdown -> finish, teach while staggered, armor is ignored
+  - Single Robot: Big tanky boi (2 Armor, Lots of HP)
+
+Conscience Get Skill: Range Harass
+Conscience Get Skill: Magma (AOE channel spell)
+
+7. Teach how magic shield absorbs magic, Teach what RESV does
+  - Triple Robot: Channeller of magic shield, Bow Guy, Front Row guy.
+
+8. Big open room, find your way through combinations of the following fights:
+
+- Double Robot: 1 armored, 1 fast /w crit
+- Double Robot: 1 armored, 1 mage /w Black Fire Snap
+- Triple Robot: 2 fast, 1 bow
+- Quad Robot: 2 mage /w Black Fire Snap, 2 Channeller
+- Triple Robot: 1 fast 2 bow
+
+Room contains the following rewards:
+
+Pragmatic Armor (Lvl 2): (DR + STAG resistance)
+Invoker Cloak (Lvl 1): (Additional RESV)
+Pragmatic Sword+ (Slightly more damage than Pragmatic Sword)
+Speedy Weeds: (Increase SPD for next fight)
+Sturdy Necklace: (DR)
+
+9. Boss
+
+- Big Tanky Boi, 1 Add.  The add changes at health thresholds.
+
+Adds:
+  1 Mage /w  Black Fire Snap behind boss
+  1 Speedy Boi /w NN in front of boss
+  1 Armored Boi /w PN in front of boss
+
+Abilities:
+  Swing NNN
+  Swing PKN
+
+  Cast (Instant): Revive Add
+  Cast: EMP
+  Cast: Mega Armorify

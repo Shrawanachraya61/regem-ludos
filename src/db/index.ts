@@ -4,6 +4,7 @@ import { init as initCharacters } from './characters';
 import { init as initOverworlds } from './overworlds';
 import { init as initTiles } from './tiles';
 import { init as initOverworldAi } from './overworld-ai';
+import { init as initAnimMetadata } from './animation-metadata';
 
 export default async () => {
   initEnemies();
@@ -11,5 +12,6 @@ export default async () => {
   initCharacters();
   initTiles();
   initOverworldAi();
+  initAnimMetadata();
   await initOverworlds();
 }

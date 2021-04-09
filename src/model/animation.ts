@@ -5,6 +5,7 @@ import { getSprite } from 'model/sprite';
 export interface AnimSprite {
   name: string;
   duration: number;
+  durationUpToNow: number;
   timestampBegin?: number;
   timestampEnd?: number;
   offsetX?: number;
@@ -21,11 +22,15 @@ export class Animation {
   currentSpriteIndex: number;
   timestampStart: number;
   awaits: any[];
+  isPaused: boolean;
+  timestampPause: number;
 
   constructor(loop: boolean) {
     this.loop = loop || false;
     this.sprites = [];
     this.done = false;
+    this.isPaused = false;
+    this.timestampPause = 0;
     this.totalDurationMs = 0;
     this.currentSpriteIndex = 0;
     this.timestampStart = 0;
@@ -42,21 +47,70 @@ export class Animation {
     this.timestampStart = getNow();
   }
 
+  pause(): void {
+    if (!this.isPaused) {
+      this.isPaused = true;
+      this.timestampPause = getNow();
+    }
+  }
+
+  unpause(): void {
+    if (this.isPaused) {
+      this.isPaused = false;
+      this.timestampStart += getNow() - this.timestampPause;
+      this.currentSpriteIndex = 0;
+      this.update();
+    }
+  }
+
   getDurationMs(): number {
     return this.totalDurationMs;
   }
 
-  addSprite({ name, duration, offsetX, offsetY, opacity }: AnimSprite): void {
+  getLongestFrameMs(): number {
+    return this.sprites.reduce((ms: number, sprite: AnimSprite) => {
+      return sprite.duration > ms ? sprite.duration : ms;
+    }, 0);
+  }
+
+  getLongestFrameIndex(): number {
+    let ms = 0;
+    return this.sprites.reduce((ind: number, sprite: AnimSprite, i: number) => {
+      if (sprite.duration > ms) {
+        ms = sprite.duration;
+        return i;
+      } else {
+        return ind;
+      }
+    }, 0);
+  }
+
+  getDurationToIndex(i: number): number {
+    if (i >= this.sprites.length) {
+      return this.totalDurationMs;
+    } else {
+      return this.sprites[i].durationUpToNow;
+    }
+  }
+
+  addSprite({
+    name,
+    duration,
+    offsetX,
+    offsetY,
+    opacity,
+  }: Partial<AnimSprite>): void {
     this.sprites.push({
-      name,
+      name: name || '',
       timestampBegin: this.totalDurationMs,
-      timestampEnd: this.totalDurationMs + duration,
-      duration,
+      timestampEnd: this.totalDurationMs + (duration ?? 0),
+      duration: duration ?? 0,
+      durationUpToNow: this.totalDurationMs,
       offsetX: offsetX || 0,
       offsetY: offsetY || 0,
       opacity,
     });
-    this.totalDurationMs += duration;
+    this.totalDurationMs += duration ?? 0;
   }
 
   getAnimIndex(timestampNow: number): number {

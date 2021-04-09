@@ -223,25 +223,25 @@ Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
 
 1-Offs
 
-Narrator: On a hot summer day, one young girl, Ada, finds herself on her way to the arcade, where a certain classmate of hers has asked her to come...
 *Ring* *Ring* *Ring*
 Ada: This is Ada.
 Voice On Phone: Are you here yet?
 Ada: I am just outside.
 Voice on Phone: Muahaha! Very good!
-Voice on Phone: Come find me on the SECOND floor!
-Voice on Phone: If.  You.  DARE!
+Voice on Phone: I, the Illustrious CARL-ARNOLD, reside on the SECOND floor!
+Voice on Phone: Muahaha!
+Ada: ...
+Voice on Phone: Come up to me.  If.  You.  DARE!
 *BEEP*
 Ada: *sigh*
-Conscience: He seems rather excited.
-Ada: I do not even remember why I agreed to meet him here.  I have half a mind to turn around and leave.
+Conscience: That classmate of yours seems rather excited about this.
+Ada: I do not even remember why I agreed to meet him here.  Honestly, I have half a mind to turn around and leave.
 Conscience: Oh come on.  You never do fun stuff like this!
-Conscience: I am quite excited, even if we are here because of the Illustrious Carl-Arnold.
-Ada: Somehow I doubt this will be as interesting as you think.
-Ada: I suppose we should get this over with.
+Conscience: I mean, an arcade!  That's cool!
+*pan to arcade*
+Ada: Conscience, we are here to see Carl-Arnold *only* and then we will leave.  Nothing further.
+Conscience: Yeah yeah, whatever.  We'll see how long that plan lasts.
 * They go inside. *
-Narrator: Little did Ada know, this particular hot summer day would become quite interesting.
-Narrator: Quite interesting indeed.
 
 Boy: This ice cream cup says it contains no artificial growth hormones.
 Girl: That's good to know!

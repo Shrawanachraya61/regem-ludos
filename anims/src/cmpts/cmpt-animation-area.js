@@ -113,6 +113,7 @@ const AnimationPreview = ({ anim, appInterface }) => {
         if (anim) {
           anim.reset();
           anim.start();
+          ev.preventDefault();
         }
       }
     };

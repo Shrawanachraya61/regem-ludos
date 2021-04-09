@@ -28,6 +28,7 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "esModuleInterop": true,
+    "pretty": true,
   },
   "references": [],
   "include": [

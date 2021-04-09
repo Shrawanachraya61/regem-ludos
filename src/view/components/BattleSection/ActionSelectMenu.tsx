@@ -17,6 +17,7 @@ interface IActionSelectMenuProps {
   cursorIndex: number;
   setCursorIndex: (i: number) => void;
   onActionClicked: (i: number) => void;
+  disabled: boolean;
   bCh: BattleCharacter;
 }
 
@@ -36,13 +37,13 @@ const ButtonRow = style('div', () => {
 
 const cursorPulse = keyframes({
   '0%': {
-    transform: 'translateX(-5px)',
+    transform: 'translateX(-10px)',
   },
   '20%': {
-    transform: 'translateX(0px)',
+    transform: 'translateX(-3px)',
   },
   '100%': {
-    transform: 'translateX(-5px)',
+    transform: 'translateX(-10px)',
   },
 });
 const CursorRoot = style('div', () => {
@@ -51,7 +52,7 @@ const CursorRoot = style('div', () => {
     position: 'absolute',
     top: '-8px',
     left: '-32px',
-    animation: `${cursorPulse} 500ms linear infinite`,
+    animation: `${cursorPulse} 750ms linear infinite`,
   };
 });
 
@@ -65,11 +66,15 @@ const Cursor = (): h.JSX.Element => {
 
 const ActionSelectMenu = (props: IActionSelectMenuProps) => {
   const handleButtonClick = (i: number) => () => {
-    props.onActionClicked(i);
+    if (!props.disabled) {
+      props.onActionClicked(i);
+    }
   };
 
   const handleButtonHover = (i: number) => () => {
-    props.setCursorIndex(i);
+    if (!props.disabled) {
+      props.setCursorIndex(i);
+    }
   };
 
   return (
@@ -85,6 +90,7 @@ const ActionSelectMenu = (props: IActionSelectMenuProps) => {
               selected={isSelected}
               onClick={handleButtonClick(i)}
               onMouseOver={handleButtonHover(i)}
+              disabled={props.disabled}
             >
               {action.name}
             </PillButton>

@@ -82,7 +82,7 @@ Conscience: "I will now look at Ada."
 +setConversationSpeaker("none");
 +lookAtCharacter("Conscience", "Ada");
 +waitMS(1000);
-Conscience: "Ada and I are now gazing wonderously at each other."
+Conscience: "Ada and I are now gazing wondrously at each other."
 Ada: "Please refrain from wording it like that."
 Conscience: "Teehee!"
 Conscience: "The test will now conclude!"
@@ -191,7 +191,6 @@ Ada: "I have jumped."
 +setConversation2("Ada", "Conscience");
 Ada: "This script tests awaitChoice."
 Conscience: "Which choice would you like to pick?"
-// +setConversationSpeaker(none);
 +awaitChoice('This is choice 1', 'This is choice 2', 'This is choice 3');
 +?eq(lastChoiceIndex, 0):{
   Ada: "I have chosen the FIRST choice."
@@ -203,7 +202,6 @@ Conscience: "Which choice would you like to pick?"
   Ada: "I have chosen the THIRD choice."
 }
 Ada: "Thus, I have chosen."
-// +setConversationSpeaker(none);
 +endConversation(100);
 +setConversation(Ada);
 Ada: "Now we will test a question asked by somebody else."
@@ -223,4 +221,4 @@ Ada: "The test will now conclude."
 +endConversation();
 
 @test-fight
-+enterCombat(ENCOUNTER_ONE_VS_ONE);
++enterCombat(ENCOUNTER_TUT4);

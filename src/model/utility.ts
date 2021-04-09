@@ -8,14 +8,16 @@ export class Timer {
   duration: number;
   shouldRemove: boolean;
   awaits: any[];
-  isPaused: boolean;
+  paused: boolean;
+  pausedOverridden: boolean;
 
   constructor(duration: number) {
     this.timestampStart = getNow();
     this.timestampPause = 0;
     this.duration = duration;
     this.shouldRemove = false;
-    this.isPaused = false;
+    this.paused = false;
+    this.pausedOverridden = false;
     this.awaits = [];
   }
 
@@ -24,16 +26,39 @@ export class Timer {
     this.duration = duration ?? this.duration;
   }
 
+  isPaused() {
+    return this.paused || this.pausedOverridden;
+  }
+
   pause(): void {
-    if (!this.isPaused) {
-      this.isPaused = true;
+    if (!this.paused) {
+      this.paused = true;
       this.timestampPause = getNow();
     }
   }
+
+  pauseOverride(): void {
+    if (!this.pausedOverridden) {
+      this.pausedOverridden = true;
+      if (!this.paused) {
+        this.timestampPause = getNow();
+      }
+    }
+  }
+
   unpause(): void {
-    if (this.isPaused) {
-      this.isPaused = false;
+    if (this.paused) {
+      this.paused = false;
       this.updateStart(getNow() - this.timestampPause);
+    }
+  }
+
+  unpauseOverride(): void {
+    if (this.pausedOverridden) {
+      this.pausedOverridden = false;
+      if (!this.paused) {
+        this.updateStart(getNow() - this.timestampPause);
+      }
     }
   }
 
@@ -49,7 +74,7 @@ export class Timer {
   }
 
   isComplete(): boolean {
-    return getNow() - this.timestampStart >= this.duration;
+    return !this.isPaused() && getNow() - this.timestampStart >= this.duration;
   }
 
   onCompletion(): Promise<void> {
@@ -63,14 +88,14 @@ export class Timer {
 
   getPctComplete(): number {
     let now = getNow();
-    if (this.isPaused) {
+    if (this.isPaused()) {
       now -= now - this.timestampPause;
     }
     let diff = now - this.timestampStart;
     if (diff > this.duration) {
       diff = this.duration;
     } else if (diff < 0) {
-      diff = 0;
+      diff = -1;
     }
     return diff / this.duration;
   }

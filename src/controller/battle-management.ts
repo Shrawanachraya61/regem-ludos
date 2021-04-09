@@ -56,19 +56,29 @@ import {
   showMarkers,
 } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
-import { createDamageParticle, createStatusParticle } from 'model/particle';
-import { getRandBetween } from 'utils';
+import {
+  createDamageParticle,
+  createStatusParticle,
+  EFFECT_TEMPLATE_ARMOR_REDUCED,
+  particleCreateFromTemplate,
+} from 'model/particle';
+import { getRandBetween, timeoutPromise } from 'utils';
 import { AppSection } from 'model/store';
 import {
   hideSection,
   setBattleCharacterIndexSelected,
   showSection,
 } from 'controller/ui-actions';
-import { BattleAction, BattleActions } from 'controller/battle-actions';
+import {
+  BattleAction,
+  BattleActions,
+  SwingType,
+} from 'controller/battle-actions';
 import { pause, unpause } from './loop';
 import { callScript } from 'controller/scene-management';
 import { popKeyHandler, pushKeyHandler } from './events';
 import { getUiInterface } from 'view/ui';
+import { colors } from 'view/style';
 
 export const initiateBattle = (
   player: Player,
@@ -116,15 +126,6 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
   const battle = getCurrentBattle();
   const isPaused = getIsPaused();
   switch (ev.key) {
-    case 'p':
-    case 'P': {
-      if (isPaused) {
-        unpause();
-      } else {
-        pause();
-      }
-      break;
-    }
     case 'd': {
       if (getTriggersVisible()) {
         hideTriggers();
@@ -203,6 +204,7 @@ export const invokeSkill = (bCh: BattleCharacter, skill: BattleAction) => {
   }
 
   skill.cb(battle, bCh);
+  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterAction, bCh);
 };
 
 export const beginAction = async (bCh: BattleCharacter): Promise<void> => {
@@ -219,29 +221,39 @@ export const beginAction = async (bCh: BattleCharacter): Promise<void> => {
   }
 
   battleCharacterSetActonState(bCh, BattleActionState.ACTING);
-  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterAction, bCh);
   bCh.actionTimer.start();
   bCh.actionTimer.pause();
+
+  battleInvokeEvent(battle, BattleEvent.onCharacterActionStarted, bCh);
 };
+
 export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   console.log('end action', bCh);
   const battle = getCurrentBattle();
 
-  battleCharacterSetActonState(bCh, BattleActionState.ACTING);
-  const transform = bCh.ch.transform;
-  if (transform) {
-    const inverseTransform = transform.createInverse();
-    characterSetTransform(bCh.ch, inverseTransform);
-    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
-    await inverseTransform.timer.onCompletion();
-    inverseTransform.markForRemoval();
+  if (battleCharacterIsCasting(bCh)) {
+  } else {
+    battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+    const transform = bCh.ch.transform;
+    if (transform) {
+      const inverseTransform = transform.createInverse();
+      characterSetTransform(bCh.ch, inverseTransform);
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
+      await inverseTransform.timer.onCompletion();
+      inverseTransform.markForRemoval();
+    }
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+    battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+    resetCooldownTimer(bCh);
+    bCh.actionTimer.unpause();
   }
-  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
-  battleCharacterSetActonState(bCh, BattleActionState.IDLE);
-  resetCooldownTimer(bCh);
-  bCh.actionTimer.unpause();
 
   bCh.canActSignaled = false;
+  battleInvokeEvent(
+    getCurrentBattle(),
+    BattleEvent.onCharacterActionEnded,
+    bCh
+  );
 
   // no more allegiance is acting
   if (battleGetActingAllegiance(battle) === null) {
@@ -272,47 +284,82 @@ export const applyStaggerDamage = (
       battleCharacterSetActonState(bCh, BattleActionState.STAGGERED);
       bCh.staggerTimer.start();
       bCh.staggerGauge.empty();
+      bCh.actionTimer.pause();
 
-      const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
-      roomAddParticle(
-        getCurrentRoom(),
-        createStatusParticle('Staggered', centerPx, centerPy, 'orange')
-      );
+      // This particle makes a lot of visual noise, disabling it for now
+      // const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+      // roomAddParticle(
+      //   getCurrentRoom(),
+      //   createStatusParticle('Staggered', centerPx, centerPy, 'orange')
+      // );
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
     }
   }
 };
 
-export const applyStandardDamage = (
+export const applySwingDamage = (
   battle: Battle,
   attacker: BattleCharacter,
   victim: BattleCharacter,
-  baseDamage: number,
-  staggerDamage: number
+  args: {
+    damage: number;
+    staggerDamage: number;
+    attackType: SwingType;
+  }
 ): void => {
-  let particleColor = '#fff';
+  const { damage: baseDamage, staggerDamage } = args;
+
+  let particleColor = colors.WHITE;
+  let particlePostfix = '';
   const maxDamage = baseDamage + attacker.ch.stats.POW;
   const minDamage = maxDamage - Math.ceil(maxDamage / 4);
   let damage = Math.floor(getRandBetween(minDamage, maxDamage));
 
   if (battleCharacterIsStaggered(victim)) {
     damage *= 2;
-    particleColor = '#f77';
+    particleColor = colors.ORANGE;
+    particlePostfix = '!';
+  } else if (victim.armor > 0) {
+    let armorReduced = false;
+    if (args.attackType === SwingType.PIERCE) {
+      victim.armor--;
+      armorReduced = true;
+      damage = 0;
+    } else if (victim.armorTimer.isComplete()) {
+      victim.armorTimer.start();
+      particleColor = colors.BLUE;
+      damage = 0;
+    } else {
+      particleColor = colors.ORANGE;
+      victim.armor--;
+      armorReduced = true;
+    }
+
+    if (armorReduced) {
+      const [centerPx, centerPy] = characterGetPosCenterPx(victim.ch);
+      const particleWidth = 16;
+      const particle = particleCreateFromTemplate(
+        [centerPx + particleWidth / 2, centerPy - victim.ch.spriteHeight / 4],
+        EFFECT_TEMPLATE_ARMOR_REDUCED
+      );
+      roomAddParticle(battle.room, particle);
+    }
   }
+
   applyStaggerDamage(victim, staggerDamage);
 
-  interruptCast(victim);
+  if (victim.armor <= 0) {
+    interruptCast(victim);
+  }
 
   // TODO Evasion
 
   // TODO Pinned
 
-  // TODO Armor
-
   // TODO Damage Reduction
 
-  damage = Math.max(1, damage);
-  applyDamage(battle, victim, damage, particleColor);
+  damage = Math.max(0, damage);
+  applyDamage(battle, victim, damage, particleColor, particlePostfix);
 };
 
 export const applyMagicDamage = (
@@ -322,11 +369,14 @@ export const applyMagicDamage = (
   baseDamage: number,
   staggerDamage: number
 ): void => {
+  let particlePostfix = '';
+
   const maxDamage = baseDamage + attacker.ch.stats.POW;
   const minDamage = maxDamage - Math.ceil(maxDamage / 4);
   let damage = Math.floor(getRandBetween(minDamage, maxDamage));
 
   if (battleCharacterIsStaggered(victim)) {
+    particlePostfix = '!';
     damage *= 2;
   }
   applyStaggerDamage(victim, staggerDamage);
@@ -340,7 +390,7 @@ export const applyMagicDamage = (
   // TODO Pinned
 
   damage = Math.max(1, damage);
-  applyDamage(battle, victim, damage, '#fff');
+  applyDamage(battle, victim, damage, colors.LIGHTBLUE, particlePostfix);
 };
 
 export const resetCooldownTimer = (bCh: BattleCharacter) => {
@@ -366,6 +416,7 @@ export const setCasting = (
 ) => {
   battleCharacterSetActonState(bCh, BattleActionState.CASTING);
   characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CAST);
+  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterCasting, bCh);
 
   const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
   roomAddParticle(
@@ -377,13 +428,11 @@ export const setCasting = (
   bCh.castTimer.duration = castArgs.castTime;
   bCh.castTimer.start();
   bCh.onCast = async () => {
-    bCh.actionTimer.unpause();
     if (castArgs.onCast) {
       await castArgs.onCast();
     }
   };
   bCh.onCastInterrupted = async () => {
-    bCh.actionTimer.unpause();
     if (castArgs.onInterrupt) {
       await castArgs.onInterrupt();
     }
@@ -400,6 +449,7 @@ export const interruptCast = (bCh: BattleCharacter) => {
     );
     bCh.onCastInterrupted();
     const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+    bCh.actionTimer.unpause();
     roomAddParticle(
       getCurrentRoom(),
       createStatusParticle('Interrupted', centerPx, centerPy, 'cyan')
@@ -408,10 +458,22 @@ export const interruptCast = (bCh: BattleCharacter) => {
 };
 
 export const completeCast = async (bCh: BattleCharacter) => {
-  if (battleCharacterCanAct(getCurrentBattle(), bCh)) {
+  const battle = getCurrentBattle();
+  const actingAllegiance = battleGetActingAllegiance(battle);
+  console.log('COMPLETE CAST ALLEGIANCE: ', actingAllegiance);
+  if (
+    actingAllegiance === null ||
+    actingAllegiance === battleGetAllegiance(battle, bCh.ch)
+  ) {
     await beginAction(bCh);
     battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterSpell, bCh);
     await bCh.onCast();
+
+    // HACK: Hard reset the timer, somehow it gets messed up.
+    bCh.actionTimer.unpause();
+    bCh.actionTimer.start();
+    bCh.actionTimer.pause();
+
     await endAction(bCh);
   }
 };
@@ -420,20 +482,23 @@ export const applyDamage = (
   battle: Battle,
   bCh: BattleCharacter,
   dmg: number,
-  particleColor: string
+  particleColor: string,
+  postfix?: string
 ): void => {
   console.log('apply damage to', dmg, bCh.ch.name);
-  const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
-  roomAddParticle(
-    battle.room,
-    createDamageParticle(
-      `${dmg}${particleColor === '#fff' ? '' : '!'}`,
-      centerPx,
-      centerPy,
-      particleColor
-    )
-  );
-  characterModifyHp(bCh.ch, -dmg);
+  if (dmg > 0) {
+    const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+    roomAddParticle(
+      battle.room,
+      createDamageParticle(
+        `${dmg}${postfix ?? ''}`,
+        centerPx,
+        centerPy,
+        particleColor
+      )
+    );
+    characterModifyHp(bCh.ch, -dmg);
+  }
   battleCharacterSetAnimationStateAfterTakingDamage(bCh);
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterDamaged, bCh);
 };
@@ -458,19 +523,21 @@ export const updateBattle = (battle: Battle): void => {
 
   if (!battle.isCompleted) {
     if (battleIsVictory(battle)) {
+      // HACK: last enemy remains without this for some reason
       battle.isCompleted = true;
-      showSection(AppSection.BattleVictory, true);
-      for (const i in battle.allies) {
-        characterSetAnimationState(
-          battle.allies[i].ch,
-          AnimationState.BATTLE_FLOURISH
-        );
-      }
-      setTimeout(() => {
-        console.log('VICTORY!');
-        popKeyHandler(battleKeyHandler);
-        showSection(AppSection.Debug, true);
-      }, 2000);
+      popKeyHandler(battleKeyHandler);
+      const showVictory = async () => {
+        console.log('VICTORY');
+        showSection(AppSection.BattleVictory, true);
+        await timeoutPromise(2000);
+        for (const i in battle.allies) {
+          characterSetAnimationState(
+            battle.allies[i].ch,
+            AnimationState.BATTLE_FLOURISH
+          );
+        }
+      };
+      showVictory();
     } else if (battleIsLoss(battle)) {
       battle.isCompleted = true;
       showSection(AppSection.BattleDefeated, true);

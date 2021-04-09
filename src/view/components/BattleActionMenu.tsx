@@ -45,7 +45,7 @@ const BattleActionMenu = (props: IBattleActionMenuProps): h.JSX.Element => {
               <MenuLabel>
                 <span>{skill.name}</span>
                 <MenuIcon>
-                  <skill.icon color={colors.WHITE} />
+                  {/* <skill.meta.icon color={colors.WHITE} /> */}
                 </MenuIcon>
               </MenuLabel>
             ),

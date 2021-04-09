@@ -475,7 +475,7 @@ export class ScriptParser {
         currentTrigger = new Trigger(line.substr(1), this.name, lineNum);
         addTrigger(line.substr(1), currentTrigger);
       } else if (firstCh === '+' || isCodeBlock) {
-        let commandContents = line.substr(isCodeBlock ? 0 : 1);
+        const commandContents = line.substr(isCodeBlock ? 0 : 1);
         if (currentScript) {
           const { conditional, endIndex } = this.getConditionalFromLine(
             commandContents,

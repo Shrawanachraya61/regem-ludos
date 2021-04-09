@@ -17,6 +17,6 @@ export const BATTLE_AI_ATTACK: BattleAI = (
   const allegiance = battleGetAllegiance(battle, ch);
   const target = battleGetNearestAttackable(battle, allegiance);
   if (target) {
-    invokeSkill(bCh, BattleActions.SwingSlow);
+    invokeSkill(bCh, bCh.ch.skills[0]);
   }
 };

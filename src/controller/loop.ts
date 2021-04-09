@@ -13,6 +13,7 @@ import {
   getCurrentScene,
   getRenderBackgroundColor,
   setCameraDrawOffset,
+  getAllTimers,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -29,9 +30,17 @@ import {
   drawRect,
   drawSprite,
 } from 'view/draw';
-import { Character, characterUpdate } from 'model/character';
-import { particleUpdate } from 'model/particle';
-import { BattleCharacter } from 'model/battle-character';
+import {
+  Character,
+  characterGetAnimation,
+  characterUpdate,
+} from 'model/character';
+import { Particle, particleUpdate } from 'model/particle';
+import {
+  BattleCharacter,
+  battleCharacterIsActing,
+  battleCharacterIsCasting,
+} from 'model/battle-character';
 import { renderUi } from 'view/ui';
 import { updateBattle } from 'controller/battle-management';
 import { updateOverworld } from 'controller/overworld-management';
@@ -45,12 +54,26 @@ export const pause = () => {
   }
   setIsPaused(true);
   renderUi();
+  getAllTimers().forEach(t => {
+    t.pauseOverride();
+  });
 
   const room = getCurrentRoom();
   if (room) {
     room.characters.forEach((ch: Character) => {
       if (ch.transform) {
-        ch.transform.timer.pause();
+        ch.transform.timer.pauseOverride();
+      }
+      const anim = characterGetAnimation(ch);
+      anim.pause();
+    });
+    room.particles.forEach((p: Particle) => {
+      p.timer.pauseOverride();
+      if (p.anim) {
+        p.anim.pause();
+      }
+      if (p.transform) {
+        p.transform.timer.pauseOverride();
       }
     });
   }
@@ -58,9 +81,13 @@ export const pause = () => {
   const battle = getCurrentBattle();
   if (battle) {
     battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-      bCh.actionTimer.pause();
-      bCh.staggerTimer.pause();
-      bCh.castTimer.pause();
+      bCh.actionTimer.pauseOverride();
+      bCh.staggerTimer.pauseOverride();
+      bCh.castTimer.pauseOverride();
+      bCh.actionReadyTimer.pauseOverride();
+      if (bCh.ch.transform) {
+        bCh.ch.transform.timer.pauseOverride();
+      }
     });
   }
 };
@@ -71,12 +98,26 @@ export const unpause = () => {
   }
   setIsPaused(false);
   renderUi();
+  getAllTimers().forEach(t => {
+    t.unpauseOverride();
+  });
 
   const room = getCurrentRoom();
   if (room) {
     room.characters.forEach((ch: Character) => {
       if (ch.transform) {
-        ch.transform.timer.unpause();
+        ch.transform.timer.unpauseOverride();
+      }
+      const anim = characterGetAnimation(ch);
+      anim.unpause();
+    });
+    room.particles.forEach((p: Particle) => {
+      p.timer.unpauseOverride();
+      if (p.anim) {
+        p.anim.unpause();
+      }
+      if (p.transform) {
+        p.transform.timer.unpauseOverride();
       }
     });
   }
@@ -84,9 +125,13 @@ export const unpause = () => {
   const battle = getCurrentBattle();
   if (battle) {
     battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-      bCh.actionTimer.unpause();
-      bCh.staggerTimer.unpause();
-      bCh.castTimer.unpause();
+      bCh.actionTimer.unpauseOverride();
+      bCh.staggerTimer.unpauseOverride();
+      bCh.castTimer.unpauseOverride();
+      bCh.actionReadyTimer.unpauseOverride();
+      if (bCh.ch.transform) {
+        bCh.ch.transform.timer.unpauseOverride();
+      }
     });
   }
 };
@@ -106,9 +151,41 @@ export const runMainLoop = async (): Promise<void> => {
     setNow(now);
 
     if (getIsPaused()) {
+      // clearScreen();
+      // clearScreen(getCtx('outer'));
+      const [screenW, screenH] = getScreenSize();
+      // drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+      const room = getCurrentRoom();
+      const battle = getCurrentBattle();
+      const roomVisible = room.visible;
+
+      // position the camera in the right spot
+      let roomXOffset = 0;
+      let roomYOffset = 0;
+      if (battle) {
+        roomXOffset = screenW / 2 - 32 / 2;
+        roomYOffset = screenH / 4 - 13;
+      } else {
+        const player = getCurrentPlayer();
+        if (player) {
+          const [oX, oY] = playerGetCameraOffset(player);
+          roomXOffset = oX;
+          roomYOffset = oY;
+        }
+      }
+      setCameraDrawOffset([roomXOffset, roomYOffset]);
+
+      if (roomVisible) {
+        drawRoom(room, [roomXOffset, roomYOffset], undefined, true);
+      }
+
       if ((window as any).running) requestAnimationFrame(loop);
       return;
     }
+
+    getAllTimers().forEach(t => {
+      t.update();
+    });
 
     clearScreen();
     clearScreen(getCtx('outer'));

@@ -158,8 +158,8 @@ const gidToTileSpriteAndSize = (
 
   let i = 0;
   do {
-    let tilesetA = tilesets[i];
-    let tilesetB = tilesets[i + 1];
+    const tilesetA = tilesets[i];
+    const tilesetB = tilesets[i + 1];
     if (!tilesetB || (gid >= tilesetA.firstgid && gid < tilesetB.firstgid)) {
       const localId = gid - tilesetA.firstgid;
       // const imageName = tilesetA.image.slice(tilesetA.image.lastIndexOf('/') + 1, -4);

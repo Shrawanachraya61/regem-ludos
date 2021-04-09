@@ -100,4 +100,10 @@ export const init = () => {
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
   };
+
+  for (const i in exp) {
+    if (exp[i].name === '') {
+      exp[i].name = i;
+    }
+  }
 };

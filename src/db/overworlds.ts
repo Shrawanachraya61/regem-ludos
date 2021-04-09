@@ -3,6 +3,8 @@ import { Room, createRoom } from 'model/room';
 import { colors } from 'view/style';
 
 import * as battle1Json from 'map/battle1.json';
+import * as battleTut1 from 'map/battle-tut1.json';
+
 import * as testJson from 'map/test.json';
 import * as test2Json from 'map/test2.json';
 import * as floor1Outside from 'map/floor1-outside.json';
@@ -33,6 +35,8 @@ export const loadRooms = async (): Promise<void> => {
   console.log('loading rooms');
 
   await loadRoom('battle1', battle1Json);
+  await loadRoom('battleTut1', battleTut1);
+
   await loadRoom('test', testJson);
   await loadRoom('test2', test2Json);
 
@@ -44,7 +48,11 @@ export const loadRooms = async (): Promise<void> => {
 };
 
 export const getRoom = (mapName: string): Room => {
-  return rooms[mapName];
+  const room = rooms[mapName];
+  if (!room) {
+    throw new Error(`No room exists with name: "${mapName}"`);
+  }
+  return room;
 };
 
 const exp: Record<

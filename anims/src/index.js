@@ -3,10 +3,17 @@ import { render } from 'react-dom';
 import MainContainer from './cmpts/main-container';
 import display from 'content/display';
 
-async function init() {
-  await display.loadImages();
+async function loadPrimary() {
+  const files = await display.getImageList();
+  await display.loadImages(files);
   const txt = await display.loadTxt();
-  await display.init(null, txt);
+  await display.loadRes(txt);
+}
+
+async function init() {
+  await display.loadPlaceholderImage();
+  await display.init(null);
+  await loadPrimary();
   Array.prototype.forEach.call(
     document.querySelectorAll('.loading'),
     el => (el.style.display = 'none')

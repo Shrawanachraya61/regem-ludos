@@ -29,14 +29,14 @@ class AssetLoader {
       const animName = line[1];
       const loop = line[2].trim();
       currentAnim.name = animName;
-      currentAnim.loop = loop.indexOf('true') >= 0 ? true : false;
+      currentAnim.loop = loop.indexOf('true') >= 0;
     };
 
     const _AnimSprite = function (line: any, currentAnim: Animation) {
       const spriteName = line[1];
       const ms = parseFloat(line[2]);
 
-      currentAnim.sprites.push({
+      currentAnim.addSprite({
         name: spriteName,
         duration: ms,
       });

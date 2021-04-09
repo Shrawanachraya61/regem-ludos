@@ -1,15 +1,22 @@
-import { Room, tilePosToWorldPos } from 'model/room';
+import { Room, roomRemoveCharacter, tilePosToWorldPos } from 'model/room';
 import {
   AnimationState,
   Character,
   characterSetAnimationState,
+  characterGetAnimationState,
   CharacterTemplate,
   characterOnAnimationCompletion,
   characterModifyHp,
+  characterHasAnimationState,
+  WeaponEquipState,
 } from 'model/character';
 import { Point, randomId } from 'utils';
 import { BattleAI } from 'controller/battle-ai';
-import { BattleAction } from 'controller/battle-actions';
+import {
+  BattleAction,
+  BattleActionType,
+  SwingType,
+} from 'controller/battle-actions';
 import { completeCast, endAction } from 'controller/battle-management';
 import { Timer, Gauge } from 'model/utility';
 import {
@@ -23,6 +30,8 @@ import {
   battleGetAllegiance,
   battleInvokeEvent,
   BattleEvent,
+  battleSubscribeEvent,
+  battleUnsubscribeEvent,
 } from './battle';
 
 export enum BattleActionState {
@@ -31,11 +40,12 @@ export enum BattleActionState {
   ACTING_READY = 'acting-ready',
   CASTING = 'casting',
   STAGGERED = 'staggered',
-  PINNED = 'pinned',
+  KNOCKED_DOWN = 'knocked-down',
 }
 
 export interface BattleCharacter {
   ch: Character;
+  armor: number;
   isDefeated: boolean;
   shouldRemove: boolean;
   actionTimer: Timer; // cooldown timer
@@ -43,6 +53,7 @@ export interface BattleCharacter {
   staggerTimer: Timer;
   staggerGauge: Gauge;
   castTimer: Timer;
+  armorTimer: Timer;
   position: BattlePosition;
   actionState: BattleActionState;
   actionStateIndex: number;
@@ -56,13 +67,13 @@ export interface BattleCharacter {
 
 const battleCharacterCreate = (
   ch: Character,
-  position: BattlePosition,
-  ai?: any
+  position: BattlePosition
 ): BattleCharacter => {
   const skill = ch.skills[ch.skillIndex];
   const staggerDmg = ch.stats.STAGGER;
-  return {
+  const bCh: BattleCharacter = {
     ch,
+    armor: 0,
     isDefeated: false,
     shouldRemove: false,
     actionTimer: new Timer(skill?.cooldown ?? 2000),
@@ -70,6 +81,7 @@ const battleCharacterCreate = (
     staggerTimer: new Timer(2000),
     staggerGauge: new Gauge(staggerDmg, 0.002),
     castTimer: new Timer(1000),
+    armorTimer: new Timer(500),
     position,
     actionState: BattleActionState.IDLE,
     actionStateIndex: 0,
@@ -78,8 +90,9 @@ const battleCharacterCreate = (
     onCanActCb: async function () {},
     onCast: async function () {},
     onCastInterrupted: async function () {},
-    ai,
+    ai: undefined,
   };
+  return bCh;
 };
 
 export const battleCharacterCreateEnemy = (
@@ -89,7 +102,13 @@ export const battleCharacterCreateEnemy = (
   if (ch.name.lastIndexOf('+') === -1) {
     ch.name = ch.name + '+' + randomId();
   }
-  return battleCharacterCreate(ch, template.position, template.ai);
+
+  const bCh = battleCharacterCreate(ch, template.position);
+
+  bCh.ai = template.ai;
+  bCh.armor = template.armor ?? ch.template?.armor ?? 0;
+
+  return bCh;
 };
 export const battleCharacterCreateAlly = (
   ch: Character,
@@ -114,12 +133,12 @@ export const battleCharacterIsActingReady = (bCh: BattleCharacter) => {
 export const battleCharacterIsStaggered = (bCh: BattleCharacter) => {
   return (
     bCh.actionState === BattleActionState.STAGGERED ||
-    bCh.actionState === BattleActionState.PINNED
+    bCh.actionState === BattleActionState.KNOCKED_DOWN
   );
 };
 
-export const battleCharacterIsPinned = (bCh: BattleCharacter) => {
-  return bCh.actionState === BattleActionState.PINNED;
+export const battleCharacterIsKnockedDown = (bCh: BattleCharacter) => {
+  return bCh.actionState === BattleActionState.KNOCKED_DOWN;
 };
 
 export const battleCharacterIsCasting = (bCh: BattleCharacter) => {
@@ -138,6 +157,9 @@ export const battleCharacterCanAct = (
   bCh: BattleCharacter
 ): boolean => {
   if (battleCharacterIsActing(bCh)) {
+    return false;
+  }
+  if (battleCharacterIsStaggered(bCh)) {
     return false;
   }
   const ch = bCh.ch;
@@ -193,16 +215,105 @@ export const battleCharacterSetAnimationStateAfterTakingDamage = (
   bCh: BattleCharacter
 ) => {
   if (battleCharacterIsStaggered(bCh)) {
-    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED, true);
   } else {
-    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED);
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED, true);
     characterOnAnimationCompletion(bCh.ch, () => {
       if (battleCharacterIsStaggered(bCh)) {
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
+        characterSetAnimationState(
+          bCh.ch,
+          AnimationState.BATTLE_STAGGERED,
+          true
+        );
       } else {
         characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
       }
     });
+  }
+};
+
+export const battleCharacterSetAnimationIdle = (bCh: BattleCharacter) => {
+  if (bCh.ch.weaponEquipState === WeaponEquipState.RANGED) {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE_RANGED);
+  } else {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+  }
+};
+
+export const battleCharacterSetAnimationStateAttack = (
+  bCh: BattleCharacter,
+  actionType: BattleActionType,
+  swingType?: SwingType
+) => {
+  switch (actionType) {
+    case BattleActionType.RANGED: {
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_RANGED);
+      break;
+    }
+    case BattleActionType.CAST: {
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CAST);
+      break;
+    }
+    case BattleActionType.CHANNEL: {
+      console.error('No channel type implemented to set animation');
+      break;
+    }
+    case BattleActionType.SWING: {
+      switch (swingType) {
+        case SwingType.NORMAL: {
+          characterSetAnimationState(bCh.ch, AnimationState.BATTLE_ATTACK);
+          break;
+        }
+        case SwingType.PIERCE: {
+          if (
+            characterHasAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_PIERCE
+            )
+          ) {
+            characterSetAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_PIERCE
+            );
+            break;
+          } else {
+            characterSetAnimationState(bCh.ch, AnimationState.BATTLE_ATTACK);
+          }
+        }
+        case SwingType.KNOCK_DOWN: {
+          if (
+            characterHasAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_KNOCKDOWN
+            )
+          ) {
+            characterSetAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_KNOCKDOWN
+            );
+            break;
+          } else {
+            characterSetAnimationState(bCh.ch, AnimationState.BATTLE_ATTACK);
+          }
+        }
+        case SwingType.FINISH: {
+          if (
+            characterHasAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_FINISH
+            )
+          ) {
+            characterSetAnimationState(
+              bCh.ch,
+              AnimationState.BATTLE_ATTACK_FINISH
+            );
+            break;
+          } else {
+            characterSetAnimationState(bCh.ch, AnimationState.BATTLE_ATTACK);
+          }
+        }
+      }
+    }
   }
 };
 
@@ -211,14 +322,22 @@ export const updateBattleCharacter = (
   bCh: BattleCharacter
 ): void => {
   if (bCh.ch.hp <= 0) {
+    // enforce the animation state of defeated every frame
+    if (characterGetAnimationState(bCh.ch) !== AnimationState.BATTLE_DEFEATED) {
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
+    }
+
     if (!bCh.isDefeated) {
       bCh.isDefeated = true;
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
-      characterOnAnimationCompletion(bCh.ch, () => {
+
+      // HACK: assumes that a character can only die at the end of a turn
+      const removeCharacter = () => {
         let ind = battle.enemies.indexOf(bCh);
         if (ind > -1) {
           bCh.shouldRemove = true;
           battle.defeated.push(bCh);
+          roomRemoveCharacter(battle.room, bCh.ch);
           return;
         }
         ind = battle.allies.indexOf(bCh);
@@ -226,7 +345,13 @@ export const updateBattleCharacter = (
           bCh.shouldRemove = true;
           battle.defeated.push(bCh);
         }
-      });
+        battleUnsubscribeEvent(
+          battle,
+          BattleEvent.onTurnEnded,
+          removeCharacter
+        );
+      };
+      battleSubscribeEvent(battle, BattleEvent.onTurnEnded, removeCharacter);
     }
     return;
   }
@@ -239,6 +364,7 @@ export const updateBattleCharacter = (
     if (bCh.staggerTimer.isComplete()) {
       battleCharacterSetActonState(bCh, BattleActionState.IDLE);
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+      bCh.actionTimer.unpause();
       battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
     }
   }
@@ -255,7 +381,13 @@ export const updateBattleCharacter = (
 
   bCh.staggerGauge.update();
 
-  if (!battleCharacterIsActing(bCh)) {
+  if (battleCharacterIsActing(bCh)) {
+    if (battleCharacterIsActingReady(bCh)) {
+      if (bCh.ai) {
+        bCh.ai(battle, bCh);
+      }
+    }
+  } else {
     if (battleCharacterCanAct(battle, bCh)) {
       if (!bCh.canActSignaled) {
         bCh.canActSignaled = true;

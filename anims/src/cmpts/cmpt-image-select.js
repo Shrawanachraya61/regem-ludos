@@ -6,7 +6,18 @@ const THUMB_HEIGHT = 64;
 
 const ImageButton = ({ appInterface, imageName }) => {
   const ref = React.useRef(null);
-  const { spriteWidth, img } = display.pictures[imageName];
+  let spriteWidth, img;
+  if (
+    !display.pictures[imageName] ||
+    Array.isArray(display.pictures[imageName])
+  ) {
+    spriteWidth = 64;
+    img = display.placeholder;
+  } else {
+    spriteWidth = display.pictures[imageName].spriteWidth;
+    img = display.pictures[imageName].img;
+  }
+
   React.useEffect(() => {
     const scale = spriteWidth > 64 ? 0.25 : 1;
     let offsetX = 0;

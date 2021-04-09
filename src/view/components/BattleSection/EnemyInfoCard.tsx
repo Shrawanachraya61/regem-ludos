@@ -1,21 +1,29 @@
 /* @jsx h */
 import { h, Fragment } from 'preact';
-import { BattleCharacter } from 'model/battle-character';
+import {
+  BattleActionState,
+  BattleCharacter,
+  battleCharacterIsStaggered,
+} from 'model/battle-character';
 import { colors, style } from 'view/style';
 import { ProgressBarWithRender } from 'view/elements/ProgressBar';
 import { characterGetHpPct } from 'model/character';
 import AnimDiv from 'view/elements/AnimDiv';
 import ActionSelectMenu from './ActionSelectMenu';
 import { useState } from 'preact/hooks';
-import { useCursorIndexStateWithKeypress } from 'view/hooks';
-import {
-  setBattleCharacterSelectedAction,
-  setBattleCharacterIndexSelected,
-} from 'controller/ui-actions';
-import { getUiInterface } from 'view/ui';
+import { useBattleSubscriptionWithBattleCharacter } from 'view/hooks';
+import { setBattleCharacterSelectedAction } from 'controller/ui-actions';
+import { getUiInterface, renderUi } from 'view/ui';
 import { getCurrentBattle, getIsPaused } from 'model/generics';
 import ActionInfoTooltip from './ActionInfoTooltip';
 import PillButton, { ButtonType } from 'view/elements/PillButton';
+import {
+  BattleEvent,
+  battleGetActingAllegiance,
+  battleGetTargetedEnemy,
+  battleSetEnemyTargetIndex,
+} from 'model/battle';
+import ArmorIcon from 'view/icons/Armor';
 
 const MAX_WIDTH = '256px';
 const PRIMARY_CONTAINER_WIDTH = '192px';
@@ -46,7 +54,7 @@ const TopRowContainer = style('div', () => {
     justifyContent: 'center',
     alignItems: 'baseline',
     marginLeft: '32px',
-    marginBottom: '8px',
+    marginBottom: '12px',
     pointerEvents: 'none',
   };
 });
@@ -69,6 +77,7 @@ const PrimaryRowContainer = style('div', () => {
 const PrimaryRoot = style('div', () => {
   return {
     border: '2px solid ' + colors.BLACK,
+    borderBottom: '2px solid ' + colors.RED,
     background: colors.DARKRED,
     display: 'flex',
     justifyContent: 'space-between',
@@ -84,6 +93,11 @@ const ArmorInfoContainer = style('div', () => {
     display: 'flex',
     alignItems: 'column',
     width: '32px',
+    '& > div': {
+      width: '28px',
+      marginBottom: '8px',
+      zIndex: '1',
+    },
   };
 });
 
@@ -125,45 +139,47 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
     return `${props.bCh.ch.name}_${append}`;
   };
 
-  const handleSkillSelect = (i: number) => {
-    setBattleCharacterSelectedAction(props.bCh, i);
-  };
-
   const handlePrimaryClick = () => {
-    if (getIsPaused()) {
-      const battle = getCurrentBattle();
-      setBattleCharacterIndexSelected(battle.allies.indexOf(props.bCh));
+    const battle = getCurrentBattle();
+    if (battleGetActingAllegiance(battle) === null) {
+      battleSetEnemyTargetIndex(battle, props.characterIndex);
+      renderUi();
     }
   };
 
-  const [cursorIndex, setCursorIndex] = useCursorIndexStateWithKeypress(
-    props.isSelected,
-    props.bCh.ch.skillIndex,
-    props.bCh.ch.skills.map((_, i) => i),
-    handleSkillSelect
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterDamaged,
+    () => {
+      // HACK just render the individual progress bar instead of this...
+      renderUi();
+    }
   );
 
-  const actionMenuOpen = props.isSelected;
   const chName = props.bCh.ch.name;
-  const EVA = 0;
-  const actionPct = 1;
-  const hpPct = 1;
-  const stagPct = 0.5;
-  const resPct = 0.25;
-  const portraitName = `${props.bCh.ch.spriteBase}_portrait`;
-  const selectedAction = props.bCh.ch.skills[props.bCh.ch.skillIndex];
-  const isTargeted = true;
+  const isTargeted = battleGetTargetedEnemy(getCurrentBattle()) === props.bCh;
+  const armorIcons: any[] = [];
+  for (let i = 0; i < props.bCh.armor; i++) {
+    armorIcons.push(
+      <div>
+        <ArmorIcon key={i} color={colors.LIGHTGREY} />
+      </div>
+    );
+  }
 
   return (
     <>
       <Root>
         <TopRowContainer id="top-row-ctr">
-          <PillButton id={'name-label-' + chName} type={ButtonType.SECONDARY}>
-            TARGETED
-          </PillButton>
+          {isTargeted ? (
+            <PillButton id={'name-label-' + chName} type={ButtonType.ENEMY}>
+              TARGETED
+            </PillButton>
+          ) : null}
         </TopRowContainer>
         <PrimaryRowContainer id="primary-row-ctr">
-          <ArmorInfoContainer>ARMOR</ArmorInfoContainer>
+          <ArmorInfoContainer>{armorIcons}</ArmorInfoContainer>
           <PrimaryRoot id="primary-root" onClick={handlePrimaryClick}>
             <PrimaryContainer id="primary">
               <CharacterNameLabel id={'name-label-' + chName}>
@@ -205,11 +221,17 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
                   <ProgressBarWithRender
                     id="progress-stagger"
                     renderFunc={() => {
-                      return stagPct;
+                      return battleCharacterIsStaggered(props.bCh)
+                        ? 1 - props.bCh.staggerTimer.getPctComplete()
+                        : props.bCh.staggerGauge.getPct();
                     }}
                     renderKey={createRenderKey('stagger')}
                     backgroundColor={colors.BLACK}
-                    color={PROGRESS_STAG_COLOR}
+                    color={
+                      battleCharacterIsStaggered(props.bCh)
+                        ? colors.WHITE
+                        : PROGRESS_STAG_COLOR
+                    }
                     height={PERCENT_BAR_SHORT_HEIGHT}
                     label=""
                   />

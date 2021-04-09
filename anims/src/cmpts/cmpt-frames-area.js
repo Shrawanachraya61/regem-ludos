@@ -61,6 +61,7 @@ const DragDivider = ({
   appInterface,
   spriteIndex,
   setParentIsDraggingOver,
+  onDropAccepted,
 }) => {
   const [isDraggingOver, setIsDraggingOver] = React.useState(false);
   const color = isDraggingOver ? colors.lightBlue : 'transparent';
@@ -92,6 +93,9 @@ const DragDivider = ({
               appInterface.defaultAnimDuration
             );
             setParentIsDraggingOver(spriteIndex === -1 ? 'scroll' : null);
+            if (onDropAccepted) {
+              onDropAccepted();
+            }
           } else if (dragType.slice(0, 5) === 'frame') {
             const frameIndex = Number(dragType.slice(5));
             moveSpriteFromIndexToIndex(
@@ -100,6 +104,9 @@ const DragDivider = ({
               spriteIndex >= 0 ? spriteIndex : anim.sprites.length,
               false
             );
+            if (onDropAccepted) {
+              onDropAccepted();
+            }
           }
           appInterface.setAnimation(display.getAnimation(anim.name));
         }}
@@ -178,7 +185,7 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
     display.clearScreen();
     display.drawSprite(spriteName, 32, 32, { centered: true });
     display.restoreCanvas();
-  }, [spriteName, ref]);
+  });
 
   React.useEffect(() => {
     if (!setup && durationMs !== duration) {
@@ -218,6 +225,10 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               spriteName,
               spriteIndex >= 0 ? spriteIndex : anim.sprites.length
             );
+            appInterface.setAnimation(display.getAnimation(anim.name));
+            setTimeout(() => {
+              appInterface.render();
+            });
           } else if (dragType.slice(0, 5) === 'frame') {
             const frameIndex = Number(dragType.slice(5));
             moveSpriteFromIndexToIndex(
@@ -226,6 +237,10 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               spriteIndex >= 0 ? spriteIndex : anim.sprites.length,
               true
             );
+            appInterface.setAnimation(display.getAnimation(anim.name));
+            setTimeout(() => {
+              appInterface.render();
+            });
           }
         }}
         style={{
@@ -260,6 +275,7 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               marginBottom: '5px',
               pointerEvents: 'none',
               textAlign: 'left',
+              maxWidth: '118px',
             }}
           >
             {spriteName}
@@ -316,15 +332,24 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               label="Duration"
               width={60}
               value={duration}
+              onClick={ev => {
+                ev.target.select();
+              }}
               onChange={ev => {
-                console.log('SET DURATION', ev.target.value);
-                setDuration(ev.target.value);
+                setSetup(true);
+                const value = ev.target.value;
+                setTimeout(() => {
+                  setDuration(value);
+                });
               }}
               onBlur={() => {
                 anim.sprites[spriteIndex].durationMs = Number(duration);
                 display.updateAnimation(anim, null, anim.loop, anim.sprites);
                 anim.remakeMS();
                 appInterface.setAnimation(display.getAnimation(anim.name));
+                setTimeout(() => {
+                  appInterface.render();
+                });
               }}
               style={{ pointerEvents: appInterface.isDragging ? 'none' : null }}
               inputStyle={{
@@ -337,18 +362,37 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
             />
           </div>
         </div>
-        <canvas
+        <div
           style={{
-            pointerEvents: 'none',
-            margin: '5px',
-            border:
-              '1px solid ' + (isDraggingOver ? colors.green : colors.white),
-            backgroundColor: 'black',
+            position: 'relative',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
           }}
-          ref={ref}
-          width={64}
-          height={64}
-        ></canvas>
+        >
+          <canvas
+            style={{
+              pointerEvents: 'none',
+              margin: '5px',
+              border:
+                '1px solid ' + (isDraggingOver ? colors.green : colors.white),
+              backgroundColor: 'black',
+            }}
+            ref={ref}
+            width={64}
+            height={64}
+          ></canvas>
+          <div
+            style={{
+              position: 'absolute',
+              left: '6px',
+              bottom: '4px',
+              color: colors.lightBlue,
+            }}
+          >
+            {spriteIndex}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -400,6 +444,19 @@ const FramesArea = ({ appInterface }) => {
                       setShouldScrollToRight(true);
                     }
                   }}
+                  onDropAccepted={
+                    i === 0
+                      ? () => {
+                          appInterface.setAnimation(null);
+                          setTimeout(() => {
+                            appInterface.setAnimation(
+                              display.getAnimation(anim.name)
+                            );
+                            appInterface.render();
+                          });
+                        }
+                      : 0
+                  }
                 />
                 <Frame
                   key={i}

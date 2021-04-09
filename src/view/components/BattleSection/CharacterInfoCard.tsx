@@ -1,39 +1,40 @@
 /* @jsx h */
 import { h, Fragment } from 'preact';
-import { BattleCharacter } from 'model/battle-character';
+import {
+  BattleCharacter,
+  battleCharacterIsStaggered,
+  BattleActionState,
+  battleCharacterIsActing,
+  battleCharacterIsActingReady,
+  battleCharacterCanAct,
+  battleCharacterIsCasting,
+} from 'model/battle-character';
 import { colors, keyframes, style } from 'view/style';
-import { ProgressBarWithRender } from 'view/elements/ProgressBar';
-import { characterGetHpPct } from 'model/character';
 import AnimDiv from 'view/elements/AnimDiv';
 import ActionSelectMenu from './ActionSelectMenu';
-import { useState } from 'preact/hooks';
 import {
   useCursorIndexStateWithKeypress,
   useBattleSubscriptionWithBattleCharacter,
+  useReRender,
 } from 'view/hooks';
 import {
   setBattleCharacterSelectedAction,
   setBattleCharacterIndexSelected,
 } from 'controller/ui-actions';
-import { getUiInterface } from 'view/ui';
 import { getCurrentBattle, getIsPaused } from 'model/generics';
 import ActionInfoTooltip from './ActionInfoTooltip';
 import { BattleEvent } from 'model/battle';
 
+import PrimaryInfo from './PrimaryInfo';
+import PrimaryActingWeapon from './PrimaryActingWeapon';
+import PrimaryCasting from './PrimaryCasting';
 import Circle from 'view/icons/Circle';
+import { BattleActionType } from 'controller/battle-actions';
 
 const MAX_WIDTH = '256px';
 const PRIMARY_CONTAINER_WIDTH = '192px';
 const PRIMARY_CONTAINER_HEIGHT = '96px';
 const PORTRAIT_WIDTH = '152px';
-const PRIMARY_BAR_WIDTH = '100%';
-const PRIMARY_BAR_WIDTH_SHORT = '65%';
-const PERCENT_BAR_HEIGHT = 24;
-const PERCENT_BAR_SHORT_HEIGHT = 6;
-const PROGRESS_HP_COLOR = colors.GREEN;
-const PROGRESS_ACTION_COLOR = colors.BLUE;
-const PROGRESS_STAG_COLOR = colors.YELLOW;
-const PROGRESS_RESV_COLOR = colors.PURPLE;
 const ACTION_MENU_HEIGHT = 146;
 const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
 
@@ -47,15 +48,12 @@ const Root = style('div', (props: { expanded: boolean }) => {
   };
 });
 
-const CharacterInfoCardContainer = style(
-  'div',
-  (props: { visible: boolean }) => {
-    return {
-      opacity: props.visible ? '1.0' : '0.0',
-      transition: 'opacity 100ms linear',
-    };
-  }
-);
+const ActionInfoCardContainer = style('div', (props: { visible: boolean }) => {
+  return {
+    opacity: props.visible ? '1.0' : '0.0',
+    transition: 'opacity 100ms linear',
+  };
+});
 
 const TopRowContainer = style('div', () => {
   return {
@@ -74,6 +72,7 @@ const CharacterNameLabel = style('div', () => {
     boxShadow: BOX_SHADOW,
     borderTopLeftRadius: '8px',
     borderTopRightRadius: '8px',
+    textTransform: 'uppercase',
     border: `2px solid ${colors.BLACK}`,
     padding: '8px',
     marginBottom: '12px',
@@ -110,6 +109,7 @@ const PortraitContainer = style('div', () => {
     borderRight: '2px solid ' + colors.BLACK,
     width: PRIMARY_CONTAINER_HEIGHT,
     height: PRIMARY_CONTAINER_HEIGHT,
+    cursor: 'pointer',
     overflow: 'hidden',
   };
 });
@@ -134,6 +134,7 @@ const PrimaryRoot = style('div', (props: { ready: boolean }) => {
     justifyContent: 'space-between',
     animation: props.ready ? `${pulsePrimary} 1000ms linear infinite` : 'unset',
     boxShadow: BOX_SHADOW,
+    height: PRIMARY_CONTAINER_HEIGHT,
     '&:hover': {
       border: '2px solid ' + colors.BLUE,
     },
@@ -156,28 +157,6 @@ const PrimaryContainer = style('div', () => {
     padding: '0px 8px',
   };
 });
-
-const PercentBarContainer = style('div', () => {
-  return {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginBottom: '4px',
-  };
-});
-
-const PercentBarWrapper = style(
-  'div',
-  (props: { short: boolean; borderColor?: string }) => {
-    return {
-      width: props.short ? PRIMARY_BAR_WIDTH_SHORT : PRIMARY_BAR_WIDTH,
-      border: props.short
-        ? 'unset'
-        : `2px solid ${props.borderColor ?? colors.WHITE}`,
-      borderBottom: props.short ? 'unset' : '0px',
-    };
-  }
-);
 
 const BottomRowContainer = style(
   'div',
@@ -282,12 +261,12 @@ interface ICharacterInfoCardProps {
 }
 
 const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
-  const createRenderKey = (append: string) => {
-    return `${props.bCh.ch.name}_${append}`;
-  };
+  const render = useReRender();
 
   const handleSkillSelect = (i: number) => {
-    setBattleCharacterSelectedAction(props.bCh, i);
+    if (!actionMenuDisabled) {
+      setBattleCharacterSelectedAction(props.bCh, i);
+    }
   };
 
   const handlePrimaryClick = () => {
@@ -297,24 +276,30 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
     }
   };
 
-  const [chReady, setChReady] = useState(false);
-  const [chActing, setChActing] = useState(false);
-  const [chCasting, setChCasting] = useState(false);
-
   useBattleSubscriptionWithBattleCharacter(
     getCurrentBattle(),
     props.bCh,
     BattleEvent.onCharacterReady,
     () => {
-      setChReady(true);
+      render();
     }
   );
   useBattleSubscriptionWithBattleCharacter(
     getCurrentBattle(),
     props.bCh,
-    BattleEvent.onCharacterAction,
+    BattleEvent.onCharacterActionStarted,
     () => {
-      setChReady(false);
+      console.log(props.bCh.ch.name, 'Action started');
+      render();
+    }
+  );
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterActionEnded,
+    () => {
+      console.log(props.bCh.ch.name, 'Action ended');
+      render();
     }
   );
   useBattleSubscriptionWithBattleCharacter(
@@ -322,11 +307,10 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
     props.bCh,
     BattleEvent.onCharacterCasting,
     () => {
-      setChCasting(true);
+      console.log(props.bCh.ch.name, 'Casting started');
+      render();
     }
   );
-
-  console.log('render info card', props.bCh.ch.name);
 
   const [cursorIndex, setCursorIndex] = useCursorIndexStateWithKeypress(
     props.isSelected,
@@ -335,21 +319,31 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
     handleSkillSelect
   );
 
-  const actionMenuOpen = props.isSelected;
+  const battle = getCurrentBattle();
   const chName = props.bCh.ch.name;
   const EVA = 0;
-  const stagPct = 0.5;
-  const resPct = 0.25;
   const portraitName = `${props.bCh.ch.spriteBase}_portrait_f`;
   const selectedAction = props.bCh.ch.skills[props.bCh.ch.skillIndex];
+  const chBattleState = props.bCh.actionState;
+  const isInvokingSpell =
+    selectedAction.type === BattleActionType.CAST &&
+    battleCharacterIsActing(props.bCh);
+  const actingWeaponVisible =
+    battleCharacterIsActing(props.bCh) && !isInvokingSpell;
+  const castingVisible = battleCharacterIsCasting(props.bCh) || isInvokingSpell;
+  const infoVisible =
+    !battleCharacterIsActing(props.bCh) && !battleCharacterIsCasting(props.bCh);
+  const actionMenuOpen = props.isSelected;
+  const actionMenuDisabled =
+    battleCharacterIsCasting(props.bCh) || battleCharacterIsActing(props.bCh);
 
   return (
     <>
-      <CharacterInfoCardContainer visible={actionMenuOpen}>
+      <ActionInfoCardContainer visible={actionMenuOpen}>
         <ActionInfoTooltip characterIndexSelected={props.characterIndex}>
           {props.bCh.ch.skills[cursorIndex]?.description}
         </ActionInfoTooltip>
-      </CharacterInfoCardContainer>
+      </ActionInfoCardContainer>
       <Root expanded={actionMenuOpen}>
         <TopRowContainer id="top-row-ctr">
           <CharacterNameLabel id={'name-label-' + chName}>
@@ -362,7 +356,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
           <PrimaryRoot
             id="primary-root"
             onClick={handlePrimaryClick}
-            ready={chReady}
+            ready={chBattleState === BattleActionState.IDLE}
           >
             <PortraitContainer id={`portrait-${portraitName}`}>
               <AnimDiv
@@ -370,76 +364,24 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
                 animName={portraitName}
               ></AnimDiv>
             </PortraitContainer>
-            <PrimaryContainer id="primary">
-              <PercentBarContainer>
-                <PercentBarWrapper
-                  short={false}
-                  borderColor={chReady ? colors.YELLOW : undefined}
-                >
-                  <ProgressBarWithRender
-                    id="progress-action"
-                    renderFunc={() => {
-                      return props.bCh.actionTimer.getPctComplete();
-                    }}
-                    renderKey={createRenderKey('action')}
-                    backgroundColor={colors.BLACK}
-                    color={PROGRESS_ACTION_COLOR}
-                    height={PERCENT_BAR_HEIGHT}
-                    label=""
-                  />
-                </PercentBarWrapper>
-              </PercentBarContainer>
-              <PercentBarContainer>
-                <PercentBarWrapper short={false}>
-                  <ProgressBarWithRender
-                    id="progress-hp"
-                    renderFunc={() => {
-                      return characterGetHpPct(props.bCh.ch);
-                    }}
-                    renderKey={createRenderKey('hp')}
-                    backgroundColor={colors.BLACK}
-                    color={PROGRESS_HP_COLOR}
-                    height={PERCENT_BAR_HEIGHT}
-                    label={`HP: ${props.bCh.ch.hp}`}
-                  />
-                </PercentBarWrapper>
-              </PercentBarContainer>
-              <PercentBarContainer>
-                <span> STAG </span>
-                <PercentBarWrapper short={true}>
-                  <ProgressBarWithRender
-                    id="progress-stagger"
-                    renderFunc={() => {
-                      return stagPct;
-                    }}
-                    renderKey={createRenderKey('stagger')}
-                    backgroundColor={colors.BLACK}
-                    color={PROGRESS_STAG_COLOR}
-                    height={PERCENT_BAR_SHORT_HEIGHT}
-                    label=""
-                  />
-                </PercentBarWrapper>
-              </PercentBarContainer>
-              <PercentBarContainer>
-                <span> RESV </span>
-                <PercentBarWrapper short={true}>
-                  <ProgressBarWithRender
-                    id="progress-reserve"
-                    renderFunc={() => {
-                      return resPct;
-                    }}
-                    renderKey={createRenderKey('reserve')}
-                    backgroundColor={colors.BLACK}
-                    color={PROGRESS_RESV_COLOR}
-                    height={PERCENT_BAR_SHORT_HEIGHT}
-                    label=""
-                  />
-                </PercentBarWrapper>
-              </PercentBarContainer>
+            <PrimaryContainer id={'primary-' + props.bCh.ch.name}>
+              {actingWeaponVisible ? (
+                <PrimaryActingWeapon
+                  bCh={props.bCh}
+                  battleAction={selectedAction}
+                />
+              ) : null}
+              {castingVisible ? (
+                <PrimaryCasting bCh={props.bCh} battleAction={selectedAction} />
+              ) : null}
+              {infoVisible ? <PrimaryInfo bCh={props.bCh} /> : null}
             </PrimaryContainer>
           </PrimaryRoot>
         </PrimaryRowContainer>
-        <BottomRowContainer actionsEnabled={actionMenuOpen} id="bottom-row-ctr">
+        <BottomRowContainer
+          actionsEnabled={actionMenuOpen}
+          id={'bottom-row-ctr-' + props.bCh.ch.name}
+        >
           {actionMenuOpen ? (
             <BottomSwapButtonWrapper>SWAP</BottomSwapButtonWrapper>
           ) : null}
@@ -449,10 +391,17 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
               cursorIndex={cursorIndex}
               setCursorIndex={setCursorIndex}
               onActionClicked={handleSkillSelect}
+              disabled={actionMenuDisabled}
             />
           </BottomRowActionMenuWrapper>
           {actionMenuOpen ? null : (
-            <BottomRowButtonIcon active={chReady && !getIsPaused()}>
+            <BottomRowButtonIcon
+              active={
+                (battleCharacterCanAct(battle, props.bCh) ||
+                  battleCharacterIsActingReady(props.bCh)) &&
+                !getIsPaused()
+              }
+            >
               <Circle color={colors.GREY}></Circle>
               <BottomRowButtonIconText>
                 {keyMapping[props.characterIndex]}

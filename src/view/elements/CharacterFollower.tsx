@@ -3,9 +3,8 @@ import { h } from 'preact';
 import { useRenderLoop } from 'view/hooks';
 import { style, IntrinsicProps } from 'view/style';
 import { getDrawScale } from 'model/canvas';
-import { Character, characterGetPos } from 'model/character';
-import { isoToPixelCoords } from 'utils';
-import { getCameraDrawOffset } from 'model/generics';
+import { Character, characterGetPos, characterGetSize } from 'model/character';
+import { worldToCanvasCoords4by3 } from 'utils';
 
 interface ICharacterFollowerProps extends IntrinsicProps {
   ch: Character;
@@ -15,7 +14,7 @@ interface ICharacterFollowerProps extends IntrinsicProps {
 const Root = style('div', () => {
   return {
     position: 'absolute',
-    border: '2px solid white',
+    // border: '2px solid white',
   };
 });
 
@@ -24,19 +23,19 @@ const CharacterFollower = (props: ICharacterFollowerProps): h.JSX.Element => {
   useRenderLoop(renderKey);
 
   const [x, y, z] = characterGetPos(ch);
-  const [px, py] = isoToPixelCoords(x, y, z);
-  const [roomXOffset, roomYOffset] = getCameraDrawOffset();
-  const scale = getDrawScale();
-  // HACK for scale of 4 at 4:3 resolution
-  const resultX = (px + roomXOffset) * scale - 638 - 48;
-  const resultY = (py + roomYOffset) * scale - 512;
+  const [spriteWidth, spriteHeight] = characterGetSize(ch);
+  const [resultX, resultY] = worldToCanvasCoords4by3(
+    x - (spriteWidth - 32),
+    y - (spriteHeight - 32) / 2,
+    z
+  );
   return (
     <Root
       style={{
         left: resultX + 'px',
         top: resultY + 'px',
-        width: 32 * getDrawScale() + 'px',
-        height: 32 * getDrawScale() + 'px',
+        width: spriteWidth * getDrawScale() + 'px',
+        height: spriteHeight * getDrawScale() + 'px',
         ...(style as Record<string, string>),
       }}
       {...rest}

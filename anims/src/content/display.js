@@ -34,6 +34,18 @@ const display = {
     x: 0,
     y: 0,
   },
+  placeholderImage: null,
+};
+
+display.loadPlaceholderImage = async function() {
+  return new Promise(resolve => {
+    const img = new global.Image();
+    img.onload = () => {
+      display.placeholderImage = img;
+      resolve(img);
+    };
+    img.src = 'placeholder.png';
+  });
 };
 
 class Sprite {
@@ -134,7 +146,11 @@ display.calculateSpritesheet = (imageName, spriteWidth, spriteHeight) => {
 
 display.updatePictureSpriteSize = function(name, spriteWidth, spriteHeight) {
   const picture = display.pictures[name];
-  if (
+  if (Array.isArray(picture)) {
+    picture.push(() =>
+      display.updatePictureSpriteSize(name, spriteWidth, spriteHeight)
+    );
+  } else if (
     picture &&
     (picture.spriteWidth !== spriteWidth ||
       picture.spriteHeight !== spriteHeight)
@@ -170,12 +186,23 @@ display.updateAnimation = function(anim, imageName, loop, sprites) {
 };
 
 display.createAnimation = function(name, picName, cb) {
-  display.animations[name] = cb;
-  if (picName) {
-    const pic = display.pictures[picName];
-    if (!pic.animations.includes(name)) {
-      pic.animations.push(name);
+  try {
+    display.animations[name] = cb;
+    if (picName) {
+      const pic = display.pictures[picName];
+      if (!pic) {
+        throw new Error('Cannot create anim ' + name);
+      }
+
+      if (Array.isArray(pic)) {
+        pic.push(() => display.createAnimation(name, picName, cb));
+      } else if (!pic.animations.includes(name)) {
+        pic.animations.push(name);
+      }
     }
+  } catch (e) {
+    console.error('cannot create anim', name, 'for pic', picName);
+    delete display.animations[name];
   }
 };
 
@@ -491,7 +518,7 @@ display.loadTxt = async function loadTxt() {
   return data.files.reduce((prev, curr) => prev + '\n' + curr, '');
 };
 
-display.loadImages = async function loadImages() {
+display.getImageList = async function getImageList() {
   const type = 'GET';
   const url = '/spritesheets';
   const opts = {
@@ -514,8 +541,11 @@ display.loadImages = async function loadImages() {
     .catch(err => {
       throw err;
     });
+  return data.files;
+};
 
-  const callbacks = data.files.map(async fileName => {
+display.loadImages = async function loadImages(files) {
+  const callbacks = files.map(async fileName => {
     return display.loadPicture(fileName.slice(0, -4), fileName);
   });
 
@@ -600,7 +630,14 @@ display.saveToTxt = async function() {
   }
 };
 
-display.init = async function(canvasId, resTxt) {
+display.loadRes = async function(resTxt) {
+  const l = new AssetLoader(display);
+  await l.loadAssets(resTxt);
+  display.resize(window.innerWidth, window.innerHeight);
+  console.log('[DISPLAY] successfully loaded.');
+};
+
+display.init = async function(canvasId) {
   if (display.loaded) {
     console.warn('[DISPLAY] already loaded!');
     return;
@@ -631,11 +668,6 @@ display.init = async function(canvasId, resTxt) {
   display.origCanvas = display.canvas;
   display.width = display.canvas.width;
   display.height = display.canvas.height;
-
-  const l = new AssetLoader(display);
-  await l.loadAssets(resTxt);
-  display.resize(window.innerWidth, window.innerHeight);
-  console.log('[DISPLAY] successfully loaded.');
   display.loading = false;
 };
 

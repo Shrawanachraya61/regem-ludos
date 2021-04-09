@@ -8,6 +8,7 @@ const Input = ({
   name,
   label,
   errorText,
+  onClick,
   onChange,
   onBlur,
   onKeyDown,
@@ -55,6 +56,7 @@ const Input = ({
         type={type}
         name={name}
         value={value}
+        onClick={onClick}
         onChange={onChange}
         onBlur={onBlur}
         onKeyDown={onKeyDown}

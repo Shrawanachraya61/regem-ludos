@@ -33,7 +33,7 @@ const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
       if (!display.hasAnimation(newAnimName)) {
         copied.push(newAnimName);
         display.createAnimation(newAnimName, selectedSpritesheet, () => {
-          let a = new Animation(true, display);
+          let a = new Animation(anim.loop, display);
           a.name = newAnimName;
           a.isCadence = anim.isCadence;
           anim.sprites.forEach(obj => {

@@ -16,17 +16,19 @@ export const createCanvas = (
   height: number,
   isGL?: boolean
 ): [HTMLCanvasElement, CanvasRenderingContext2D, number, number] => {
-  const canvas = document.createElement('canvas');
+  const canvas = mainCanvas
+    ? new OffscreenCanvas(width || 1, height || 1)
+    : document.createElement('canvas');
   canvas.width = width || 1;
   canvas.height = height || 1;
   let context: any;
   if (isGL) {
     WebGL2D.enable(canvas);
-    context = canvas.getContext('webgl-2d');
+    context = (canvas as any).getContext('webgl-2d');
   } else {
-    context = canvas.getContext('2d');
+    context = (canvas as any).getContext('2d');
   }
-  return [canvas, context as CanvasRenderingContext2D, width, height];
+  return [canvas as any, context as CanvasRenderingContext2D, width, height];
 };
 
 // get a reference to the current canvas.  If it has not been made yet, then create it,
@@ -76,9 +78,6 @@ const setDrawScaleCanvas = (canvas: HTMLCanvasElement, s: number) => {
       canvas.style.left = -(parseInt(canvas.style.width) / 4) + 'px';
       canvas.style.top = -(parseInt(canvas.style.height) / 4) + 'px';
     }
-
-    // canvas.width = SCREEN_WIDTH * drawScale;
-    // canvas.height = SCREEN_WIDTH * drawScale;
   }
 };
 

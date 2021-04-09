@@ -12,6 +12,8 @@ export interface Particle {
   timer: Timer;
   shouldRemove: boolean;
   transform?: Transform;
+  opacity?: number;
+  scale: number;
   x: number;
   y: number;
 }
@@ -20,10 +22,30 @@ export interface ParticleTemplate {
   animName?: string;
   duration?: number;
   flipped?: boolean;
+  opacity?: number;
+  scale?: number;
 }
 
 export const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
   animName: 'effect_sword_left',
+};
+
+export const EFFECT_TEMPLATE_PIERCE_LEFT: ParticleTemplate = {
+  animName: 'effect_pierce_left',
+};
+
+export const EFFECT_TEMPLATE_FIREBALL: ParticleTemplate = {
+  animName: 'effect_fireball_explosion_anim',
+  opacity: 0.65,
+};
+
+export const EFFECT_TEMPLATE_SMOKE: ParticleTemplate = {
+  animName: 'effect_smoke_anim',
+};
+
+export const EFFECT_TEMPLATE_ARMOR_REDUCED: ParticleTemplate = {
+  animName: 'effect_armor_shatter',
+  scale: 0.5,
 };
 
 export const createDamageParticle = (
@@ -39,9 +61,6 @@ export const createDamageParticle = (
     align: 'center',
     strokeColor: 'black',
   };
-  // const [w, h] = measureText(text, textParams);
-  // const xPx = x - w / 2;
-  // const yPx = y - h / 2;
   const particle: Particle = {
     anim: undefined,
     text,
@@ -54,6 +73,7 @@ export const createDamageParticle = (
       duration,
       TransformEase.EASE_OUT
     ),
+    scale: 1,
     x,
     y,
   };
@@ -89,6 +109,7 @@ export const createStatusParticle = (
       duration,
       TransformEase.EASE_OUT
     ),
+    scale: 1,
     x,
     y,
   };
@@ -111,8 +132,10 @@ export const particleCreateFromTemplate = (
     anim,
     timer: new Timer(template.duration ?? anim.getDurationMs()),
     shouldRemove: false,
+    opacity: template.opacity ?? 1,
     x: point[0] - w / 2,
     y: point[1] - h / 2,
+    scale: template.scale ?? 1,
   };
 
   anim.start();

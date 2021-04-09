@@ -1,4 +1,4 @@
-import { createAnimation, Animation } from 'model/animation';
+import { createAnimation, Animation, hasAnimation } from 'model/animation';
 import { BattleStats, battleStatsCreate } from 'model/battle';
 import { Transform, Timer } from 'model/utility';
 import {
@@ -16,6 +16,7 @@ import {
   createPolygonFromRect,
   toFixedPrecision,
   extrapolatePoint,
+  pixelToIsoCoords,
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
 import {
@@ -66,6 +67,12 @@ const DEBUG_drawText = (text: string, x: number, y: number, color: string) => {
   }
 };
 
+export enum WeaponEquipState {
+  NORMAL = 'normal',
+  RANGED = 'ranged',
+  MAGIC = 'magic',
+}
+
 export enum Facing {
   LEFT = 'left',
   UP = 'up',
@@ -85,10 +92,15 @@ export enum AnimationState {
   IDLE = 'idle',
   WALK = 'walk',
   BATTLE_IDLE = 'battle_idle',
+  BATTLE_IDLE_RANGED = 'battle_idle_ranged',
   BATTLE_JUMP = 'battle_jump',
   BATTLE_ATTACK = 'battle_attack',
+  BATTLE_ATTACK_PIERCE = 'battle_attack_p',
+  BATTLE_ATTACK_KNOCKDOWN = 'battle_attack_k',
+  BATTLE_ATTACK_FINISH = 'battle_attack_f',
   BATTLE_DAMAGED = 'battle_damaged',
   BATTLE_STAGGERED = 'battle_staggered',
+  BATTLE_RANGED = 'battle_ranged',
   BATTLE_CAST = 'battle_cast',
   BATTLE_SPELL = 'battle_spell',
   BATTLE_ITEM = 'battle_item',
@@ -107,6 +119,8 @@ export interface Character {
   z: number;
   vx: number;
   vy: number;
+  spriteWidth: number;
+  spriteHeight: number;
   speed: number;
   hp: number;
   transform: Transform | null;
@@ -122,6 +136,7 @@ export interface Character {
     reject: () => void;
   };
   storedAnimations: { [key: string]: Animation };
+  weaponEquipState: WeaponEquipState;
   walkTarget: null | Point;
   walkAngle: number;
   walkDistance: number;
@@ -134,6 +149,8 @@ export interface Character {
   overworldAi: OverworldAI;
   storedState: Record<string, any>;
   timers: Timer[];
+  highlighted: boolean;
+  template: CharacterTemplate | null;
   ro?: RenderObject;
 }
 
@@ -148,6 +165,9 @@ export interface CharacterTemplate {
   skills?: BattleAction[];
   tags?: string[];
   overworldAi?: string;
+  armor?: number;
+  weaponEquipState?: WeaponEquipState;
+  spriteSize?: Point;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -160,6 +180,8 @@ export const characterCreate = (name: string): Character => {
     z: 0,
     vx: 0,
     vy: 0,
+    spriteWidth: 32,
+    spriteHeight: 32,
     speed: DEFAULT_SPEED,
     transform: null,
     hp: 10,
@@ -171,6 +193,7 @@ export const characterCreate = (name: string): Character => {
     animationKey: '',
     animationOverride: null,
     storedAnimations: {},
+    weaponEquipState: WeaponEquipState.NORMAL,
     walkTarget: null,
     walkAngle: 0,
     walkDistance: 0,
@@ -183,6 +206,8 @@ export const characterCreate = (name: string): Character => {
     storedState: {},
     timers: [] as Timer[],
     tags: [] as string[],
+    highlighted: false,
+    template: null,
   };
   ch.ro = {
     character: ch,
@@ -217,6 +242,14 @@ export const characterCreateFromTemplate = (
   if (template.nameLabel) {
     ch.nameLabel = template.nameLabel;
   }
+  if (template.weaponEquipState) {
+    ch.weaponEquipState = template.weaponEquipState;
+  }
+  if (template.spriteSize) {
+    ch.spriteWidth = template.spriteSize[0];
+    ch.spriteHeight = template.spriteSize[1];
+  }
+  ch.template = template;
   return ch;
 };
 
@@ -256,7 +289,8 @@ export const characterGetAnimation = (ch: Character): Animation => {
 
 export const characterSetAnimationState = (
   ch: Character,
-  animState: AnimationState
+  animState: AnimationState,
+  reset?: boolean
 ): void => {
   ch.animationState = animState;
   const newAnimKey = characterGetAnimKey(ch);
@@ -274,9 +308,18 @@ export const characterSetAnimationState = (
     const anim = characterGetAnimation(ch);
     anim.reset();
     anim.start();
+  } else if (reset) {
+    const anim = characterGetAnimation(ch);
+    anim.reset();
+    anim.start();
   }
 };
 
+export const characterGetAnimationState = (ch: Character): AnimationState => {
+  return ch.animationState;
+};
+
+// Set an animation that isn't derived from the state of the character
 export const characterOverrideAnimation = (
   ch: Character,
   animation: Animation,
@@ -324,8 +367,6 @@ export const characterOnAnimationCompletion = (
     return Promise.resolve();
   }
 
-  const animState = ch.animationState;
-
   const newPromiseObj: any = {};
   const promise = new Promise<void>((resolve, reject) => {
     newPromiseObj.resolve = resolve;
@@ -341,16 +382,7 @@ export const characterOnAnimationCompletion = (
       cb();
     })
     .catch(e => {
-      if (animState === AnimationState.BATTLE_DEFEATED) {
-        console.log(
-          'defeated animation was canceled but is not cancellable:',
-          anim.name,
-          e
-        );
-        cb();
-      } else {
-        console.log('animation was canceled:', anim.name, e);
-      }
+      console.log('animation was canceled:', anim.name, e);
     });
 
   ch.animationPromise = newPromiseObj;
@@ -424,14 +456,22 @@ export const characterGetPosPx = (ch: Character): Point => {
 };
 
 export const characterGetPosCenterPx = (ch: Character): Point => {
-  const [px, py] = characterGetPosPx(ch);
+  const [x, y, z] = characterGetPosTopLeft(ch);
+  const [px, py] = isoToPixelCoords(x, y, z);
   const [w, h] = characterGetSize(ch);
   return [px + w / 2, py + h / 2];
 };
 
+export const characterGetPosTopLeft = (ch: Character) => {
+  const [x, y, z] = characterGetPos(ch);
+  const [spriteWidth, spriteHeight] = characterGetSize(ch);
+  // game assumes each character is 32 x 32 px, if not, the top left corner is adjusted
+  // by the isometric transform of the size of the sprite
+  return [x - (spriteWidth - 32), y - (spriteHeight - 32) / 2, z];
+};
+
 export const characterGetSize = (ch: Character): Point => {
-  const anim = characterGetAnimation(ch);
-  return anim.getSpriteSize(0);
+  return [ch.spriteWidth, ch.spriteHeight];
 };
 
 export const characterSetWalkTarget = (
@@ -515,6 +555,7 @@ export const characterRemoveTimer = (ch: Character, timer: Timer) => {
 export const characterStopAi = (ch: Character) => {
   characterStoreState(ch);
   ch.aiEnabled = false;
+  ch.walkTarget = null;
   characterSetAnimationState(ch, AnimationState.IDLE);
 };
 
@@ -529,12 +570,30 @@ export const characterHasTimer = (ch: Character, timer: Timer) => {
 
 export const characterStoreState = (ch: Character) => {
   ch.storedState.facing = ch.facing;
+  ch.storedState.walkTarget = ch.walkTarget;
 };
 
 export const characterRestoreState = (ch: Character) => {
   if (ch.storedState.facing) {
     characterSetFacing(ch, ch.storedState.facing);
   }
+  if (ch.storedState.walkTarget) {
+    ch.walkTarget = ch.storedState.walkTarget;
+  }
+};
+
+export const characterHasAnimationState = (
+  ch: Character,
+  animState: AnimationState
+) => {
+  const oldAnimState = ch.animationState;
+  const oldAnimKey = ch.animationKey;
+  ch.animationState = animState;
+  const newAnimKey = characterGetAnimKey(ch);
+  ch.animationState = oldAnimState;
+  ch.animationKey = oldAnimKey;
+  const ret = hasAnimation(newAnimKey);
+  return ret;
 };
 
 export const characterUpdate = (ch: Character): void => {

@@ -32,7 +32,10 @@ import HudGamepad from 'lib/hud-gamepad';
 import { callScript } from 'controller/scene-management';
 import { getAngleTowards } from 'utils';
 import { battleStatsCreate } from 'model/battle';
-import { BattleActions } from 'controller/battle-actions';
+import {
+  BattleActions,
+  init as initBattleActions,
+} from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
 
 function parseQuery(queryString: string): Record<string, string> {
@@ -56,6 +59,8 @@ export const main = async (): Promise<void> => {
   // for the rest of the app to load.  This is probably fine, but is not definitive.
   console.log('mount ui');
   mountUi();
+
+  initBattleActions();
 
   console.log('load rpgscript');
   initScene();
@@ -90,7 +95,7 @@ export const main = async (): Promise<void> => {
     spriteBase: 'ada',
     stats: {
       ...battleStatsCreate(),
-      HP: 100,
+      HP: 30,
     },
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
@@ -103,9 +108,9 @@ export const main = async (): Promise<void> => {
   });
   player.leader.speed = 1;
 
-  const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
-  player.party.push(conscience);
-  player.battlePositions.push(conscience);
+  // const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
+  // player.party.push(conscience);
+  // player.battlePositions.push(conscience);
 
   const query = parseQuery(window.location.search);
   if (query.room) {
