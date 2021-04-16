@@ -4,6 +4,7 @@ import { Player } from 'model/player';
 import { Battle } from 'model/battle';
 import { Overworld } from 'model/overworld';
 import { Scene } from 'model/scene';
+import { ParticleSystem } from 'model/particle-system';
 import { Timer } from './utility';
 
 let currentRoom: Room | null = ((window as any).room = null);
@@ -141,3 +142,8 @@ export const removeTimer = (...timersToRemove: Timer[]) => {
   });
 };
 export const getAllTimers = () => timers;
+
+let globalParticleSystem: ParticleSystem | null = null;
+export const getGlobalParticleSystem = () => globalParticleSystem;
+export const setGlobalParticleSystem = (ps: ParticleSystem | null) =>
+  (globalParticleSystem = ps);

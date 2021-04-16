@@ -14,6 +14,7 @@ import {
   getRenderBackgroundColor,
   setCameraDrawOffset,
   getAllTimers,
+  getGlobalParticleSystem,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -44,9 +45,10 @@ import {
 import { renderUi } from 'view/ui';
 import { updateBattle } from 'controller/battle-management';
 import { updateOverworld } from 'controller/overworld-management';
-import { getDrawScale, getCtx, getScreenSize } from 'model/canvas';
+import { getDrawScale, getCtx, getScreenSize, getCanvas } from 'model/canvas';
 import { updateScene } from './scene-management';
 import { playerGetCameraOffset } from 'model/player';
+import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
 
 export const pause = () => {
   if (getIsPaused()) {
@@ -80,15 +82,7 @@ export const pause = () => {
 
   const battle = getCurrentBattle();
   if (battle) {
-    battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-      bCh.actionTimer.pauseOverride();
-      bCh.staggerTimer.pauseOverride();
-      bCh.castTimer.pauseOverride();
-      bCh.actionReadyTimer.pauseOverride();
-      if (bCh.ch.transform) {
-        bCh.ch.transform.timer.pauseOverride();
-      }
-    });
+    battlePauseTimers(battle);
   }
 };
 
@@ -124,15 +118,7 @@ export const unpause = () => {
 
   const battle = getCurrentBattle();
   if (battle) {
-    battle.allies.concat(battle.enemies).forEach((bCh: BattleCharacter) => {
-      bCh.actionTimer.unpauseOverride();
-      bCh.staggerTimer.unpauseOverride();
-      bCh.castTimer.unpauseOverride();
-      bCh.actionReadyTimer.unpauseOverride();
-      if (bCh.ch.transform) {
-        bCh.ch.transform.timer.unpauseOverride();
-      }
-    });
+    battleUnpauseTimers(battle);
   }
 };
 
@@ -141,6 +127,8 @@ export const runMainLoop = async (): Promise<void> => {
   let prevNow = startTime;
   const sixtyFpsMs = 16;
   (window as any).running = true;
+  const canvasOuter = getCanvas('outer');
+  const outerCtx: any = canvasOuter.getContext('2d');
 
   const loop = (now: number) => {
     const dt = now - prevNow;
@@ -174,12 +162,13 @@ export const runMainLoop = async (): Promise<void> => {
         }
       }
       setCameraDrawOffset([roomXOffset, roomYOffset]);
-
       if (roomVisible) {
         drawRoom(room, [roomXOffset, roomYOffset], undefined, true);
       }
 
       if ((window as any).running) requestAnimationFrame(loop);
+      // if ((window as any).running)
+      //   setTimeout(() => loop(performance.now()), 100); // for debugging
       return;
     }
 
@@ -187,10 +176,7 @@ export const runMainLoop = async (): Promise<void> => {
       t.update();
     });
 
-    clearScreen();
-    clearScreen(getCtx('outer'));
     const [screenW, screenH] = getScreenSize();
-    drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
     const scene = getCurrentScene();
     const battle = getCurrentBattle();
     const overworld = getCurrentOverworld();
@@ -200,9 +186,11 @@ export const runMainLoop = async (): Promise<void> => {
       updateScene(scene);
     }
 
+    let roomVisible = false;
+    let roomXOffset = 0;
+    let roomYOffset = 0;
     if (room) {
-      const roomVisible = room.visible;
-
+      roomVisible = room.visible;
       for (let i = 0; i < room.tiles.length; i++) {
         room.tiles[i].highlighted = false;
       }
@@ -232,8 +220,6 @@ export const runMainLoop = async (): Promise<void> => {
       }
 
       // position the camera in the right spot
-      let roomXOffset = 0;
-      let roomYOffset = 0;
       if (battle) {
         roomXOffset = screenW / 2 - 32 / 2;
         roomYOffset = screenH / 4 - 13;
@@ -265,13 +251,23 @@ export const runMainLoop = async (): Promise<void> => {
       // }
 
       // console.log('OFFSET', roomXOffset, roomYOffset);
-      if (roomVisible) {
-        drawRoom(room, [roomXOffset, roomYOffset]);
-      }
 
       // drawSprite('ada_0', 100, 100, 1);
     }
 
+    const ps = getGlobalParticleSystem();
+    if (ps) {
+      ps.updateDraw();
+      if ((window as any).running) requestAnimationFrame(loop);
+      return;
+    }
+
+    clearScreen();
+    clearScreen(getCtx('outer'));
+    drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+    if (roomVisible) {
+      drawRoom(room, [roomXOffset, roomYOffset]);
+    }
     const renderables = getRenderables();
     for (const i in renderables) {
       const cb = renderables[i];

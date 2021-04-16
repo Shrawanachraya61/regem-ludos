@@ -57,7 +57,7 @@ import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
 import { playSoundName } from 'model/sound';
-import { initiateBattle } from './battle-management';
+import { transitionToBattle } from './battle-management';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -1339,7 +1339,8 @@ export const enterCombat = (encounterName: string) => {
   }
 
   overworldHide(getCurrentOverworld());
-  initiateBattle(getCurrentPlayer(), encounter);
+  const player = getCurrentPlayer();
+  transitionToBattle(player, encounter, null, true);
 };
 
 const commands = {

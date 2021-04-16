@@ -1,6 +1,6 @@
 import { Sprite, getSprite } from 'model/sprite';
 import { Animation } from 'model/animation';
-import { getCtx, getScreenSize } from 'model/canvas';
+import { getCanvas, getCtx, getScreenSize } from 'model/canvas';
 import {
   TILE_WIDTH,
   TILE_HEIGHT,
@@ -42,8 +42,19 @@ const DEFAULT_TEXT_PARAMS = {
 
 export const clearScreen = (ctx?: CanvasRenderingContext2D): void => {
   ctx = ctx || getCtx();
-  const [screenW, screenH] = getScreenSize();
-  ctx.clearRect(0, 0, screenW, screenH);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+};
+
+export const setGlobalAlpha = (v: number, ctx?: CanvasRenderingContext2D) => {
+  ctx = ctx || getCtx();
+  ctx.globalAlpha = v;
+};
+
+export const getImageDataScreenshot = (
+  ctx?: CanvasRenderingContext2D
+): ImageData => {
+  ctx = ctx || getCtx();
+  return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 };
 
 export const drawRect = (
@@ -59,6 +70,22 @@ export const drawRect = (
   ctx.lineWidth = 1;
   ctx[stroke ? 'strokeStyle' : 'fillStyle'] = color;
   ctx[stroke ? 'strokeRect' : 'fillRect'](Math.floor(x), Math.floor(y), w, h);
+};
+
+export const drawCircle = (
+  x: number,
+  y: number,
+  r: number,
+  color: string,
+  stroke?: boolean,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  ctx = ctx || getCtx();
+  ctx.lineWidth = 1;
+  ctx[stroke ? 'strokeStyle' : 'fillStyle'] = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx[stroke ? 'stroke' : 'fill']();
 };
 
 export const measureText = (
@@ -247,8 +274,12 @@ export const drawCharacter = (
 ): void => {
   const [x, y, z] = characterGetPosTopLeft(ch);
   const anim = characterGetAnimation(ch);
-  const [px, py] = isoToPixelCoords(x, y, z);
+  let [px, py] = isoToPixelCoords(x, y, z);
   ctx = ctx || getCtx();
+
+  // HACK: Make the collision from the top left actually make some sort of visual sense
+  px += 1;
+  py += 0;
 
   if (anim.isPaused) {
     const sprite = anim.getSprite();
@@ -295,7 +326,7 @@ export const drawParticle = (
   ctx?: CanvasRenderingContext2D
 ): void => {
   const [px, py] = particleGetPos(particle);
-  const { anim, text, textParams, opacity } = particle;
+  const { anim, text, textParams, opacity, w, h, color, shape } = particle;
   ctx = ctx ?? getCtx();
   ctx.globalAlpha = opacity ?? 1;
   if (anim) {
@@ -309,6 +340,13 @@ export const drawParticle = (
   }
   if (text && textParams) {
     drawText(text, px, py, textParams);
+  }
+  if (w && h && color && shape) {
+    if (shape === 'rect') {
+      drawRect(px - w / 2, py - h / 2, w, h, color, false, ctx);
+    } else if (shape === 'circle') {
+      drawCircle(px, py, w, color, false, ctx);
+    }
   }
   ctx.globalAlpha = 1;
 };
@@ -424,4 +462,17 @@ export const drawRoom = (
   }
 
   ctx.restore();
+
+  const outerCtx = getCtx('outer');
+  const [x, y] = characterGetPos(leader);
+  drawText(
+    `POS: ${x.toFixed(0)}, ${y.toFixed(0)}`,
+    20,
+    100,
+    {
+      color: 'white',
+      size: 32,
+    },
+    outerCtx
+  );
 };

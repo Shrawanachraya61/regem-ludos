@@ -24,6 +24,7 @@ import {
   hideTriggers,
   showMarkers,
   showTriggers,
+  getIsPaused,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
@@ -58,6 +59,9 @@ import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pushKeyHandler } from 'controller/events';
 import HudGamepad from 'lib/hud-gamepad';
+import { pause, unpause } from './loop';
+import { getImageDataScreenshot } from 'view/draw';
+import { getCanvas } from 'model/canvas';
 
 export const initiateOverworld = (
   player: Player,

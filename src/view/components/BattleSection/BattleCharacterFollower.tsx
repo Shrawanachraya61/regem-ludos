@@ -1,7 +1,7 @@
 /* @jsx h */
 import { h, Fragment } from 'preact';
 import { colors, IntrinsicProps, style, keyframes } from 'view/style';
-import { getCurrentBattle } from 'model/generics';
+import { getCurrentBattle, getIsPaused } from 'model/generics';
 import {
   BattleCharacter,
   battleCharacterCanAct,
@@ -19,13 +19,16 @@ import {
   BattleEvent,
   battleGetActingAllegiance,
   battleGetTargetedEnemy,
+  battleSetEnemyRangeTargetIndex,
   battleSetEnemyTargetIndex,
 } from 'model/battle';
 import CharacterFollower from 'view/elements/CharacterFollower';
 import { renderUi } from 'view/ui';
 import { useState } from 'lib/preact-hooks';
-import TargetIcon from 'view/icons/Target';
+import MeleeTargetIcon from 'view/icons/TargetMelee';
+import RangeTargetIcon from 'view/icons/Target';
 import ArmorIcon from 'view/icons/Armor';
+import { BattleActionType } from 'controller/battle-actions';
 
 interface IBattleCharacterProps {
   bCh: BattleCharacter;
@@ -42,6 +45,18 @@ const targetRotate = keyframes({
   },
   '100%': {
     transform: 'rotateZ(360deg)',
+  },
+});
+
+const targetBounce = keyframes({
+  '0%': {
+    transform: 'translateY(-2px)',
+  },
+  '30%': {
+    transform: 'translateY(2px)',
+  },
+  '100%': {
+    transform: 'translateY(-2px)',
   },
 });
 
@@ -63,9 +78,19 @@ const TargetIndicatorContainer = style('div', () => {
   };
 });
 
-const TargetIconContainer = style('div', () => {
+const TargetIconContainerMelee = style('div', () => {
+  return {
+    // animation: `${targetRotate} 3000ms linear infinite`,
+    animation: `${targetBounce} 750ms linear infinite`,
+    width: '48px',
+    height: '48px',
+  };
+});
+
+const TargetIconContainerRanged = style('div', () => {
   return {
     animation: `${targetRotate} 3000ms linear infinite`,
+    // animation: `${targetBounce} 1000ms linear infinite`,
     width: '48px',
     height: '48px',
   };
@@ -102,14 +127,37 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
     getCurrentBattle(),
     BattleEvent.onTurnStarted,
     (allegiance: BattleAllegiance) => {
-      console.log('turn started');
       setCurrentlyActingAllegiance(allegiance);
     }
   );
   useBattleSubscription(getCurrentBattle(), BattleEvent.onTurnEnded, () => {
-    console.log('turn ended');
     setCurrentlyActingAllegiance(null);
   });
+
+  const targetedByMelee =
+    battleGetTargetedEnemy(battle, BattleActionType.SWING) === bCh;
+  const targetedByRanged =
+    battleGetTargetedEnemy(battle, BattleActionType.RANGED) === bCh;
+
+  const handleEnemyClick = () => {
+    if (props.isEnemy) {
+      if (battleGetActingAllegiance(battle) === null) {
+        if (!targetedByMelee) {
+          const wasTargetSet = battleSetEnemyTargetIndex(
+            battle,
+            props.battleIndex
+          );
+          if (!wasTargetSet) {
+            battleSetEnemyRangeTargetIndex(battle, props.battleIndex);
+          }
+        } else {
+          battleSetEnemyRangeTargetIndex(battle, props.battleIndex);
+        }
+        //HACK Sort of... need to re-render this and also the enemy info cards
+        renderUi();
+      }
+    }
+  };
 
   const armorIcons: any[] = [];
   for (let i = 0; i < props.bCh.armor; i++) {
@@ -120,20 +168,15 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
     );
   }
 
+  const isNobodyActing = currentlyActingAllegiance === null;
+  const isPaused = getIsPaused();
+  const targetsVisible = !bCh.isDefeated && (isPaused || isNobodyActing);
+
   return (
     <CharacterFollower
       ch={bCh.ch}
       renderKey={'follower-' + bCh.ch.name}
-      onClick={() => {
-        if (props.isEnemy) {
-          if (battleGetActingAllegiance(battle) === null) {
-            battleSetEnemyTargetIndex(battle, props.battleIndex);
-
-            //HACK Sort of... need to re-render this and also the enemy info cards
-            renderUi();
-          }
-        }
-      }}
+      onClick={handleEnemyClick}
       onMouseOver={() => {
         bCh.ch.highlighted = true;
       }}
@@ -141,13 +184,20 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
         bCh.ch.highlighted = false;
       }}
     >
-      {battleGetTargetedEnemy(battle) === bCh &&
-      currentlyActingAllegiance === null ? (
+      {targetedByMelee && targetsVisible ? (
         <TargetIndicatorContainer>
-          <span>Target</span>
-          <TargetIconContainer>
-            <TargetIcon color={colors.RED} />
-          </TargetIconContainer>
+          {/* <span>Target</span> */}
+          <TargetIconContainerMelee>
+            <MeleeTargetIcon color={colors.YELLOW} />
+          </TargetIconContainerMelee>
+        </TargetIndicatorContainer>
+      ) : null}
+      {targetedByRanged && targetsVisible ? (
+        <TargetIndicatorContainer>
+          {/* <span>Target</span> */}
+          <TargetIconContainerRanged>
+            <RangeTargetIcon color={colors.RED} />
+          </TargetIconContainerRanged>
         </TargetIndicatorContainer>
       ) : null}
       <ArmorIconsContainer align={props.isEnemy ? 'right' : 'left'}>

@@ -68,10 +68,9 @@ export const getCtx = (type?: string): CanvasRenderingContext2D => {
 };
 
 const setDrawScaleCanvas = (canvas: HTMLCanvasElement, s: number) => {
-  drawScale = s;
   if (canvas) {
-    canvas.style.width = String(SCREEN_WIDTH * drawScale);
-    canvas.style.height = String(SCREEN_HEIGHT * drawScale);
+    canvas.style.width = String(SCREEN_WIDTH * s);
+    canvas.style.height = String(SCREEN_HEIGHT * s);
 
     if (s > 2) {
       canvas.style.position = 'relative';
@@ -91,7 +90,9 @@ export const setDrawScale = (s: number): void => {
     CANVAS_ID_OUTER
   ) as HTMLCanvasElement | null;
   if (canvasOuter) {
-    setDrawScaleCanvas(canvasOuter, s);
+    // setDrawScaleCanvas(canvasOuter, s / 2);
+    canvasOuter.width = (SCREEN_WIDTH * s) / 2;
+    canvasOuter.height = (SCREEN_HEIGHT * s) / 2;
     canvasOuter.style.position = 'absolute';
     canvasOuter.style.left = '0px';
     canvasOuter.style.top = '0px';

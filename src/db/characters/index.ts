@@ -1,5 +1,13 @@
 import { BattleActions } from 'controller/battle-actions';
-import { AnimationState, Facing, CharacterTemplate } from 'model/character';
+import { battleStatsCreate } from 'model/battle';
+import {
+  AnimationState,
+  Facing,
+  CharacterTemplate,
+  WeaponEquipState,
+} from 'model/character';
+
+import { init as initTutorial } from './tutorial';
 
 const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {
@@ -23,21 +31,26 @@ export const getIfExists = (key: string): CharacterTemplate | null => {
 };
 
 export const init = () => {
-  exp.Skye = {
-    name: 'Skye',
-    spriteBase: 'skye',
-    talkTrigger: '',
-    facing: Facing.LEFT_UP,
-    animationState: AnimationState.IDLE,
-  };
-
   exp.Conscience = {
     name: 'Conscience',
     spriteBase: 'conscience',
     talkTrigger: '',
     facing: Facing.LEFT_UP,
     animationState: AnimationState.IDLE,
-    skills: [BattleActions.Fireball],
+    skills: [BattleActions.BowLevel1],
+    weaponEquipState: WeaponEquipState.RANGED,
+    stats: {
+      ...battleStatsCreate(),
+      HP: 35,
+    },
+  };
+
+  exp.Skye = {
+    name: 'Skye',
+    spriteBase: 'skye',
+    talkTrigger: '',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
   };
 
   exp.Roger = {
@@ -100,6 +113,8 @@ export const init = () => {
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
   };
+
+  Object.assign(exp, initTutorial());
 
   for (const i in exp) {
     if (exp[i].name === '') {

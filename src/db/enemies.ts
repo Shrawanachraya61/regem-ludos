@@ -88,6 +88,20 @@ export const init = () => {
     armor: 1,
   };
 
+  exp.TUT_ROBOT_RANGED = {
+    name: 'Robot R',
+    spriteBase: 'tut_robot_ranged',
+    stats: {
+      ...battleStatsCreate(),
+      HP: 12,
+      STAGGER: 15,
+    },
+    facing: Facing.LEFT,
+    animationState: AnimationState.BATTLE_IDLE,
+    skills: [BattleActions.RobotRanged],
+    armor: 0,
+  };
+
   exp.TUT_ROBOT_BOSS = {
     name: 'Giga Robot',
     spriteBase: 'tut_robot_boss',
@@ -102,4 +116,16 @@ export const init = () => {
     skills: [BattleActions.RobotSwingArmoredNK, BattleActions.RobotSwingPierce],
     armor: 1,
   };
+
+  for (const i in exp) {
+    const enemyTemplate = exp[i];
+    for (const j in enemyTemplate.skills) {
+      const skill = enemyTemplate.skills[j];
+      if (!skill) {
+        throw new Error(
+          `Enemy template '${enemyTemplate.name}' has invalid skill at index: ${j}`
+        );
+      }
+    }
+  }
 };

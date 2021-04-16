@@ -6,6 +6,7 @@ import {
   BattleAction,
   BattleActions,
   BattleActionType,
+  RangeType,
   SwingType,
 } from 'controller/battle-actions';
 import { BattleCharacter } from 'model/battle-character';
@@ -18,11 +19,9 @@ import { BattleEvent } from 'model/battle';
 
 import CircleIcon from 'view/icons/Circle';
 import CloseIcon from 'view/icons/Close';
-import SwingNormalIcon from 'view/icons/SwingNormal';
-import SwingPierceIcon from 'view/icons/SwingPierce';
-import SwingFinisherIcon from 'view/icons/SwingFinisher';
+import RangedNormalIcon from 'view/icons/RangedNormal';
 
-interface IActingWeaponPrimaryProps extends IntrinsicProps {
+interface IActingRangePrimaryProps extends IntrinsicProps {
   id?: string;
   children?: string;
   bCh: BattleCharacter;
@@ -37,7 +36,7 @@ const Root = style('div', () => {
   };
 });
 
-const SwingTable = style('div', () => {
+const RangeTable = style('div', () => {
   return {
     display: 'flex',
     justifyContent: 'center',
@@ -47,7 +46,7 @@ const SwingTable = style('div', () => {
   };
 });
 
-const SwingTableCell = style('div', () => {
+const RangeTableCell = style('div', () => {
   return {
     border: '2px solid ' + colors.WHITE,
     borderBottom: '2px solid ' + colors.GREEN,
@@ -73,21 +72,19 @@ const SwingTableCell = style('div', () => {
   };
 });
 
-const getIcon = (swingType: SwingType, color: string) => {
-  const SwingTypeToIconType = {
-    [SwingType.NORMAL]: <SwingNormalIcon color={color} />,
-    [SwingType.PIERCE]: <SwingPierceIcon color={color} />,
-    [SwingType.FINISH]: <SwingFinisherIcon color={color} />,
+const getIcon = (rangeType: RangeType, color: string) => {
+  const RangeTypeToIconType = {
+    [RangeType.NORMAL]: <RangedNormalIcon color={color} />,
   };
 
-  return SwingTypeToIconType[swingType];
+  return RangeTypeToIconType[rangeType];
 };
 
-const ActingWeaponPrimary = (props: IActingWeaponPrimaryProps) => {
+const ActingRangePrimary = (props: IActingRangePrimaryProps) => {
   const action = props.battleAction;
   const actionStateIndex = props.bCh.actionStateIndex;
   const ref = useRef(null);
-  const id = 'acting-weapon-primary-' + props.bCh.ch.name;
+  const id = 'acting-range-primary-' + props.bCh.ch.name;
   const render = useReRender();
 
   useEffect(() => {
@@ -114,18 +111,17 @@ const ActingWeaponPrimary = (props: IActingWeaponPrimaryProps) => {
 
   return (
     <Root ref={ref} id={id}>
-      <SwingTable>
-        {action.meta.swings?.map((swingType: SwingType, i: number) => {
+      <RangeTable>
+        {action.meta.ranges?.map((rangeType: RangeType, i: number) => {
           const hasConsumedSwing =
             i < actionStateIndex || actionStateIndex === 0;
-          switch (swingType) {
-            case SwingType.PIERCE:
-            case SwingType.NORMAL: {
+          switch (rangeType) {
+            case RangeType.NORMAL: {
               return (
-                <SwingTableCell
-                  id={'swing-table-cell-' + props.bCh.ch.name + '-' + i}
+                <RangeTableCell
+                  id={'range-table-cell-' + props.bCh.ch.name + '-' + i}
                 >
-                  {getIcon(swingType, colors.BLUE)}
+                  {getIcon(rangeType, colors.BLUE)}
                   {hasConsumedSwing ? (
                     <span>
                       <CloseIcon color={colors.LIGHTGREEN} />
@@ -135,16 +131,16 @@ const ActingWeaponPrimary = (props: IActingWeaponPrimaryProps) => {
                       <CircleIcon color={colors.WHITE} />
                     </span>
                   )}
-                </SwingTableCell>
+                </RangeTableCell>
               );
             }
             default:
-              return <SwingTableCell></SwingTableCell>;
+              return <RangeTableCell></RangeTableCell>;
           }
         })}
-      </SwingTable>
+      </RangeTable>
     </Root>
   );
 };
 
-export default ActingWeaponPrimary;
+export default ActingRangePrimary;

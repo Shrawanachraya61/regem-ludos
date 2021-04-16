@@ -14,13 +14,6 @@ const SetDurationDialog = ({ open, setOpen, appInterface, anim }) => {
       .map(spriteIndex => anim.sprites[spriteIndex])?.[0]?.durationMs ?? 100
   );
 
-  console.log(
-    'MARKED FRAME',
-    appInterface
-      .getMarkedFrames()
-      .map(spriteIndex => anim.sprites[spriteIndex])?.[0]?.durationMs
-  );
-
   const validate = value => {
     return value === '';
   };
@@ -33,9 +26,12 @@ const SetDurationDialog = ({ open, setOpen, appInterface, anim }) => {
       });
       display.updateAnimation(anim, null, anim.loop, anim.sprites);
       anim.remakeMS();
-      appInterface.setAnimation(display.getAnimation(anim.name));
+      appInterface.setAnimation(null);
       setOpen(false);
-      appInterface.render();
+      setTimeout(() => {
+        appInterface.setAnimation(display.getAnimation(anim.name));
+        // appInterface.render();
+      });
     }
   };
 
@@ -76,7 +72,7 @@ const ButtonRow = props => {
     <div
       style={{
         display: 'flex',
-        justifyContent: 'flex-start',
+        justifyContent: props?.style?.justifyContent ?? 'flex-start',
         alignItems: 'center',
         marginTop: '7px',
       }}
@@ -397,7 +393,8 @@ const AnimationArea = ({ appInterface }) => {
               + Invisible
             </Button>
           </ButtonRow>
-          <ButtonRow>
+          {/* // Kinda redundant to have this */}
+          {/* <ButtonRow>
             <Button
               type="secondary"
               margin={2}
@@ -411,7 +408,7 @@ const AnimationArea = ({ appInterface }) => {
             >
               Reverse All
             </Button>
-          </ButtonRow>
+          </ButtonRow> */}
           <div
             style={{
               fontSize: '18px',
@@ -423,10 +420,17 @@ const AnimationArea = ({ appInterface }) => {
           >
             Marked Frames
           </div>
-          <ButtonRow>
+          <ButtonRow
+            style={{
+              justifyContent: 'space-evenly',
+            }}
+          >
             <Button
               type="primary"
               margin={2}
+              style={{
+                width: '90px',
+              }}
               onClick={() => {
                 appInterface.markAllFrames();
               }}
@@ -434,8 +438,11 @@ const AnimationArea = ({ appInterface }) => {
               Mark All
             </Button>
             <Button
-              type="secondary"
+              type="primary"
               margin={2}
+              style={{
+                width: '90px',
+              }}
               onClick={() => {
                 appInterface.clearMarkedFrames();
               }}

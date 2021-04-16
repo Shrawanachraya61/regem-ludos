@@ -1,9 +1,15 @@
-import { Timer, Transform, TransformEase } from 'model/utility';
+import {
+  Timer,
+  Transform,
+  TransformEase,
+  transformOffsetWeightedParticle,
+} from 'model/utility';
 import { Animation, createAnimation } from 'model/animation';
 import { Point, truncatePoint3d, getRandBetween } from 'utils';
 import { SpriteModification } from './sprite';
 import { DrawTextParams, measureText } from 'view/draw';
 import { TILE_HEIGHT, TILE_WIDTH } from './room';
+import { getFrameMultiplier } from './generics';
 
 export interface Particle {
   anim?: Animation;
@@ -16,6 +22,13 @@ export interface Particle {
   scale: number;
   x: number;
   y: number;
+  vx: number;
+  vy: number;
+  w: number;
+  h: number;
+  color?: string;
+  shape?: 'rect' | 'circle';
+  meta: Record<string, any>;
 }
 
 export interface ParticleTemplate {
@@ -24,6 +37,8 @@ export interface ParticleTemplate {
   flipped?: boolean;
   opacity?: number;
   scale?: number;
+  transform?: Transform;
+  offset?: Point;
 }
 
 export const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
@@ -48,6 +63,31 @@ export const EFFECT_TEMPLATE_ARMOR_REDUCED: ParticleTemplate = {
   scale: 0.5,
 };
 
+export const EFFECT_TEMPLATE_RANGED_LEFT: ParticleTemplate = {
+  animName: 'effect_range_projectile_left',
+  duration: 300,
+};
+
+export const EFFECT_TEMPLATE_RANGED_HIT: ParticleTemplate = {
+  animName: 'effect_range_hit_left',
+};
+
+export const EFFECT_TEMPLATE_GEM: ParticleTemplate = {
+  animName: 'effect_gem',
+};
+
+export const EFFECT_TEMPLATE_TREASURE: ParticleTemplate = {
+  animName: 'effect_treasure_anim',
+};
+
+export const EFFECT_TEMPLATE_DEAD32: ParticleTemplate = {
+  animName: 'effect_dead2_anim',
+  // aligns the sprite to the bottom of feet for 32x32 px sprites
+  offset: [0, -12.5],
+  opacity: 0.65,
+  duration: 2320,
+};
+
 export const createDamageParticle = (
   text: string,
   x: number,
@@ -61,23 +101,40 @@ export const createDamageParticle = (
     align: 'center',
     strokeColor: 'black',
   };
-  const particle: Particle = {
-    anim: undefined,
-    text,
-    textParams,
-    timer: new Timer(duration),
-    shouldRemove: false,
-    transform: new Transform(
-      [x, y, 0],
-      [x + getRandBetween(-TILE_WIDTH / 2, TILE_WIDTH / 2), y - TILE_HEIGHT, 0],
-      duration,
-      TransformEase.EASE_OUT
-    ),
-    scale: 1,
-    x,
-    y,
-  };
+  const particle = particleCreate();
+  particle.anim = undefined;
+  particle.text = text;
+  particle.textParams = textParams;
+  particle.timer = new Timer(duration);
+  particle.transform = new Transform(
+    [x, y, 0],
+    [x + getRandBetween(-TILE_WIDTH / 2, TILE_WIDTH / 2), y - TILE_HEIGHT, 0],
+    duration,
+    TransformEase.EASE_OUT
+  );
+  particle.x = x;
+  particle.y = y;
   particle.timer.start();
+  return particle;
+};
+
+// creates a particle that appears to fly up, then land on the ground.
+export const createWeightedParticle = (
+  template: ParticleTemplate,
+  x: number,
+  y: number,
+  durationMs?: number
+): Particle => {
+  const duration = durationMs ?? 1000;
+  const particle = particleCreateFromTemplate([x, y], template);
+  particle.transform = new Transform(
+    [particle.x, particle.y, 0],
+    [particle.x + getRandBetween(-TILE_WIDTH, TILE_WIDTH), particle.y, 0],
+    duration,
+    TransformEase.EASE_OUT,
+    transformOffsetWeightedParticle
+  );
+  particle.timer.start(duration);
   return particle;
 };
 
@@ -94,26 +151,37 @@ export const createStatusParticle = (
     align: 'center',
     strokeColor: 'black',
   };
-  // const [w, h] = measureText(text, textParams);
-  // const xPx = x - w / 2;
-  // const yPx = y - h / 2;
-  const particle: Particle = {
-    anim: undefined,
-    text,
-    textParams,
-    timer: new Timer(duration),
-    shouldRemove: false,
-    transform: new Transform(
-      [x, y, 0],
-      [x, y - TILE_HEIGHT, 0],
-      duration,
-      TransformEase.EASE_OUT
-    ),
-    scale: 1,
-    x,
-    y,
-  };
+  const particle = particleCreate();
+  particle.anim = undefined;
+  particle.text = text;
+  particle.textParams = textParams;
+  particle.timer = new Timer(duration);
+  particle.transform = new Transform(
+    [x, y, 0],
+    [x, y - TILE_HEIGHT, 0],
+    duration,
+    TransformEase.EASE_OUT
+  );
+  particle.x = x;
+  particle.y = y;
   particle.timer.start();
+  return particle;
+};
+
+export const particleCreate = (): Particle => {
+  const particle: Particle = {
+    timer: new Timer(1000),
+    shouldRemove: false,
+    opacity: 1,
+    x: 0,
+    y: 0,
+    vx: 0,
+    vy: 0,
+    w: 0,
+    h: 0,
+    scale: 1,
+    meta: {},
+  };
   return particle;
 };
 
@@ -128,15 +196,13 @@ export const particleCreateFromTemplate = (
         : SpriteModification.NORMAL)
   );
   const [w, h] = anim.getSpriteSize(1);
-  const particle = {
-    anim,
-    timer: new Timer(template.duration ?? anim.getDurationMs()),
-    shouldRemove: false,
-    opacity: template.opacity ?? 1,
-    x: point[0] - w / 2,
-    y: point[1] - h / 2,
-    scale: template.scale ?? 1,
-  };
+  const particle = particleCreate();
+  particle.anim = anim;
+  particle.timer = new Timer(template.duration ?? anim.getDurationMs());
+  particle.opacity = template.opacity ?? 1;
+  particle.x = point[0] - w / 2 + (template.offset?.[0] ?? 0);
+  particle.y = point[1] - h / 2 + (template.offset?.[1] ?? 0);
+  particle.scale = template.scale ?? 1;
 
   anim.start();
   particle.timer.start();
@@ -157,6 +223,9 @@ export const particleGetSize = (particle: Particle): Point => {
 };
 
 export const particleUpdate = (particle: Particle): void => {
+  const mult = getFrameMultiplier();
+  particle.x += particle.vx * mult;
+  particle.y += particle.vy * mult;
   if (particle.timer.isComplete()) {
     particle.shouldRemove = true;
   }

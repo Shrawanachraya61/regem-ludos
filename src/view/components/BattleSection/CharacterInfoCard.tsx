@@ -27,9 +27,11 @@ import { BattleEvent } from 'model/battle';
 
 import PrimaryInfo from './PrimaryInfo';
 import PrimaryActingWeapon from './PrimaryActingWeapon';
+import PrimaryActingRanged from './PrimaryActingRanged';
 import PrimaryCasting from './PrimaryCasting';
 import Circle from 'view/icons/Circle';
 import { BattleActionType } from 'controller/battle-actions';
+import SwingPierce from 'view/icons/SwingPierce';
 
 const MAX_WIDTH = '256px';
 const PRIMARY_CONTAINER_WIDTH = '192px';
@@ -329,7 +331,13 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
     selectedAction.type === BattleActionType.CAST &&
     battleCharacterIsActing(props.bCh);
   const actingWeaponVisible =
-    battleCharacterIsActing(props.bCh) && !isInvokingSpell;
+    battleCharacterIsActing(props.bCh) &&
+    !isInvokingSpell &&
+    selectedAction.type === BattleActionType.SWING;
+  const actingRangeVisible =
+    battleCharacterIsActing(props.bCh) &&
+    !isInvokingSpell &&
+    selectedAction.type === BattleActionType.RANGED;
   const castingVisible = battleCharacterIsCasting(props.bCh) || isInvokingSpell;
   const infoVisible =
     !battleCharacterIsActing(props.bCh) && !battleCharacterIsCasting(props.bCh);
@@ -367,6 +375,12 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
             <PrimaryContainer id={'primary-' + props.bCh.ch.name}>
               {actingWeaponVisible ? (
                 <PrimaryActingWeapon
+                  bCh={props.bCh}
+                  battleAction={selectedAction}
+                />
+              ) : null}
+              {actingRangeVisible ? (
+                <PrimaryActingRanged
                   bCh={props.bCh}
                   battleAction={selectedAction}
                 />

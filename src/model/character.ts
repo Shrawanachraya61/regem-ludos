@@ -106,6 +106,7 @@ export enum AnimationState {
   BATTLE_ITEM = 'battle_item',
   BATTLE_FLOURISH = 'battle_flourish',
   BATTLE_DEFEATED = 'battle_defeated',
+  BATTLE_DEAD = 'battle_dead',
 }
 
 export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
@@ -168,6 +169,7 @@ export interface CharacterTemplate {
   armor?: number;
   weaponEquipState?: WeaponEquipState;
   spriteSize?: Point;
+  canGetStuckWhileWalking?: boolean;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -248,6 +250,12 @@ export const characterCreateFromTemplate = (
   if (template.spriteSize) {
     ch.spriteWidth = template.spriteSize[0];
     ch.spriteHeight = template.spriteSize[1];
+  }
+  if (template.canGetStuckWhileWalking) {
+    // if walkRetries cannot be incremented, then the character is able to get stuck
+    // on things.  This is the desired behavior for roaming npcs who cause battles
+    // when you bonk into them.
+    ch.walkRetries = -Infinity;
   }
   ch.template = template;
   return ch;
@@ -455,6 +463,10 @@ export const characterGetPosPx = (ch: Character): Point => {
   return isoToPixelCoords(x, y, z);
 };
 
+export const characterGetPosTopLeftPx = (ch: Character): Point => {
+  return characterGetPosPx(ch);
+};
+
 export const characterGetPosCenterPx = (ch: Character): Point => {
   const [x, y, z] = characterGetPosTopLeft(ch);
   const [px, py] = isoToPixelCoords(x, y, z);
@@ -489,7 +501,13 @@ export const characterSetWalkTarget = (
     extrapolatePoint(point1),
     extrapolatePoint(point2)
   );
-  ch.walkRetries = 0;
+  if (ch.walkRetries > 0) {
+    ch.walkRetries = 0;
+  }
+};
+
+export const characterHasWalkTarget = (ch: Character) => {
+  return !!ch.walkTarget;
 };
 
 // This converts the walkTarget so that it's specified relative to characterPosBottom
@@ -667,6 +685,7 @@ export const characterUpdate = (ch: Character): void => {
     const tile = roomGetTileBelow(room, [ch.x, ch.y]);
     let tileBelowY1: Tile | null = null;
     let tileBelowX1: Tile | null = null;
+    let tileBelowXY1: Tile | null = null;
     if (tile) {
       // tile.highlighted = true;
       // if (ch.name === 'Ada') {
@@ -688,9 +707,16 @@ export const characterUpdate = (ch: Character): void => {
         Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
         tile.y
       );
+      tileBelowXY1 = roomGetTileAt(
+        room,
+        Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+        Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+      );
     }
     const isObstructedByWall =
-      isPrimaryWall(tileBelowY1) || isPrimaryWall(tileBelowX1);
+      isPrimaryWall(tileBelowY1) ||
+      isPrimaryWall(tileBelowX1) ||
+      isPrimaryWall(tileBelowXY1);
     if (tile?.isWall || isObstructedByWall) {
       // if (tile && tileBelowY1) {
       //   tile.highlighted = true;

@@ -86,7 +86,7 @@ const DuplicateToOtherDialog = ({ open, setOpen, appInterface }) => {
   return (
     <Dialog
       open={!!open}
-      title="Duplicate Animations"
+      title="Copy Animations To Other"
       onConfirm={() => {
         if (completedArr) {
           setCompletedArr(null);
@@ -519,7 +519,8 @@ const AnimationItem = ({
                         });
                       });
                       return a;
-                    }
+                    },
+                    i + 1
                   );
 
                   // appInterface.setAnimation(display.getAnimation(animName));

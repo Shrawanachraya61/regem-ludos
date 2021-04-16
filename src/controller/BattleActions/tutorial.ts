@@ -4,16 +4,20 @@ import {
   BattleActionType,
   doSwing,
   getTarget,
+  doRange,
+  RangeType,
 } from 'controller/battle-actions';
 import { Battle } from 'model/battle';
 import { BattleCharacter } from 'model/battle-character';
+
+const COOLDOWN_MOD = 10;
 
 export const init = (): Record<string, BattleAction> => {
   const exp = {
     RobotSwingNormalNNStaggerable: {
       name: 'RobotSwingNormalNNStaggerable',
       description: 'AI',
-      cooldown: 1000,
+      cooldown: 10000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL, SwingType.NORMAL],
@@ -35,7 +39,7 @@ export const init = (): Record<string, BattleAction> => {
     RobotSwingNormalNN: {
       name: 'RobotSwingNormalNN',
       description: 'AI',
-      cooldown: 5000,
+      cooldown: 10000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL, SwingType.NORMAL],
@@ -57,7 +61,7 @@ export const init = (): Record<string, BattleAction> => {
     RobotSwingSpeedyN: {
       name: 'RobotSwingSpeedyN',
       description: 'AI',
-      cooldown: 3000,
+      cooldown: 8000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL],
@@ -79,7 +83,7 @@ export const init = (): Record<string, BattleAction> => {
     RobotSwingArmoredNK: {
       name: 'RobotSwingArmoredNK',
       description: 'AI',
-      cooldown: 7000,
+      cooldown: 11000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL, SwingType.KNOCK_DOWN],
@@ -101,7 +105,7 @@ export const init = (): Record<string, BattleAction> => {
     RobotSwingPierce: {
       name: 'RobotSwingPierce',
       description: 'AI',
-      cooldown: 5000,
+      cooldown: 9000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.PIERCE],
@@ -116,6 +120,28 @@ export const init = (): Record<string, BattleAction> => {
             baseStagger,
             swingType:
               this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
+    RobotRanged: {
+      name: 'RobotRanged',
+      description: 'AI',
+      cooldown: 5000 * COOLDOWN_MOD,
+      type: BattleActionType.RANGED,
+      meta: {
+        ranges: [RangeType.NORMAL, RangeType.NORMAL],
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 1;
+        const baseStagger = 0;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doRange(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            rangeType:
+              this.meta?.ranges?.[bCh.actionStateIndex] ?? RangeType.NORMAL,
           });
         }
       },

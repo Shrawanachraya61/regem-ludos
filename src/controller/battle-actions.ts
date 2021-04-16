@@ -16,8 +16,10 @@ import {
   battleCharacterSetActonState,
   BattleActionState,
   battleCharacterSetAnimationStateAttack,
+  battleCharacterSetAnimationIdle,
 } from 'model/battle-character';
 import {
+  Character,
   AnimationState,
   characterGetAnimation,
   characterGetPos,
@@ -26,6 +28,8 @@ import {
   characterGetPosCenterPx,
   characterHasAnimationState,
   characterGetSize,
+  characterGetPosTopLeft,
+  characterGetPosTopLeftPx,
 } from 'model/character';
 import { roomAddParticle, TILE_WIDTH } from 'model/room';
 import {
@@ -47,16 +51,20 @@ import {
   EFFECT_TEMPLATE_SWORD_LEFT,
   EFFECT_TEMPLATE_FIREBALL,
   EFFECT_TEMPLATE_PIERCE_LEFT,
+  EFFECT_TEMPLATE_RANGED_HIT,
   EFFECT_TEMPLATE_SMOKE,
   createDamageParticle,
   createStatusParticle,
+  EFFECT_TEMPLATE_RANGED_LEFT,
+  ParticleTemplate,
 } from 'model/particle';
 import {
   beginAction,
   endAction,
-  applySwingDamage,
   setCasting,
+  applySwingDamage,
   applyMagicDamage,
+  applyRangeDamage,
 } from 'controller/battle-management';
 import { getCurrentRoom } from 'model/generics';
 import { getIfExists as getAnimMetadata } from 'db/animation-metadata';
@@ -67,6 +75,7 @@ import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
 
 import { init as initTutorial } from 'controller/BattleActions/tutorial';
+import { init as initParty } from 'controller/BattleActions/party';
 
 export interface BattleAction {
   name: string;
@@ -79,6 +88,7 @@ export interface BattleAction {
 
 interface BattleActionMeta {
   swings?: SwingType[];
+  ranges?: RangeType[];
   castTime?: number;
   icon?: (props: any) => h.JSX.Element;
 }
@@ -96,6 +106,18 @@ export enum SwingType {
   KNOCK_DOWN = 'knock-down',
   FINISH = 'finish',
 }
+
+export enum RangeType {
+  NORMAL = 'normal',
+}
+
+export const createParticleAtCharacter = (
+  template: ParticleTemplate,
+  ch: Character
+) => {
+  const [centerPx, centerPy] = characterGetPosCenterPx(ch);
+  return particleCreateFromTemplate([centerPx, centerPy], template);
+};
 
 export const getDurationUntilStrike = (anim: Animation) => {
   const meta = getAnimMetadata(anim.name);
@@ -118,9 +140,10 @@ export const getTransformOffsetFunction = (distance: number) => {
 export const getTarget = (battle: Battle, bCh: BattleCharacter) => {
   const ch = bCh.ch;
   const allegiance = battleGetAllegiance(battle, ch);
+  const selectedAction = bCh.ch.skills[bCh.ch.skillIndex];
   let target: BattleCharacter | null;
   if (allegiance === BattleAllegiance.ALLY) {
-    target = battleGetTargetedEnemy(battle);
+    target = battleGetTargetedEnemy(battle, selectedAction.type);
   } else {
     target = battleGetNearestAttackable(battle, allegiance);
   }
@@ -136,16 +159,44 @@ export const moveForward = async (
   const startPoint = characterGetPos(ch);
   const endPoint: Point3d = [...startPoint];
   if (allegiance === BattleAllegiance.ALLY) {
-    endPoint[0] += TILE_WIDTH / 2;
-    endPoint[1] -= TILE_WIDTH / 2;
+    endPoint[0] += TILE_WIDTH / 2 / 2;
+    endPoint[1] -= TILE_WIDTH / 2 / 2;
   } else {
-    endPoint[0] -= TILE_WIDTH / 2;
-    endPoint[1] += TILE_WIDTH / 2;
+    endPoint[0] -= TILE_WIDTH / 2 / 2;
+    endPoint[1] += TILE_WIDTH / 2 / 2;
   }
   const transform = new Transform(
     startPoint,
     endPoint,
-    200,
+    150,
+    TransformEase.LINEAR,
+    transformOffsetJumpShort
+  );
+  characterSetTransform(ch, transform);
+  characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
+  await transform.timer.onCompletion();
+  return transform;
+};
+
+export const moveBackward = async (
+  battle: Battle,
+  bCh: BattleCharacter
+): Promise<Transform> => {
+  const ch = bCh.ch;
+  const allegiance = battleGetAllegiance(battle, ch);
+  const startPoint = characterGetPos(ch);
+  const endPoint: Point3d = [...startPoint];
+  if (allegiance === BattleAllegiance.ALLY) {
+    endPoint[0] -= TILE_WIDTH / 2;
+    endPoint[1] += TILE_WIDTH / 2;
+  } else {
+    endPoint[0] += TILE_WIDTH / 2;
+    endPoint[1] -= TILE_WIDTH / 2;
+  }
+  const transform = new Transform(
+    startPoint,
+    endPoint,
+    150,
     TransformEase.LINEAR,
     transformOffsetJumpShort
   );
@@ -163,6 +214,9 @@ export const jumpToTarget = async (
   const ch = bCh.ch;
   const chSize = characterGetSize(bCh.ch);
   const targetSize = characterGetSize(target.ch);
+  // for bigger targets, the character needs to jump further away so they don't look like
+  // they're phasing into the sprite.  This calculation adjusts for the size of the
+  // character jumping and the size of the target
   const jumpTileOffsetIters = Math.floor(
     1 + (chSize[0] - 32) / 32 + (targetSize[1] - 32) / 32
   );
@@ -191,6 +245,8 @@ export const jumpToTarget = async (
   const transform = new Transform(
     startPoint,
     endPoint,
+    // it should take a tiny bit longer to jump a further distance, so elongate that by
+    // 1.75 at max distance in linearly interpolate between
     250 * normalize(distance, 35, 125, 1, 1.75),
     TransformEase.LINEAR,
     getTransformOffsetFunction(distance)
@@ -270,7 +326,98 @@ export const doSwing = async (
     // HACK: don't invoke events in this file
     battleInvokeEvent(battle, BattleEvent.onCharacterActionReady, bCh);
     battleCharacterSetActonState(bCh, BattleActionState.ACTING_READY);
-    characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
+    battleCharacterSetAnimationIdle(bCh);
+
+    bCh.actionReadyTimer.unpause();
+  }
+
+  if (bCh.actionStateIndex === 0) {
+    await endAction(bCh);
+  }
+};
+
+export const doRange = async (
+  battle: Battle,
+  action: BattleAction,
+  bCh: BattleCharacter,
+  target: BattleCharacter,
+  {
+    baseDamage,
+    baseStagger,
+    rangeType,
+  }: { baseDamage: number; baseStagger: number; rangeType: RangeType }
+) => {
+  const ch = bCh.ch;
+  const numRanges = action.meta.ranges?.length ?? 1;
+  const actionStateIndex = bCh.actionStateIndex;
+  bCh.actionStateIndex = (bCh.actionStateIndex + 1) % numRanges;
+
+  console.log('DO RANGE', action, bCh, numRanges);
+
+  if (actionStateIndex === 0) {
+    await beginAction(bCh);
+
+    bCh.actionReadyTimer.start();
+    await moveBackward(battle, bCh);
+  }
+
+  if (actionStateIndex < numRanges) {
+    bCh.actionReadyTimer.start();
+    bCh.actionReadyTimer.pause();
+
+    // shoot weapon
+    battleCharacterSetActonState(bCh, BattleActionState.ACTING);
+    battleCharacterSetAnimationStateAttack(bCh, BattleActionType.RANGED);
+    const anim = characterGetAnimation(ch);
+    const particleSpawnDelayMs = getDurationUntilStrike(anim);
+
+    // spawn particle when bow is drawn and fired
+    timeoutPromise(particleSpawnDelayMs).then(() => {
+      const particle = createParticleAtCharacter(
+        {
+          ...EFFECT_TEMPLATE_RANGED_LEFT,
+          flipped:
+            battleGetAllegiance(battle, bCh.ch) === BattleAllegiance.ALLY,
+        },
+        ch
+      );
+      const [targetX, targetY] = characterGetPosTopLeftPx(target.ch);
+      const animMetadata = getAnimMetadata(anim.name);
+      const [
+        spawnOffsetX,
+        spawnOffsetY,
+      ] = animMetadata?.rangedParticleSpawnOffset ?? [0, 0];
+
+      particle.transform = new Transform(
+        [particle.x + spawnOffsetX, particle.y + spawnOffsetY, 0],
+        [targetX, targetY, 0],
+        100,
+        TransformEase.LINEAR
+      );
+      roomAddParticle(battle.room, particle);
+    });
+
+    // show effect particles + apply damage after some timeout
+    timeoutPromise(particleSpawnDelayMs + 75).then(() => {
+      const particle = createParticleAtCharacter(
+        EFFECT_TEMPLATE_RANGED_HIT,
+        target.ch
+      );
+      roomAddParticle(battle.room, particle);
+      applyRangeDamage(battle, bCh, target, baseDamage, baseStagger);
+    });
+
+    await anim.onCompletion();
+    if (actionStateIndex === numRanges - 1) {
+      await timeoutPromise(750);
+    } else {
+      await timeoutPromise(400);
+    }
+
+    // HACK: don't invoke events in this file
+    battleInvokeEvent(battle, BattleEvent.onCharacterActionReady, bCh);
+    battleCharacterSetActonState(bCh, BattleActionState.ACTING_READY);
+    battleCharacterSetAnimationIdle(bCh);
 
     bCh.actionReadyTimer.unpause();
   }
@@ -359,7 +506,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
       await inverseTransform.timer.onCompletion();
 
       inverseTransform.markForRemoval();
-      characterSetAnimationState(ch, AnimationState.BATTLE_IDLE);
+      battleCharacterSetAnimationIdle(bCh);
 
       setCasting(bCh, {
         castTime: 5000,
@@ -406,7 +553,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
           const allegiance = battleGetAllegiance(battle, ch);
           let target: BattleCharacter | null;
           if (allegiance === BattleAllegiance.ALLY) {
-            target = battleGetTargetedEnemy(battle);
+            target = battleGetTargetedEnemy(battle, BattleActionType.RANGED);
           } else {
             target = battleGetNearestAttackable(battle, allegiance);
           }
@@ -434,4 +581,6 @@ export const BattleActions: { [key: string]: BattleAction } = {
 
 export const init = () => {
   Object.assign(BattleActions, initTutorial());
+  Object.assign(BattleActions, initParty());
+  console.log('BATTLE ACTIONS', BattleActions);
 };

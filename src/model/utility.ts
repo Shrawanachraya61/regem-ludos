@@ -22,6 +22,11 @@ export class Timer {
   }
 
   start(duration?: number): void {
+    if (this.paused) {
+      this.timestampPause = getNow();
+      this.unpause();
+    }
+
     this.timestampStart = getNow();
     this.duration = duration ?? this.duration;
   }
@@ -74,7 +79,7 @@ export class Timer {
   }
 
   isComplete(): boolean {
-    return !this.isPaused() && getNow() - this.timestampStart >= this.duration;
+    return getNow() - this.timestampStart >= this.duration;
   }
 
   onCompletion(): Promise<void> {
@@ -98,6 +103,20 @@ export class Timer {
       diff = -1;
     }
     return diff / this.duration;
+  }
+
+  getDiff() {
+    let now = getNow();
+    if (this.isPaused()) {
+      now -= now - this.timestampPause;
+    }
+    const diff = now - this.timestampStart;
+    return [
+      diff,
+      now - this.timestampPause,
+      this.timestampStart,
+      this.timestampPause,
+    ];
   }
 
   markForRemoval(): void {
@@ -151,6 +170,19 @@ export const transformOffsetFlat: TransformOffsetFunc = (
   pctComplete: number
 ) => {
   return [0 * pctComplete, 0 * pctComplete, 0 * pctComplete];
+};
+
+export const transformOffsetWeightedParticle: TransformOffsetFunc = (
+  pctComplete: number
+) => {
+  const threshold = 0.6;
+  if (pctComplete < threshold) {
+    const n = normalizeClamp(pctComplete, 0, threshold, 0, 1);
+    return [0, -TILE_HEIGHT * Math.sin(n * Math.PI), 0];
+  } else {
+    const n = normalizeClamp(pctComplete, threshold, 1, 0, 1);
+    return [0, -(TILE_HEIGHT / 4) * Math.sin(n * Math.PI), 0];
+  }
 };
 
 export const transformOffsetJumpShort: TransformOffsetFunc = (

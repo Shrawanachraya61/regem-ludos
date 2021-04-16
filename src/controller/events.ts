@@ -90,6 +90,11 @@ export const getCurrentKeyHandler = (): KeyboardHandler | null =>
 export const pushKeyHandler = (cb: KeyboardHandler): void => {
   keyHandlers.push(cb);
 };
+export const pushEmptyKeyHandler = () => {
+  const handler = () => {};
+  keyHandlers.push(handler);
+  return handler;
+};
 export const popKeyHandler = (handler: KeyboardHandler) => {
   const ind = keyHandlers.indexOf(handler);
   if (ind > -1) {

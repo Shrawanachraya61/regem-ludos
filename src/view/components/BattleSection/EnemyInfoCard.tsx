@@ -147,6 +147,14 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
     }
   };
 
+  const handleMouseOver = () => {
+    props.bCh.ch.highlighted = true;
+  };
+
+  const handleMouseOut = () => {
+    props.bCh.ch.highlighted = false;
+  };
+
   useBattleSubscriptionWithBattleCharacter(
     getCurrentBattle(),
     props.bCh,
@@ -158,7 +166,6 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
   );
 
   const chName = props.bCh.ch.name;
-  const isTargeted = battleGetTargetedEnemy(getCurrentBattle()) === props.bCh;
   const armorIcons: any[] = [];
   for (let i = 0; i < props.bCh.armor; i++) {
     armorIcons.push(
@@ -171,14 +178,12 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
   return (
     <>
       <Root>
-        <TopRowContainer id="top-row-ctr">
-          {isTargeted ? (
-            <PillButton id={'name-label-' + chName} type={ButtonType.ENEMY}>
-              TARGETED
-            </PillButton>
-          ) : null}
-        </TopRowContainer>
-        <PrimaryRowContainer id="primary-row-ctr">
+        <TopRowContainer id="top-row-ctr"></TopRowContainer>
+        <PrimaryRowContainer
+          id="primary-row-ctr"
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+        >
           <ArmorInfoContainer>{armorIcons}</ArmorInfoContainer>
           <PrimaryRoot id="primary-root" onClick={handlePrimaryClick}>
             <PrimaryContainer id="primary">

@@ -185,7 +185,7 @@ display.updateAnimation = function(anim, imageName, loop, sprites) {
   });
 };
 
-display.createAnimation = function(name, picName, cb) {
+display.createAnimation = function(name, picName, cb, i) {
   try {
     display.animations[name] = cb;
     if (picName) {
@@ -195,9 +195,17 @@ display.createAnimation = function(name, picName, cb) {
       }
 
       if (Array.isArray(pic)) {
-        pic.push(() => display.createAnimation(name, picName, cb));
+        if (i === undefined) {
+          pic.push(() => display.createAnimation(name, picName, cb));
+        } else {
+          pic.splice(i, 0, () => display.createAnimation(name, picName, cb));
+        }
       } else if (!pic.animations.includes(name)) {
-        pic.animations.push(name);
+        if (i === undefined) {
+          pic.animations.push(name);
+        } else {
+          pic.animations.splice(i, 0, name);
+        }
       }
     }
   } catch (e) {

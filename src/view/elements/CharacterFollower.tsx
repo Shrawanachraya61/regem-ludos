@@ -3,7 +3,11 @@ import { h } from 'preact';
 import { useRenderLoop } from 'view/hooks';
 import { style, IntrinsicProps } from 'view/style';
 import { getDrawScale } from 'model/canvas';
-import { Character, characterGetPos, characterGetSize } from 'model/character';
+import {
+  Character,
+  characterGetPosTopLeft,
+  characterGetSize,
+} from 'model/character';
 import { worldToCanvasCoords4by3 } from 'utils';
 
 interface ICharacterFollowerProps extends IntrinsicProps {
@@ -22,13 +26,9 @@ const CharacterFollower = (props: ICharacterFollowerProps): h.JSX.Element => {
   const { renderKey, ch, style, ...rest } = props;
   useRenderLoop(renderKey);
 
-  const [x, y, z] = characterGetPos(ch);
+  const [x, y, z] = characterGetPosTopLeft(ch);
   const [spriteWidth, spriteHeight] = characterGetSize(ch);
-  const [resultX, resultY] = worldToCanvasCoords4by3(
-    x - (spriteWidth - 32),
-    y - (spriteHeight - 32) / 2,
-    z
-  );
+  const [resultX, resultY] = worldToCanvasCoords4by3(x, y, z);
   return (
     <Root
       style={{

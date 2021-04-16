@@ -112,13 +112,16 @@ export interface Tile {
   highlighted: boolean;
   ro?: RenderObject;
 }
-
 interface TiledObject {
   x: number;
   y: number;
   width: number;
   height: number;
   name: string;
+  properties?: {
+    name: 'overworldAi' | 'encounterName';
+    value: string;
+  }[];
   gid?: number;
 }
 
@@ -372,8 +375,19 @@ export const createRoom = async (
         `Could not load character '${tiledObject.name}' in room definition '${name}', no entry in the db.`
       );
     }
-    const ch = characterCreateFromTemplate(chTemplate);
+    const customProps = tiledObject.properties ?? [];
+    const customOverworldAi = customProps.find(p => p.name === 'overworldAi');
+    if (customOverworldAi) {
+      chTemplate.overworldAi = customOverworldAi.value;
+    }
+    // const customEncounterName = customProps.find(
+    //   p => p.name === 'encounterName'
+    // );
+    // if (customEncounterName) {
+    //   chTemplate.encounterName = customEncounterName.value;
+    // }
 
+    const ch = characterCreateFromTemplate(chTemplate);
     characterSetPos(ch, [newX, newY, 0]);
     roomAddCharacter(room, ch);
   };

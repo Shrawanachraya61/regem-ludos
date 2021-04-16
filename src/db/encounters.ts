@@ -131,6 +131,27 @@ export const init = () => {
     ],
   };
 
+  exp.ENCOUNTER_TUT5 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_RANGED'),
+        position: BattlePosition.MIDDLE,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
   exp.ENCOUNTER_TUT_BOSS = {
     roomName: 'battleTut1',
     enemies: [

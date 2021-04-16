@@ -53,7 +53,7 @@ export interface BattleCharacter {
   staggerTimer: Timer;
   staggerGauge: Gauge;
   castTimer: Timer;
-  armorTimer: Timer;
+  armorTimer: Timer; // timer for tracking simultaneous hits that break armor
   position: BattlePosition;
   actionState: BattleActionState;
   actionStateIndex: number;
@@ -81,7 +81,7 @@ const battleCharacterCreate = (
     staggerTimer: new Timer(2000),
     staggerGauge: new Gauge(staggerDmg, 0.002),
     castTimer: new Timer(1000),
-    armorTimer: new Timer(500),
+    armorTimer: new Timer(250),
     position,
     actionState: BattleActionState.IDLE,
     actionStateIndex: 0,
@@ -323,7 +323,10 @@ export const updateBattleCharacter = (
 ): void => {
   if (bCh.ch.hp <= 0) {
     // enforce the animation state of defeated every frame
-    if (characterGetAnimationState(bCh.ch) !== AnimationState.BATTLE_DEFEATED) {
+    if (
+      characterGetAnimationState(bCh.ch) !== AnimationState.BATTLE_DEFEATED &&
+      characterGetAnimationState(bCh.ch) !== AnimationState.BATTLE_DEAD
+    ) {
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
     }
 
@@ -333,7 +336,14 @@ export const updateBattleCharacter = (
 
       // HACK: assumes that a character can only die at the end of a turn
       const removeCharacter = () => {
+        battleUnsubscribeEvent(
+          battle,
+          BattleEvent.onTurnEnded,
+          removeCharacter
+        );
+
         let ind = battle.enemies.indexOf(bCh);
+        // if ch is an enemy, remove from room
         if (ind > -1) {
           bCh.shouldRemove = true;
           battle.defeated.push(bCh);
@@ -345,11 +355,6 @@ export const updateBattleCharacter = (
           bCh.shouldRemove = true;
           battle.defeated.push(bCh);
         }
-        battleUnsubscribeEvent(
-          battle,
-          BattleEvent.onTurnEnded,
-          removeCharacter
-        );
       };
       battleSubscribeEvent(battle, BattleEvent.onTurnEnded, removeCharacter);
     }

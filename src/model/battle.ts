@@ -1,9 +1,10 @@
 import { Room } from 'model/room';
 import { BattleAI } from 'controller/battle-ai';
 import { BattleCharacter, battleCharacterIsActing } from './battle-character';
-import { CharacterTemplate, Character } from './character';
+import { CharacterTemplate, Character, AnimationState } from './character';
 import { setAtMarker } from 'controller/scene-commands';
 import { getCurrentPlayer } from './generics';
+import { BattleActionType } from 'controller/battle-actions';
 
 export interface Battle {
   room: Room;
@@ -13,6 +14,8 @@ export interface Battle {
   defeated: BattleCharacter[];
   subscriptions: IBattleSubscriptionHub;
   targetedEnemyIndex: number;
+  targetedEnemyRangeIndex: number;
+  isPaused: boolean;
 }
 
 export enum BattleEvent {
@@ -137,6 +140,8 @@ export const battleCreate = (
     allies,
     subscriptions,
     targetedEnemyIndex: 0,
+    targetedEnemyRangeIndex: 0,
+    isPaused: false,
   };
 };
 
@@ -258,6 +263,15 @@ export const battleGetNearestAttackable = (
   return target ?? null;
 };
 
+export const battleGetCharactersByPosition = (
+  arr: BattleCharacter[],
+  position: BattlePosition
+): BattleCharacter[] => {
+  return arr.filter((bCh: BattleCharacter) => {
+    return bCh.position === position;
+  });
+};
+
 export const battleSubscribeEvent = (
   battle: Battle,
   eventName: BattleEvent,
@@ -307,19 +321,161 @@ export const battleGetActingAllegiance = (
   return null;
 };
 
-export const battleSetEnemyTargetIndex = (battle: Battle, i: number) => {
+// melee characters can only target enemies if there are no enemies in front of them
+export const battleIsEnemyTargetableByMelee = (
+  battle: Battle,
+  i: number
+): boolean => {
+  const enemies = battle.enemies;
+  const front = battleGetCharactersByPosition(enemies, BattlePosition.FRONT);
+  if (front.length > 0 && i >= front.length) {
+    return false;
+  } else if (i < front.length) {
+    return true;
+  }
+  const middle = battleGetCharactersByPosition(enemies, BattlePosition.MIDDLE);
+  if (middle.length > 0 && i >= middle.length) {
+    return false;
+  } else if (i < middle.length) {
+    return true;
+  }
+  return true;
+};
+
+export const battleSetEnemyTargetIndex = (
+  battle: Battle,
+  i: number
+): boolean => {
   if (battleGetActingAllegiance(battle) === BattleAllegiance.ENEMY) {
     console.log('Cannot set battle target index during enemy acting phase.');
-    return;
+    return false;
+  }
+
+  if (!battleIsEnemyTargetableByMelee(battle, i)) {
+    console.log('Cannot target characters behind other characters.');
+    return false;
+  }
+
+  if (battleGetDefeatedCharacters(battle).length) {
+    // fixes a bug where spam clicking the target while a character is dying causes
+    // the target to decrement at the end of a player phase and therefore invalidate
+    // the index
+    console.log('Cannot cannot set target when characters are defeated.');
+    return false;
   }
 
   if (i < battle.enemies.length) {
     battle.targetedEnemyIndex = i;
   }
+  return true;
+};
+
+export const battleSetEnemyRangeTargetIndex = (
+  battle: Battle,
+  i: number
+): boolean => {
+  if (battleGetActingAllegiance(battle) === BattleAllegiance.ENEMY) {
+    console.log(
+      'Cannot set ranged battle target index during enemy acting phase.'
+    );
+    return false;
+  }
+
+  if (battleGetDefeatedCharacters(battle).length) {
+    // fixes a bug where spam clicking the target while a character is dying causes
+    // the target to decrement at the end of a player phase and therefore invalidate
+    // the index
+    console.log(
+      'Cannot cannot set ranged target when characters are defeated.'
+    );
+    return false;
+  }
+
+  if (i < battle.enemies.length) {
+    battle.targetedEnemyRangeIndex = i;
+  }
+  return true;
 };
 
 export const battleGetTargetedEnemy = (
-  battle: Battle
+  battle: Battle,
+  type: BattleActionType
 ): BattleCharacter | null => {
-  return battle.enemies[battle.targetedEnemyIndex] ?? null;
+  const i =
+    type === BattleActionType.SWING
+      ? battle.targetedEnemyIndex
+      : battle.targetedEnemyRangeIndex;
+  return battle.enemies[i] ?? null;
+};
+
+export const battlePauseTimers = (
+  battle: Battle,
+  characters?: BattleCharacter[]
+) => {
+  (characters ?? battle.allies.concat(battle.enemies)).forEach(
+    (bCh: BattleCharacter) => {
+      bCh.actionTimer.pauseOverride();
+      bCh.staggerTimer.pauseOverride();
+      bCh.castTimer.pauseOverride();
+      bCh.actionReadyTimer.pauseOverride();
+      if (bCh.ch.transform) {
+        bCh.ch.transform.timer.pauseOverride();
+      }
+    }
+  );
+};
+
+export const battleUnpauseTimers = (
+  battle: Battle,
+  characters?: BattleCharacter[]
+) => {
+  (characters ?? battle.allies.concat(battle.enemies)).forEach(
+    (bCh: BattleCharacter) => {
+      bCh.actionTimer.unpauseOverride();
+      bCh.staggerTimer.unpauseOverride();
+      bCh.castTimer.unpauseOverride();
+      bCh.actionReadyTimer.unpauseOverride();
+      if (bCh.ch.transform) {
+        bCh.ch.transform.timer.unpauseOverride();
+      }
+    }
+  );
+};
+
+export const battlePauseActionTimers = (
+  battle: Battle,
+  characters?: BattleCharacter[],
+  override?: boolean
+) => {
+  (characters ?? battle.allies.concat(battle.enemies)).forEach(
+    (bCh: BattleCharacter) => {
+      override ? bCh.actionTimer.pauseOverride() : bCh.actionTimer.pause();
+    }
+  );
+};
+
+export const battleUnpauseActionTimers = (
+  battle: Battle,
+  characters?: BattleCharacter[],
+  override?: boolean
+) => {
+  (characters ?? battle.allies.concat(battle.enemies)).forEach(
+    (bCh: BattleCharacter) => {
+      override ? bCh.actionTimer.unpauseOverride() : bCh.actionTimer.unpause();
+    }
+  );
+};
+
+export const battleGetDefeatedCharacters = (battle: Battle) => {
+  return battle.allies.concat(battle.enemies).filter((bCh: BattleCharacter) => {
+    return bCh.isDefeated;
+  });
+};
+
+export const battleGetDyingCharacters = (battle: Battle) => {
+  return battle.allies.concat(battle.enemies).filter((bCh: BattleCharacter) => {
+    return (
+      bCh.isDefeated && bCh.ch.animationState === AnimationState.BATTLE_DEAD
+    );
+  });
 };

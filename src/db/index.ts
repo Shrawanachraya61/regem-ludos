@@ -14,4 +14,4 @@ export default async () => {
   initOverworldAi();
   initAnimMetadata();
   await initOverworlds();
-}
+};

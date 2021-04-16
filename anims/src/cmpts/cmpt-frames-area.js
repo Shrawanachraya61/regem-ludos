@@ -275,7 +275,10 @@ const Frame = ({ appInterface, spriteIndex, setParentIsDraggingOver }) => {
               marginBottom: '5px',
               pointerEvents: 'none',
               textAlign: 'left',
-              maxWidth: '118px',
+              maxWidth: '108px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              direction: 'rtl',
             }}
           >
             {spriteName}

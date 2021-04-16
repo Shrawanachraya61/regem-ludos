@@ -103,6 +103,8 @@ export default () => {
   });
 
   display.resize(window.innerWidth, window.innerHeight);
+  const animationAreaVisible = imageName && display.pictures[imageName];
+
   return (
     <div
       onDrop={() => {
@@ -113,43 +115,57 @@ export default () => {
         ev.preventDefault();
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-around',
-          height: dims[1] - 200 + 'px',
-        }}
-      >
+      {animationAreaVisible ? (
+        <>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              height: dims[1] - 200 + 'px',
+            }}
+          >
+            <div
+              style={{
+                width: '350px',
+                height: '100%',
+                backgroundColor: colors.darkGrey,
+                borderRight: '1px solid ' + colors.grey,
+              }}
+            >
+              <AnimationSelect appInterface={appInterface} />
+            </div>
+            <div style={{ width: 'calc(100% - 700px)', height: '100%' }}>
+              <Spritesheet appInterface={appInterface} />
+            </div>
+            <div
+              style={{
+                width: '350px',
+                height: '100%',
+                backgroundColor: colors.darkGrey,
+                borderLeft: '1px solid ' + colors.grey,
+                overflowY: 'auto',
+              }}
+            >
+              <AnimationArea appInterface={appInterface} />
+            </div>
+          </div>
+          <FramesArea appInterface={appInterface} />
+        </>
+      ) : (
         <div
           style={{
-            width: '350px',
+            border: '32px solid ' + colors.darkGrey,
+            borderBottomWidth: '2px',
+            borderTopWidth: '2px',
+            boxSizing: 'border-box',
             height: '100%',
-            backgroundColor: colors.darkGrey,
-            borderRight: '1px solid ' + colors.grey,
-          }}
-        >
-          <AnimationSelect appInterface={appInterface} />
-        </div>
-        <div style={{ width: 'calc(100% - 700px)', height: '100%' }}>
-          {imageName && display.pictures[imageName] ? (
-            <Spritesheet appInterface={appInterface} />
-          ) : (
-            <ImageSelect appInterface={appInterface} />
-          )}
-        </div>
-        <div
-          style={{
-            width: '350px',
-            height: '100%',
-            backgroundColor: colors.darkGrey,
-            borderLeft: '1px solid ' + colors.grey,
             overflowY: 'auto',
+            background: colors.darkGrey,
           }}
         >
-          <AnimationArea appInterface={appInterface} />
+          <ImageSelect appInterface={appInterface} />
         </div>
-      </div>
-      <FramesArea appInterface={appInterface} />
+      )}
     </div>
   );
 };

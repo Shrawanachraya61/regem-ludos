@@ -95,22 +95,17 @@ export const main = async (): Promise<void> => {
     spriteBase: 'ada',
     stats: {
       ...battleStatsCreate(),
-      HP: 30,
+      HP: 50,
     },
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
-    skills: [
-      BattleActions.Swing,
-      BattleActions.SwingSlow,
-      BattleActions.SwingWithLongDescription,
-      BattleActions.Defend,
-    ],
+    skills: [BattleActions.AdaTrainingSwing],
   });
   player.leader.speed = 1;
 
-  // const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
-  // player.party.push(conscience);
-  // player.battlePositions.push(conscience);
+  const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
+  player.party.push(conscience);
+  player.battlePositions.push(conscience);
 
   const query = parseQuery(window.location.search);
   if (query.room) {

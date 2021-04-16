@@ -272,3 +272,7 @@ export const createPolygonFromRect = (r: Rect): Polygon => {
 export const toFixedPrecision = (n: number, precision: number): number => {
   return parseFloat(n.toFixed(precision));
 };
+
+export function randInArr<T>(arr: T[]) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
