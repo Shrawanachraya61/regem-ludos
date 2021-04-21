@@ -4,11 +4,17 @@ import {
   Point,
   isoToPixelCoords,
   pixelToIsoCoords,
+  facingToIncrements,
+  pxFacingToWorldFacing,
+  calculateDistance,
 } from 'utils';
 import {
   Character,
   characterSetPos,
   characterCreateFromTemplate,
+  characterGetPos,
+  characterGetPosBottom,
+  Facing,
 } from 'model/character';
 import { Particle } from 'model/particle';
 import { get as getCharacter } from 'db/characters';
@@ -340,21 +346,22 @@ export const createRoom = async (
           );
         }
         promises.push(
-          new Promise<void>(async resolve => {
-            await loadImageAsSprite(
+          new Promise<void>(resolve => {
+            loadImageAsSprite(
               pictureName,
               removeFileExtension(pictureName)
-            );
-            const prop = {
-              x,
-              y,
-              sprite: pictureName,
-              isDynamic: true,
-              isFront: tiledProp.type === 'front',
-            };
-            room.props.push(prop);
-            room.renderObjects.push(createPropRenderObject(prop));
-            resolve();
+            ).then(() => {
+              const prop = {
+                x,
+                y,
+                sprite: pictureName,
+                isDynamic: true,
+                isFront: tiledProp.type === 'front',
+              };
+              room.props.push(prop);
+              room.renderObjects.push(createPropRenderObject(prop));
+              resolve();
+            });
           })
         );
       }
@@ -380,12 +387,17 @@ export const createRoom = async (
     if (customOverworldAi) {
       chTemplate.overworldAi = customOverworldAi.value;
     }
-    // const customEncounterName = customProps.find(
-    //   p => p.name === 'encounterName'
-    // );
-    // if (customEncounterName) {
-    //   chTemplate.encounterName = customEncounterName.value;
-    // }
+    const customEncounterName = customProps.find(
+      p => p.name === 'encounterName'
+    );
+    if (customEncounterName) {
+      chTemplate.encounterName = customEncounterName.value;
+    } else if (customOverworldAi) {
+      console.error(
+        `Error, character has an overworldAi but not an encounterName: ${tiledObject.name} `,
+        tiledObject
+      );
+    }
 
     const ch = characterCreateFromTemplate(chTemplate);
     characterSetPos(ch, [newX, newY, 0]);
@@ -570,4 +582,68 @@ export const roomShow = (room: Room) => {
 
 export const roomHide = (room: Room) => {
   room.visible = false;
+};
+
+const _innerNearestInSomeDirection = (
+  room: Room,
+  x: number,
+  y: number,
+  pxFacing: Facing
+) => {
+  let tile = roomGetTileBelow(room, [x, y]);
+  if (!tile) {
+    console.error(room, x, y);
+    console.error(
+      'cannot _innerNearestInSomeDirection, given point is not contained within the room.'
+    );
+    return Infinity;
+  }
+  const [incrementX, incrementY] = facingToIncrements(
+    pxFacingToWorldFacing(pxFacing)
+  );
+
+  let loopCtr = 0;
+  let xOffset = 0;
+  let yOffset = 0;
+  do {
+    if (tile) {
+      const nextTile = roomGetTileBelow(room, [x + xOffset, y + yOffset]);
+      if (nextTile && !nextTile.isWall) {
+        tile = nextTile;
+        xOffset += 1 * incrementX;
+        yOffset += 1 * incrementY;
+      } else {
+        break;
+      }
+    }
+    loopCtr++;
+  } while (loopCtr < 100);
+
+  return calculateDistance([x, y, 0], [x + xOffset, y + yOffset, 0]);
+};
+
+export const roomGetDistanceToNearestWallInFacingDirection = (
+  room: Room,
+  ch: Character
+): number => {
+  const [x, y] = characterGetPosBottom(ch);
+  const sz = 32;
+  const points = [
+    [x + sz, y],
+    [x - sz, y],
+    [x, y + sz],
+    [x, y - sz],
+  ];
+
+  let minDistance = Infinity;
+  for (let i = 0; i < points.length; i++) {
+    const d = _innerNearestInSomeDirection(
+      room,
+      points[i][0],
+      points[i][1],
+      ch.facing
+    );
+    minDistance = Math.min(minDistance, d);
+  }
+  return minDistance;
 };

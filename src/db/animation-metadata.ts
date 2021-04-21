@@ -2,7 +2,7 @@ import { Point } from 'utils';
 
 interface IAnimationSound {
   soundName: string;
-  frame: number;
+  frame: number; // frame on which sound occurs
 }
 
 export interface AnimationMetadata {
@@ -36,37 +36,103 @@ export const getIfExists = (key: string): AnimationMetadata | null => {
 export const init = () => {
   exp.ada_battle_attack_left_f = {
     strikeFrame: 3,
+    sounds: [
+      {
+        soundName: 'battle_swing1',
+        frame: 3,
+      },
+    ],
   };
   exp.ada_battle_attack_p_left_f = {
     strikeFrame: 5,
+    sounds: [
+      {
+        soundName: 'battle_swing1',
+        frame: 5,
+      },
+    ],
   };
   exp.conscience_battle_ranged_left_f = {
     strikeFrame: 5,
     rangedParticleSpawnOffset: [0, 0],
+    sounds: [
+      {
+        soundName: 'battle_shoot_arrow',
+        frame: 5,
+      },
+    ],
   };
   exp.tut_robot_boss_battle_attack_left = {
     strikeFrame: 10,
+    sounds: [
+      {
+        soundName: 'battle_swing4',
+        frame: 10,
+      },
+    ],
   };
   exp.tut_robot_boss_battle_attack_k_left = {
     strikeFrame: 6,
+    sounds: [
+      {
+        soundName: 'battle_swing3',
+        frame: 6,
+      },
+    ],
   };
   exp.tut_robot_boss_battle_attack_p_left = {
     strikeFrame: 6,
+    sounds: [
+      {
+        soundName: 'battle_swing2',
+        frame: 6,
+      },
+    ],
   };
   exp.tut_robot_melee_speedy_battle_attack_left = {
     strikeFrame: 2,
+    sounds: [
+      {
+        soundName: 'battle_swing1',
+        frame: 2,
+      },
+    ],
   };
   exp.tut_robot_ranged_battle_ranged_left = {
     strikeFrame: 2,
     rangedParticleSpawnOffset: [8, -8],
+    sounds: [
+      {
+        soundName: 'battle_shoot_arrow',
+        frame: 0,
+      },
+    ],
   };
   exp.tut_robot_armored_battle_attack_left = {
     strikeFrame: 2,
+    sounds: [
+      {
+        soundName: 'battle_swing1',
+        frame: 2,
+      },
+    ],
   };
   exp.tut_robot_armored_battle_attack_k_left = {
     strikeFrame: 10,
+    sounds: [
+      {
+        soundName: 'battle_swing3',
+        frame: 8,
+      },
+    ],
   };
   exp.tut_robot_melee_battle_attack_left = {
     strikeFrame: 3,
+    sounds: [
+      {
+        soundName: 'battle_swing1',
+        frame: 3,
+      },
+    ],
   };
 };

@@ -8,6 +8,7 @@ export enum AppSection {
   Debug = 'debug',
   ArcadeCabinet = 'arcadeCabinet',
   Choices = 'choices',
+  Settings = 'settings',
 }
 
 export enum CutsceneSpeaker {

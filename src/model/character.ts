@@ -1,5 +1,5 @@
 import { createAnimation, Animation, hasAnimation } from 'model/animation';
-import { BattleStats, battleStatsCreate } from 'model/battle';
+import { BattleStats, battleStatsCreate, BattleTemplate } from 'model/battle';
 import { Transform, Timer } from 'model/utility';
 import {
   Point,
@@ -17,6 +17,9 @@ import {
   toFixedPrecision,
   extrapolatePoint,
   pixelToIsoCoords,
+  facingToIncrements,
+  pxFacingToWorldFacing,
+  timeoutPromise,
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
 import {
@@ -30,12 +33,14 @@ import {
   Tile,
   TILE_HEIGHT_WORLD,
   TILE_WIDTH_WORLD,
+  roomGetDistanceToNearestWallInFacingDirection,
 } from 'model/room';
 import { RenderObject } from 'model/render-object';
 import { getCtx } from './canvas';
 import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
+import { getIfExists as getEncounter } from 'db/encounters';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -151,14 +156,17 @@ export interface Character {
   storedState: Record<string, any>;
   timers: Timer[];
   highlighted: boolean;
+  visionRange: number;
+  collisionSize: Point;
   template: CharacterTemplate | null;
+  encounter?: BattleTemplate;
   ro?: RenderObject;
 }
 
 export interface CharacterTemplate {
   name: string;
-  nameLabel?: string;
   spriteBase: string;
+  nameLabel?: string;
   talkTrigger?: string;
   stats?: BattleStats;
   facing?: Facing;
@@ -170,6 +178,7 @@ export interface CharacterTemplate {
   weaponEquipState?: WeaponEquipState;
   spriteSize?: Point;
   canGetStuckWhileWalking?: boolean;
+  encounterName?: string;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -209,6 +218,8 @@ export const characterCreate = (name: string): Character => {
     timers: [] as Timer[],
     tags: [] as string[],
     highlighted: false,
+    visionRange: 16 * 2,
+    collisionSize: [16, 16],
     template: null,
   };
   ch.ro = {
@@ -256,6 +267,16 @@ export const characterCreateFromTemplate = (
     // on things.  This is the desired behavior for roaming npcs who cause battles
     // when you bonk into them.
     ch.walkRetries = -Infinity;
+  }
+  if (template.encounterName) {
+    const encounter = getEncounter(template.encounterName);
+    if (!encounter) {
+      console.error(template);
+      throw new Error(
+        `Cannot create character from template.  No encounter exists with encounterName="${template.encounterName}"`
+      );
+    }
+    ch.encounter = encounter;
   }
   ch.template = template;
   return ch;
@@ -573,13 +594,17 @@ export const characterRemoveTimer = (ch: Character, timer: Timer) => {
 export const characterStopAi = (ch: Character) => {
   characterStoreState(ch);
   ch.aiEnabled = false;
-  ch.walkTarget = null;
-  characterSetAnimationState(ch, AnimationState.IDLE);
+  characterStopWalking(ch);
 };
 
 export const characterStartAi = (ch: Character) => {
   ch.aiEnabled = true;
   characterRestoreState(ch);
+};
+
+export const characterStopWalking = (ch: Character) => {
+  ch.walkTarget = null;
+  characterSetAnimationState(ch, AnimationState.IDLE);
 };
 
 export const characterHasTimer = (ch: Character, timer: Timer) => {
@@ -612,6 +637,47 @@ export const characterHasAnimationState = (
   ch.animationKey = oldAnimKey;
   const ret = hasAnimation(newAnimKey);
   return ret;
+};
+
+export const characterGetVisionPoint = (ch: Character): Point => {
+  const [x, y] = characterGetPos(ch);
+  const [incX, incY] = facingToIncrements(pxFacingToWorldFacing(ch.facing));
+  return [x + (ch.visionRange * incX) / 2, y + (ch.visionRange * incY) / 2];
+};
+
+export const characterCanSeeOther = (
+  ch: Character,
+  other: Character
+): boolean => {
+  const [x, y] = characterGetPos(other);
+  const [visX, visY] = characterGetVisionPoint(ch);
+  const r = ch.visionRange;
+  return circleCircleCollision([x, y, 1], [visX, visY, r]);
+};
+
+export const characterCollidesWithOther = (ch: Character, other: Character) => {
+  const [x, y] = characterGetPos(ch);
+  const [chW, chH] = ch.collisionSize;
+  // const chR = Math.min(ch.collisionSize[0] / 2, ch.collisionSize[1] / 2);
+  const [x2, y2] = characterGetPos(other);
+  const chR2 = Math.min(other.collisionSize[0] / 2, other.collisionSize[1] / 2);
+  return (
+    circleRectCollision(
+      [x2, y2, chR2],
+      [x - chW / 2, y - chH / 2, chW, chH]
+    ) !== 'none'
+  );
+};
+
+export const characterClearTimers = (ch: Character) => {
+  ch.timers = [];
+};
+
+export const characterSetOverworldAi = (ch: Character, ai: OverworldAI) => {
+  ch.overworldAi = ai;
+  if (ai.onCreate) {
+    ai.onCreate(ch);
+  }
 };
 
 export const characterUpdate = (ch: Character): void => {
@@ -682,51 +748,94 @@ export const characterUpdate = (ch: Character): void => {
     }
     characterSetFacingFromAngle(ch, angle);
 
-    const tile = roomGetTileBelow(room, [ch.x, ch.y]);
-    let tileBelowY1: Tile | null = null;
-    let tileBelowX1: Tile | null = null;
-    let tileBelowXY1: Tile | null = null;
-    if (tile) {
-      // tile.highlighted = true;
-      // if (ch.name === 'Ada') {
-      //   console.log(
-      //     tile.x,
-      //     tile.y,
-      //     tile.x,
-      //     Math.floor((ch.y + 8) / TILE_HEIGHT_WORLD)
-      //   );
-      // }
+    if (isPersonCharacter(ch)) {
+      const tile = roomGetTileBelow(room, [ch.x, ch.y]);
+      let tileBelowY1: Tile | null = null;
+      let tileBelowX1: Tile | null = null;
+      let tileBelowXY1: Tile | null = null;
+      if (tile) {
+        // tile.highlighted = true;
+        // if (ch.name === 'Ada') {
+        //   console.log(
+        //     tile.x,
+        //     tile.y,
+        //     tile.x,
+        //     Math.floor((ch.y + 8) / TILE_HEIGHT_WORLD)
+        //   );
+        // }
 
-      tileBelowY1 = roomGetTileAt(
-        room,
-        tile.x,
-        Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
-      );
-      tileBelowX1 = roomGetTileAt(
-        room,
-        Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
-        tile.y
-      );
-      tileBelowXY1 = roomGetTileAt(
-        room,
-        Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
-        Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
-      );
-    }
-    const isObstructedByWall =
-      isPrimaryWall(tileBelowY1) ||
-      isPrimaryWall(tileBelowX1) ||
-      isPrimaryWall(tileBelowXY1);
-    if (tile?.isWall || isObstructedByWall) {
-      // if (tile && tileBelowY1) {
-      //   tile.highlighted = true;
-      //   tileBelowY1.highlighted = true;
+        tileBelowY1 = roomGetTileAt(
+          room,
+          tile.x,
+          Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+        );
+        tileBelowX1 = roomGetTileAt(
+          room,
+          Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+          tile.y
+        );
+        tileBelowXY1 = roomGetTileAt(
+          room,
+          Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+          Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+        );
+      }
+      const isObstructedByWall =
+        isPrimaryWall(tileBelowY1) ||
+        isPrimaryWall(tileBelowX1) ||
+        isPrimaryWall(tileBelowXY1);
+      if (tile?.isWall || isObstructedByWall) {
+        // if (tile && tileBelowY1) {
+        //   tile.highlighted = true;
+        //   tileBelowY1.highlighted = true;
+        // }
+        ch.x = prevX;
+        ch.y = prevY;
+      }
+      // ch.x = parseFloat(ch.x.toFixed(2));
+      // ch.y = parseFloat(ch.y.toFixed(2));
+    } else {
+      // const distanceToWall = roomGetDistanceToNearestWallInFacingDirection(
+      //   room,
+      //   ch
+      // );
+      // if (distanceToWall < 25) {
+      //   ch.x = prevX;
+      //   ch.y = prevY;
       // }
-      ch.x = prevX;
-      ch.y = prevY;
+      // const tileTop = roomGetTileBelow(room, [ch.x, ch.y]);
+      const sz = 12;
+      const tiles = [
+        // roomGetTileBelow(room, [ch.x - sz, ch.y + 0]),
+        // roomGetTileBelow(room, [ch.x + 0, ch.y - sz]),
+        // roomGetTileBelow(room, [ch.x - sz, ch.y - sz]),
+        roomGetTileBelow(room, [ch.x - 0, ch.y + 0]),
+        // roomGetTileBelow(room, [ch.x + sz, ch.y + 0]),
+        // roomGetTileBelow(room, [ch.x + 0, ch.y + sz]),
+        // roomGetTileBelow(room, [ch.x + sz, ch.y + sz]),
+      ];
+      const isObstructedByWall = tiles.reduce(
+        (prev, tile) => prev || isPrimaryWall(tile),
+        false
+      );
+      if (isObstructedByWall) {
+        ch.x = prevX;
+        ch.y = prevY;
+        if (ch.encounter) {
+          characterStopWalking(ch);
+          characterStopAi(ch);
+          timeoutPromise(250 + Math.random() * 250).then(() => {
+            characterStartAi(ch);
+          });
+        }
+        // const timer = new Timer(500);
+        // timer.awaits.push(() => {
+        //   console.log('RESTART AI');
+        //   characterStartAi(ch);
+        // });
+        // characterAddTimer(ch, timer);
+      }
     }
-    // ch.x = parseFloat(ch.x.toFixed(2));
-    // ch.y = parseFloat(ch.y.toFixed(2));
     ch.vx = 0;
     ch.vy = 0;
   }
@@ -742,4 +851,8 @@ export const characterUpdate = (ch: Character): void => {
 
 const isPrimaryWall = (tile: Tile | null) => {
   return tile?.isWall && !tile?.isProp;
+};
+
+const isPersonCharacter = (ch: Character) => {
+  return ch.spriteBase === 'ada';
 };

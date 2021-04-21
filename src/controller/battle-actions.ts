@@ -76,6 +76,7 @@ import SwordIcon from 'view/icons/Sword';
 
 import { init as initTutorial } from 'controller/BattleActions/tutorial';
 import { init as initParty } from 'controller/BattleActions/party';
+import { playSoundName } from 'model/sound';
 
 export interface BattleAction {
   name: string;
@@ -173,6 +174,7 @@ export const moveForward = async (
     transformOffsetJumpShort
   );
   characterSetTransform(ch, transform);
+  playSoundName('battle_jump');
   characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
   await transform.timer.onCompletion();
   return transform;
@@ -201,6 +203,7 @@ export const moveBackward = async (
     transformOffsetJumpShort
   );
   characterSetTransform(ch, transform);
+  playSoundName('battle_jump');
   characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
   await transform.timer.onCompletion();
   return transform;
@@ -253,6 +256,7 @@ export const jumpToTarget = async (
   );
   characterSetTransform(ch, transform);
   characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
+  playSoundName('battle_jump');
   await transform.timer.onCompletion();
   return transform;
 };
@@ -403,6 +407,7 @@ export const doRange = async (
         EFFECT_TEMPLATE_RANGED_HIT,
         target.ch
       );
+      playSoundName('battle_arrow_hit');
       roomAddParticle(battle.room, particle);
       applyRangeDamage(battle, bCh, target, baseDamage, baseStagger);
     });

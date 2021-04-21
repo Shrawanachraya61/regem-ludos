@@ -1,14 +1,27 @@
 import { Animation, createAnimationBuilder } from 'model/animation';
 import { loadImageAsSpritesheet, SpriteModification } from 'model/sprite';
-import { loadSound } from 'model/sound';
+import { loadSound, SoundType } from 'model/sound';
 
 class AssetLoader {
   async processAssetFile(text: string): Promise<void> {
     const loadCbs = [] as any[];
 
     const _Sound = async function (line: any) {
-      const [, soundName, soundUrl] = line;
-      return loadSound(soundName, soundUrl);
+      const [, soundName, soundUrl, volumeModifierStr] = line;
+      let volumeModifier = parseFloat(volumeModifierStr);
+      if (isNaN(volumeModifier)) {
+        volumeModifier = 1;
+      }
+      return loadSound(soundName, soundUrl, SoundType.NORMAL, volumeModifier);
+    };
+
+    const _Music = async function (line: any) {
+      const [, soundName, soundUrl, volumeModifierStr] = line;
+      let volumeModifier = parseFloat(volumeModifierStr);
+      if (isNaN(volumeModifier)) {
+        volumeModifier = 1;
+      }
+      return loadSound(soundName, soundUrl, SoundType.MUSIC, volumeModifier);
     };
 
     const _Picture = async function (line: any) {
@@ -111,6 +124,11 @@ class AssetLoader {
         }
         case 'Sound': {
           loadCbs.push(() => _Sound(line));
+          break;
+        }
+        case 'Music': {
+          loadCbs.push(() => _Music(line));
+          break;
         }
       }
     }

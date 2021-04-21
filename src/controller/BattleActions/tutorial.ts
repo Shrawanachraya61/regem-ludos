@@ -10,7 +10,7 @@ import {
 import { Battle } from 'model/battle';
 import { BattleCharacter } from 'model/battle-character';
 
-const COOLDOWN_MOD = 10;
+const COOLDOWN_MOD = 1.25;
 
 export const init = (): Record<string, BattleAction> => {
   const exp = {

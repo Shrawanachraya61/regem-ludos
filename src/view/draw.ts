@@ -7,15 +7,23 @@ import {
   Room,
   Prop,
   tilePosToWorldPos,
+  roomGetDistanceToNearestWallInFacingDirection,
 } from 'model/room';
-import { isoToPixelCoords, Point } from 'utils';
+import {
+  isoToPixelCoords,
+  degreesToRadians,
+  Point,
+  pxToCanvasCoords4by3,
+} from 'utils';
 import {
   Character,
+  characterCanSeeOther,
   characterGetAnimation,
   characterGetPos,
   characterGetPosBottom,
   characterGetPosTopLeft,
   characterGetSize,
+  characterGetVisionPoint,
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
 import { colors } from './style';
@@ -38,6 +46,16 @@ const DEFAULT_TEXT_PARAMS = {
   size: 14,
   align: 'left',
   strokeColor: '',
+};
+
+export const circleToPolygonPx = (x: number, y: number, r: number): Polygon => {
+  const polygon: Polygon = [];
+  for (let i = 0; i < 360; i += 10) {
+    const pointX = x + Math.sin(degreesToRadians(i)) * r;
+    const pointY = y + Math.cos(degreesToRadians(i)) * r;
+    polygon.push(pxToCanvasCoords4by3(...isoToPixelCoords(pointX, pointY)));
+  }
+  return polygon;
 };
 
 export const clearScreen = (ctx?: CanvasRenderingContext2D): void => {
@@ -88,6 +106,36 @@ export const drawCircle = (
   ctx[stroke ? 'stroke' : 'fill']();
 };
 
+export type Polygon = Point[];
+
+export const drawPolygon = (
+  polygon: Polygon,
+  color: string,
+  scale?: number,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  scale = scale || 1;
+  ctx = ctx || getCtx();
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.beginPath();
+
+  const firstPoint = polygon[0];
+  const [x, y] = firstPoint;
+  const [px, py] = ctx ? [x, y] : isoToPixelCoords(x, y, 0);
+  ctx.moveTo(px, py);
+  for (let i = 1; i < polygon.length; i++) {
+    const point = polygon[i];
+    const [x, y] = point;
+    const [px, py] = ctx ? [x, y] : isoToPixelCoords(x, y, 0);
+    ctx.lineTo(px, py);
+  }
+
+  ctx.closePath();
+  ctx.lineWidth = 2;
+  ctx.stroke();
+};
+
 export const measureText = (
   text: string,
   textParams: DrawTextParams,
@@ -118,16 +166,26 @@ export const drawText = (
     ...(textParams || {}),
   };
   ctx = ctx || getCtx();
+  if (strokeColor) {
+    const color = strokeColor;
+    drawText(
+      text,
+      x + 1,
+      y + 1,
+      {
+        font,
+        size,
+        color,
+        align: align as any,
+      },
+      ctx
+    );
+  }
   ctx.font = `${size}px ${font}`;
   ctx.fillStyle = color;
   ctx.textAlign = align as CanvasTextAlign;
   ctx.textBaseline = 'middle';
   ctx.fillText(text, x, y);
-  if (strokeColor) {
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = 0.5;
-    ctx.strokeText(text, Math.floor(x), Math.floor(y));
-  }
 };
 
 export const drawSprite = (
@@ -238,35 +296,6 @@ export const drawAnimationNF = (
   }
 };
 
-export type Polygon = Point[];
-
-export const drawPolygon = (
-  polygon: Polygon,
-  color: string,
-  scale?: number,
-  ctx?: CanvasRenderingContext2D
-): void => {
-  scale = scale || 1;
-  ctx = ctx || getCtx();
-  ctx.fillStyle = color;
-  ctx.beginPath();
-
-  const firstPoint = polygon[0];
-  const [x, y] = firstPoint;
-  const [px, py] = isoToPixelCoords(x, y, 0);
-  ctx.moveTo(px, py);
-  for (let i = 1; i < polygon.length; i++) {
-    const point = polygon[i];
-    const [x, y] = point;
-    const [px, py] = isoToPixelCoords(x, y, 0);
-    ctx.lineTo(px, py);
-  }
-
-  ctx.closePath();
-  ctx.lineWidth = 2;
-  ctx.stroke();
-};
-
 export const drawCharacter = (
   ch: Character,
   scale?: number,
@@ -302,6 +331,47 @@ export const drawCharacter = (
       drawAnimation(anim, px, py, scale, ctx);
       ctx.globalCompositeOperation = 'source-over';
     }
+
+    // DEBUG Draw circles where the game thinks the ch is
+    // HACK this math is so convoluted, but whatever it somehow works for 32px sprites
+    // const visionPolygon: Point[] = [];
+    // const visionRange = ch.visionRange;
+    // for (let i = 0; i < 360; i += 10) {
+    //   const [visX, visY] = characterGetVisionPoint(ch);
+    //   const pointX = visX + Math.sin(degreesToRadians(i)) * visionRange;
+    //   const pointY = visY + Math.cos(degreesToRadians(i)) * visionRange;
+    //   visionPolygon.push(
+    //     pxToCanvasCoords4by3(...isoToPixelCoords(pointX, pointY))
+    //   );
+    //   // visionPolygon.push([pointX, pointY]);
+    // }
+
+    // drawPolygon(visionPolygon, 'white', 1, getCtx('outer'));
+
+    // top left of a character
+    // drawCircle(px, py, 5, 'red');
+
+    // where the game thinks the character is
+    // const [x, y] = characterGetPos(ch);
+    // const [aX, aY] = isoToPixelCoords(...characterGetPos(ch));
+    // const [visX, visY] = characterGetVisionPoint(ch);
+    // drawPolygon(
+    //   circleToPolygonPx(visX, visY, ch.visionRange),
+    //   'white',
+    //   1,
+    //   getCtx('outer')
+    // );
+    // drawPolygon(
+    //   circleToPolygonPx(x, y, ch.collisionSize[0] / 2),
+    //   'purple',
+    //   1,
+    //   getCtx('outer')
+    // );
+    // drawCircle(aX, aY, 5, 'blue');
+
+    // // where the game thinks the character's feet are
+    // const [fX, fY] = isoToPixelCoords(...characterGetPosBottom(ch));
+    // drawCircle(fX, fY, 5, 'orange');
   }
   // {
   //   const [x, y] = characterGetPosBottom(ch);
@@ -367,6 +437,19 @@ export const drawRoom = (
     return a.sortY < b.sortY ? -1 : 1;
   });
 
+  const player = getCurrentPlayer();
+  const leader = player.leader;
+
+  // DEBUG highlight stuff that sees Ada
+  // for (let i = 0; i < room.characters.length; i++) {
+  //   const ch = room.characters[i];
+  //   if (ch !== leader && characterCanSeeOther(ch, leader)) {
+  //     ch.highlighted = true;
+  //   } else {
+  //     ch.highlighted = false;
+  //   }
+  // }
+
   // if (!isPaused) {
   //   for (let i = 0; i < particles.length; i++) {
   //     const p = particles[i];
@@ -405,11 +488,22 @@ export const drawRoom = (
     } else {
       if (isMarker) {
         if (getMarkersVisible()) {
-          drawText(name || '', (px as number) + 16, py as number, {
-            align: 'center',
-            color: colors.WHITE,
-            size: 12,
-          });
+          const [pxO, pyO] = pxToCanvasCoords4by3(
+            (px as number) + 16,
+            py as number
+          );
+          drawText(
+            name || '',
+            pxO,
+            pyO,
+            {
+              align: 'center',
+              color: colors.WHITE,
+              strokeColor: colors.BLACK,
+              size: 24,
+            },
+            getCtx('outer')
+          );
           drawSprite(sprite as string, px as number, py as number);
         }
       } else if (isTrigger) {
@@ -417,20 +511,45 @@ export const drawRoom = (
           if (polygon) {
             const point = polygon[0];
             const [x, y] = point;
-            const [px, py] = isoToPixelCoords(x, y, 0);
-            drawPolygon(polygon, 'rgba(0, 0, 0, 0.5)');
-            drawText(name || '', px, py, {
-              align: 'center',
-              color: colors.PINK,
-              size: 12,
+            const [pxO, pyO] = pxToCanvasCoords4by3(
+              ...isoToPixelCoords(x, y, 0)
+            );
+
+            const mappedPolygon = polygon.map(([pointX, pointY]) => {
+              return isoToPixelCoords(pointX, pointY);
             });
+
+            drawPolygon(mappedPolygon, 'rgba(0, 0, 0, 0.5)', 1, getCtx());
+            drawText(
+              name || '',
+              pxO,
+              pyO,
+              {
+                align: 'center',
+                color: colors.PINK,
+                strokeColor: colors.BLACK,
+                size: 24,
+              },
+              getCtx('outer')
+            );
           } else {
+            const [pxO, pyO] = pxToCanvasCoords4by3(
+              (px as number) + 16,
+              py as number
+            );
             drawSprite(sprite as string, px as number, py as number);
-            drawText(name || '', (px as number) + 16, py as number, {
-              align: 'center',
-              color: colors.PINK,
-              size: 12,
-            });
+            drawText(
+              name || '',
+              pxO,
+              pyO,
+              {
+                align: 'center',
+                color: colors.PINK,
+                strokeColor: colors.BLACK,
+                size: 24,
+              },
+              getCtx('outer')
+            );
           }
         }
       } else if (anim) {
@@ -446,8 +565,6 @@ export const drawRoom = (
     }
   }
 
-  const player = getCurrentPlayer();
-  const leader = player.leader;
   ctx.globalAlpha = 0.25;
   ctx.globalCompositeOperation = 'luminosity';
   drawCharacter(leader);
@@ -469,6 +586,18 @@ export const drawRoom = (
     `POS: ${x.toFixed(0)}, ${y.toFixed(0)}`,
     20,
     100,
+    {
+      color: 'white',
+      size: 32,
+    },
+    outerCtx
+  );
+
+  const d = roomGetDistanceToNearestWallInFacingDirection(room, leader);
+  drawText(
+    `D: ${d.toFixed(0)}`,
+    20,
+    150,
     {
       color: 'white',
       size: 32,

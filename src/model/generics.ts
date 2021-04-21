@@ -6,6 +6,11 @@ import { Overworld } from 'model/overworld';
 import { Scene } from 'model/scene';
 import { ParticleSystem } from 'model/particle-system';
 import { Timer } from './utility';
+import {
+  setVolumeForActiveSounds,
+  setVolumeForMusic,
+  SoundType,
+} from './sound';
 
 let currentRoom: Room | null = ((window as any).room = null);
 export const getCurrentRoom = (): Room => currentRoom as Room;
@@ -120,6 +125,28 @@ export const setRenderBackgroundColor = (color: string) =>
 let soundEnabled = true;
 export const getSoundEnabled = () => soundEnabled;
 export const setSoundEnabled = (v: boolean) => (soundEnabled = v);
+
+const volumeLevels = {
+  [SoundType.NORMAL]: 0.75,
+  [SoundType.MUSIC]: 0.75,
+};
+export const setVolume = (type: SoundType, volumeDecimal: number) => {
+  if (volumeDecimal > 1) {
+    volumeDecimal = 1;
+  }
+  if (volumeDecimal < 0) {
+    volumeDecimal = 0;
+  }
+  volumeLevels[type] = volumeDecimal;
+  if (type === SoundType.MUSIC) {
+    setVolumeForMusic(volumeDecimal);
+  } else {
+    setVolumeForActiveSounds(volumeDecimal);
+  }
+};
+export const getVolume = (type: SoundType) => {
+  return volumeLevels[type];
+};
 
 let cameraDrawOffset: Point = [0, 0];
 export const getCameraDrawOffset = () => cameraDrawOffset;

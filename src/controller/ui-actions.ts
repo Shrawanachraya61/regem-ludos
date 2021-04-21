@@ -13,6 +13,7 @@ import { getCurrentOverworld } from 'model/generics';
 import { overworldShow } from 'model/overworld';
 import { playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
+import { popKeyHandler, pushEmptyKeyHandler } from './events';
 
 export interface ReducerAction<T> {
   action: string;
@@ -266,11 +267,13 @@ export const showChoices = (choices: string[]) => {
     action: 'setChoicesState',
     payload,
   });
+  pushEmptyKeyHandler();
   playSoundName('menu_choice_open');
 };
 
 export const hideChoices = () => {
   const payload = AppSection.Choices;
+  popKeyHandler();
   getUiInterface().dispatch({
     action: 'hideSection',
     payload,

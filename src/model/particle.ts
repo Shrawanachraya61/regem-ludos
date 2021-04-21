@@ -80,6 +80,12 @@ export const EFFECT_TEMPLATE_TREASURE: ParticleTemplate = {
   animName: 'effect_treasure_anim',
 };
 
+export const EFFECT_TEMPLATE_AGGROED: ParticleTemplate = {
+  animName: 'effect_aggro',
+  duration: 500,
+  offset: [0, -32],
+};
+
 export const EFFECT_TEMPLATE_DEAD32: ParticleTemplate = {
   animName: 'effect_dead2_anim',
   // aligns the sprite to the bottom of feet for 32x32 px sprites

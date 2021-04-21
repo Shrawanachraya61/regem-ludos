@@ -33,6 +33,7 @@ import {
   battleSubscribeEvent,
   battleUnsubscribeEvent,
 } from './battle';
+import { playSoundName } from './sound';
 
 export enum BattleActionState {
   IDLE = 'idle',
@@ -332,6 +333,7 @@ export const updateBattleCharacter = (
 
     if (!bCh.isDefeated) {
       bCh.isDefeated = true;
+      playSoundName('despawn');
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
 
       // HACK: assumes that a character can only die at the end of a turn

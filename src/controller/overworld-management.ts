@@ -174,8 +174,18 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
 
 export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
+  const isPaused = getIsPaused();
   switch (ev.key) {
     case ' ': {
+      if (isPaused) {
+        unpause();
+      } else {
+        pause();
+      }
+      break;
+    }
+    case 'X':
+    case 'x': {
       if (overworld.triggersEnabled) {
         if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
           checkAndCallTalkTrigger();

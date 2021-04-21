@@ -1,11 +1,13 @@
 /* @jsx h */
 import { h } from 'preact';
-import { colors, style } from 'view/style';
+import { colors, keyframes, style } from 'view/style';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import AnimDiv from 'view/elements/AnimDiv';
 import { getUiInterface } from 'view/ui';
 import { CutsceneSpeaker } from 'model/store';
 import { getDrawScale } from 'model/canvas';
+import { getCurrentKeyHandler } from 'controller/events';
+import TalkIcon from 'view/icons/Talk';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -184,6 +186,7 @@ const TextBox = style(
       borderRightColor,
       borderLeftColor,
       borderTopColor: colors.BLUE,
+      position: 'relative',
     };
   }
 );
@@ -231,6 +234,29 @@ const NameLabel = style('div', (props: {}) => {
   };
 });
 
+const talkIconBounce = keyframes({
+  '0%': {
+    transform: 'translateY(-2px)',
+  },
+  '30%': {
+    transform: 'translateY(2px)',
+  },
+  '100%': {
+    transform: 'translateY(-2px)',
+  },
+});
+
+const TalkIconContainer = style('div', (props: { flipped: boolean }) => {
+  return {
+    position: 'absolute',
+    animation: `${talkIconBounce} 750ms linear infinite`,
+    bottom: 'calc(50% - 12px)',
+    right: props.flipped ? 'unset' : '-42px',
+    left: props.flipped ? '-42px' : 'unset',
+    width: '24px',
+  };
+});
+
 const CutsceneSection = () => {
   const [barsVisible, setBarsVisible] = useState(false);
   const textBoxRef = useRef<null | HTMLSpanElement>(null);
@@ -257,6 +283,7 @@ const CutsceneSection = () => {
       }, 25);
     }
   });
+
   const cutscene = getUiInterface().appState.cutscene;
 
   let textBoxAlign: 'left' | 'right' | 'center' | 'center-low' = 'center';
@@ -270,8 +297,22 @@ const CutsceneSection = () => {
     textBoxAlign = 'center-low';
   }
 
+  const handleMouseClick = () => {
+    // when mouse is clicked, simulate a keypress so user can click to advance dialogue
+    const handler = getCurrentKeyHandler();
+    if (handler && barsVisible && cutscene.visible) {
+      handler({
+        key: 'x',
+      } as any);
+    }
+  };
+
   return (
-    <Root fixed={!!getUiInterface().appState.arcadeGame.path}>
+    <Root
+      id="cutscene-root"
+      fixed={!!getUiInterface().appState.arcadeGame.path}
+      onClick={handleMouseClick}
+    >
       <TopBarWrapper visible={cutscene.visible && barsVisible}></TopBarWrapper>
       <BottomBarWrapper
         visible={cutscene.visible && barsVisible}
@@ -342,7 +383,11 @@ const CutsceneSection = () => {
         >
           <NameLabel>{cutscene.speakerName}</NameLabel>
         </NameLabelWrapper>
-        <TextBox align={textBoxAlign} isNarration={!cutscene.speakerName}>
+        <TextBox
+          id="cutscene-textbox"
+          align={textBoxAlign}
+          isNarration={!cutscene.speakerName}
+        >
           <span
             style={{
               opacity: '0',
@@ -354,6 +399,11 @@ const CutsceneSection = () => {
             {/* Yes, Other Ben, yes it is. */}
             {/* {cutscene.text} */}
           </span>
+          <TalkIconContainer
+            flipped={cutscene.speaker === CutsceneSpeaker.Right}
+          >
+            <TalkIcon color={colors.WHITE} />
+          </TalkIconContainer>
         </TextBox>
       </TextBoxWrapper>
     </Root>

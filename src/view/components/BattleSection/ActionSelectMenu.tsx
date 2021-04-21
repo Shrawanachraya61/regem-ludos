@@ -7,7 +7,7 @@ import { pause, unpause } from 'controller/loop';
 import CharacterInfoCard from './CharacterInfoCard';
 import { getUiInterface } from 'view/ui';
 import { BattleAction } from 'controller/battle-actions';
-import PillButton, { ButtonType } from 'view/elements/PillButton';
+import Button, { ButtonType } from 'view/elements/Button';
 import { BattleCharacter } from 'model/battle-character';
 
 import CursorIcon from 'view/icons/Cursor';
@@ -40,7 +40,7 @@ const cursorPulse = keyframes({
     transform: 'translateX(-10px)',
   },
   '20%': {
-    transform: 'translateX(-3px)',
+    transform: 'translateX(-1px)',
   },
   '100%': {
     transform: 'translateX(-10px)',
@@ -85,7 +85,7 @@ const ActionSelectMenu = (props: IActionSelectMenuProps) => {
         return (
           <ButtonRow id={'action-select-menu-button-row-' + i}>
             {isSelected ? <Cursor /> : null}
-            <PillButton
+            <Button
               type={isActive ? ButtonType.PRIMARY : ButtonType.NEUTRAL}
               selected={isSelected}
               onClick={handleButtonClick(i)}
@@ -93,7 +93,7 @@ const ActionSelectMenu = (props: IActionSelectMenuProps) => {
               disabled={props.disabled}
             >
               {action.name}
-            </PillButton>
+            </Button>
           </ButtonRow>
         );
       })}

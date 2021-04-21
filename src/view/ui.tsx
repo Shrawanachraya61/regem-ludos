@@ -17,6 +17,7 @@ import CutsceneSection from './components/CutsceneSection';
 
 import ArcadeCabinet from './components/ArcadeCabinet';
 import CutsceneChoicesSection from './components/CutsceneChoicesSection';
+import SettingsSection from './components/SettingsSection';
 
 interface UIInterface {
   appState: AppState;
@@ -81,10 +82,13 @@ const App = () => {
         return <CutsceneSection key={key} />;
       }
       case AppSection.ArcadeCabinet: {
-        return <ArcadeCabinet game={appState.arcadeGame.path} />;
+        return <ArcadeCabinet key={key} game={appState.arcadeGame.path} />;
       }
       case AppSection.Choices: {
         return <CutsceneChoicesSection key={key} />;
+      }
+      case AppSection.Settings: {
+        return <SettingsSection key={key} />;
       }
       case AppSection.Debug: {
         return <Debug />;
@@ -129,7 +133,6 @@ export const mountUi = () => {
     const parent = document.getElementById('canvas-area-parent');
     if (parent) {
       const scale = 2;
-      console.log('MOUNT', scale);
       parent.style['max-width'] = SCREEN_WIDTH * scale;
       parent.style['max-height'] = SCREEN_HEIGHT * scale;
     }

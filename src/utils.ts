@@ -2,6 +2,7 @@ import { Polygon } from 'view/draw';
 import { addTimer, getCameraDrawOffset, removeTimer } from 'model/generics';
 import { getDrawScale } from 'model/canvas';
 import { Timer } from 'model/utility';
+import { Facing } from 'model/character';
 
 export const isoToPixelCoords = (
   x: number,
@@ -21,6 +22,13 @@ export const worldToCanvasCoords4by3 = (
   z: number
 ): [number, number] => {
   const [px, py] = isoToPixelCoords(x, y, z);
+  return pxToCanvasCoords4by3(px, py);
+};
+
+export const pxToCanvasCoords4by3 = (
+  px: number,
+  py: number
+): [number, number] => {
   const [roomXOffset, roomYOffset] = getCameraDrawOffset();
   const scale = getDrawScale();
 
@@ -118,12 +126,19 @@ export function normalizeEaseOutClamp(
   return easeOut(t, c, d - c, 1);
 }
 
-export const timeoutPromise = async (ms: number): Promise<void> => {
+export const timeoutPromise = async (
+  ms: number,
+  skipGlobalQueue?: boolean
+): Promise<void> => {
   const t = new Timer(ms);
-  addTimer(t);
+  if (!skipGlobalQueue) {
+    addTimer(t);
+  }
   t.start();
   await t.onCompletion();
-  removeTimer(t);
+  if (!skipGlobalQueue) {
+    removeTimer(t);
+  }
 };
 
 export const getRandBetween = (a: number, b: number): number => {
@@ -241,6 +256,10 @@ export const radiansToDegrees = (rad: number) => {
   return rad * (180 / Math.PI);
 };
 
+export const degreesToRadians = (degrees: number) => {
+  return degrees * (Math.PI / 180);
+};
+
 export const getAngleFromVector = (x: number, y: number): number => {
   if (x == 0) {
     return y > 0 ? 90 : y == 0 ? 0 : 270;
@@ -276,3 +295,69 @@ export const toFixedPrecision = (n: number, precision: number): number => {
 export function randInArr<T>(arr: T[]) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+
+// px facing and world facing are different. "down" in px scope is actually "right_down"
+// in world coords and so on
+export const pxFacingToWorldFacing = (direction: Facing): Facing => {
+  const mapping = {
+    [Facing.LEFT]: Facing.LEFT_DOWN,
+    [Facing.RIGHT]: Facing.RIGHT_UP,
+    [Facing.UP]: Facing.LEFT_UP,
+    [Facing.DOWN]: Facing.RIGHT_DOWN,
+    [Facing.LEFT_DOWN]: Facing.DOWN,
+    [Facing.RIGHT_DOWN]: Facing.RIGHT,
+    [Facing.LEFT_UP]: Facing.LEFT,
+    [Facing.RIGHT_UP]: Facing.UP,
+  };
+  return mapping[direction];
+};
+
+export const facingToIncrements = (direction: Facing): Point => {
+  let incrementX = 0;
+  let incrementY = 0;
+
+  switch (direction) {
+    case Facing.LEFT: {
+      incrementX = -1;
+      break;
+    }
+    case Facing.RIGHT: {
+      incrementX = 1;
+      break;
+    }
+    case Facing.UP: {
+      incrementY = -1;
+      break;
+    }
+    case Facing.DOWN: {
+      incrementY = 1;
+      break;
+    }
+    case Facing.LEFT_UP: {
+      incrementX = -1;
+      incrementY = -1;
+      break;
+    }
+    case Facing.RIGHT_UP: {
+      incrementX = 1;
+      incrementY = -1;
+      break;
+    }
+    case Facing.LEFT_DOWN: {
+      incrementX = -1;
+      incrementY = 1;
+      break;
+    }
+    case Facing.RIGHT_DOWN: {
+      incrementX = 1;
+      incrementY = 1;
+      break;
+    }
+  }
+
+  return [incrementX, incrementY];
+};
+
+export const to1dIndex = (point: Point, width: number) => {
+  return point[1] * width + (point[0] % width);
+};

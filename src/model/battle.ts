@@ -36,6 +36,7 @@ export enum BattleEvent {
   onMagicShieldDamaged = 'onMagicShieldDamaged',
   onTurnStarted = 'onTurnStarted',
   onTurnEnded = 'onTurnEnded',
+  onCompletion = 'onCompletion',
 }
 
 export interface IBattleSubscriptionHub {
@@ -60,6 +61,7 @@ export interface IBattleSubscriptionHub {
   ) => void)[];
   [BattleEvent.onTurnStarted]: ((allegiance: BattleAllegiance) => void)[];
   [BattleEvent.onTurnEnded]: ((allegiance: BattleAllegiance) => void)[];
+  [BattleEvent.onCompletion]: ((battle: Battle) => void)[];
 }
 
 export interface BattleTemplateEnemy {
@@ -130,6 +132,7 @@ export const battleCreate = (
     onMagicShieldDamaged: [],
     onTurnStarted: [],
     onTurnEnded: [],
+    onCompletion: [],
   };
 
   return {

@@ -383,6 +383,8 @@ const waitForUserInput = (cb?: () => void) => {
     switch (ev.key) {
       case 'Return':
       case 'Enter':
+      case 'x':
+      case 'X':
       case ' ': {
         clearTimeout(scene.waitTimeoutId);
         popKeyHandler(keyHandler);
@@ -414,6 +416,8 @@ const waitForUserInputDialog = (cb?: () => void) => {
     switch (ev.key) {
       case 'Return':
       case 'Enter':
+      case 'x':
+      case 'X':
       case ' ': {
         playSoundName('dialog_select');
         setTimeout(() => {
@@ -1340,7 +1344,7 @@ export const enterCombat = (encounterName: string) => {
 
   overworldHide(getCurrentOverworld());
   const player = getCurrentPlayer();
-  transitionToBattle(player, encounter, null, true);
+  transitionToBattle(player, encounter, undefined, true);
 };
 
 const commands = {

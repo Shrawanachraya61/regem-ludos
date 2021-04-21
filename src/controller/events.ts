@@ -95,9 +95,13 @@ export const pushEmptyKeyHandler = () => {
   keyHandlers.push(handler);
   return handler;
 };
-export const popKeyHandler = (handler: KeyboardHandler) => {
-  const ind = keyHandlers.indexOf(handler);
-  if (ind > -1) {
-    keyHandlers.splice(ind, 1);
+export const popKeyHandler = (handler?: KeyboardHandler) => {
+  if (handler) {
+    const ind = keyHandlers.indexOf(handler);
+    if (ind > -1) {
+      keyHandlers.splice(ind, 1);
+    }
+  } else {
+    keyHandlers.splice(keyHandlers.length - 1, 1);
   }
 };

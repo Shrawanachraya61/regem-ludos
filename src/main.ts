@@ -13,6 +13,7 @@ import {
   enableKeyUpdate,
   getCurrentScene,
   getCurrentPlayer,
+  getCurrentRoom,
 } from 'model/generics';
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
@@ -37,6 +38,8 @@ import {
   init as initBattleActions,
 } from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
+import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
+import { loadSettingsFromLS, setCurrentSettings } from 'controller/save-management';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -81,6 +84,14 @@ export const main = async (): Promise<void> => {
   console.log('load tiles');
   await loadTiles();
 
+  try {
+    const settings = loadSettingsFromLS();
+    setCurrentSettings(settings);
+    console.log('Settings have been loaded from localStorage.');
+  } catch (e) {
+    console.log('Settings have NOT been loaded from localStorage.');
+  }
+
   console.log('create canvas');
   getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
   setDrawScale(4);
@@ -116,6 +127,11 @@ export const main = async (): Promise<void> => {
   }
 
   (document.getElementById('controls') as any).style.display = 'none';
+
+  console.log('test path');
+  const pfPath = createPFPath([1, 4], [5, 4], getCurrentRoom());
+  const roomPath = pfPathToRoomPath(pfPath);
+  console.log('PATH:', JSON.stringify(roomPath));
 
   // HudGamepad.GamePad.setup({
   //   canvas: 'controls',

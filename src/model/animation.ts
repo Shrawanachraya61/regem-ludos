@@ -1,6 +1,11 @@
 import { getNow } from 'model/generics';
 import { Point } from 'utils';
 import { getSprite } from 'model/sprite';
+import {
+  getIfExists as getAnimMeta,
+  AnimationMetadata,
+} from 'db/animation-metadata';
+import { playSoundName } from './sound';
 
 export interface AnimSprite {
   name: string;
@@ -11,6 +16,7 @@ export interface AnimSprite {
   offsetX?: number;
   offsetY?: number;
   opacity?: number;
+  hasPlayedSound: boolean;
 }
 
 export class Animation {
@@ -24,6 +30,7 @@ export class Animation {
   awaits: any[];
   isPaused: boolean;
   timestampPause: number;
+  meta: AnimationMetadata | null;
 
   constructor(loop: boolean) {
     this.loop = loop || false;
@@ -34,13 +41,16 @@ export class Animation {
     this.totalDurationMs = 0;
     this.currentSpriteIndex = 0;
     this.timestampStart = 0;
-    this.name = '';
+    this.name = ''; // set when constructed from a builder
     this.awaits = [];
   }
 
   reset(): void {
     this.done = false;
     this.currentSpriteIndex = 0;
+    this.sprites.forEach(s => {
+      s.hasPlayedSound = false;
+    });
   }
 
   start(): void {
@@ -109,6 +119,7 @@ export class Animation {
       offsetX: offsetX || 0,
       offsetY: offsetY || 0,
       opacity,
+      hasPlayedSound: false,
     });
     this.totalDurationMs += duration ?? 0;
   }
@@ -156,6 +167,22 @@ export class Animation {
         this.done = true;
         this.awaits.forEach(r => r());
         this.awaits = [];
+      }
+    }
+
+    if (this.meta) {
+      const sounds = this.meta.sounds;
+      if (sounds) {
+        sounds.forEach((sound, i) => {
+          const sprite = this.sprites[i];
+          if (
+            this.currentSpriteIndex >= sound.frame &&
+            !sprite.hasPlayedSound
+          ) {
+            playSoundName(sound.soundName);
+            sprite.hasPlayedSound = true;
+          }
+        });
       }
     }
   }
@@ -210,6 +237,7 @@ export const createAnimation = (animName: string): Animation => {
   if (builder) {
     const anim = builder();
     anim.name = animName;
+    anim.meta = getAnimMeta(animName);
     return anim;
   } else {
     throw new Error(`No animation exists which is named '${animName}'`);

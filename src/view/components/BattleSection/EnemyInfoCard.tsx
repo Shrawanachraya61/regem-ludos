@@ -16,7 +16,7 @@ import { setBattleCharacterSelectedAction } from 'controller/ui-actions';
 import { getUiInterface, renderUi } from 'view/ui';
 import { getCurrentBattle, getIsPaused } from 'model/generics';
 import ActionInfoTooltip from './ActionInfoTooltip';
-import PillButton, { ButtonType } from 'view/elements/PillButton';
+import Button, { ButtonType } from 'view/elements/Button';
 import {
   BattleEvent,
   battleGetActingAllegiance,

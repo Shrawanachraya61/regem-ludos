@@ -106,13 +106,21 @@ import {
   transformOffsetJumpMedium,
   transformOffsetJumpShort,
 } from 'model/utility';
+import {
+  playMusic,
+  playSound,
+  playSoundName,
+  stopCurrentMusic,
+} from 'model/sound';
 
 export const transitionToBattle = async (
   player: Player,
   template: BattleTemplate,
-  onCompletion?: any,
+  onCompletion?: () => void,
   skipIntro?: boolean
 ) => {
+  stopCurrentMusic(500);
+
   if (skipIntro) {
     initiateBattle(player, template);
     return;
@@ -123,7 +131,11 @@ export const transitionToBattle = async (
   const handler = pushEmptyKeyHandler();
   setTimeout(() => {
     fadeOut(100, true);
+    playMusic('music_battle1', true);
   }, 1250);
+  // setTimeout(() => {
+  //   playMusic('music_battle1', true);
+  // }, 500);
   setTimeout(() => {
     setGlobalParticleSystem(null);
     popKeyHandler(handler);
@@ -169,7 +181,15 @@ export const transitionToBattle = async (
     ).then(() => {
       battleUnpauseTimers(battle);
     });
-  }, 1500);
+
+    battleSubscribeEvent(battle, BattleEvent.onCompletion, () => {
+      stopCurrentMusic(1000);
+      if (onCompletion) {
+        onCompletion();
+      }
+    });
+    // this timeout is synced with the default battle music
+  }, 2550);
 };
 
 export const initiateBattle = (
@@ -299,8 +319,10 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
     }
     case ' ': {
       if (isPaused) {
+        playSoundName('woosh_reverse');
         unpause();
       } else {
+        playSoundName('woosh');
         pause();
       }
       break;
@@ -373,6 +395,7 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
     if (transform) {
       const inverseTransform = transform.createInverse();
       characterSetTransform(bCh.ch, inverseTransform);
+      playSoundName('battle_jump');
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
       await inverseTransform.timer.onCompletion();
       inverseTransform.markForRemoval();
@@ -479,14 +502,17 @@ export const applyArmorDamage = (
   let nextDamageAmount = damage;
   let armorReduced = false;
   if (isPierce) {
+    playSoundName('battle_armor_broken');
     console.log('BROKE ARMOR WITH PIERCE ATTACK!');
     victim.armor--;
     armorReduced = true;
     nextDamageAmount = 0;
   } else if (victim.armorTimer.isComplete()) {
+    playSoundName('battle_armor_broken');
     victim.armorTimer.start();
     nextDamageAmount = 0;
   } else {
+    playSoundName('battle_armor_hit');
     console.log('BROKE ARMOR WITH SIMULTANEOUS ATTACK!');
     victim.armor--;
     armorReduced = true;
@@ -765,8 +791,13 @@ export const updateBattle = (battle: Battle): void => {
       popKeyHandler(battleKeyHandler);
       const showVictory = async () => {
         console.log('VICTORY');
+        stopCurrentMusic();
+        playSoundName('fanfare');
+        timeoutPromise(2800).then(() => {
+          playMusic('music_battle_victory', true);
+        });
         showSection(AppSection.BattleVictory, true);
-        await timeoutPromise(2000);
+        await timeoutPromise(1250);
         for (const i in battle.allies) {
           characterSetAnimationState(
             battle.allies[i].ch,

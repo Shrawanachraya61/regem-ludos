@@ -7,13 +7,44 @@ import {
   characterGetPos,
   characterHasWalkTarget,
   characterGetPosBottom,
+  characterCanSeeOther,
+  characterClearTimers,
+  characterStopWalking,
+  characterSetOverworldAi,
+  characterCollidesWithOther,
+  characterSetPos,
+  characterSetFacing,
 } from 'model/character';
-import { Overworld } from 'model/overworld';
+import { Overworld, overworldHide, overworldShow } from 'model/overworld';
 import { Timer } from 'model/utility';
-import commands from 'controller/scene-commands';
-import { Point } from 'utils';
-import { getCurrentPlayer, getCurrentRoom } from 'model/generics';
-import { Room, roomGetTileBelow, roomGetTileAt } from 'model/room';
+import commands, { fadeIn, fadeOut } from 'controller/scene-commands';
+import {
+  Point,
+  facingToIncrements,
+  truncatePoint3d,
+  timeoutPromise,
+} from 'utils';
+import {
+  getCurrentOverworld,
+  getCurrentPlayer,
+  getCurrentRoom,
+  setCurrentBattle,
+  setCurrentRoom,
+} from 'model/generics';
+import {
+  Room,
+  roomGetTileBelow,
+  roomGetTileAt,
+  roomRemoveCharacter,
+  roomAddParticle,
+} from 'model/room';
+import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
+import { transitionToBattle } from 'controller/battle-management';
+import { showSection } from 'controller/ui-actions';
+import { AppSection } from 'model/store';
+import { createParticleAtCharacter } from 'controller/battle-actions';
+import { EFFECT_TEMPLATE_AGGROED } from 'model/particle';
+import { playSoundName } from 'model/sound';
 
 const exp = {} as { [key: string]: OverworldAI };
 export const get = (key: string): OverworldAI => {
@@ -57,47 +88,7 @@ const findNextLinearWalkPosition = (
     );
     return [0, 0];
   }
-  let incrementX = 0;
-  let incrementY = 0;
-
-  switch (direction) {
-    case Facing.LEFT: {
-      incrementX = -1;
-      break;
-    }
-    case Facing.RIGHT: {
-      incrementX = 1;
-      break;
-    }
-    case Facing.UP: {
-      incrementY = -1;
-      break;
-    }
-    case Facing.DOWN: {
-      incrementY = 1;
-      break;
-    }
-    case Facing.LEFT_UP: {
-      incrementX = -1;
-      incrementY = -1;
-      break;
-    }
-    case Facing.RIGHT_UP: {
-      incrementX = 1;
-      incrementY = -1;
-      break;
-    }
-    case Facing.LEFT_DOWN: {
-      incrementX = -1;
-      incrementY = 1;
-      break;
-    }
-    case Facing.RIGHT_DOWN: {
-      incrementX = 1;
-      incrementY = 1;
-      break;
-    }
-  }
+  const [incrementX, incrementY] = facingToIncrements(direction);
 
   let loopCtr = 0;
   let xOffset = startingPoint[0];
@@ -128,20 +119,96 @@ const findNextLinearWalkPosition = (
   return [xOffset, yOffset];
 };
 
+const startEncounterFromRoamer = (ch: Character) => {
+  const encounter = ch.encounter;
+  const oldRoom = getCurrentRoom();
+  if (encounter) {
+    playSoundName('battle_encountered');
+    overworldHide(getCurrentOverworld());
+    const player = getCurrentPlayer();
+    const leaderPos = characterGetPos(player.leader);
+    const leaderFacing = player.leader.facing;
+    transitionToBattle(
+      player,
+      encounter,
+      () => {
+        console.log('BATTLE COMPLETED!');
+        fadeOut(500, true);
+        timeoutPromise(500).then(() => {
+          fadeIn(500, true);
+          setCurrentBattle(null);
+          setCurrentRoom(oldRoom);
+          showSection(AppSection.Debug, true);
+          overworldShow(getCurrentOverworld());
+          const player = getCurrentPlayer();
+          characterSetPos(player.leader, leaderPos);
+          characterSetFacing(player.leader, leaderFacing);
+        });
+      },
+      false
+    );
+  } else {
+    console.error('ERROR: Roamer has no Encounter!', ch);
+  }
+};
+
 export const init = () => {
   exp.DO_NOTHING = {
     update: function () {},
   };
 
   exp.ROAM_SEEK_PLAYER = (function () {
+    const chWalkAtPlayer = (ch: Character) => {
+      const room = getCurrentRoom();
+      const startPoint = characterGetPos(ch);
+      const targetPoint = characterGetPos(getCurrentPlayer().leader);
+      const tileStart = roomGetTileBelow(room, truncatePoint3d(startPoint));
+      const tileTarget = roomGetTileBelow(room, truncatePoint3d(targetPoint));
+      const pfPath = createPFPath(
+        [tileStart?.x || 0, tileStart?.y || 0],
+        [tileTarget?.x || 0, tileTarget?.y || 0],
+        getCurrentRoom()
+      );
+      const roomPath = pfPathToRoomPath(pfPath);
+      const firstPointInPath = roomPath[1];
+      // walk towards the first position in the path
+      if (firstPointInPath) {
+        characterSetWalkTarget(
+          ch,
+          [firstPointInPath[0], firstPointInPath[1]],
+          () => {}
+        );
+      } else {
+        ch.aiState.halted = true;
+        const t = new Timer(500);
+        t.awaits.push(() => {
+          ch.aiState.halted = false;
+        });
+        characterAddTimer(ch, t);
+      }
+    };
+
     return {
+      onCreate: (ch: Character) => {
+        ch.aiState.halted = true;
+        const t = new Timer(500);
+        t.awaits.push(() => {
+          ch.aiState.halted = false;
+        });
+        characterAddTimer(ch, t);
+      },
       update: (ch: Character) => {
-        if (!characterHasWalkTarget(ch)) {
-          const target = getCurrentPlayer().leader;
-          const [x, y] = characterGetPosBottom(target);
-          characterSetWalkTarget(ch, [x, y], () => {
-            console.log('START BATTLE!!!!!');
-          });
+        if (!ch.aiState.halted && !ch.walkTarget) {
+          chWalkAtPlayer(ch);
+        }
+        if (
+          !ch.aiState.encountered &&
+          characterCollidesWithOther(ch, getCurrentPlayer().leader)
+        ) {
+          ch.aiState.halted = true;
+          ch.aiState.encountered = true;
+          roomRemoveCharacter(getCurrentRoom(), ch);
+          startEncounterFromRoamer(ch);
         }
       },
     };
@@ -160,7 +227,6 @@ export const init = () => {
         [chX, chY],
         nextMarker === 0 ? direction1 : direction2
       );
-      console.log('WALK TO NEXT POSITION', target);
       characterSetWalkTarget(ch, target, cb);
     };
 
@@ -186,6 +252,22 @@ export const init = () => {
             });
           });
           characterAddTimer(ch, t);
+        }
+        const player = getCurrentPlayer();
+        const leader = player.leader;
+        if (characterCanSeeOther(ch, leader)) {
+          // SAW THAT CHARACTER BRO
+          playSoundName('aggro_alert');
+          const particle = createParticleAtCharacter(
+            {
+              ...EFFECT_TEMPLATE_AGGROED,
+            },
+            ch
+          );
+          roomAddParticle(getCurrentRoom(), particle);
+          characterClearTimers(ch);
+          characterStopWalking(ch);
+          characterSetOverworldAi(ch, exp.ROAM_SEEK_PLAYER);
         }
       },
     };
