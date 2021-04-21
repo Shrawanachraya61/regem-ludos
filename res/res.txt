@@ -633,6 +633,11 @@ Animation,effect_gem,true
 AnimSprite,effects_23,100
 AnimSprite,effects_24,100
 AnimSprite,effects_25,100
+Animation,effect_aggro,false
+AnimSprite,effects_26,50
+AnimSprite,effects_27,50
+AnimSprite,effects_28,50
+AnimSprite,effects_29,300
 Picture,employee-girl,employee-girl.png,32,32
 Animation,employee-girl_idle_down,true
 AnimSprite,employee-girl_2,100

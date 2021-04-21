@@ -1,6 +1,6 @@
 Sound,menu_move,foley/menu_move.mp3
 Sound,menu_select,foley/menu_select.mp3
-Sound,menu_choice_open,foley/menu_choice_open.mp3, Creative Commons https://freesound.org/people/Leszek_Szary/sounds/171527/
+Sound,menu_choice_open,foley/menu_choice_open.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
 Sound,menu_sparkle,foley/menu_sparkle.mp3,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
 Sound,gain_token,foley/gain_token.mp3
 Sound,insert_token,foley/insert_token.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
@@ -11,3 +11,21 @@ Sound,get_item,foley/get_item.mp3
 Sound,skye_kick_vending_machine,foley/skye_kick_vending_machine.mp3,Creative Commons https://freesound.org/people/CS279/sounds/202757/
 Sound,dialog_select,foley/dialog_select.mp3,Creative Commons https://freesound.org/people/CS279/sounds/198449/
 Sound,dialog_woosh,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
+Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
+Sound,battle_encountered,foley/encounter.mp3,jsfxr
+Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,woosh_reverse,foley/woosh_reverse.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,fanfare,foley/fanfare.mp3,0.8,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,despawn,foley/despawn.mp3,0.9,jsfxr
+Sound,battle_jump,foley/jump.mp3,Attribution https://freesound.org/people/andersmmg/sounds/518970/
+Sound,battle_shoot_arrow,foley/shoot_arrow.mp3,jsfxr
+Sound,battle_swing1,foley/battle_swing1.mp3,0.7,jsfxr
+Sound,battle_swing2,foley/battle_swing2.mp3,0.7,jsfxr
+Sound,battle_swing3,foley/battle_swing3.mp3,0.7,jsfxr
+Sound,battle_swing4,foley/battle_swing4.mp3,0.7,jsfxr
+Sound,battle_armor_hit,foley/battle_armor_hit.mp3,Creative Commons https://freesound.org/people/vibe_crc/sounds/59317/
+Sound,battle_armor_broken,foley/battle_armor_broken.mp3,Creative Commons https://freesound.org/people/Andre_Desartistes/sounds/331919/
+Sound,battle_arrow_hit,foley/battle_arrow_hit.mp3,jsfxr
+
+Music,music_battle1,music/battle1.mp3
+Music,music_battle_victory,music/battle_victory.mp3
