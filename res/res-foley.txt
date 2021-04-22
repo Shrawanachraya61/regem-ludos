@@ -15,17 +15,22 @@ Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
 Sound,battle_encountered,foley/encounter.mp3,jsfxr
 Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
 Sound,woosh_reverse,foley/woosh_reverse.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
-Sound,fanfare,foley/fanfare.mp3,0.8,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
-Sound,despawn,foley/despawn.mp3,0.9,jsfxr
-Sound,battle_jump,foley/jump.mp3,Attribution https://freesound.org/people/andersmmg/sounds/518970/
+Sound,fanfare,foley/fanfare.mp3,0.45,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,despawn,foley/despawn.mp3,0.55,jsfxr
+Sound,battle_jump,foley/jump2.mp3,0.9,Attribution https://freesound.org/people/andersmmg/sounds/518970/
 Sound,battle_shoot_arrow,foley/shoot_arrow.mp3,jsfxr
-Sound,battle_swing1,foley/battle_swing1.mp3,0.7,jsfxr
-Sound,battle_swing2,foley/battle_swing2.mp3,0.7,jsfxr
-Sound,battle_swing3,foley/battle_swing3.mp3,0.7,jsfxr
-Sound,battle_swing4,foley/battle_swing4.mp3,0.7,jsfxr
-Sound,battle_armor_hit,foley/battle_armor_hit.mp3,Creative Commons https://freesound.org/people/vibe_crc/sounds/59317/
-Sound,battle_armor_broken,foley/battle_armor_broken.mp3,Creative Commons https://freesound.org/people/Andre_Desartistes/sounds/331919/
+Sound,battle_swing1,foley/battle_swing1.mp3,0.6,jsfxr
+Sound,battle_swing2,foley/battle_swing2.mp3,0.6,jsfxr
+Sound,battle_swing3,foley/battle_swing3.mp3,0.6,jsfxr
+Sound,battle_swing4,foley/battle_swing4.mp3,0.6,jsfxr
+Sound,battle_armor_hit,foley/battle_armor_hit2.mp3,0.5,jsfxr
+Sound,battle_armor_broken,foley/battle_armor_broken2.mp3,Creative Commons https://freesound.org/people/Andre_Desartistes/sounds/331919/
 Sound,battle_arrow_hit,foley/battle_arrow_hit.mp3,jsfxr
+Sound,battle_robot_charge_up,foley/robot_charge_up.mp3,0.9,jsfxr
+Sound,dead,foley/dead3.mp3,1,jsfxr
+Sound,phone_ring,foley/phone_ring.mp3,1,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
+Sound,phone_beep,foley/phone_beep.mp3,1,Creative Commonds https://freesound.org/people/bay_area_bob/sounds/542044/
+Sound,phone_beep_off,foley/phone_beep_off.mp3,1,Creative Commonds https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3
