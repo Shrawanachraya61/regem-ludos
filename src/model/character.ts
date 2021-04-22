@@ -792,6 +792,13 @@ export const characterUpdate = (ch: Character): void => {
         ch.x = prevX;
         ch.y = prevY;
       }
+      const [x, y] = characterGetPos(ch);
+      // explicitly don't check z for sortY, otherwise the character may disappear behind
+      // walls behind them when rising/falling
+      const [, py] = isoToPixelCoords(x, y, 0);
+      if (ch.ro) {
+        ch.ro.sortY = py + 33;
+      }
       // ch.x = parseFloat(ch.x.toFixed(2));
       // ch.y = parseFloat(ch.y.toFixed(2));
     } else {
@@ -835,17 +842,16 @@ export const characterUpdate = (ch: Character): void => {
         // });
         // characterAddTimer(ch, timer);
       }
+      const [x, y] = characterGetPos(ch);
+      // explicitly don't check z for sortY, otherwise the character may disappear behind
+      // walls behind them when rising/falling
+      const [, py] = isoToPixelCoords(x, y, 0);
+      if (ch.ro) {
+        ch.ro.sortY = py + 32;
+      }
     }
     ch.vx = 0;
     ch.vy = 0;
-  }
-
-  const [x, y] = characterGetPos(ch);
-  // explicitly don't check z for sortY, otherwise the character may disappear behind
-  // walls behind them when rising/falling
-  const [, py] = isoToPixelCoords(x, y, 0);
-  if (ch.ro) {
-    ch.ro.sortY = py + 32;
   }
 };
 

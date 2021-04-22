@@ -121,6 +121,10 @@ export const init = () => {
     strikeFrame: 10,
     sounds: [
       {
+        soundName: 'battle_robot_charge_up',
+        frame: 2,
+      },
+      {
         soundName: 'battle_swing3',
         frame: 8,
       },

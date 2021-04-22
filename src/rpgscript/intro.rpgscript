@@ -1,0 +1,96 @@
+@intro
++fadeOut();
++setConversation('Ada');
++playSound('phone_ring');
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(200);
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(200);
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(200);
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(200);
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(200);
++spawnParticleAtCharacter('Ada', 'EFFECT_TEMPLATE_RING', 'weighted');
++waitMS(1100);
++fadeIn(1000);
++setAnimationAndWait('Ada', 'ada_phone_answer');
++setAnimation('Ada', 'ada_phone_loop');
++playSound('phone_beep');
++waitMS(500);
+Ada: "This is Ada."
+Voice On Phone: "Have you arrived yet?"
+Ada: "I am just outside."
++setConversationSpeaker('none');
++setAnimation('Ada', 'ada_phone_rightup');
++panCameraRelativeToPlayer(40, -65);
+Ada: "The Regem Ludos Arcade.  It looks like quite a large building."
++setConversationSpeaker('none');
++spawnCharacterAtCharacter('Conscience', 'Ada');
++setAtMarker('Conscience', 'MarkerConscience');
++setFacing('Conscience', 'leftdown');
++panCameraBackToPlayer();
++setAnimationAndWait('Ada', 'ada_phone_down');
++setAnimation('Ada', 'ada_phone_loop');
+Voice On Phone: "Yes! The very place I asked you to to come! You'll find that it is even larger than it appears."
+Ada: "Is that so?"
+Ada: "How long is this going to take?  I have better things to do than trying to find you in there."
+Voice on Phone: "Don't you worry your pretty little head about that!"
+Voice on Phone: "You brought your... friend with you, right?"
++setConversationSpeaker('none');
++setAnimation('Ada', 'ada_phone_rightdown');
++panCameraRelativeToPlayer(50, 25);
++setFacing('Conscience', 'down');
++waitMS(50);
++setFacing('Conscience', 'rightdown');
++waitMS(50);
++setFacing('Conscience', 'right');
++waitMS(500);
++setFacing('Conscience', 'rightdown');
++waitMS(50);
++setFacing('Conscience', 'down');
++waitMS(50);
++setFacing('Conscience', 'leftdown');
++waitMS(50);
++setFacing('Conscience', 'left');
++waitMS(500);
++setFacing('Conscience', 'leftdown');
++waitMS(250);
+Ada: "Of course.  She is always with me."
++setConversationSpeaker('none');
++panCameraBackToPlayer();
++setAnimation('Ada', 'ada_phone_loop');
+Voice on Phone: "Good!  Very good!"
+Voice on Phone: "I'm on the SECOND floor.  Meet me up here."
+Voice on Phone: "Like I said before, I have a special surprise for you."
+Voice on Phone: "Quite special indeed."
+Voice on Phone: "Hehehe."
++setConversationSpeaker('none');
++waitMS(500);
++playSound('phone_beep_off');
++waitMS(1000);
++setAnimationAndWait('Ada', 'ada_phone_put_away');
+Ada: "*sigh*"
++setFacing('Ada', 'down');
++setAnimationState('Ada', 'idle');
++walkToMarker('Conscience', MarkerConscience2, 0, 0, true);
++waitMS(250);
+Ada: "He is so... *difficult*."
++endConversation();
++setConversation2('Ada', 'Conscience');
+Conscience: "Was that Carl-Arnold?  That's what, the fifth time he's called you today?  He seems fairly excited for this."
++setFacing('Ada', 'rightdown');
+Ada: "I cannot even remember why I agreed to meet him here.  Honestly, I have half a mind to turn around and leave."
+Conscience: "Aw C'mon.  We walked all the way over here.  We might as well go and see what he wants."
++setFacing('Conscience', 'rightup');
+Conscience: "At the very least, it's an arcade!  There's got to be something in there that was worth the trip."
+Ada: "Fine.  Let us get this over with."
++setConversationSpeaker('none');
++callScript('utils-stop-Conscience-dialogue');
++endConversation();
++walkToOffset('Ada', 16, -16, true);
++fadeOut();
++changeRoom(floor1Atrium, MarkerDoorEntrance);
++setFacing('Ada', 'rightup');
++fadeIn();

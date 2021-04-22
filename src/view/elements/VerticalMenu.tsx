@@ -19,6 +19,7 @@ interface IVerticalMenuProps<T> {
   startingIndex?: number;
   width?: string;
   style?: Record<string, string>;
+  hideTitle?: boolean;
 }
 
 interface VerticalMenuItem<T> {
@@ -138,7 +139,7 @@ const CursorRoot = style('div', () => {
   return {
     color: colors.WHITE,
     position: 'absolute',
-    top: '0px',
+    top: '-4px',
     left: '-32px',
     animation: `${cursorPulse} 500ms linear infinite`,
   };
@@ -283,12 +284,14 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       style={props.style}
     >
       <MenuItemWrapper key="title" borderColor={props.borderColor}>
-        <MenuTitle
-          backgroundColor={props.backgroundColor || colors.BLACK}
-          onClick={props.onClose}
-          lineHeight={props.lineHeight}
-          title={props.title}
-        />
+        {props.hideTitle ? null : (
+          <MenuTitle
+            backgroundColor={props.backgroundColor || colors.BLACK}
+            onClick={props.onClose}
+            lineHeight={props.lineHeight}
+            title={props.title}
+          />
+        )}
       </MenuItemWrapper>
       {props.items.map((item: VerticalMenuItem<T>, i: number) => {
         return (

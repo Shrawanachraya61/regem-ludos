@@ -15,6 +15,8 @@ import {
   setCameraDrawOffset,
   getAllTimers,
   getGlobalParticleSystem,
+  getCameraTransform,
+  setCameraTransform,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -60,6 +62,11 @@ export const pause = () => {
     t.pauseOverride();
   });
 
+  const transform = getCameraTransform();
+  if (transform) {
+    transform.timer.pauseOverride();
+  }
+
   const room = getCurrentRoom();
   if (room) {
     room.characters.forEach((ch: Character) => {
@@ -95,6 +102,11 @@ export const unpause = () => {
   getAllTimers().forEach(t => {
     t.unpauseOverride();
   });
+
+  const transform = getCameraTransform();
+  if (transform) {
+    transform.timer.unpauseOverride();
+  }
 
   const room = getCurrentRoom();
   if (room) {
@@ -226,9 +238,20 @@ export const runMainLoop = async (): Promise<void> => {
       } else {
         const player = getCurrentPlayer();
         if (player) {
-          const [oX, oY] = playerGetCameraOffset(player);
-          roomXOffset = oX;
-          roomYOffset = oY;
+          const transform = getCameraTransform();
+          if (transform) {
+            const [x, y] = transform.current();
+            roomXOffset = x;
+            roomYOffset = y;
+            transform.update();
+            // if (transform.shouldRemove) {
+            //   setCameraTransform(null);
+            // }
+          } else {
+            const [oX, oY] = playerGetCameraOffset(player);
+            roomXOffset = oX;
+            roomYOffset = oY;
+          }
         }
       }
       setCameraDrawOffset([roomXOffset, roomYOffset]);

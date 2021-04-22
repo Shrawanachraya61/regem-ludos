@@ -16,6 +16,8 @@ export enum PortraitActiveState {
   Invisible = 'invisible',
 }
 
+type TextBoxAlign = 'left' | 'right' | 'center' | 'center-low' | 'none';
+
 const determinePortraitAnim = (
   base: string,
   emotion: string,
@@ -101,10 +103,7 @@ const Portrait = style(
 
 const TextBoxWrapper = style(
   'div',
-  (props: {
-    align: 'left' | 'right' | 'center' | 'center-low';
-    visible: boolean;
-  }) => {
+  (props: { align: TextBoxAlign; visible: boolean }) => {
     const hOffset = '29%';
     let width = '40%';
     let left =
@@ -112,14 +111,14 @@ const TextBoxWrapper = style(
     let height = '25%';
     let transition = 'height 0.1s, left 0.1s, transform 0.1s ease-in';
     if (props.align === 'center') {
-      left = '20%';
-      width = '60%';
+      left = '25%';
+      width = '50%';
       height = '75%';
       transition = 'height 0.1s, left 0.25s, transform 0.1s ease-in';
     } else if (props.align === 'center-low') {
       height = '35%';
-      left = '20%';
-      width = '60%';
+      left = '25%';
+      width = '50%';
     } else if (!props.visible) {
       transition = '';
     }
@@ -142,10 +141,7 @@ const TextBoxWrapper = style(
 
 const TextBox = style(
   'div',
-  (props: {
-    align: 'right' | 'left' | 'center' | 'center-low';
-    isNarration: boolean;
-  }) => {
+  (props: { align: TextBoxAlign; isNarration: boolean }) => {
     let borderBottomLeftRadius = 'unset';
     let borderBottomRightRadius = 'unset';
     let borderLeft = 'solid';
@@ -286,7 +282,7 @@ const CutsceneSection = () => {
 
   const cutscene = getUiInterface().appState.cutscene;
 
-  let textBoxAlign: 'left' | 'right' | 'center' | 'center-low' = 'center';
+  let textBoxAlign: TextBoxAlign = 'center';
   if ([CutsceneSpeaker.Left].includes(cutscene.speaker)) {
     textBoxAlign = 'right';
   } else if ([CutsceneSpeaker.Center].includes(cutscene.speaker)) {
@@ -296,6 +292,8 @@ const CutsceneSection = () => {
   } else if (cutscene.portraitCenter) {
     textBoxAlign = 'center-low';
   }
+
+  const isNoneSpeaker = [CutsceneSpeaker.None].includes(cutscene.speaker);
 
   const handleMouseClick = () => {
     // when mouse is clicked, simulate a keypress so user can click to advance dialogue
@@ -386,7 +384,7 @@ const CutsceneSection = () => {
         <TextBox
           id="cutscene-textbox"
           align={textBoxAlign}
-          isNarration={!cutscene.speakerName}
+          isNarration={!cutscene.speakerName && !isNoneSpeaker}
         >
           <span
             style={{

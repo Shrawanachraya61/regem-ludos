@@ -333,7 +333,7 @@ export const updateBattleCharacter = (
 
     if (!bCh.isDefeated) {
       bCh.isDefeated = true;
-      playSoundName('despawn');
+      playSoundName('dead');
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
 
       // HACK: assumes that a character can only die at the end of a turn

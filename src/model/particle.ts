@@ -7,7 +7,7 @@ import {
 import { Animation, createAnimation } from 'model/animation';
 import { Point, truncatePoint3d, getRandBetween } from 'utils';
 import { SpriteModification } from './sprite';
-import { DrawTextParams, measureText } from 'view/draw';
+import { DrawTextParams, DEFAULT_TEXT_PARAMS, measureText } from 'view/draw';
 import { TILE_HEIGHT, TILE_WIDTH } from './room';
 import { getFrameMultiplier } from './generics';
 
@@ -26,6 +26,7 @@ export interface Particle {
   vy: number;
   w: number;
   h: number;
+  useOuterCanvas: boolean;
   color?: string;
   shape?: 'rect' | 'circle';
   meta: Record<string, any>;
@@ -39,6 +40,9 @@ export interface ParticleTemplate {
   scale?: number;
   transform?: Transform;
   offset?: Point;
+  text?: string;
+  textParams?: DrawTextParams;
+  useOuterCanvas?: boolean;
 }
 
 export const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
@@ -187,6 +191,7 @@ export const particleCreate = (): Particle => {
     h: 0,
     scale: 1,
     meta: {},
+    useOuterCanvas: false,
   };
   return particle;
 };
@@ -195,22 +200,29 @@ export const particleCreateFromTemplate = (
   point: Point,
   template: ParticleTemplate
 ): Particle => {
-  const anim = createAnimation(
-    template.animName +
-      (template.flipped
-        ? SpriteModification.FLIPPED
-        : SpriteModification.NORMAL)
-  );
-  const [w, h] = anim.getSpriteSize(1);
+  const anim = template.animName
+    ? createAnimation(
+        template.animName +
+          (template.flipped
+            ? SpriteModification.FLIPPED
+            : SpriteModification.NORMAL)
+      )
+    : undefined;
+  const [w, h] = anim?.getSpriteSize(1) ?? [1, 1];
   const particle = particleCreate();
   particle.anim = anim;
-  particle.timer = new Timer(template.duration ?? anim.getDurationMs());
+  particle.timer = new Timer(
+    template.duration ?? anim?.getDurationMs() ?? 1000
+  );
   particle.opacity = template.opacity ?? 1;
   particle.x = point[0] - w / 2 + (template.offset?.[0] ?? 0);
   particle.y = point[1] - h / 2 + (template.offset?.[1] ?? 0);
   particle.scale = template.scale ?? 1;
+  particle.text = template.text ?? '';
+  particle.useOuterCanvas = template.useOuterCanvas ?? false;
+  particle.textParams = template.textParams ?? DEFAULT_TEXT_PARAMS;
 
-  anim.start();
+  anim?.start();
   particle.timer.start();
 
   return particle;

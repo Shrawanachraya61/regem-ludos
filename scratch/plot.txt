@@ -222,25 +222,40 @@ Support Robot: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeat
 Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
 
 1-Offs
-
+*Fade to black*
 *Ring* *Ring* *Ring*
+*Fade in just Ada's sprite*
+*Ada pulls her phone out*
 Ada: This is Ada.
-Voice On Phone: Are you here yet?
+???: Have you arrived yet?
 Ada: I am just outside.
-Voice on Phone: Muahaha! Very good!
-Voice on Phone: I, the Illustrious CARL-ARNOLD, reside on the SECOND floor!
-Voice on Phone: Muahaha!
+*Ada looks up and to the right*
+*Fade in the rest of the screen and float camera up and right*
+Ada: The Regem Ludos arcade.  It looks like quite a large building.
+*Move camera back to Ada*
+???: Yes! The very place I asked you to to come! You'll find that it is even larger than it appears.
+Ada: Is that so?
+Ada: How long is this going to take?  I have better things to do than trying to find you in there.
+Voice on Phone: Don't worry.  It's not as daunting as it seems, especially for one as clever as you.
 Ada: ...
-Voice on Phone: Come up to me.  If.  You.  DARE!
-*BEEP*
+Voice on Phone: Also, you brought your... friend with you, right?
+*Pan camera to Conscience who is just a bit to the south.*
+Ada: Of course.  She is always with me.
+*Pan back to Ada*
+Voice on Phone: Good!  Very good!
+Voice on Phone: I'm on the SECOND floor.  Meet me up here.
+Voice on Phone: Like I said before, I have a special surprise for you.
+Voice on Phone: Quite special indeed.
+Voice on Phone: Hehehe.
+*Beep*
 Ada: *sigh*
-Conscience: That classmate of yours seems rather excited about this.
-Ada: I do not even remember why I agreed to meet him here.  Honestly, I have half a mind to turn around and leave.
-Conscience: Oh come on.  You never do fun stuff like this!
-Conscience: I mean, an arcade!  That's cool!
-*pan to arcade*
-Ada: Conscience, we are here to see Carl-Arnold *only* and then we will leave.  Nothing further.
-Conscience: Yeah yeah, whatever.  We'll see how long that plan lasts.
+Ada: Why am I even here?
+*Conscience walks back to Ada*
+Conscience: Was that Carl-Arnold?  He seems fairly excited for this.
+Ada: That makes one of us.  Honestly, I have half a mind to turn around and leave.
+Conscience: Aw C'mon.  We walked all the way over here.  We might as well go and see what he wants.
+Conscience: At the very least, it's an arcade!  There's got to be something in there that was worth the trip.
+Ada: Fine.  Let us get this over with.
 * They go inside. *
 
 Boy: This ice cream cup says it contains no artificial growth hormones.
@@ -275,7 +290,7 @@ Attacks:
 Standard Attacks: Front line attack. Depending on skill with weapon, a character can jump to a target and attack multiple times doing reg + stagger damage
 Pierce Attacks: Front line attack. Hitting a pierce attack reduces armor without a simultaneous hit.
 Pin Attacks: Front line attack. If a character is staggered and somebody executes a Pin attack, that unit is Pinned: stunned for some amount of time.
-Crit attacks: If a character crits, they create an auto stagger, and sometimes and auto Pin.
+Crit attacks: If a character crits, they create an auto stagger, and sometimes an auto Pin.
 Finisher Attacks: A finisher attack only hits if a character is pinned.
 Bow/Ranged Attacks: Does regular damage, cannot crit, little stagger damage, useful for chip or extending a combo.  Can attach things to arrows to change their effects.  Can hit the back line.
 Magic Attacks: Various types of damage, but usually big damage on a long cooldown that might cause stagger or pin.  Must be maintained.

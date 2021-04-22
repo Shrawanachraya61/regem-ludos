@@ -14,6 +14,7 @@ import {
   degreesToRadians,
   Point,
   pxToCanvasCoords4by3,
+  pixelToIsoCoords,
 } from 'utils';
 import {
   Character,
@@ -31,6 +32,7 @@ import {
   getMarkersVisible,
   getTriggersVisible,
   getCurrentPlayer,
+  getPlayerWallGlowEnabled,
 } from 'model/generics';
 
 export interface DrawTextParams {
@@ -40,7 +42,7 @@ export interface DrawTextParams {
   align?: 'left' | 'center' | 'right';
   strokeColor?: string;
 }
-const DEFAULT_TEXT_PARAMS = {
+export const DEFAULT_TEXT_PARAMS: DrawTextParams = {
   font: 'monospace',
   color: '#fff',
   size: 14,
@@ -150,7 +152,7 @@ export const measureText = (
   ctx.textBaseline = 'top';
   ctx.font = size + 'px ' + font;
   const width = ctx.measureText(text).width;
-  const height = size;
+  const height = size ?? 12;
   return [width, height];
 };
 
@@ -182,7 +184,7 @@ export const drawText = (
     );
   }
   ctx.font = `${size}px ${font}`;
-  ctx.fillStyle = color;
+  ctx.fillStyle = color || '#FFF';
   ctx.textAlign = align as CanvasTextAlign;
   ctx.textBaseline = 'middle';
   ctx.fillText(text, x, y);
@@ -392,10 +394,11 @@ export const drawCharacter = (
 
 export const drawParticle = (
   particle: Particle,
+  px: number,
+  py: number,
   scale?: number,
   ctx?: CanvasRenderingContext2D
 ): void => {
-  const [px, py] = particleGetPos(particle);
   const { anim, text, textParams, opacity, w, h, color, shape } = particle;
   ctx = ctx ?? getCtx();
   ctx.globalAlpha = opacity ?? 1;
@@ -409,7 +412,7 @@ export const drawParticle = (
     );
   }
   if (text && textParams) {
-    drawText(text, px, py, textParams);
+    drawText(text, px, py, textParams, ctx);
   }
   if (w && h && color && shape) {
     if (shape === 'rect') {
@@ -437,6 +440,7 @@ export const drawRoom = (
     return a.sortY < b.sortY ? -1 : 1;
   });
 
+  const outerCtx = getCtx('outer');
   const player = getCurrentPlayer();
   const leader = player.leader;
 
@@ -565,27 +569,35 @@ export const drawRoom = (
     }
   }
 
-  ctx.globalAlpha = 0.25;
-  ctx.globalCompositeOperation = 'luminosity';
-  drawCharacter(leader);
-  ctx.globalAlpha = 1.0;
-  ctx.globalCompositeOperation = 'source-over';
+  if (getPlayerWallGlowEnabled()) {
+    ctx.globalAlpha = 0.25;
+    ctx.globalCompositeOperation = 'luminosity';
+    drawCharacter(leader);
+    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = 'source-over';
+  }
 
   if (!isPaused) {
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
-      drawParticle(p);
+      if (p.useOuterCanvas) {
+        const [px, py] = particleGetPos(p);
+        const [pxO, pyO] = pxToCanvasCoords4by3(px, py);
+        drawParticle(p, pxO, pyO, 1, outerCtx);
+      } else {
+        const [px, py] = particleGetPos(p);
+        drawParticle(p, px, py);
+      }
     }
   }
 
   ctx.restore();
 
-  const outerCtx = getCtx('outer');
   const [x, y] = characterGetPos(leader);
   drawText(
     `POS: ${x.toFixed(0)}, ${y.toFixed(0)}`,
     20,
-    100,
+    164,
     {
       color: 'white',
       size: 32,
@@ -593,11 +605,12 @@ export const drawRoom = (
     outerCtx
   );
 
-  const d = roomGetDistanceToNearestWallInFacingDirection(room, leader);
+  const [px, py] = isoToPixelCoords(x, y);
+  const [pxO, pyO] = pxToCanvasCoords4by3(px, py);
   drawText(
-    `D: ${d.toFixed(0)}`,
+    `OPos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
     20,
-    150,
+    194,
     {
       color: 'white',
       size: 32,

@@ -57,7 +57,11 @@ import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
 import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
-import { pushKeyHandler } from 'controller/events';
+import {
+  popKeyHandler,
+  pushEmptyKeyHandler,
+  pushKeyHandler,
+} from 'controller/events';
 import HudGamepad from 'lib/hud-gamepad';
 import { pause, unpause } from './loop';
 import { getImageDataScreenshot } from 'view/draw';
@@ -96,13 +100,17 @@ export const initiateOverworld = (
     pushKeyHandler(overworldKeyHandler);
 
     if (overworld.loadTriggerName) {
-      const scriptCaller = invokeTrigger(
-        getCurrentScene(),
-        overworld.loadTriggerName,
-        TriggerType.ACTION
-      );
-      if (scriptCaller !== null) {
-        callTriggerScriptCaller(scriptCaller);
+      try {
+        const scriptCaller = invokeTrigger(
+          getCurrentScene(),
+          overworld.loadTriggerName,
+          TriggerType.ACTION
+        );
+        if (scriptCaller !== null) {
+          callTriggerScriptCaller(scriptCaller);
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
 
@@ -237,10 +245,12 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       if (getKeyUpdateEnabled()) {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
+        pushEmptyKeyHandler();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-awaitChoice');
+        await callScript(getCurrentScene(), 'intro');
         showSection(AppSection.Debug, true);
         console.log('ENABLE KEYS');
+        popKeyHandler();
         enableKeyUpdate();
       }
       break;

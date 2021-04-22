@@ -10,7 +10,7 @@ import {
 import { Battle } from 'model/battle';
 import { BattleCharacter } from 'model/battle-character';
 
-const COOLDOWN_MOD = 1.25;
+const COOLDOWN_MOD = 1;
 
 export const init = (): Record<string, BattleAction> => {
   const exp = {
@@ -86,7 +86,7 @@ export const init = (): Record<string, BattleAction> => {
       cooldown: 11000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
-        swings: [SwingType.NORMAL, SwingType.KNOCK_DOWN],
+        swings: [SwingType.KNOCK_DOWN, SwingType.KNOCK_DOWN],
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 3;

@@ -4,6 +4,8 @@ import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
 import { getCurrentBattle } from 'model/generics';
 import { BattleEvent, battleInvokeEvent } from 'model/battle';
+import VerticalMenu from 'view/elements/VerticalMenu';
+// import { Ver
 
 interface IBattleConclusionProps {
   isVictory: boolean;
@@ -31,9 +33,32 @@ const BattleSelectMenu = (props: IBattleConclusionProps): h.JSX.Element => {
   return (
     <Root>
       <span>{props.isVictory ? 'VICTORY!' : 'DEFEATED!'}</span>
-      <Button type={ButtonType.PRIMARY} onClick={handleContinueClick}>
+      <VerticalMenu
+        title="Choose"
+        width="50%"
+        open={true}
+        hideTitle
+        style={{
+          transition: 'transform 0.15s',
+          transform: 'scaleX(1)',
+          width: '128px',
+        }}
+        items={[
+          {
+            label: (
+              <div>
+                <span>Continue</span>
+              </div>
+            ),
+            value: 0,
+          },
+        ]}
+        onItemClickSound="menu_select"
+        onItemClick={handleContinueClick}
+      />
+      {/* <Button type={ButtonType.PRIMARY} onClick={handleContinueClick}>
         Continue
-      </Button>
+      </Button> */}
     </Root>
   );
 };

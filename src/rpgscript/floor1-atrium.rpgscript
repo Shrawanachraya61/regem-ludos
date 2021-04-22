@@ -79,7 +79,7 @@
   +waitMS(250);
   +jump('Conscience');
   Conscience: "I'm super exited!  I want to check out the VR floor before we go meet him.  Let's go talk to that Instructor Jason guy."
-  Ada: "A solid enough plan."
+  Ada: "Of course you do..."
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);

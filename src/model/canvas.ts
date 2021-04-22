@@ -47,10 +47,19 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
     ctx.imageSmoothingEnabled = false;
     const div = document.getElementById('canvas-container');
     if (div) {
-      div.appendChild(canvas);
       const [canvasOuter, ctx] = createCanvas(SCREEN_WIDTH, SCREEN_HEIGHT);
       canvasOuter.id = CANVAS_ID_OUTER;
       ctx.imageSmoothingEnabled = false;
+
+      const fadeDiv = document.createElement('div');
+      fadeDiv.style.position = 'absolute';
+      fadeDiv.style.width = '100%';
+      fadeDiv.style.height = '100%';
+      fadeDiv.style.top = '0';
+      fadeDiv.id = 'fade';
+
+      div.appendChild(canvas);
+      div.appendChild(fadeDiv);
       div.appendChild(canvasOuter);
     } else {
       console.warn('Failed to acquire parent div for primary canvas.');

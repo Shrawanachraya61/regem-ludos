@@ -39,7 +39,10 @@ import {
 } from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
 import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
-import { loadSettingsFromLS, setCurrentSettings } from 'controller/save-management';
+import {
+  loadSettingsFromLS,
+  setCurrentSettings,
+} from 'controller/save-management';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -74,6 +77,7 @@ export const main = async (): Promise<void> => {
   await loadRPGScript('example', scene);
   await loadRPGScript('utils', scene);
   await loadRPGScript('floor1-atrium', scene);
+  await loadRPGScript('intro', scene);
 
   console.log('load res');
   await loadRes();
@@ -127,11 +131,6 @@ export const main = async (): Promise<void> => {
   }
 
   (document.getElementById('controls') as any).style.display = 'none';
-
-  console.log('test path');
-  const pfPath = createPFPath([1, 4], [5, 4], getCurrentRoom());
-  const roomPath = pfPathToRoomPath(pfPath);
-  console.log('PATH:', JSON.stringify(roomPath));
 
   // HudGamepad.GamePad.setup({
   //   canvas: 'controls',

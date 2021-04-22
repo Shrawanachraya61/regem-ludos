@@ -5,8 +5,10 @@ import { init as initOverworlds } from './overworlds';
 import { init as initTiles } from './tiles';
 import { init as initOverworldAi } from './overworld-ai';
 import { init as initAnimMetadata } from './animation-metadata';
+import { init as initParticles } from './particles';
 
 export default async () => {
+  initParticles();
   initEnemies();
   initEncounters();
   initCharacters();

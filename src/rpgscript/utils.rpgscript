@@ -7,6 +7,6 @@
 
 @utils-stop-Conscience-dialogue
 +setConversationSpeaker("none");
-+walkToOffset("Conscience", -16, -16);
++walkToCharacter("Conscience", "Ada");
 +despawnCharacter("Conscience");
-+waitMS(1000);
++waitMS(750);

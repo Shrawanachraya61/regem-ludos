@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="48">
+<map version="1.4" tiledversion="1.4.3" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="50">
  <editorsettings>
   <export target="../src/map/floor1-outside.json" format="json"/>
  </editorsettings>
@@ -59,9 +59,11 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects" offsetx="4" offsety="4">
-  <object id="19" name="MarkerPlayer" gid="194" x="216" y="240" width="32" height="32"/>
-  <object id="45" type="front" gid="356" x="268" y="180" width="177" height="108"/>
+  <object id="19" name="MarkerPlayer" gid="194" x="240" y="240" width="32" height="32"/>
+  <object id="45" type="front" gid="356" x="200" y="104" width="177" height="108"/>
   <object id="46" gid="353" x="396" y="248" width="32" height="64"/>
   <object id="47" gid="353" x="44" y="248" width="32" height="64"/>
+  <object id="48" name="MarkerConscience" gid="194" x="360" y="248" width="32" height="32"/>
+  <object id="49" name="MarkerConscience2" gid="194" x="268" y="240" width="32" height="32"/>
  </objectgroup>
 </map>

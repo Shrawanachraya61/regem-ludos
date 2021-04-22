@@ -5,7 +5,7 @@ import { Battle } from 'model/battle';
 import { Overworld } from 'model/overworld';
 import { Scene } from 'model/scene';
 import { ParticleSystem } from 'model/particle-system';
-import { Timer } from './utility';
+import { Timer, Transform } from './utility';
 import {
   setVolumeForActiveSounds,
   setVolumeForMusic,
@@ -127,8 +127,8 @@ export const getSoundEnabled = () => soundEnabled;
 export const setSoundEnabled = (v: boolean) => (soundEnabled = v);
 
 const volumeLevels = {
-  [SoundType.NORMAL]: 0.75,
-  [SoundType.MUSIC]: 0.75,
+  [SoundType.NORMAL]: 0.5,
+  [SoundType.MUSIC]: 0.5,
 };
 export const setVolume = (type: SoundType, volumeDecimal: number) => {
   if (volumeDecimal > 1) {
@@ -152,6 +152,11 @@ let cameraDrawOffset: Point = [0, 0];
 export const getCameraDrawOffset = () => cameraDrawOffset;
 export const setCameraDrawOffset = (p: Point) => (cameraDrawOffset = p);
 
+let cameraTransform: Transform | null = null;
+export const getCameraTransform = () => cameraTransform;
+export const setCameraTransform = (t: Transform | null) =>
+  (cameraTransform = t);
+
 const timers: Timer[] = [];
 export const addTimer = (...timersToAdd: Timer[]) => {
   timersToAdd.forEach(t => {
@@ -174,3 +179,8 @@ let globalParticleSystem: ParticleSystem | null = null;
 export const getGlobalParticleSystem = () => globalParticleSystem;
 export const setGlobalParticleSystem = (ps: ParticleSystem | null) =>
   (globalParticleSystem = ps);
+
+let playerWallGlowEnabled = true;
+export const getPlayerWallGlowEnabled = () => playerWallGlowEnabled;
+export const setPlayerWallGlowEnabled = (b: boolean) =>
+  (playerWallGlowEnabled = b);

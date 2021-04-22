@@ -26,9 +26,11 @@ import {
   AnimationState,
   characterSetAnimationState,
   characterStartAi,
+  characterGetPosBottom,
 } from 'model/character';
 import {
   roomAddCharacter,
+  roomAddParticle,
   roomGetCharacterByName,
   roomGetTileBelow,
   roomRemoveCharacter,
@@ -38,6 +40,8 @@ import {
   getCurrentRoom,
   getCurrentPlayer,
   getCurrentOverworld,
+  setCameraTransform,
+  getCameraTransform,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
@@ -47,17 +51,23 @@ import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { getIfExists as getOverworld } from 'db/overworlds';
 import { getIfExists as getEncounter } from 'db/encounters';
+import { getIfExists as getParticle } from 'db/particles';
 import {
   playerAddItem,
   playerRemoveItem,
   playerModifyTokens,
   playerModifyTickets,
+  playerGetCameraOffset,
 } from 'model/player';
 import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
 import { playSoundName } from 'model/sound';
 import { transitionToBattle } from './battle-management';
+import {
+  createWeightedParticle,
+  particleCreateFromTemplate,
+} from 'model/particle';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -131,7 +141,9 @@ export const playDialogue = (
     actorNameLower !== 'narrator' ? nameLabel : ''
   );
 
-  return waitForUserInputDialog();
+  return waitMS(150, () => {
+    waitForUserInputDialog();
+  });
 };
 
 /**
@@ -698,6 +710,37 @@ export const walkToMarker = (
     marker.x + (xOffset ?? 0),
     marker.y + (yOffset ?? 0),
   ] as Point;
+
+  if (skipWait) {
+    characterSetWalkTarget(ch, target, () => void 0);
+  } else {
+    characterSetWalkTarget(ch, target, waitUntil());
+    return true;
+  }
+};
+
+export const walkToCharacter = (
+  chName: string,
+  chName2: string,
+  xOffset?: number,
+  yOffset?: number,
+  skipWait?: boolean
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  const ch2 = roomGetCharacterByName(room, chName2);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+  if (!ch2) {
+    console.error('Could not find target ch with name: ' + chName2);
+    return;
+  }
+
+  const [pX, pY] = characterGetPos(ch2);
+  const target = [pX + (xOffset ?? 0), pY + (yOffset ?? 0)] as Point;
 
   if (skipWait) {
     characterSetWalkTarget(ch, target, () => void 0);
@@ -1347,6 +1390,90 @@ export const enterCombat = (encounterName: string) => {
   transitionToBattle(player, encounter, undefined, true);
 };
 
+export const panCameraRelativeToPlayer = (
+  relX: number,
+  relY: number,
+  ms?: number,
+  skipWait?: boolean
+) => {
+  const duration = ms ?? 1000;
+  const player = getCurrentPlayer();
+  if (player) {
+    const [oX, oY] = playerGetCameraOffset(player);
+    const t = new Transform(
+      [oX, oY, 0],
+      [oX - relX, oY - relY, 0],
+      duration,
+      TransformEase.EASE_OUT
+    );
+    setCameraTransform(t);
+    if (!skipWait) {
+      return waitMS(duration);
+    }
+  }
+};
+
+export const panCameraBackToPlayer = (ms?: number, skipWait?: boolean) => {
+  const duration = ms ?? 1000;
+  const player = getCurrentPlayer();
+  const transform = getCameraTransform();
+  if (player && transform) {
+    const [oX, oY] = playerGetCameraOffset(player);
+    const [tX, tY] = transform.current();
+    const t = new Transform(
+      [tX, tY, 0],
+      [oX, oY, 0],
+      duration,
+      TransformEase.EASE_OUT
+    );
+    t.timer.awaits.push(() => {
+      setCameraTransform(null);
+    });
+    setCameraTransform(t);
+    if (!skipWait) {
+      return waitMS(duration);
+    }
+  }
+};
+
+export const playSound = (soundName: string) => {
+  playSoundName(soundName);
+};
+
+export const spawnParticleAtCharacter = (
+  chName: string,
+  particleName: string,
+  particleMethod: 'normal' | 'weighted'
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  const template = getParticle(particleName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  if (!template) {
+    console.error('Could not find particle with name: ' + particleName);
+    return;
+  }
+
+  if (particleMethod === 'normal') {
+    const [centerPx, centerPy] = characterGetPosCenterPx(ch);
+    const particle = particleCreateFromTemplate([centerPx, centerPy], template);
+    roomAddParticle(room, particle);
+  } else if (particleMethod === 'weighted') {
+    const [centerPx, centerPy] = characterGetPosCenterPx(ch);
+    roomAddParticle(
+      room,
+      createWeightedParticle(template, centerPx, centerPy, 1000)
+    );
+  } else {
+    console.error(`Particle method not known: :${particleMethod}"`);
+  }
+};
+
 const commands = {
   playDialogue,
   setConversation2,
@@ -1366,6 +1493,7 @@ const commands = {
   shakeScreen,
   setCharacterAt,
   walkToMarker,
+  walkToCharacter,
   setAtMarker,
   walkToOffset,
   setCharacterAtMarker,
@@ -1390,6 +1518,10 @@ const commands = {
   setDoorStateAtMarker,
   awaitChoice,
   enterCombat,
+  panCameraRelativeToPlayer,
+  panCameraBackToPlayer,
+  playSound,
+  spawnParticleAtCharacter,
 };
 
 export default commands;

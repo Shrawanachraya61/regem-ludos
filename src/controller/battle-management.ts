@@ -164,6 +164,9 @@ export const transitionToBattle = async (
       transform.timer.pause();
 
       timeoutPromise(500 + i * jumpTimeMsStaggered).then(() => {
+        if (i === 0) {
+          playSoundName('battle_jump');
+        }
         characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
         bCh.ch.transform?.timer.unpause();
         timeoutPromise(jumpTimeMs).then(() => {
@@ -423,6 +426,7 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
         // );
         // particleDuration = Math.max(particleDuration, particle.timer.duration);
         // roomAddParticle(battle.room, particle);
+        playSoundName('despawn');
         characterSetAnimationState(defeatedBCh.ch, AnimationState.BATTLE_DEAD);
 
         // set target indices so that they are at least VALID, otherwise the player
@@ -436,6 +440,9 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
           0,
           battle.targetedEnemyRangeIndex - defeatedCharacters.length
         );
+
+        // stagger these out bit for a cooler effect
+        await timeoutPromise(100);
       }
       await timeoutPromise(particleDuration);
       battleInvokeEvent(
@@ -508,11 +515,11 @@ export const applyArmorDamage = (
     armorReduced = true;
     nextDamageAmount = 0;
   } else if (victim.armorTimer.isComplete()) {
-    playSoundName('battle_armor_broken');
+    playSoundName('battle_armor_hit');
     victim.armorTimer.start();
     nextDamageAmount = 0;
   } else {
-    playSoundName('battle_armor_hit');
+    playSoundName('battle_armor_broken');
     console.log('BROKE ARMOR WITH SIMULTANEOUS ATTACK!');
     victim.armor--;
     armorReduced = true;
@@ -797,7 +804,7 @@ export const updateBattle = (battle: Battle): void => {
           playMusic('music_battle_victory', true);
         });
         showSection(AppSection.BattleVictory, true);
-        await timeoutPromise(1250);
+        await timeoutPromise(250);
         for (const i in battle.allies) {
           characterSetAnimationState(
             battle.allies[i].ch,
