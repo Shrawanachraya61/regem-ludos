@@ -128,6 +128,24 @@ export const createDamageParticle = (
   return particle;
 };
 
+export const createRiseParticle = (
+  template: ParticleTemplate,
+  x: number,
+  y: number,
+  durationMs?: number
+): Particle => {
+  const duration = durationMs ?? 1000;
+  const particle = particleCreateFromTemplate([x, y], template);
+  particle.transform = new Transform(
+    [particle.x, particle.y, 0],
+    [particle.x, particle.y - TILE_HEIGHT, 0],
+    duration,
+    TransformEase.EASE_OUT
+  );
+  particle.timer.start(duration);
+  return particle;
+};
+
 // creates a particle that appears to fly up, then land on the ground.
 export const createWeightedParticle = (
   template: ParticleTemplate,
@@ -208,7 +226,11 @@ export const particleCreateFromTemplate = (
             : SpriteModification.NORMAL)
       )
     : undefined;
-  const [w, h] = anim?.getSpriteSize(1) ?? [1, 1];
+  let [w, h] = anim?.getSpriteSize(1) ?? [1, 1];
+  const scale = template.scale ?? 1;
+  w = w * scale;
+  h = h * scale;
+
   const particle = particleCreate();
   particle.anim = anim;
   particle.timer = new Timer(

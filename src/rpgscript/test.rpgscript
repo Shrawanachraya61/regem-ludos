@@ -220,5 +220,55 @@ Ada: "Thus, I have chosen again."
 Ada: "The test will now conclude."
 +endConversation();
 
-@test-fight
-+enterCombat(ENCOUNTER_TUT4);
+@test-giggle-and-sigh
++setConversation("Ada");
+Ada: "I will now giggle."
++setConversationSpeaker(none);
++callScript("utils-character-giggle", "Ada");
+Ada: "I have giggled."
+Ada: "And now I will sigh, because this is so very stupid."
++setConversationSpeaker(none);
++callScript("utils-character-sigh", "Ada");
+Ada: "I have sighed."
++endConversation();
+
+@test-fight-events
++enterCombat(ENCOUNTER_TEST_EVENTS);
+
+@test-fight-event-start
++setConversation2('Ada', 'Bartolo');
+Bartolo: "The battle has begun!"
+Bartolo: "Now you will witness the awesome power of my SUPER R-O-B-O-T-S."
+Ada: "You have no chance of winning this."
++endConversation();
+
+@test-fight-event-damaged
+
+@test-fight-event-end
++setConversation2('Ada', 'Bartolo');
+Bartolo: "Gah!"
+Bartolo: "You may have won THIS battle.  But I will win the NEXT battle."
++endConversation();
+
+@test-fight-event-turn-ended
+
+@test-spawn-party-members
++setConversation("Ada");
+Ada: "Party members will now spawn."
++setConversationSpeaker(none);
++spawnPartyMembers();
+Ada: "The party members have spawned."
+Ada: "They will now despawn."
++setConversationSpeaker(none);
++despawnPartyMembers();
+Ada: "The party members have despawned."
++endConversation();
+
+@test-spawn-particle-at-marker
++setConversation("Ada");
+Ada: "A particle will now spawn at MarkerPlayer."
++setConversationSpeaker(none);
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerPlayer, rise);
++waitMS(1000);
+Ada: "A particle should have spawned."
++endConversation();

@@ -105,3 +105,7 @@ export const popKeyHandler = (handler?: KeyboardHandler) => {
     keyHandlers.splice(keyHandlers.length - 1, 1);
   }
 };
+
+export const isConfirmKey = (key: string) => {
+  return ['Return', 'Enter', ' ', 'x', 'X'].includes(key);
+};

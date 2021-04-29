@@ -16,7 +16,16 @@ export const init = () => {
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     overworldAi: 'ROAM_WALK_RIGHT_LEFT',
-    canGetStuckWhileWalking: true,
+    // canGetStuckWhileWalking: true,
+  };
+
+  exp.TutRobotDummy1 = {
+    name: 'TutRobotDummy1',
+    spriteBase: 'tut_robot_roamer',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    // overworldAi: 'ROAM_WALK_RIGHT_LEFT',
+    // canGetStuckWhileWalking: true,
   };
 
   return exp;

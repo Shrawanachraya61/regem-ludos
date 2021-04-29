@@ -179,6 +179,7 @@ export interface CharacterTemplate {
   spriteSize?: Point;
   canGetStuckWhileWalking?: boolean;
   encounterName?: string;
+  speed?: number;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -264,7 +265,7 @@ export const characterCreateFromTemplate = (
   }
   if (template.canGetStuckWhileWalking) {
     // if walkRetries cannot be incremented, then the character is able to get stuck
-    // on things.  This is the desired behavior for roaming npcs who cause battles
+    // on things.  This is the desired behavior for some roaming npcs who cause battles
     // when you bonk into them.
     ch.walkRetries = -Infinity;
   }
@@ -277,6 +278,9 @@ export const characterCreateFromTemplate = (
       );
     }
     ch.encounter = encounter;
+  }
+  if (template.speed) {
+    ch.speed = template.speed;
   }
   ch.template = template;
   return ch;
@@ -441,7 +445,7 @@ export const characterSetFacingFromAngle = (ch: Character, angle: number) => {
   ];
 
   for (let i = 1; i < 8; i++) {
-    if (angle >= i * 45 - 22.5 && angle < (i + 1) * 45 - 22.5) {
+    if (angle >= i * 45 - 22.5 && angle <= (i + 1) * 45 - 22.5) {
       characterSetFacing(ch, facings[i]);
     }
   }
@@ -525,6 +529,9 @@ export const characterSetWalkTarget = (
   if (ch.walkRetries > 0) {
     ch.walkRetries = 0;
   }
+  if (characterCollidesWithPoint(ch, [...point2, 1.5])) {
+    characterFinishWalking(ch);
+  }
 };
 
 export const characterHasWalkTarget = (ch: Character) => {
@@ -600,6 +607,17 @@ export const characterStopAi = (ch: Character) => {
 export const characterStartAi = (ch: Character) => {
   ch.aiEnabled = true;
   characterRestoreState(ch);
+};
+
+const characterFinishWalking = (ch: Character) => {
+  characterSetAnimationState(ch, AnimationState.IDLE);
+  const target = ch.walkTarget;
+  characterSetPos(ch, [target?.[0] ?? 0, target?.[1] ?? 0, ch.z]);
+  if (ch.onReachWalkTarget) {
+    ch.onReachWalkTarget();
+  }
+  ch.walkTarget = null;
+  ch.onReachWalkTarget = null;
 };
 
 export const characterStopWalking = (ch: Character) => {
@@ -723,13 +741,9 @@ export const characterUpdate = (ch: Character): void => {
       ch.walkRetries > 10 ||
       characterCollidesWithPoint(ch, [...point2, 1.5])
     ) {
-      characterSetAnimationState(ch, AnimationState.IDLE);
-      characterSetPos(ch, [...ch.walkTarget, ch.z]);
-      if (ch.onReachWalkTarget) {
-        ch.onReachWalkTarget();
-      }
-      ch.walkTarget = null;
-      ch.onReachWalkTarget = null;
+      characterFinishWalking(ch);
+      ch.vx = 0;
+      ch.vy = 0;
     }
   }
 
@@ -747,7 +761,6 @@ export const characterUpdate = (ch: Character): void => {
       angle += 360;
     }
     characterSetFacingFromAngle(ch, angle);
-
     if (isPersonCharacter(ch)) {
       const tile = roomGetTileBelow(room, [ch.x, ch.y]);
       let tileBelowY1: Tile | null = null;
@@ -792,13 +805,6 @@ export const characterUpdate = (ch: Character): void => {
         ch.x = prevX;
         ch.y = prevY;
       }
-      const [x, y] = characterGetPos(ch);
-      // explicitly don't check z for sortY, otherwise the character may disappear behind
-      // walls behind them when rising/falling
-      const [, py] = isoToPixelCoords(x, y, 0);
-      if (ch.ro) {
-        ch.ro.sortY = py + 33;
-      }
       // ch.x = parseFloat(ch.x.toFixed(2));
       // ch.y = parseFloat(ch.y.toFixed(2));
     } else {
@@ -842,17 +848,15 @@ export const characterUpdate = (ch: Character): void => {
         // });
         // characterAddTimer(ch, timer);
       }
-      const [x, y] = characterGetPos(ch);
-      // explicitly don't check z for sortY, otherwise the character may disappear behind
-      // walls behind them when rising/falling
-      const [, py] = isoToPixelCoords(x, y, 0);
-      if (ch.ro) {
-        ch.ro.sortY = py + 32;
-      }
     }
-    ch.vx = 0;
-    ch.vy = 0;
   }
+  const [x, y] = characterGetPos(ch);
+  const [, py] = isoToPixelCoords(x, y, 0);
+  if (ch.ro) {
+    ch.ro.sortY = py + 32;
+  }
+  ch.vx = 0;
+  ch.vy = 0;
 };
 
 const isPrimaryWall = (tile: Tile | null) => {

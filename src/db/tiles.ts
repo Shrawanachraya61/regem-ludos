@@ -1,7 +1,13 @@
+import { Point } from 'utils';
+
 interface TileTemplate {
   baseSprite: string;
   animName?: string;
   isWall?: boolean;
+  isProp?: boolean;
+  pxOffset?: Point;
+  size?: Point;
+  hasFloorTile?: boolean;
 }
 
 const exp = {} as Record<string, TileTemplate>;
@@ -81,7 +87,7 @@ export const init = () => {
     animName: 'walls-anims_red_door_fwd_open2',
     isWall: false,
   };
-  
+
   exp.ELEVATOR_BCK_CLOSED1 = {
     baseSprite: 'walls_7',
     animName: 'walls-anims_elevator_bck_close1',
@@ -124,4 +130,27 @@ export const init = () => {
     animName: 'walls-anims_elevator_fwd_open2',
     isWall: false,
   };
+  exp.KIOSK_STATS_ACTIVE = {
+    baseSprite: 'props_26',
+    animName: 'tile_vr_portal_active',
+    isWall: true,
+  };
+  exp.KIOSK_STATS_PASSIVE = {
+    baseSprite: 'props_26',
+    animName: 'tile_vr_portal_passive',
+    isWall: true,
+  };
+  exp.VR_PORTAL_FLOOR = {
+    baseSprite: 'floors_15',
+    animName: 'tile_vr_portal_floor_anim',
+  };
+  exp.TUT_GATE_FLOOR = {
+    baseSprite: 'floors_59',
+    isWall: false,
+    hasFloorTile: false,
+    size: [32, 32],
+    // calculated based on height of the bridge wall tile (I did it manually cuz I'm lazy)
+    pxOffset: [0, 48],
+  };
+  replacementTemplates.floors_15 = 'VR_PORTAL_FLOOR';
 };

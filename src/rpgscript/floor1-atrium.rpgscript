@@ -147,29 +147,67 @@
   +waitMS(500);
 
 #floor1-atrium-employee-jason
+  action,?is(quest_tutorial_active):floor1-atrium-employee-jason-tutorial-active
   // haven't spoken to front desk yet
-  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
+  // action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
   // don't have Haptic Bracer yet
-  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer-complete):floor1-atrium-employee-jason-haptic-bracer
+  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once()):floor1-atrium-employee-jason-haptic-bracer
+  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete)):floor1-atrium-employee-jason-haptic-bracer-ask
   action,floor1-atrium-employee-jason-default
 @floor1-atrium-employee-jason-haptic-bracer
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
   +setConversation('Ada');
   Atrium Employee Jason: "Hello! How may I help you today?"
   Ada: "Do you happen to be Jason?  I am looking to acquire something called a 'Haptic Bracer'."
-  Atrium Employee Jason: "Ah yes.  I can help you with that."
-  Atrium Employee Jason: "Let me grab you one."
-  +setConversationSpeaker(none);
-  +walkToMarker(Atrium Employee Jason, MarkerJasonB);
-  +lookAtCharacter('Ada', 'Atrium Employee Jason');
-  +waitMS(1000);
-  +walkToMarker(Atrium Employee Jason, MarkerJasonA);
-  +lookAtEachOther('Ada', 'Atrium Employee Jason');
+  // Atrium Employee Jason: "Ah yes.  I can help you with that."
+  // Atrium Employee Jason: "Let me grab you one."
+  // +setConversationSpeaker(none);
+  // +walkToMarker(Atrium Employee Jason, MarkerJasonB);
+  // +lookAtCharacter('Ada', 'Atrium Employee Jason');
+  // +waitMS(1000);
+  // +walkToMarker(Atrium Employee Jason, MarkerJasonA);
+  // +lookAtEachOther('Ada', 'Atrium Employee Jason');
   Atrium Employee Jason: "Here you are!"
   +acquireItem('Haptic Bracer');
   Atrium Employee Jason: "Would you like me to run you through how to use it?"
   +awaitChoice('Yes. (Enters Tutorial)', 'No.');
+  +?eq(lastChoiceIndex, 0):{
+    Ada: "Sure."
+    +callScript('floor1-atrium-employee-jason-start-tutorial');
+  }
+  +?eq(lastChoiceIndex, 1):{
+    Ada: "Not right now."
+    Atrium Employee Jason: "No worries.  Come back when you're ready."
+  }
   +endConversation();
+@floor1-atrium-employee-jason-haptic-bracer-ask
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Would you like me to run you through how to use your Haptic Bracer?"
+  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
+  +?eq(lastChoiceIndex, 0):{
+    Ada: "Sure"
+    +callScript('floor1-atrium-employee-jason-start-tutorial');
+  }
+  +?eq(lastChoiceIndex, 1):{
+    Ada: "Not right now."
+    Atrium Employee Jason: "No worries.  Come back when you're ready."
+  }
+  +endConversation();
+@floor1-atrium-employee-jason-start-tutorial
+  +setStorage('quest_tutorial_active', true);
+  Atrium Employee Jason: "Excellent!  Follow me please."
+  +setConversationSpeaker('none');
+  +walkToMarker(Atrium Employee Jason, MarkerDoorTut);
+  +setFacing(Atrium Employee Jason, 'rightup');
+  +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, OPEN);
+  +waitMS(500);
+  +despawnCharacter(Atrium Employee Jason);
+  +waitMS(500);
+  +walkToMarker(Ada, MarkerDoorTut);
+  +callScript('utils-change-room', 'floor1TutEntrance', 'MarkerDoor');
+  //pass control to the script in the next room
+  +callScript('floor1-tut-entrance-begin-tut');
 @floor1-atrium-employee-jason-quest-not-started
   +lookAtCharacter('Atrium Employee Jason', 'Ada');
   +setConversation('Ada');
@@ -181,6 +219,11 @@
   Atrium Employee Jason: "Then you can come back over here."
   +endConversation();
   // +setDoorStateAtMarker(MarkerDoorVRPractice, RED_DOOR, BCK, OPEN);
+@floor1-atrium-employee-jason-tutorial-active
+  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Are you enjoying the tutorial?"
+  +endConversation();
 
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest

@@ -61,6 +61,7 @@ const isWallProp = (sprite: string) => {
 };
 
 export interface Room {
+  name: string;
   tiledJson: any;
   width: number;
   height: number;
@@ -78,6 +79,12 @@ export interface Room {
   triggerActivators: TriggerActivator[];
   visible: boolean;
 }
+
+export const roomCopy = (room: Room) => {
+  // HACK: should just deep copy it
+  const roomCp = createRoom(room.name, room.tiledJson);
+  return roomCp;
+};
 
 export interface Prop {
   sprite: string;
@@ -113,6 +120,7 @@ export interface Tile {
   y: number;
   isWall: boolean;
   isProp: boolean;
+  floorTileBeneath?: Tile;
   tileWidth: number;
   tileHeight: number;
   highlighted: boolean;
@@ -144,7 +152,7 @@ interface TiledTileset {
 }
 
 interface TiledLayer {
-  name: 'Props' | 'Objects' | 'Tiles';
+  name: 'Props' | 'Objects' | 'Tiles' | 'Tiles2';
   objects?: any[];
   data?: any[];
 }
@@ -185,7 +193,7 @@ const gidToTileSpriteAndSize = (
 };
 
 let dynamicPropsTileset: null | string[] = null;
-const loadDynamicPropsTileset = async () => {
+export const loadDynamicPropsTileset = async () => {
   const xml = await fetch('res/props-dynamic.tiled-sheet.tsx').then(result =>
     result.text()
   );
@@ -200,16 +208,22 @@ const loadDynamicPropsTileset = async () => {
   }
 };
 
-export const createRoom = async (
-  name: string,
-  tiledJson: any
-): Promise<Room> => {
-  // const t
-  if (!dynamicPropsTileset) {
-    await loadDynamicPropsTileset();
-  }
+const promises: Promise<any>[] = [];
+export const awaitAllRoomProps = async () => {
+  await Promise.all(promises);
+};
 
-  const { width, height, data } = tiledJson.layers[0];
+export const createRoom = (name: string, tiledJson: any): Room => {
+  const { width, height, data } =
+    tiledJson.layers.find((l: TiledLayer) => l.name === 'Tiles') ?? {};
+  if (!data) {
+    throw new Error(
+      `Cannot create room '${name}', it does not have a layer named 'Tiles'`
+    );
+  }
+  const secondaryTileLayer = tiledJson.layers.find(
+    (l: TiledLayer) => l.name === 'Tiles2'
+  );
   const { objects: props } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
   const { objects } =
@@ -230,6 +244,7 @@ export const createRoom = async (
   const [floorCanvas, floorCtx] = createCanvas(widthPx, heightPx + TILE_HEIGHT);
 
   const room: Room = {
+    name,
     tiledJson,
     width,
     height,
@@ -258,9 +273,12 @@ export const createRoom = async (
     room.height
   );
 
-  const promises: Promise<any>[] = [];
+  const addTile = (tiledTileId: number, i: number) => {
+    // Tiled sets id to 0 when no tile exists
+    if (tiledTileId === 0) {
+      return;
+    }
 
-  data.forEach((tiledTileId: number, i: number) => {
     const { sprite, tileWidth, tileHeight } = gidToTileSpriteAndSize(
       tiledJson.tilesets,
       tiledTileId
@@ -268,6 +286,10 @@ export const createRoom = async (
 
     const isWallTileset = sprite.indexOf('wall') > -1;
     const isPropTileset = sprite.indexOf('props') > -1;
+    const isFromTiles2 =
+      secondaryTileLayer && data[i] !== secondaryTileLayer.data[i];
+    // const isFromTiles2 = false;
+
     const tile = {
       sprite,
       tileWidth,
@@ -286,16 +308,31 @@ export const createRoom = async (
     const ro = createTileRenderObject(tile);
     if (ro.isFloor) {
       room.renderObjects.push(ro);
+      if (tile.sprite === 'floors_0') {
+        tile.isProp = true;
+        tile.isWall = true;
+      }
     } else {
+      let defaultFloorSprite = room.defaultFloorSprite;
+
+      if (isFromTiles2) {
+        // if a tile came from the Tiles2 layer, then use the tile from below it as the
+        // floor sprite.  This way it looks the same as how Tiled sees it.
+        const { sprite } = gidToTileSpriteAndSize(tiledJson.tilesets, data[i]);
+        defaultFloorSprite = sprite;
+      }
+
       if (tile.isWall && !tile.isProp) {
         const floorTile = {
           ...tile,
           tileWidth: 32,
           tileHeight: 32,
-          sprite: room.defaultFloorSprite,
-          id: 1,
+          sprite: defaultFloorSprite,
+          id: isFromTiles2 ? data[i] || 1 : 1,
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
+        floorTile.ro = roFloor;
+        tile.floorTileBeneath = floorTile;
         room.renderObjects.push(roFloor);
       } else {
         ro.sortY += 8;
@@ -303,12 +340,14 @@ export const createRoom = async (
           ...tile,
           tileWidth: 32,
           tileHeight: 32,
-          sprite: room.defaultFloorSprite,
+          sprite: defaultFloorSprite,
           id: 1,
           x: tile.x,
           y: tile.y,
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
+        floorTile.ro = roFloor;
+        tile.floorTileBeneath = floorTile;
         room.renderObjects.push(roFloor);
       }
       room.renderObjects.push(ro);
@@ -324,7 +363,7 @@ export const createRoom = async (
         tile.ro.anim.start();
       }
     }
-  });
+  };
 
   const addProp = (tiledProp: any) => {
     const x: number = tiledProp.x;
@@ -477,6 +516,19 @@ export const createRoom = async (
     }
   };
 
+  const tiles = data.slice();
+
+  // The secondary tile layer overrides the one beneath it
+  if (secondaryTileLayer && secondaryTileLayer.data) {
+    secondaryTileLayer.data.forEach((tiledTileId: number, i: number) => {
+      if (tiledTileId !== 0) {
+        tiles[i] = tiledTileId;
+      }
+    });
+  }
+
+  tiles.forEach(addTile);
+
   if (props) {
     props.forEach(addProp);
   }
@@ -515,8 +567,6 @@ export const createRoom = async (
       );
     }
   }
-
-  await Promise.all(promises);
 
   return room;
 };

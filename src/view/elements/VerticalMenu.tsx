@@ -248,6 +248,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
+      console.log('CODE', ev.code);
       if (props.open && !props.isInactive) {
         let nextIndex = cursorIndex;
         if (ev.code === 'ArrowDown') {
@@ -255,7 +256,11 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         } else if (ev.code === 'ArrowUp') {
           dispatch({ type: 'Decrement' });
           nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
-        } else if (ev.code === 'Enter') {
+        } else if (
+          ev.code === 'Enter' ||
+          ev.code === 'KeyX' ||
+          ev.code === 'Keyx'
+        ) {
           dispatch({ type: 'Select' });
           if (props.onItemClickSound) {
             playSoundName(props.onItemClickSound);

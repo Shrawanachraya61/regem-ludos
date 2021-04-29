@@ -31,6 +31,8 @@ export class Animation {
   isPaused: boolean;
   timestampPause: number;
   meta: AnimationMetadata | null;
+  subLoopAnim: Animation | null;
+  useSubLoopAnim: boolean;
 
   constructor(loop: boolean) {
     this.loop = loop || false;
@@ -42,25 +44,47 @@ export class Animation {
     this.currentSpriteIndex = 0;
     this.timestampStart = 0;
     this.name = ''; // set when constructed from a builder
+    this.useSubLoopAnim = false;
     this.awaits = [];
   }
 
-  reset(): void {
+  reset(fromLoop?: boolean): void {
     this.done = false;
     this.currentSpriteIndex = 0;
-    this.sprites.forEach(s => {
-      s.hasPlayedSound = false;
-    });
+    if (fromLoop) {
+      this.useSubLoopAnim = true;
+      if (this.subLoopAnim) {
+        this.subLoopAnim.reset(fromLoop);
+      } else {
+        this.sprites.forEach(s => {
+          s.hasPlayedSound = false;
+        });
+      }
+    } else {
+      this.useSubLoopAnim = false;
+      if (this.subLoopAnim) {
+        this.subLoopAnim.reset();
+      }
+      this.sprites.forEach(s => {
+        s.hasPlayedSound = false;
+      });
+    }
   }
 
   start(): void {
     this.timestampStart = getNow();
+    if (this.useSubLoopAnim && this.subLoopAnim) {
+      this.subLoopAnim.start();
+    }
   }
 
   pause(): void {
     if (!this.isPaused) {
       this.isPaused = true;
       this.timestampPause = getNow();
+      if (this.subLoopAnim) {
+        this.subLoopAnim.pause();
+      }
     }
   }
 
@@ -70,6 +94,9 @@ export class Animation {
       this.timestampStart += getNow() - this.timestampPause;
       this.currentSpriteIndex = 0;
       this.update();
+      if (this.subLoopAnim) {
+        this.subLoopAnim.unpause();
+      }
     }
   }
 
@@ -125,6 +152,10 @@ export class Animation {
   }
 
   getAnimIndex(timestampNow: number): number {
+    if (this.useSubLoopAnim && this.subLoopAnim) {
+      return this.subLoopAnim.getAnimIndex(timestampNow);
+    }
+
     let lastIndex = 0;
     let leftI = this.currentSpriteIndex;
     let rightI = this.sprites.length - 1;
@@ -150,11 +181,16 @@ export class Animation {
   }
 
   update(): void {
+    if (this.useSubLoopAnim && this.subLoopAnim) {
+      this.subLoopAnim.update();
+      return;
+    }
+
     const now = getNow();
     if (this.currentSpriteIndex === this.sprites.length - 1) {
       if (this.loop && now - this.timestampStart > this.totalDurationMs) {
         const newStart = this.timestampStart + this.totalDurationMs;
-        this.reset();
+        this.reset(true);
         this.start();
         if (now - newStart < this.totalDurationMs) {
           this.timestampStart = newStart;
@@ -197,6 +233,9 @@ export class Animation {
   }
 
   getSprite(): string {
+    if (this.useSubLoopAnim && this.subLoopAnim) {
+      return this.subLoopAnim.getSprite();
+    }
     return this.sprites[this.currentSpriteIndex]?.name;
   }
 
@@ -238,6 +277,18 @@ export const createAnimation = (animName: string): Animation => {
     const anim = builder();
     anim.name = animName;
     anim.meta = getAnimMeta(animName);
+    const loopFromFrame = anim?.meta?.loopFromFrame;
+    if (loopFromFrame !== undefined) {
+      const subAnim = new Animation(true);
+      for (let i = loopFromFrame; i < anim.sprites.length; i++) {
+        const spr = anim.sprites[i];
+        subAnim.addSprite({
+          name: spr.name,
+          duration: spr.duration,
+        });
+      }
+      anim.subLoopAnim = subAnim;
+    }
     return anim;
   } else {
     throw new Error(`No animation exists which is named '${animName}'`);

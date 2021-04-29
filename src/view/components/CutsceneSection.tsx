@@ -16,7 +16,13 @@ export enum PortraitActiveState {
   Invisible = 'invisible',
 }
 
-type TextBoxAlign = 'left' | 'right' | 'center' | 'center-low' | 'none';
+type TextBoxAlign =
+  | 'left'
+  | 'right'
+  | 'center'
+  | 'center-low'
+  | 'center-high'
+  | 'none';
 
 const determinePortraitAnim = (
   base: string,
@@ -113,7 +119,7 @@ const TextBoxWrapper = style(
     if (props.align === 'center') {
       left = '25%';
       width = '50%';
-      height = '75%';
+      height = '50%';
       transition = 'height 0.1s, left 0.25s, transform 0.1s ease-in';
     } else if (props.align === 'center-low') {
       height = '35%';
@@ -121,6 +127,11 @@ const TextBoxWrapper = style(
       width = '50%';
     } else if (!props.visible) {
       transition = '';
+    } else if (props.align === 'center-high') {
+      left = '25%';
+      width = '50%';
+      height = '80%';
+      transition = 'height 0.1s, left 0.25s, transform 0.1s ease-in';
     }
 
     return {
@@ -293,6 +304,11 @@ const CutsceneSection = () => {
     textBoxAlign = 'center-low';
   }
 
+  // HACK, this is stupid, but I'm feeling lazy
+  if (cutscene.showBars === false) {
+    textBoxAlign = 'center-high';
+  }
+
   const isNoneSpeaker = [CutsceneSpeaker.None].includes(cutscene.speaker);
 
   const handleMouseClick = () => {
@@ -311,9 +327,11 @@ const CutsceneSection = () => {
       fixed={!!getUiInterface().appState.arcadeGame.path}
       onClick={handleMouseClick}
     >
-      <TopBarWrapper visible={cutscene.visible && barsVisible}></TopBarWrapper>
+      <TopBarWrapper
+        visible={cutscene.visible && cutscene.showBars && barsVisible}
+      ></TopBarWrapper>
       <BottomBarWrapper
-        visible={cutscene.visible && barsVisible}
+        visible={cutscene.visible && cutscene.showBars && barsVisible}
       ></BottomBarWrapper>
       <PortraitWrapper visible={cutscene.visible && barsVisible}>
         {cutscene.portraitLeft !== '' ? (

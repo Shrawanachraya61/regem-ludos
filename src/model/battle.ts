@@ -16,6 +16,7 @@ export interface Battle {
   targetedEnemyIndex: number;
   targetedEnemyRangeIndex: number;
   isPaused: boolean;
+  template?: BattleTemplate;
 }
 
 export enum BattleEvent {
@@ -74,6 +75,13 @@ export interface BattleTemplateEnemy {
 export interface BattleTemplate {
   roomName: string;
   enemies: BattleTemplateEnemy[];
+  events?: {
+    onBattleStart?: (battle: Battle) => Promise<void>;
+    onBattleEnd?: (battle: Battle) => Promise<void>;
+    onCharacterDamaged?: (bCh: BattleCharacter) => Promise<void>;
+    onTurnEnded?: (allegiance: BattleAllegiance) => Promise<void>;
+    onAfterBattleEnded?: () => Promise<void>;
+  };
 }
 
 export enum BattlePosition {
@@ -167,21 +175,26 @@ export const battleSetActorPositions = (battle: Battle): void => {
   battle.allies.forEach((bCh, i) => {
     const ind = player.battlePositions.indexOf(bCh.ch);
     setAtMarker(bCh.ch.name, 'MarkerAlly' + (ind > -1 ? ind : i));
-    bCh.position =
-      ind < 2
-        ? BattlePosition.FRONT
-        : ind < 4
-        ? BattlePosition.MIDDLE
-        : BattlePosition.BACK;
   });
-  battle.enemies.forEach((bCh, i) => {
-    setAtMarker(bCh.ch.name, 'MarkerEnemy' + i);
-    bCh.position =
-      i < 2
-        ? BattlePosition.FRONT
-        : i < 4
-        ? BattlePosition.MIDDLE
-        : BattlePosition.BACK;
+
+  const usedPositions: Record<string, boolean> = {};
+  battle.enemies.forEach(bCh => {
+    const pos = bCh.position;
+    let offset = 0;
+
+    if (pos === BattlePosition.MIDDLE) {
+      offset = 2;
+    } else if (pos === BattlePosition.BACK) {
+      offset = 4;
+    }
+
+    const markerName = 'MarkerEnemy' + offset;
+    if (usedPositions[markerName]) {
+      setAtMarker(bCh.ch.name, 'MarkerEnemy' + (offset + 1));
+    } else {
+      usedPositions[markerName] = true;
+      setAtMarker(bCh.ch.name, markerName);
+    }
   });
 };
 
@@ -299,7 +312,9 @@ export const battleInvokeEvent = (
   eventName: BattleEvent,
   arg: any
 ) => {
-  const events = battle.subscriptions[eventName];
+  // REALLY IMPORTANT: this has to be a copy or you get bugs when an event removes
+  // itself while the event is firing.
+  const events = battle.subscriptions[eventName].slice();
   events.forEach((cb: (arg: any) => void) => {
     cb(arg);
   });
@@ -415,6 +430,7 @@ export const battlePauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
+  console.log('BATTLE PAUSE');
   (characters ?? battle.allies.concat(battle.enemies)).forEach(
     (bCh: BattleCharacter) => {
       bCh.actionTimer.pauseOverride();
@@ -432,6 +448,7 @@ export const battleUnpauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
+  console.log('BATTLE UNPAUSE');
   (characters ?? battle.allies.concat(battle.enemies)).forEach(
     (bCh: BattleCharacter) => {
       bCh.actionTimer.unpauseOverride();

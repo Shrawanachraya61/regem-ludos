@@ -52,7 +52,7 @@ export const loadSound = async (
         soundType: type,
         volumeModifier,
       };
-      console.log('sound loaded', name, url);
+      // console.log('sound loaded', name, url);
       if (type === SoundType.MUSIC) {
         console.log('Adding music track', name, getSound(name));
         musicSoundObjects[name] = getSound(name) as ISound;
@@ -88,7 +88,7 @@ export const getSound = (soundName: string): ISound | null => {
       duration: 0,
       ...soundObj,
       //soundDuration merged in from soundObj
-      audio: soundObj.audio.cloneNode(),
+      audio: soundObj.audio.cloneNode(true),
       soundName,
       lastStartTimestamp: getNow(),
     };

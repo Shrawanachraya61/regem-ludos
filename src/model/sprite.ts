@@ -133,21 +133,23 @@ const loadSpritesFromImage = (
       spriteHeight
     );
 
-    // TODO Add this back if necessary, but I think it
+    // TODO Add this back if necessary, but I think it not necessary
     // create rotated sprites:<baseSpriteName>_rN
     // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 1);
     // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 2);
     // addRotatedSprite(spriteToCanvas(sprite), baseSpriteName, 3);
 
     // create flipped sprite: <baseSpriteName>_f
-    addSprite(
-      `${baseSpriteName}${SpriteModification.FLIPPED}`,
-      createFlippedImg(spriteToCanvas(sprite)),
-      0,
-      0,
-      spriteWidth,
-      spriteHeight
-    );
+    if (hasFlippedVariant(baseSpriteName)) {
+      addSprite(
+        `${baseSpriteName}${SpriteModification.FLIPPED}`,
+        createFlippedImg(spriteToCanvas(sprite)),
+        0,
+        0,
+        spriteWidth,
+        spriteHeight
+      );
+    }
   };
 
   const numColumns = image.width / spriteWidth;
@@ -226,4 +228,22 @@ export const getSprite = (spriteName: string): Sprite => {
     return invisibleSprite;
   }
   return (loadedSprites as SpriteCollection)[spriteName];
+};
+
+const nonFlippedVariants = [
+  /props/,
+  /effect_/,
+  /control/,
+  /walls(.*)/,
+  /walls-anims/,
+];
+
+const hasFlippedVariant = (baseSpriteName: string) => {
+  for (let i = 0; i < nonFlippedVariants.length; i++) {
+    const regex = nonFlippedVariants[i];
+    if (regex.test(baseSpriteName)) {
+      return false;
+    }
+  }
+  return true;
 };

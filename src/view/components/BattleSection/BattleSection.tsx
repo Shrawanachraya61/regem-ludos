@@ -36,6 +36,7 @@ const Root = style('div', () => {
     overflow: 'hidden',
     width: '100%',
     height: '100%',
+    pointerEvents: 'none',
   };
 });
 
@@ -50,6 +51,7 @@ const CharacterInfoCardsContainer = style('div', () => {
     justifyContent: 'center',
     alignItems: 'flex-end',
     flexDirection: 'row-reverse',
+    pointerEvents: 'all',
   };
 });
 
@@ -63,6 +65,7 @@ const EnemyInfoCardsContainer = style('div', () => {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+    pointerEvents: 'all',
   };
 });
 
@@ -74,6 +77,7 @@ const UpperLeftContainer = style('div', () => {
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    pointerEvents: 'all',
   };
 });
 
@@ -88,6 +92,7 @@ const PauseButton = style('div', () => {
     textAlign: 'center',
     minWidth: '161px',
     cursor: 'pointer',
+    pointerEvents: 'all',
     '&:hover': {
       filter: 'brightness(120%)',
     },
@@ -99,6 +104,7 @@ const PauseButton = style('div', () => {
 
 const OptionsButton = style('div', () => {
   return {
+    pointerEvents: 'all',
     color: colors.WHITE,
     background: 'rgba(0, 0, 0, 0.5)',
     border: `2px solid ${colors.WHITE}`,

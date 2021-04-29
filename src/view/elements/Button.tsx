@@ -1,4 +1,7 @@
-import { colors, style, keyframes } from 'view/style';
+/* @jsx h */
+import { h } from 'preact';
+import { colors, style, keyframes, IntrinsicProps } from 'view/style';
+import CursorIcon from 'view/icons/Cursor';
 
 export enum ButtonType {
   NEUTRAL,
@@ -11,6 +14,8 @@ export enum ButtonType {
 
 interface IButtonProps {
   type: ButtonType;
+  showCursor?: boolean;
+  active?: boolean;
   selected?: boolean;
   disabled?: boolean;
 }
@@ -35,6 +40,34 @@ const pulse = keyframes({
     filter: 'brightness(100%)',
   },
 });
+
+const cursorPulse = keyframes({
+  '0%': {
+    transform: 'translateX(-10px)',
+  },
+  '20%': {
+    transform: 'translateX(-1px)',
+  },
+  '100%': {
+    transform: 'translateX(-10px)',
+  },
+});
+const CursorRoot = style('div', () => {
+  return {
+    color: colors.WHITE,
+    position: 'absolute',
+    top: '-8px',
+    left: '-32px',
+    animation: `${cursorPulse} 750ms linear infinite`,
+  };
+});
+const Cursor = (): h.JSX.Element => {
+  return (
+    <CursorRoot>
+      <CursorIcon color={colors.BLUE} />
+    </CursorRoot>
+  );
+};
 
 const Button = style(
   'div',
@@ -71,7 +104,25 @@ const Button = style(
       filter: props.disabled ? 'unset' : 'brightness(80%)',
       transform: 'translateY(2px)',
     },
+    ...(props.active
+      ? {
+          filter: props.disabled ? 'unset' : 'brightness(80%)',
+          transform: 'translateY(2px)',
+        }
+      : {}),
   })
 );
 
-export default Button;
+export default (props: IButtonProps & IntrinsicProps) => {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        pointerEvents: props.disabled ? 'none' : 'unset',
+      }}
+    >
+      {props.showCursor ? <Cursor /> : null}
+      <Button {...props} />
+    </div>
+  );
+};

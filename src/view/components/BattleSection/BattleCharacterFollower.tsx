@@ -141,6 +141,7 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
 
   const handleEnemyClick = () => {
     if (props.isEnemy) {
+      console.log('ACTING ALLEGIANCE', battleGetActingAllegiance(battle));
       if (battleGetActingAllegiance(battle) === null) {
         if (!targetedByMelee) {
           const wasTargetSet = battleSetEnemyTargetIndex(

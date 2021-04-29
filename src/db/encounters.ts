@@ -1,7 +1,19 @@
-import { BattleTemplate, BattlePosition, BattleStats } from 'model/battle';
+import {
+  BattleTemplate,
+  BattlePosition,
+  BattleStats,
+  Battle,
+  battleIsVictory,
+  battleUnsubscribeEvent,
+  BattleEvent,
+  battleSubscribeEvent,
+} from 'model/battle';
 import { BATTLE_AI_ATTACK } from 'controller/battle-ai';
 import { get as getEnemy } from './enemies';
 import { CharacterTemplate } from 'model/character';
+import { callScriptDuringBattle } from 'controller/battle-management';
+import { callScriptDuringOverworld } from 'controller/overworld-management';
+import { getCurrentBattle } from 'model/generics';
 
 export const varyStats = (chTemplate: CharacterTemplate): CharacterTemplate => {
   const stats = chTemplate.stats as BattleStats;
@@ -92,11 +104,40 @@ export const init = () => {
     roomName: 'battleTut1',
     enemies: [
       {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE_EASY'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+    events: {
+      onBattleStart: async (battle: Battle) => {
+        await callScriptDuringBattle('floor1-tut-vr2-battle1-on-start');
+      },
+      onAfterBattleEnded: async () => {
+        await callScriptDuringOverworld('floor1-tut-vr2-battle1-on-after-end');
+      },
+    },
+  };
+
+  exp.ENCOUNTER_TUT1_5 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_STAGGERABLE'),
         position: BattlePosition.FRONT,
         ai: BATTLE_AI_ATTACK,
       },
     ],
+    events: {
+      onBattleStart: async (battle: Battle) => {
+        await callScriptDuringBattle('floor1-tut-vr2-battle1_5-on-start');
+      },
+      onAfterBattleEnded: async () => {
+        await callScriptDuringOverworld(
+          'floor1-tut-vr2-battle1_5-on-after-end'
+        );
+      },
+    },
   };
 
   exp.ENCOUNTER_TUT2 = {
@@ -109,10 +150,45 @@ export const init = () => {
       },
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_SPEEDY'),
-        position: BattlePosition.FRONT,
+        position: BattlePosition.BACK,
         ai: BATTLE_AI_ATTACK,
       },
     ],
+    events: {
+      onBattleStart: async (battle: Battle) => {
+        await callScriptDuringBattle('floor1-tut-vr2-battle2-on-start');
+      },
+      onAfterBattleEnded: async () => {
+        await callScriptDuringOverworld('floor1-tut-vr2-battle2-on-after-end');
+      },
+    },
+  };
+
+  exp.ENCOUNTER_TUT3 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MAGE'),
+        position: BattlePosition.MIDDLE,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+    events: {
+      onBattleStart: async (battle: Battle) => {
+        await callScriptDuringBattle('floor1-tut-vr2-battle3-on-start');
+      },
+      onBattleEnd: async (battle: Battle) => {
+        await callScriptDuringBattle('floor1-tut-vr2-battle3-on-end');
+      },
+      onAfterBattleEnded: async () => {
+        await callScriptDuringOverworld('floor1-tut-vr2-battle3-on-after-end');
+      },
+    },
   };
 
   exp.ENCOUNTER_TUT4 = {
@@ -152,11 +228,74 @@ export const init = () => {
     ],
   };
 
+  exp.ENCOUNTER_TUT6 = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_ARMORED'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MAGE'),
+        position: BattlePosition.MIDDLE,
+        ai: BATTLE_AI_ATTACK,
+      },
+      // {
+      //   chTemplate: getEnemy('TUT_ROBOT_MELEE_SPEEDY'),
+      //   position: BattlePosition.MIDDLE,
+      //   ai: BATTLE_AI_ATTACK,
+      // },
+      // {
+      //   chTemplate: getEnemy('TUT_ROBOT_MAGE'),
+      //   position: BattlePosition.BACK,
+      //   ai: BATTLE_AI_ATTACK,
+      // },
+    ],
+  };
+
   exp.ENCOUNTER_TUT_BOSS = {
     roomName: 'battleTut1',
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
+  exp.ENCOUNTER_TEST_EVENTS = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+    events: {
+      onBattleStart: async (battle: Battle) => {
+        await callScriptDuringBattle('test-fight-event-start');
+      },
+      onBattleEnd: async (battle: Battle) => {
+        if (battleIsVictory(battle)) {
+          await callScriptDuringBattle('test-fight-event-end');
+        }
+      },
+    },
+  };
+
+  exp.ENCOUNTER_TEST_MULTI_DEATH = {
+    roomName: 'battleTut1',
+    enemies: [
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE_REALLY_EASY'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+      {
+        chTemplate: getEnemy('TUT_ROBOT_MELEE_REALLY_EASY'),
         position: BattlePosition.FRONT,
         ai: BATTLE_AI_ATTACK,
       },

@@ -18,6 +18,7 @@ interface ICharacterFollowerProps extends IntrinsicProps {
 const Root = style('div', () => {
   return {
     position: 'absolute',
+    pointerEvents: 'all',
     // border: '2px solid white',
   };
 });

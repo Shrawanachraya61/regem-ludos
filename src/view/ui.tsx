@@ -18,6 +18,7 @@ import CutsceneSection from './components/CutsceneSection';
 import ArcadeCabinet from './components/ArcadeCabinet';
 import CutsceneChoicesSection from './components/CutsceneChoicesSection';
 import SettingsSection from './components/SettingsSection';
+import ModalSection from './components/ModalSection';
 
 interface UIInterface {
   appState: AppState;
@@ -89,6 +90,9 @@ const App = () => {
       }
       case AppSection.Settings: {
         return <SettingsSection key={key} />;
+      }
+      case AppSection.Modal: {
+        return <ModalSection key={key} />;
       }
       case AppSection.Debug: {
         return <Debug />;

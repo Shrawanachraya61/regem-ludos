@@ -90,6 +90,7 @@ export const pause = () => {
   const battle = getCurrentBattle();
   if (battle) {
     battlePauseTimers(battle);
+    battle.isPaused = true;
   }
 };
 
@@ -131,6 +132,7 @@ export const unpause = () => {
   const battle = getCurrentBattle();
   if (battle) {
     battleUnpauseTimers(battle);
+    battle.isPaused = false;
   }
 };
 
@@ -141,6 +143,11 @@ export const runMainLoop = async (): Promise<void> => {
   (window as any).running = true;
   const canvasOuter = getCanvas('outer');
   const outerCtx: any = canvasOuter.getContext('2d');
+
+  // for debugging
+  // const reLoop = () =>
+  //   (window as any).running && setTimeout(() => loop(performance.now()), 100);
+  const reLoop = () => (window as any).running && requestAnimationFrame(loop);
 
   const loop = (now: number) => {
     const dt = now - prevNow;
@@ -178,7 +185,7 @@ export const runMainLoop = async (): Promise<void> => {
         drawRoom(room, [roomXOffset, roomYOffset], undefined, true);
       }
 
-      if ((window as any).running) requestAnimationFrame(loop);
+      reLoop();
       // if ((window as any).running)
       //   setTimeout(() => loop(performance.now()), 100); // for debugging
       return;
@@ -281,7 +288,7 @@ export const runMainLoop = async (): Promise<void> => {
     const ps = getGlobalParticleSystem();
     if (ps) {
       ps.updateDraw();
-      if ((window as any).running) requestAnimationFrame(loop);
+      reLoop();
       return;
     }
 
@@ -297,8 +304,7 @@ export const runMainLoop = async (): Promise<void> => {
       cb();
     }
 
-    if ((window as any).running) requestAnimationFrame(loop);
-    // if ((window as any).running) setTimeout(() => loop(performance.now()), 100); // for debugging
+    reLoop();
   };
   loop(startTime);
 };

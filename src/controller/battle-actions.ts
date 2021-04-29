@@ -73,9 +73,6 @@ import { Animation } from 'model/animation';
 import { h } from 'preact';
 import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
-
-import { init as initTutorial } from 'controller/BattleActions/tutorial';
-import { init as initParty } from 'controller/BattleActions/party';
 import { playSoundName } from 'model/sound';
 
 export interface BattleAction {
@@ -432,7 +429,80 @@ export const doRange = async (
   }
 };
 
+export const doSpell = async (
+  battle: Battle,
+  action: BattleAction,
+  bCh: BattleCharacter,
+  target: BattleCharacter,
+  {
+    particleText,
+    particleTemplate,
+    baseDamage,
+    baseStagger,
+  }: {
+    particleText: string;
+    particleTemplate: ParticleTemplate;
+    baseDamage: number;
+    baseStagger: number;
+  }
+) => {
+  console.log('DO SPELL', action, bCh);
+
+  await moveForward(battle, bCh);
+  const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+  roomAddParticle(
+    getCurrentRoom(),
+    createStatusParticle(particleText, centerPx, centerPy, 'red')
+  );
+  await timeoutPromise(150);
+  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_SPELL);
+  await timeoutPromise(150);
+  // const ch = bCh.ch;
+  // const allegiance = battleGetAllegiance(battle, ch);
+  // let target: BattleCharacter | null;
+  // if (allegiance === BattleAllegiance.ALLY) {
+  //   target = battleGetTargetedEnemy(battle, BattleActionType.RANGED);
+  // } else {
+  //   target = battleGetNearestAttackable(battle, allegiance);
+  // }
+  if (target) {
+    const [targetPx, targetPy] = characterGetPosCenterPx(target.ch);
+    console.log('TARGETTING WITH SPELL', target);
+    roomAddParticle(
+      battle.room,
+      particleCreateFromTemplate([targetPx, targetPy], particleTemplate)
+    );
+    // await timeoutPromise(150);
+
+    applyMagicDamage(battle, bCh, target, baseDamage, baseStagger);
+    await timeoutPromise(2000);
+  }
+};
+
 export const BattleActions: { [key: string]: BattleAction } = {
+  AdaTrainingSwing: {
+    name: 'Training Swing',
+    description: 'Jump to target and swing your weapon.',
+    cooldown: 1000,
+    type: BattleActionType.SWING,
+    meta: {
+      swings: [SwingType.NORMAL, SwingType.NORMAL],
+      icon: SwordIcon,
+    },
+    cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+      const baseDamage = 1;
+      const baseStagger = 5;
+      const target = getTarget(battle, bCh);
+      if (target) {
+        await doSwing(battle, this, bCh, target, {
+          baseDamage,
+          baseStagger,
+          swingType:
+            this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+        });
+      }
+    },
+  },
   Swing: {
     name: 'Swing',
     description: 'Jump to target and swing your weapon.',
@@ -528,64 +598,4 @@ export const BattleActions: { [key: string]: BattleAction } = {
       await endAction(bCh);
     },
   },
-  Fireball: {
-    name: 'Fireball',
-    description: 'Shoot a big fireball.',
-    cooldown: 1000,
-    type: BattleActionType.CAST,
-    meta: {
-      castTime: 3000,
-      icon: SwordIcon,
-    },
-    cb: async (battle: Battle, bCh: BattleCharacter) => {
-      await beginAction(bCh);
-      setCasting(bCh, {
-        castTime: BattleActions.Fireball.meta.castTime as number,
-        onCast: async () => {
-          const baseDamage = 15;
-          const baseStagger = 15;
-
-          await moveForward(battle, bCh);
-          const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
-          roomAddParticle(
-            getCurrentRoom(),
-            createStatusParticle('Fireball!', centerPx, centerPy, 'red')
-          );
-          await timeoutPromise(150);
-          characterSetAnimationState(bCh.ch, AnimationState.BATTLE_SPELL);
-          await timeoutPromise(150);
-          const ch = bCh.ch;
-          const allegiance = battleGetAllegiance(battle, ch);
-          let target: BattleCharacter | null;
-          if (allegiance === BattleAllegiance.ALLY) {
-            target = battleGetTargetedEnemy(battle, BattleActionType.RANGED);
-          } else {
-            target = battleGetNearestAttackable(battle, allegiance);
-          }
-          if (target) {
-            const [targetPx, targetPy] = characterGetPosCenterPx(target.ch);
-            roomAddParticle(
-              battle.room,
-              particleCreateFromTemplate(
-                [targetPx, targetPy],
-                EFFECT_TEMPLATE_FIREBALL
-              )
-            );
-            // await timeoutPromise(150);
-
-            applyMagicDamage(battle, bCh, target, baseDamage, baseStagger);
-            await timeoutPromise(2000);
-          }
-        },
-        onInterrupt: async () => {},
-      });
-      await endAction(bCh);
-    },
-  },
-};
-
-export const init = () => {
-  Object.assign(BattleActions, initTutorial());
-  Object.assign(BattleActions, initParty());
-  console.log('BATTLE ACTIONS', BattleActions);
 };

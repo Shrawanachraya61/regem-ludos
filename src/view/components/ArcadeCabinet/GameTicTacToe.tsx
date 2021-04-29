@@ -14,6 +14,7 @@ import { createAndCallScript, callScript } from 'controller/scene-management';
 import {
   disableKeyUpdate,
   enableKeyUpdate,
+  getCurrentOverworld,
   getCurrentScene,
 } from 'model/generics';
 import { modifyTickets } from 'controller/scene-commands';
@@ -69,11 +70,14 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
       const scene = getCurrentScene();
       hideArcadeGame();
       disableKeyUpdate();
+      getCurrentOverworld().triggersEnabled = false;
       await callScript(scene, 'floor1-atrium-TicTacToeGirl-complete');
+      getCurrentOverworld().triggersEnabled = true;
       enableKeyUpdate();
     } else if (score > -1) {
       // player won
       disableKeyUpdate();
+      getCurrentOverworld().triggersEnabled = false;
       await createAndCallScript(
         scene,
         `
@@ -81,6 +85,7 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
         +modifyTickets(${score});
         +endConversation();`
       );
+      getCurrentOverworld().triggersEnabled = true;
       enableKeyUpdate();
       hideSection(AppSection.Cutscene);
     }

@@ -45,8 +45,9 @@ import {
   Facing,
   characterSetTransform,
   characterGetPos,
+  characterSetPos,
 } from 'model/character';
-import { roomAddParticle, roomAddCharacter } from 'model/room';
+import { roomAddParticle, roomAddCharacter, Room } from 'model/room';
 import { getRoom } from 'db/overworlds';
 import {
   setCurrentRoom,
@@ -66,6 +67,7 @@ import {
   showMarkers,
   setGlobalParticleSystem,
   getCurrentPlayer,
+  getCurrentOverworld,
 } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
 import {
@@ -82,6 +84,7 @@ import { getRandBetween, Point3d, timeoutPromise } from 'utils';
 import { AppSection } from 'model/store';
 import {
   hideSection,
+  hideSections,
   setBattleCharacterIndexSelected,
   showSection,
 } from 'controller/ui-actions';
@@ -112,6 +115,7 @@ import {
   playSoundName,
   stopCurrentMusic,
 } from 'model/sound';
+import { overworldShow } from 'model/overworld';
 
 export const transitionToBattle = async (
   player: Player,
@@ -122,7 +126,11 @@ export const transitionToBattle = async (
   stopCurrentMusic(500);
 
   if (skipIntro) {
-    initiateBattle(player, template);
+    const battle = initiateBattle(player, template);
+    if (template.events?.onBattleStart) {
+      await template.events?.onBattleStart(battle);
+    }
+    showSection(AppSection.BattleUI, true);
     return;
   }
 
@@ -133,9 +141,6 @@ export const transitionToBattle = async (
     fadeOut(100, true);
     playMusic('music_battle1', true);
   }, 1250);
-  // setTimeout(() => {
-  //   playMusic('music_battle1', true);
-  // }, 500);
   setTimeout(() => {
     setGlobalParticleSystem(null);
     popKeyHandler(handler);
@@ -145,7 +150,7 @@ export const transitionToBattle = async (
 
     const jumpTimeMs = 500;
     const jumpTimeMsPostLag = 500;
-    const jumpTimeMsStaggered = 75;
+    const jumpTimeMsStaggered = 250;
     battle.allies.forEach((bCh, i) => {
       const endPoint = characterGetPos(bCh.ch);
       const startPoint = [
@@ -182,7 +187,12 @@ export const transitionToBattle = async (
         (500 + battle.allies.length * jumpTimeMsStaggered) +
         jumpTimeMsPostLag
     ).then(() => {
-      battleUnpauseTimers(battle);
+      showSection(AppSection.BattleUI, true);
+      if (template.events?.onBattleStart) {
+        template.events?.onBattleStart(battle);
+      } else {
+        battleUnpauseTimers(battle);
+      }
     });
 
     battleSubscribeEvent(battle, BattleEvent.onCompletion, () => {
@@ -215,6 +225,7 @@ export const initiateBattle = (
   });
 
   const battle = battleCreate(room, allies, enemies);
+  battle.template = template;
 
   battle.allies.forEach(resetCooldownTimer);
   battle.enemies.forEach(resetCooldownTimer);
@@ -230,7 +241,6 @@ export const initiateBattle = (
   battleSetActorPositions(battle);
 
   pushKeyHandler(battleKeyHandler);
-  showSection(AppSection.BattleUI, true);
 
   // While you are acting, all your characters have their action timers paused.
   // This prevents infinite chaining of attacks when speed is too fast.
@@ -257,9 +267,41 @@ export const initiateBattle = (
     }
   );
 
+  if (template.events?.onCharacterDamaged) {
+    battleSubscribeEvent(
+      battle,
+      BattleEvent.onCharacterDamaged,
+      template.events?.onCharacterDamaged
+    );
+  }
+  if (template.events?.onTurnEnded) {
+    battleSubscribeEvent(
+      battle,
+      BattleEvent.onTurnEnded,
+      template.events?.onTurnEnded
+    );
+  }
+
   console.log('CREATE BATTLE', battle);
 
   return battle;
+};
+
+export const callScriptDuringBattle = async (scriptName: string) => {
+  const battle = getCurrentBattle();
+  if (battle) {
+    battle.isPaused = true;
+    const keyHandler = pushEmptyKeyHandler();
+    hideSections();
+    battlePauseTimers(battle);
+    disableKeyUpdate();
+    await callScript(getCurrentScene(), scriptName);
+    battle.isPaused = false;
+    enableKeyUpdate();
+    popKeyHandler(keyHandler);
+    battleUnpauseTimers(battle);
+    showSection(AppSection.BattleUI, true);
+  }
 };
 
 export const battleKeyHandler = async (ev: KeyboardEvent) => {
@@ -413,6 +455,7 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   // no more allegiance is acting
   if (battleGetActingAllegiance(battle) === null) {
     const defeatedCharacters = battleGetDefeatedCharacters(battle);
+    console.log('NO MORE ALLEGIANCE IS ACTING', defeatedCharacters);
     if (defeatedCharacters.length) {
       const particleDuration = 1500;
       for (let i = 0; i < defeatedCharacters.length; i++) {
@@ -638,6 +681,8 @@ export const applyMagicDamage = (
   if (battleCharacterIsStaggered(victim)) {
     particlePostfix = '!';
     damage *= 2;
+  } else if (victim.armor > 0) {
+    applyArmorDamage(battle, victim, damage, false);
   }
   applyStaggerDamage(victim, staggerDamage);
 
@@ -721,7 +766,6 @@ export const interruptCast = (bCh: BattleCharacter) => {
 export const completeCast = async (bCh: BattleCharacter) => {
   const battle = getCurrentBattle();
   const actingAllegiance = battleGetActingAllegiance(battle);
-  console.log('COMPLETE CAST ALLEGIANCE: ', actingAllegiance);
   if (
     actingAllegiance === null ||
     actingAllegiance === battleGetAllegiance(battle, bCh.ch)
@@ -773,6 +817,67 @@ export const applyDamage = (
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterDamaged, bCh);
 };
 
+export const getReturnToOverworldBattleCompletionCB = (
+  oldRoom: Room,
+  leaderPos: Point3d,
+  leaderFacing: Facing,
+  template: BattleTemplate
+) => {
+  return () => {
+    console.log('BATTLE COMPLETED!');
+    fadeOut(500, true);
+    timeoutPromise(500).then(() => {
+      fadeIn(500, true);
+      setCurrentBattle(null);
+      setCurrentRoom(oldRoom);
+      showSection(AppSection.Debug, true);
+      overworldShow(getCurrentOverworld());
+      const player = getCurrentPlayer();
+      characterSetPos(player.leader, leaderPos);
+      characterSetFacing(player.leader, leaderFacing);
+      if (template.events?.onAfterBattleEnded) {
+        template.events?.onAfterBattleEnded();
+      }
+    });
+  };
+};
+
+const checkBattleCompletion = async (battle: Battle) => {
+  if (battleIsVictory(battle)) {
+    hideSections();
+    battle.isCompleted = true;
+    popKeyHandler(battleKeyHandler);
+    battlePauseActionTimers(battle);
+    // HACK: last enemy remains without this for some reason
+    if (battle.template?.events?.onBattleEnd) {
+      await battle.template?.events?.onBattleEnd(battle);
+    }
+
+    console.log('VICTORY');
+    stopCurrentMusic();
+    playSoundName('fanfare');
+    timeoutPromise(2800).then(() => {
+      playMusic('music_battle_victory', true);
+    });
+    showSection(AppSection.BattleVictory, true);
+    await timeoutPromise(250);
+    for (const i in battle.allies) {
+      characterSetAnimationState(
+        battle.allies[i].ch,
+        AnimationState.BATTLE_FLOURISH
+      );
+    }
+  } else if (battleIsLoss(battle)) {
+    hideSections();
+    battle.isCompleted = true;
+    popKeyHandler(battleKeyHandler);
+    battlePauseActionTimers(battle);
+    await timeoutPromise(2000);
+    console.log('DEFEAT!');
+    showSection(AppSection.BattleDefeated, true);
+  }
+};
+
 export const updateBattle = (battle: Battle): void => {
   for (let i = 0; i < battle.allies.length; i++) {
     const bCh = battle.allies[i];
@@ -792,34 +897,6 @@ export const updateBattle = (battle: Battle): void => {
   }
 
   if (!battle.isCompleted) {
-    if (battleIsVictory(battle)) {
-      // HACK: last enemy remains without this for some reason
-      battle.isCompleted = true;
-      popKeyHandler(battleKeyHandler);
-      const showVictory = async () => {
-        console.log('VICTORY');
-        stopCurrentMusic();
-        playSoundName('fanfare');
-        timeoutPromise(2800).then(() => {
-          playMusic('music_battle_victory', true);
-        });
-        showSection(AppSection.BattleVictory, true);
-        await timeoutPromise(250);
-        for (const i in battle.allies) {
-          characterSetAnimationState(
-            battle.allies[i].ch,
-            AnimationState.BATTLE_FLOURISH
-          );
-        }
-      };
-      showVictory();
-    } else if (battleIsLoss(battle)) {
-      battle.isCompleted = true;
-      showSection(AppSection.BattleDefeated, true);
-      setTimeout(() => {
-        console.log('DEFEAT!');
-        showSection(AppSection.Debug, true);
-      }, 2000);
-    }
+    checkBattleCompletion(battle);
   }
 };

@@ -57,6 +57,7 @@ export const init = () => {
   };
 
   const EFFECT_TEMPLATE_TREASURE: ParticleTemplate = {
+    duration: 1000,
     animName: 'effect_treasure_anim',
   };
 
@@ -69,13 +70,21 @@ export const init = () => {
   const EFFECT_TEMPLATE_DEAD32: ParticleTemplate = {
     animName: 'effect_dead2_anim',
     // aligns the sprite to the bottom of feet for 32x32 px sprites
-    offset: [0, -12.5],
-    opacity: 0.65,
+    offset: [8, -12.5],
+    opacity: 1,
+    duration: 2320,
+  };
+
+  const EFFECT_TEMPLATE_PORTAL_SPAWN: ParticleTemplate = {
+    animName: 'effect_dead2_anim',
+    // aligns the sprite to the bottom of feet for 32x32 px sprites
+    offset: [3, -12.5],
+    opacity: 1,
     duration: 2320,
   };
 
   const EFFECT_TEMPLATE_RING: ParticleTemplate = {
-    duration: 2000,
+    duration: 1000,
     text: 'RING!',
     useOuterCanvas: true,
     offset: [0, 8],
@@ -83,7 +92,47 @@ export const init = () => {
       size: 32,
       color: colors.YELLOW,
       align: 'center',
+      strokeColor: colors.WHITE,
     },
+  };
+
+  const EFFECT_TEMPLATE_GIGGLE: ParticleTemplate = {
+    duration: 750,
+    text: 'Ha',
+    useOuterCanvas: true,
+    offset: [0, -16],
+    textParams: {
+      size: 24,
+      color: colors.WHITE,
+      align: 'center',
+      strokeColor: colors.BLACK,
+    },
+  };
+
+  const EFFECT_TEMPLATE_SIGH: ParticleTemplate = {
+    duration: 1500,
+    text: '*Sigh*',
+    useOuterCanvas: true,
+    offset: [4, -16],
+    textParams: {
+      size: 24,
+      color: colors.WHITE,
+      align: 'center',
+      strokeColor: colors.BLACK,
+    },
+  };
+
+  const EFFECT_TEMPLATE_VR_PORTAL: ParticleTemplate = {
+    animName: 'effect_vr_anim',
+    duration: 5000,
+    scale: 4,
+    offset: [0, -32],
+  };
+
+  const EFFECT_TEMPLATE_SPAWN: ParticleTemplate = {
+    animName: 'effect_spawn',
+    duration: 1000,
+    // offset: [0, -32],
   };
 
   Object.assign(exp, {
@@ -99,5 +148,10 @@ export const init = () => {
     EFFECT_TEMPLATE_AGGROED,
     EFFECT_TEMPLATE_DEAD32,
     EFFECT_TEMPLATE_RING,
+    EFFECT_TEMPLATE_GIGGLE,
+    EFFECT_TEMPLATE_SIGH,
+    EFFECT_TEMPLATE_VR_PORTAL,
+    EFFECT_TEMPLATE_PORTAL_SPAWN,
+    EFFECT_TEMPLATE_SPAWN,
   });
 };

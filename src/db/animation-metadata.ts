@@ -52,6 +52,17 @@ export const init = () => {
       },
     ],
   };
+  exp.ada_enter_vr_portal = {
+    sounds: [],
+  };
+  // every grey frame
+  for (let i = 13; i <= 27; i += 2) {
+    exp?.ada_enter_vr_portal?.sounds?.push({
+      soundName: 'vr_portal_beep',
+      frame: i,
+    });
+  }
+
   exp.conscience_battle_ranged_left_f = {
     strikeFrame: 5,
     rangedParticleSpawnOffset: [0, 0],
@@ -136,6 +147,24 @@ export const init = () => {
       {
         soundName: 'battle_swing1',
         frame: 3,
+      },
+    ],
+  };
+  exp.tile_vr_portal_active = {
+    loopFromFrame: 5,
+    sounds: [
+      {
+        soundName: 'vr_portal_activate',
+        frame: 0,
+      },
+    ],
+  };
+  exp.tile_vr_portal_passive = {
+    loopFromFrame: 5,
+    sounds: [
+      {
+        soundName: 'vr_portal_deactivate',
+        frame: 0,
       },
     ],
   };

@@ -168,7 +168,11 @@
   Atrium Employee Jason: "Here you are!"
   +acquireItem('Haptic Bracer');
   Atrium Employee Jason: "Would you like me to run you through how to use it?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
+  +awaitChoice('Yes. (Enters Tutorial)', 'Not yet.');
+  +endConversation();
+@floor1-atrium-employee-jason-haptic-bracer-ask-question
+  Atrium Employee Jason: "Do you want me to show you how to use the Haptic Bracer?"
+  +awaitChoice('Yes. (Enters Tutorial)', 'Not yet.');
   +endConversation();
 @floor1-atrium-employee-jason-quest-not-started
   +lookAtCharacter('Atrium Employee Jason', 'Ada');

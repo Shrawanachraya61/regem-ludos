@@ -8,6 +8,7 @@ import {
   Prop,
   tilePosToWorldPos,
   roomGetDistanceToNearestWallInFacingDirection,
+  roomGetTileBelow,
 } from 'model/room';
 import {
   isoToPixelCoords,
@@ -611,6 +612,18 @@ export const drawRoom = (
     `OPos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
     20,
     194,
+    {
+      color: 'white',
+      size: 32,
+    },
+    outerCtx
+  );
+
+  const tile = roomGetTileBelow(room, [x, y]);
+  drawText(
+    `TPos: ${tile?.x.toFixed(0)}, ${tile?.y.toFixed(0)}`,
+    20,
+    224,
     {
       color: 'white',
       size: 32,

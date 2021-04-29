@@ -39,7 +39,10 @@ import {
   roomAddParticle,
 } from 'model/room';
 import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
-import { transitionToBattle } from 'controller/battle-management';
+import {
+  getReturnToOverworldBattleCompletionCB,
+  transitionToBattle,
+} from 'controller/battle-management';
 import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { createParticleAtCharacter } from 'controller/battle-actions';
@@ -131,20 +134,12 @@ const startEncounterFromRoamer = (ch: Character) => {
     transitionToBattle(
       player,
       encounter,
-      () => {
-        console.log('BATTLE COMPLETED!');
-        fadeOut(500, true);
-        timeoutPromise(500).then(() => {
-          fadeIn(500, true);
-          setCurrentBattle(null);
-          setCurrentRoom(oldRoom);
-          showSection(AppSection.Debug, true);
-          overworldShow(getCurrentOverworld());
-          const player = getCurrentPlayer();
-          characterSetPos(player.leader, leaderPos);
-          characterSetFacing(player.leader, leaderFacing);
-        });
-      },
+      getReturnToOverworldBattleCompletionCB(
+        oldRoom,
+        leaderPos,
+        leaderFacing,
+        encounter
+      ),
       false
     );
   } else {

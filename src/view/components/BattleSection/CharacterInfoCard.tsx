@@ -360,7 +360,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
           <EVALabel>EVA: {EVA}%</EVALabel>
         </TopRowContainer>
         <PrimaryRowContainer id="primary-row-ctr">
-          <ArmorInfoContainer>ARMOR</ArmorInfoContainer>
+          <ArmorInfoContainer></ArmorInfoContainer>
           <PrimaryRoot
             id="primary-root"
             onClick={handlePrimaryClick}

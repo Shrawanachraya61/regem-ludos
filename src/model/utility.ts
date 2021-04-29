@@ -79,7 +79,9 @@ export class Timer {
   }
 
   isComplete(): boolean {
-    return getNow() - this.timestampStart >= this.duration;
+    return (
+      !this.pausedOverridden && getNow() - this.timestampStart >= this.duration
+    );
   }
 
   onCompletion(): Promise<void> {

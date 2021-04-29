@@ -15,8 +15,10 @@ export interface Overworld {
   visible: boolean;
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
+  playerIsCollidingWithInteractable: boolean;
   loadTriggerName?: string;
   timers: Timer[];
+  stepTimer: Timer;
   // triggers: Trigger
 }
 
@@ -47,9 +49,12 @@ export const createOverworldFromTemplate = (
     visible: true,
     triggersEnabled: true,
     characterCollisionEnabled: true,
+    playerIsCollidingWithInteractable: false,
     loadTriggerName: template.loadTriggerName,
     timers: [] as Timer[],
+    stepTimer: new Timer(50),
   };
+  overworld.stepTimer.start();
   return overworld;
 };
 

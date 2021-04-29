@@ -1,5 +1,5 @@
 import { OverworldTemplate } from 'model/overworld';
-import { Room, createRoom } from 'model/room';
+import { Room, createRoom, roomCopy } from 'model/room';
 import { colors } from 'view/style';
 
 import * as battle1Json from 'map/battle1.json';
@@ -10,6 +10,10 @@ import * as test2Json from 'map/test2.json';
 import * as floor1Outside from 'map/floor1-outside.json';
 import * as floor1Atrium from 'map/floor1-atrium.json';
 import * as floor1Bowling from 'map/floor1-bowlingalley.json';
+import * as floor1TutEntrance from 'map/floor1-tut-entrance.json';
+import * as floor1TutVR1 from 'map/floor1-tut-vr1.json';
+import * as floor1TutVR2 from 'map/floor1-tut-vr2.json';
+import * as floor1TutVR3 from 'map/floor1-tut-vr3.json';
 import * as floor2South from 'map/floor2-south.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
 import * as floor2North from 'map/floor2-north.json';
@@ -21,6 +25,10 @@ const overworldToRoom = {
   floor1Outside,
   floor1Atrium,
   floor1Bowling,
+  floor1TutEntrance,
+  floor1TutVR1,
+  floor1TutVR2,
+  floor1TutVR3,
   floor2South,
   floor2Cafeteria,
   floor2North,
@@ -52,7 +60,7 @@ export const getRoom = (mapName: string): Room => {
   if (!room) {
     throw new Error(`No room exists with name: "${mapName}"`);
   }
-  return room;
+  return roomCopy(room);
 };
 
 const exp: Record<
@@ -101,4 +109,7 @@ export const init = async () => {
   }
 
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
+  exp.floor1TutVR1.backgroundColor = colors.DARKBLUE;
+  exp.floor1TutVR2.backgroundColor = colors.DARKBLUE;
+  exp.floor1TutVR3.backgroundColor = colors.DARKBLUE;
 };

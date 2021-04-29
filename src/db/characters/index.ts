@@ -7,7 +7,8 @@ import {
   WeaponEquipState,
 } from 'model/character';
 
-import { init as initTutorial } from './tutorial';
+import { init as initParty } from './party';
+import { init as initTutorial } from './tutorial-roamers';
 
 const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {
@@ -31,19 +32,7 @@ export const getIfExists = (key: string): CharacterTemplate | null => {
 };
 
 export const init = () => {
-  exp.Conscience = {
-    name: 'Conscience',
-    spriteBase: 'conscience',
-    talkTrigger: '',
-    facing: Facing.LEFT_UP,
-    animationState: AnimationState.IDLE,
-    skills: [BattleActions.BowLevel1],
-    weaponEquipState: WeaponEquipState.RANGED,
-    stats: {
-      ...battleStatsCreate(),
-      HP: 35,
-    },
-  };
+  Object.assign(exp, initParty());
 
   exp.Skye = {
     name: 'Skye',
@@ -112,6 +101,7 @@ export const init = () => {
     talkTrigger: 'floor1-atrium-employee-jason',
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
+    speed: 1,
   };
 
   Object.assign(exp, initTutorial());

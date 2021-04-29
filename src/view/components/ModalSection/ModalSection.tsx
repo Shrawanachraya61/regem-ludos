@@ -1,0 +1,226 @@
+/* @jsx h */
+import { h } from 'preact';
+import { hideSection } from 'controller/ui-actions';
+import { AppSection, ModalSection } from 'model/store';
+import DialogBox from 'view/elements/DialogBox';
+import { style } from 'view/style';
+import { getUiInterface } from 'view/ui';
+import { playSound } from 'controller/scene-commands';
+
+const TUTORIAL_MAX_WIDTH = '500px';
+
+interface ICustomModalProps {
+  onClose: () => void;
+}
+
+const CenterAligned = style('div', () => {
+  return {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+  };
+});
+
+const TutorialAttackModal = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>Welcome to the Regem Ludos Battle System!</p>
+      <p>
+        To attack an enemy, wait for the action bar to fill up, then click the
+        character portrait or press the action button corresponding to that
+        character.
+      </p>
+      <CenterAligned>
+        <img
+          src="res/img/tutorial-ada-waiting-ready.png"
+          alt="tutorial-image"
+        ></img>
+      </CenterAligned>
+    </DialogBox>
+  );
+};
+
+const TutorialPausing = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        At any time you can pause the game via the button in the top left or by
+        pressing <b>Spacebar.</b>
+      </p>
+      <p>
+        When the game is paused, you can see information about the currently
+        selected actions for your party.
+      </p>
+    </DialogBox>
+  );
+};
+
+const TutorialAttackAmounts = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        Ada currently has a <b>Swing</b> action equipped with two attacks.
+      </p>
+      <CenterAligned>
+        <img
+          src="res/img/tutorial-training-swing.png"
+          alt="tutorial-image"
+        ></img>
+      </CenterAligned>
+      <p>
+        A <b>Swing</b> action will cause Ada to jump to the character targeted
+        by the yellow sword symbol and initiate an attack. This consumes the
+        first attack.
+      </p>
+      <p>
+        For a short time afterwards, the action button can be pressed again to
+        consume the next attack.
+      </p>
+      <p>
+        This can be repeated until all the attacks specified on the action are
+        consumed.
+      </p>
+    </DialogBox>
+  );
+};
+
+const TutorialStagger = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        STAGGER is an important mechanic in the Regem Ludos Arcade Battle
+        System!
+      </p>
+      <p>
+        Below the HP bar of each character is a STAG gauge. This gage fills when
+        the character is hit.
+      </p>
+      <p>If this gauge completely fills, then the character is STAGGERED</p>
+      <p>
+        While STAGGERED, a character takes double damage and their action bar is
+        reset.
+      </p>
+    </DialogBox>
+  );
+};
+
+const TutorialBackRow = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        Characters equipped with a <b>Swing</b> action can only target
+        characters in the first row. Only when characters in the first row have
+        been defeated can a character target the back rows with a <b>Swing</b>{' '}
+        action.
+      </p>
+      <p>
+        However, a character equipped with a <b>Shoot</b> action can target any
+        character in the battle.
+      </p>
+      <p>
+        Characters with a <b>Shoot</b> action will target the character
+        indicated by the spinning, red circle. <b>Shoot</b> actions typically
+        inflict less damage, but are especially useful at chipping down enemies
+        on the back line.
+      </p>
+    </DialogBox>
+  );
+};
+
+const TutorialMagic = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        Some enemies are able to use a <b>Magic</b> action. These abilities are
+        usually very powerful and may also have a wide range of effects.
+      </p>
+      <p>
+        To use a <b>Magic</b> action, however, a character must prepare the
+        action first by entering into a CASTING state. During this state, a
+        character cannot act until the CASTING is complete, or that character is
+        interrupted. When a character is interrupted, the spell is stopped the
+        character's action timer is reset.
+      </p>
+      <p>
+        While a character is CASTING, they can be interrupted by taking damage
+        from a character with a <b> Swing </b> action. A <b>Ranged</b> action
+        does not interrupt a cast unless it otherwise states on the action
+        description.
+      </p>
+    </DialogBox>
+  );
+};
+
+const Modal = () => {
+  const modalState = getUiInterface()?.appState.modal;
+
+  const section = modalState?.section;
+  const onClose = modalState?.onClose;
+
+  const handleClose = () => {
+    hideSection(AppSection.Modal);
+    playSound('menu_close');
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  let elem: any = null;
+
+  switch (section) {
+    case ModalSection.TUTORIAL_ATTACK: {
+      elem = <TutorialAttackModal onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_PAUSING: {
+      elem = <TutorialPausing onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_ATTACK_AMOUNTS: {
+      elem = <TutorialAttackAmounts onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_STAGGER: {
+      elem = <TutorialStagger onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_BACK_ROW: {
+      elem = <TutorialBackRow onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_MAGIC: {
+      elem = <TutorialMagic onClose={handleClose} />;
+      break;
+    }
+    default: {
+      elem = <div>No Modal Specified.</div>;
+    }
+  }
+  return elem;
+};
+
+export default Modal;

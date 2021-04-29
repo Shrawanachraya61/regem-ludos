@@ -9,6 +9,7 @@ export enum AppSection {
   ArcadeCabinet = 'arcadeCabinet',
   Choices = 'choices',
   Settings = 'settings',
+  Modal = 'modal',
 }
 
 export enum CutsceneSpeaker {
@@ -22,6 +23,7 @@ export enum CutsceneSpeaker {
 
 export interface ICutsceneAppState {
   text: string;
+  showBars: boolean;
   speaker: CutsceneSpeaker;
   speakerName: string;
   visible: boolean;
@@ -54,17 +56,43 @@ export interface IBattleUiState {
   targetIndexSelected: number;
 }
 
+export interface IOverworldAppState {
+  characterText: string;
+  prevCharacterText: string;
+}
+
+export enum ModalSection {
+  TUTORIAL_ATTACK = 'TUTORIAL_ATTACK',
+  TUTORIAL_PAUSING = 'TUTORIAL_PAUSING',
+  TUTORIAL_ATTACK_AMOUNTS = 'TUTORIAL_ATTACK_AMOUNTS',
+  TUTORIAL_STAGGER = 'TUTORIAL_STAGGER',
+  TUTORIAL_BACK_ROW = 'TUTORIAL_BACK_ROW',
+  TUTORIAL_MAGIC = 'TUTORIAL_MAGIC',
+}
+
+export interface IModalState {
+  section: ModalSection;
+  onClose: () => void;
+}
+
 export interface AppState {
   sections: AppSection[];
+  overworld: IOverworldAppState;
   cutscene: ICutsceneAppState;
   battle: IBattleUiState;
   arcadeGame: IArcadeCabinetState;
   choices: IChoicesState;
+  modal: IModalState;
 }
 
 export const AppStateInitial: AppState = {
   sections: [AppSection.Debug] as AppSection[],
+  overworld: {
+    characterText: '',
+    prevCharacterText: '',
+  },
   cutscene: {
+    showBars: true,
     text: '',
     speaker: CutsceneSpeaker.None,
     speakerName: '',
@@ -93,5 +121,9 @@ export const AppStateInitial: AppState = {
   },
   choices: {
     choiceTexts: [],
+  },
+  modal: {
+    section: ModalSection.TUTORIAL_ATTACK,
+    onClose: () => {},
   },
 };

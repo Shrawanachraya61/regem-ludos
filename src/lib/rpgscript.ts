@@ -86,6 +86,7 @@ export function formatArgs(args: string[]) {
 
 export enum TriggerType {
   STEP = 'step',
+  STEP_FIRST = 'step-first',
   ACTION = 'action',
 }
 

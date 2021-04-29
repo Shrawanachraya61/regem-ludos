@@ -113,25 +113,44 @@ export const createTileRenderObject = (
   tile: Tile,
   sortYOffset?: number
 ): RenderObject => {
-  let [px, py] = isoToPixelCoords(
+  const pos = isoToPixelCoords(
     (tile.x * TILE_WIDTH) / 2,
     (tile.y * TILE_HEIGHT) / 2
   );
+  const px = pos[0];
+  let py = pos[1];
   const origPy = py;
   py -= tile.tileHeight - 32;
+  const localTileIndex = parseFloat(
+    tile.sprite.slice(tile.sprite.lastIndexOf('_') + 1)
+  );
+  const isFloor = tile.sprite.indexOf('floors') > -1;
+  // corrects for the tile height, which can be any height
+  const sortY =
+    py +
+    (tile.tileHeight - 32) +
+    (tile.tileHeight > 32 ? 16 + 4 : 16) +
+    (sortYOffset ?? 0);
+  let sprite = tile.sprite;
+  if (isFloor) {
+    // if this is a phat tile that needs to be pushed down instead of up.
+    if (!isNaN(localTileIndex) && localTileIndex >= 56) {
+      py += 16;
+    }
+    // the first tile is just a skeleton box useful for marking empty space in Tiled and
+    // it should not actually be rendered in the game.
+    if (tile.sprite === 'floors_0') {
+      sprite = 'invisible';
+    }
+  }
   return {
-    sprite: tile.sprite,
+    sprite,
     origPy,
     px,
     py,
     highlighted: tile.highlighted,
-    isFloor: tile.sprite.indexOf('floors') > -1,
-    // corrects for the tile height, which can be any height
-    sortY:
-      py +
-      (tile.tileHeight - 32) +
-      (tile.tileHeight > 32 ? 16 + 4 : 16) +
-      (sortYOffset ?? 0),
+    isFloor,
+    sortY,
     visible: true,
   };
 };

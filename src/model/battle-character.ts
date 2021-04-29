@@ -157,6 +157,9 @@ export const battleCharacterCanAct = (
   battle: Battle,
   bCh: BattleCharacter
 ): boolean => {
+  if (battle.isPaused) {
+    return false;
+  }
   if (battleCharacterIsActing(bCh)) {
     return false;
   }
@@ -227,7 +230,7 @@ export const battleCharacterSetAnimationStateAfterTakingDamage = (
           true
         );
       } else {
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+        battleCharacterSetAnimationIdle(bCh);
       }
     });
   }

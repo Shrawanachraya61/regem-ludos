@@ -2,6 +2,7 @@ import { randInArr } from 'utils';
 import { drawParticle, drawRect } from 'view/draw';
 import { colors } from 'view/style';
 import { getCanvas } from './canvas';
+import { getFrameMultiplier } from './generics';
 import { Particle, particleCreate, particleUpdate } from './particle';
 
 export class ParticleSystem {
@@ -24,7 +25,7 @@ export class ParticleSystem {
       const p = this.particles[i];
       this.onParticleUpdate(p);
       particleUpdate(p);
-      drawParticle(p, 1, ctx);
+      drawParticle(p, p.x, p.y, 1, ctx);
     }
     ctx.restore();
   }
@@ -39,7 +40,7 @@ export const createBattleTransitionParticleSystem = (screenshot: ImageData) => {
   const screenHeight = canvasOuter.height;
   ps.width = screenWidth;
   ps.height = screenHeight;
-  ps.clearColor = 'rgba(0, 0, 0, 0.05)';
+  ps.clearColor = `rgba(0, 0, 0, ${getFrameMultiplier() * 0.05})`;
   for (let i = 0; i < numParticles; i++) {
     const p = particleCreate();
     p.y = (-Math.random() * screenHeight) / 2;

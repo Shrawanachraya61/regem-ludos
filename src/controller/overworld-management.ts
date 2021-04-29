@@ -4,6 +4,8 @@ import {
   Tile,
   roomGetTileAt,
   roomAddCharacter,
+  Room,
+  TriggerActivator,
 } from 'model/room';
 import {
   setCurrentRoom,
@@ -55,7 +57,7 @@ import {
 } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
-import { showSection } from 'controller/ui-actions';
+import { setCharacterText, showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import {
   popKeyHandler,
@@ -77,6 +79,7 @@ export const initiateOverworld = (
   if (overworld) {
     const room = overworld.room;
     const leader = player.leader;
+    console.log('ROOM ADD CHARACTER', room, leader);
     roomAddCharacter(room, leader);
 
     setCurrentRoom(room);
@@ -97,26 +100,48 @@ export const initiateOverworld = (
       }
     }
 
-    pushKeyHandler(overworldKeyHandler);
-
+    console.log('initiateOverworld trigger', overworld.loadTriggerName);
     if (overworld.loadTriggerName) {
       try {
+        console.log('Invoke overworld trigger');
         const scriptCaller = invokeTrigger(
           getCurrentScene(),
           overworld.loadTriggerName,
           TriggerType.ACTION
         );
         if (scriptCaller !== null) {
+          console.log('calling script caller');
           callTriggerScriptCaller(scriptCaller);
+        } else {
+          console.log('no overworld script caller found for trigger');
         }
       } catch (e) {
         console.error(e);
       }
     }
 
+    overworld.playerIsCollidingWithInteractable = true;
+
     return overworld;
   }
   return null;
+};
+
+export const enableOverworldControl = () => {
+  pushKeyHandler(overworldKeyHandler);
+};
+
+export const callScriptDuringOverworld = async (scriptName: string) => {
+  const overworld = getCurrentOverworld();
+  overworldDisableTriggers(overworld);
+  disableKeyUpdate();
+  await callScript(getCurrentScene(), scriptName);
+  const possiblyDifferentOverworld = getCurrentOverworld();
+  overworldEnableTriggers(possiblyDifferentOverworld);
+  enableKeyUpdate();
+  if (possiblyDifferentOverworld.visible) {
+    showSection(AppSection.Debug, true);
+  }
 };
 
 const callTriggerScriptCaller = async (scriptCaller: () => Promise<void>) => {
@@ -124,34 +149,82 @@ const callTriggerScriptCaller = async (scriptCaller: () => Promise<void>) => {
   overworldDisableTriggers(overworld);
   disableKeyUpdate();
   await scriptCaller();
-  overworldEnableTriggers(overworld);
+  const possiblyDifferentOverworld = getCurrentOverworld();
+  overworldEnableTriggers(possiblyDifferentOverworld);
   enableKeyUpdate();
-  if (overworld.visible) {
+  if (possiblyDifferentOverworld.visible) {
     showSection(AppSection.Debug, true);
   }
 };
 
-const checkAndCallTriggerOfType = async (
-  type: TriggerType
-): Promise<boolean> => {
+const getScriptCallerForTrigger = (
+  name: string,
+  type: TriggerType,
+  dontTriggerOnce?: boolean
+) => {
+  const scriptCaller = invokeTrigger(
+    getCurrentScene(),
+    name,
+    type,
+    dontTriggerOnce
+  );
+  return scriptCaller;
+};
+
+const getCurrentlyCollidedTriggerActivators = (): TriggerActivator[] => {
   const player = getCurrentPlayer();
   const room = getCurrentRoom();
   const leader = player.leader;
+  const ret: TriggerActivator[] = [];
 
   for (let i = 0; i < room.triggerActivators.length; i++) {
     const ta = room.triggerActivators[i];
     if (characterCollidesWithRect(leader, [ta.x, ta.y, ta.width, ta.height])) {
-      const scriptCaller = invokeTrigger(getCurrentScene(), ta.name, type);
-      if (scriptCaller !== null) {
-        if (type === TriggerType.ACTION) {
-          characterSetAnimationState(leader, AnimationState.IDLE);
-        }
-        await callTriggerScriptCaller(scriptCaller);
+      ret.push(ta);
+    }
+  }
+  return ret;
+};
+
+const isCollidingWithTriggersOfType = (types: TriggerType[]) => {
+  const activators = getCurrentlyCollidedTriggerActivators();
+  for (let i = 0; i < activators.length; i++) {
+    const ta = activators[i];
+    for (let j = 0; j < types.length; j++) {
+      const type = types[j];
+      const scriptCaller = getScriptCallerForTrigger(ta.name, type, true);
+      if (scriptCaller) {
         return true;
       }
     }
   }
   return false;
+};
+
+const checkAndCallTriggerOfType = async (
+  typeOrTypes: TriggerType | TriggerType[]
+): Promise<string> => {
+  const player = getCurrentPlayer();
+  const leader = player.leader;
+
+  const types = Array.isArray(typeOrTypes) ? typeOrTypes : [typeOrTypes];
+  const activators = getCurrentlyCollidedTriggerActivators();
+  for (let i = 0; i < activators.length; i++) {
+    const ta = activators[i];
+    for (let j = 0; j < types.length; j++) {
+      const type = types[j];
+      const scriptCaller = getScriptCallerForTrigger(ta.name, type);
+      if (scriptCaller !== null) {
+        if (type === TriggerType.ACTION || type === TriggerType.STEP_FIRST) {
+          characterSetAnimationState(leader, AnimationState.IDLE);
+        }
+        await callTriggerScriptCaller(scriptCaller);
+        return ta.name;
+      }
+    }
+  }
+
+  return '';
 };
 
 const checkAndCallTalkTrigger = async (): Promise<boolean> => {
@@ -196,7 +269,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     case 'x': {
       if (overworld.triggersEnabled) {
         if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
-          checkAndCallTalkTrigger();
+          await checkAndCallTalkTrigger();
         }
       }
       break;
@@ -206,7 +279,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-fight');
+        await callScript(getCurrentScene(), 'test-tut-battle');
         if (overworld.visible) {
           showSection(AppSection.Debug, true);
         }
@@ -241,13 +314,36 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
+    case 's': {
+      if (getKeyUpdateEnabled()) {
+        console.log('DISABLE KEYS');
+        disableKeyUpdate();
+        pushEmptyKeyHandler();
+        overworldDisableTriggers(overworld);
+        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        await callScript(getCurrentScene(), 'intro');
+        // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
+        overworldEnableTriggers(getCurrentOverworld());
+        showSection(AppSection.Debug, true);
+        console.log('ENABLE KEYS');
+        popKeyHandler();
+        enableKeyUpdate();
+      }
+      break;
+    }
     case 'c': {
       if (getKeyUpdateEnabled()) {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         pushEmptyKeyHandler();
+        overworldDisableTriggers(overworld);
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'intro');
+        await callScript(
+          getCurrentScene(),
+          'floor1-tut-vr2-battle2-on-after-end'
+        );
+        // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
+        overworldEnableTriggers(getCurrentOverworld());
         showSection(AppSection.Debug, true);
         console.log('ENABLE KEYS');
         popKeyHandler();
@@ -278,6 +374,35 @@ const getFacingFromKeyState = (): Facing => {
   } else {
     return Facing.DOWN;
   }
+};
+
+export const callStepTriggers = async (overworld: Overworld) => {
+  const isStandingOnActiveStepTrigger = isCollidingWithTriggersOfType([
+    TriggerType.STEP_FIRST,
+    TriggerType.STEP,
+  ]);
+
+  if (isStandingOnActiveStepTrigger) {
+    if (overworld.playerIsCollidingWithInteractable) {
+      await checkAndCallTriggerOfType(TriggerType.STEP);
+    } else {
+      await checkAndCallTriggerOfType([
+        TriggerType.STEP_FIRST,
+        TriggerType.STEP,
+      ]);
+    }
+  }
+
+  if (
+    isStandingOnActiveStepTrigger !==
+    overworld.playerIsCollidingWithInteractable
+  ) {
+    if (!isStandingOnActiveStepTrigger) {
+      setCharacterText('');
+    }
+  }
+  overworld.playerIsCollidingWithInteractable =
+    !!getCurrentScene().currentScript || isStandingOnActiveStepTrigger;
 };
 
 export const updateOverworld = (overworld: Overworld): void => {
@@ -322,8 +447,9 @@ export const updateOverworld = (overworld: Overworld): void => {
     leader.vy = vy;
   }
 
-  if (overworld.triggersEnabled) {
-    checkAndCallTriggerOfType(TriggerType.STEP);
+  if (overworld.triggersEnabled && overworld.stepTimer.isComplete()) {
+    callStepTriggers(overworld);
+    overworld.stepTimer.start();
   }
 
   overworld.room.characters.forEach(ch => {

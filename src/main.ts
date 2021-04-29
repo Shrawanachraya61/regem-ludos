@@ -3,7 +3,7 @@ import { runMainLoop } from 'controller/loop';
 import { loadRes } from 'controller/res-loader';
 import { getCanvas, setDrawScale } from 'model/canvas';
 import { initEvents } from 'controller/events';
-import { mountUi } from 'view/ui';
+import { mountUi, renderUi } from 'view/ui';
 import { initHooks } from 'view/hooks';
 import { initScene } from 'model/scene';
 import initDb from 'db';
@@ -18,9 +18,11 @@ import {
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import OverworldSection from 'view/components/OverworldSection';
-
 import { get as getOverworld } from 'db/overworlds';
-import { initiateOverworld } from 'controller/overworld-management';
+import {
+  enableOverworldControl,
+  initiateOverworld,
+} from 'controller/overworld-management';
 import { playerCreate } from 'model/player';
 import {
   AnimationState,
@@ -33,16 +35,16 @@ import HudGamepad from 'lib/hud-gamepad';
 import { callScript } from 'controller/scene-management';
 import { getAngleTowards } from 'utils';
 import { battleStatsCreate } from 'model/battle';
-import {
-  BattleActions,
-  init as initBattleActions,
-} from 'controller/battle-actions';
+import { BattleActions } from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
 import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
 import {
   loadSettingsFromLS,
   setCurrentSettings,
 } from 'controller/save-management';
+import { awaitAllRoomProps, loadDynamicPropsTileset } from 'model/room';
+import { showModal } from 'controller/ui-actions';
+import { ModalSection } from 'model/store';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -66,24 +68,28 @@ export const main = async (): Promise<void> => {
   console.log('mount ui');
   mountUi();
 
-  initBattleActions();
-
   console.log('load rpgscript');
   initScene();
   const scene = getCurrentScene();
   await loadRPGScript('quest', scene);
-  await loadRPGScript('floor1', scene);
+  await loadRPGScript('test2', scene);
   await loadRPGScript('test', scene);
   await loadRPGScript('example', scene);
   await loadRPGScript('utils', scene);
   await loadRPGScript('floor1-atrium', scene);
+  await loadRPGScript('floor1-tut', scene);
   await loadRPGScript('intro', scene);
 
   console.log('load res');
   await loadRes();
+  // Need this loaded to load rooms, some props need height info to load properly
+  await loadDynamicPropsTileset();
 
   console.log('init db');
   await initDb();
+
+  // loading db might load some prop images dynamically, this waits for those to load
+  await awaitAllRoomProps();
 
   console.log('load tiles');
   await loadTiles();
@@ -105,21 +111,12 @@ export const main = async (): Promise<void> => {
   runMainLoop();
 
   console.log('initiate overworld');
-  const player = playerCreate({
-    name: 'Ada',
-    spriteBase: 'ada',
-    stats: {
-      ...battleStatsCreate(),
-      HP: 50,
-    },
-    facing: Facing.LEFT_DOWN,
-    animationState: AnimationState.IDLE,
-    skills: [BattleActions.AdaTrainingSwing],
-  });
-  player.leader.speed = 1;
+  const adaTemplate = getCharacter('Ada');
+  const player = playerCreate(adaTemplate);
 
   const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
   player.party.push(conscience);
+  player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
   const query = parseQuery(window.location.search);
@@ -129,8 +126,10 @@ export const main = async (): Promise<void> => {
   } else {
     initiateOverworld(player, getOverworld('TEST2'));
   }
+  enableOverworldControl();
 
   (document.getElementById('controls') as any).style.display = 'none';
+  renderUi();
 
   // HudGamepad.GamePad.setup({
   //   canvas: 'controls',

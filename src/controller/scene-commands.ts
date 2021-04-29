@@ -8,6 +8,8 @@ import {
   showConversation,
   showArcadeGame,
   showChoices,
+  setCharacterText as setCharacterTextUi,
+  showModal,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -32,6 +34,7 @@ import {
   roomAddCharacter,
   roomAddParticle,
   roomGetCharacterByName,
+  roomGetTileAt,
   roomGetTileBelow,
   roomRemoveCharacter,
 } from 'model/room';
@@ -42,9 +45,16 @@ import {
   getCurrentOverworld,
   setCameraTransform,
   getCameraTransform,
+  getCurrentBattle,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
-import { extrapolatePoint, getAngleTowards, Point, Point3d } from 'utils';
+import {
+  extrapolatePoint,
+  getAngleTowards,
+  isoToPixelCoords,
+  Point,
+  Point3d,
+} from 'utils';
 import { createAnimation, hasAnimation } from 'model/animation';
 import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
@@ -63,11 +73,19 @@ import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
 import { playSoundName } from 'model/sound';
-import { transitionToBattle } from './battle-management';
 import {
+  getReturnToOverworldBattleCompletionCB,
+  transitionToBattle,
+} from './battle-management';
+import {
+  createRiseParticle,
   createWeightedParticle,
   particleCreateFromTemplate,
+  ParticleTemplate,
 } from 'model/particle';
+import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
+import { sceneStopWaitingUntil } from 'model/scene';
+import { createTileRenderObject } from 'model/render-object';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -237,7 +255,13 @@ export const setConversation2 = (
  *
  */
 export const setConversation = (actorName: string) => {
-  startConversation(`${actorName.toLowerCase()}`);
+  startConversation(`${actorName.toLowerCase()}`, true);
+  playSoundName('dialog_woosh');
+  return waitMS(100);
+};
+
+export const setConversationWithoutBars = (actorName: string) => {
+  startConversation(`${actorName.toLowerCase()}`, false);
   playSoundName('dialog_woosh');
   return waitMS(100);
 };
@@ -487,9 +511,9 @@ export const setStorage = (key: string, value: string) => {
  * ```
  *
  */
-export const callScript = (scriptName: string) => {
+export const callScript = (scriptName: string, ...args: any[]) => {
   const scene = getCurrentScene();
-  sceneCallScript(scene, scriptName);
+  sceneCallScript(scene, scriptName, ...args);
   return true;
 };
 
@@ -704,6 +728,14 @@ export const walkToMarker = (
     console.error('Could not find target marker with name: ' + markerName);
     return;
   }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
+    return;
+  }
 
   // this offset puts the character's feet on the bottom of the marker
   const target = [
@@ -738,6 +770,14 @@ export const walkToCharacter = (
     console.error('Could not find target ch with name: ' + chName2);
     return;
   }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
+    return;
+  }
 
   const [pX, pY] = characterGetPos(ch2);
   const target = [pX + (xOffset ?? 0), pY + (yOffset ?? 0)] as Point;
@@ -769,6 +809,14 @@ export const setAtMarker = (
   }
   if (!marker) {
     console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
     return;
   }
 
@@ -815,8 +863,15 @@ export const walkToOffset = (
     console.error('Could not find character with name: ' + chName);
     return;
   }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
+    return;
+  }
 
-  // this offset puts the character's feet on the bottom of the marker
   const target = [ch.x + xOffset, ch.y + yOffset] as Point;
 
   if (skipWait) {
@@ -855,6 +910,14 @@ export const setCharacterAtMarker = (
   }
   if (!marker) {
     console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
     return;
   }
 
@@ -900,9 +963,16 @@ export const changeTileAtMarker = (
     );
     return;
   }
-
   if (!marker) {
     console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
     return;
   }
 
@@ -921,16 +991,122 @@ export const changeTileAtMarker = (
     }
 
     tile.isWall = tileTemplate.isWall ?? tile.isWall;
+    tile.isProp = tileTemplate.isProp ?? tile.isProp;
     if (tile.ro) {
       tile.ro.sprite = tileTemplate.baseSprite;
+      // if (tileTemplate.pxOffset) {
+      //   tile.ro.px = (tile.ro.px ?? 0) + tileTemplate.pxOffset[0];
+      //   tile.ro.py = (tile.ro.py ?? 0) + tileTemplate.pxOffset[1];
+      // }
+
+      // it was a wall/prop, but now it's not, so remove the floor tile beneath it.
+      // must be === false (instead of !hasFloorTile) because of the nature of undefined defaults
+      if (tile.floorTileBeneath && tileTemplate.hasFloorTile === false) {
+        const ind = room.renderObjects.indexOf(
+          tile.floorTileBeneath?.ro as any
+        );
+        if (ind > -1) {
+          room.renderObjects.splice(ind, 1);
+        }
+      }
+
       if (tile.animName !== tileTemplate.animName) {
-        tile.animName = tileTemplate.animName;
         if (tileTemplate.animName) {
-          const anim = createAnimation(tileTemplate.animName);
-          anim.start();
-          tile.ro.anim = anim;
+          tile.animName = tileTemplate.animName;
+          // const anim = createAnimation(tileTemplate.animName);
+          // anim.start();
+          // tile.ro.anim = anim;
         } else {
           tile.ro.anim = undefined;
+        }
+      }
+
+      if (tileTemplate.size) {
+        tile.tileWidth = tileTemplate.size[0];
+        tile.tileHeight = tileTemplate.size[1];
+      }
+
+      tile.ro = createTileRenderObject(tile);
+    }
+  }
+};
+
+export const removeWallAtMarker = (
+  markerName: string,
+  xOffset?: number,
+  yOffset?: number
+) => {
+  const room = getCurrentRoom();
+  const marker = room.markers[markerName];
+
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number', xOffset);
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number', yOffset);
+    return;
+  }
+
+  if (marker) {
+    const target = [
+      marker.x + (xOffset ?? 0),
+      marker.y + (yOffset ?? 0),
+    ] as Point;
+
+    const tile = roomGetTileBelow(room, target);
+    if (!tile) {
+      console.error(
+        'Could not get a tile below the provided marker: ' + markerName
+      );
+      return;
+    }
+    tile.isWall = false;
+    tile.isProp = false;
+
+    if (tile.ro) {
+      if (tile.floorTileBeneath) {
+        const ind = room.renderObjects.indexOf(tile.ro as any);
+        if (ind > -1) {
+          room.renderObjects.splice(ind, 1);
+        }
+      }
+    }
+  }
+};
+
+export const removeWallAtTilePosition = (tileX: number, tileY: number) => {
+  const room = getCurrentRoom();
+  if (typeof tileX !== 'number') {
+    console.error('tileX is not a number', tileX);
+    return;
+  }
+  if (typeof tileY !== 'number') {
+    console.error('tileY is not a number', tileY);
+    return;
+  }
+  const tile = roomGetTileAt(room, tileX, tileY);
+
+  if (tile) {
+    if (!tile) {
+      console.error(
+        'Could not get a tile at the provided position: ' +
+          [tileX, tileY].join(',')
+      );
+      return;
+    }
+    tile.isWall = false;
+    tile.isProp = false;
+
+    if (tile.ro) {
+      if (tile.floorTileBeneath) {
+        const ind = room.renderObjects.indexOf(tile.ro as any);
+        if (ind > -1) {
+          room.renderObjects.splice(ind, 1);
         }
       }
     }
@@ -965,9 +1141,16 @@ export const spawnCharacterAtCharacter = (
     );
     return;
   }
-
   if (!ch) {
     console.error('Could not find target character with name: ' + chName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
     return;
   }
 
@@ -1013,9 +1196,16 @@ export const spawnCharacterAtMarker = (
     );
     return;
   }
-
   if (!marker) {
     console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+  if (xOffset !== undefined && typeof xOffset !== 'number') {
+    console.error('xOffset is not a number');
+    return;
+  }
+  if (yOffset !== undefined && typeof yOffset !== 'number') {
+    console.error('yOffset is not a number');
     return;
   }
 
@@ -1035,6 +1225,101 @@ export const spawnCharacterAtMarker = (
   const spawnCh = characterCreateFromTemplate(chTemplate);
   characterSetPos(spawnCh, target);
   roomAddCharacter(room, spawnCh);
+};
+
+export const spawnPartyMembers = () => {
+  const player = getCurrentPlayer();
+  const partyWithoutLeader = player.partyStorage.filter(
+    ch => ch !== player.leader
+  );
+
+  const d = 12;
+  const offsets = [
+    [d, 1],
+    [1, -d],
+    [-d, 1],
+    [1, d],
+  ];
+
+  const room = getCurrentRoom();
+
+  partyWithoutLeader.forEach((chTemplate, i) => {
+    const offset = offsets[i];
+    spawnCharacterAtCharacter(
+      chTemplate.name,
+      player.leader.name,
+      offset?.[0],
+      offset?.[1]
+    );
+    const ch = roomGetCharacterByName(room, chTemplate.name);
+    if (ch) {
+      const target = [ch.x + offset[0] ?? 0, ch.y + offset[1] ?? 0] as Point;
+      characterSetWalkTarget(ch, target, () => {
+        lookAtCharacter(ch.name, player.leader.name);
+      });
+    }
+  });
+
+  return waitMS(1000);
+};
+
+export const despawnPartyMembers = () => {
+  const player = getCurrentPlayer();
+  const leader = player.leader;
+  const room = getCurrentRoom();
+  const partyWithoutLeader = player.partyStorage.filter(
+    ch => ch !== player.leader && roomGetCharacterByName(room, ch.name)
+  );
+
+  partyWithoutLeader.forEach(chTemplate => {
+    const ch = roomGetCharacterByName(room, chTemplate.name);
+    if (ch) {
+      const target = [leader.x, leader.y] as Point;
+      characterSetWalkTarget(ch, target, () => {
+        roomRemoveCharacter(room, ch);
+      });
+    }
+  });
+
+  return waitMS(1000);
+};
+
+export const spawnPartyMembersInFormation = () => {
+  const room = getCurrentRoom();
+  const player = getCurrentPlayer();
+  const partyWithoutLeader = player.partyStorage.filter(
+    ch => ch !== player.leader
+  );
+
+  const d = 16;
+  const offsets = [
+    [d, 1],
+    [1, -d],
+    [-d, 1],
+    [1, d],
+  ];
+
+  partyWithoutLeader.forEach((chTemplate, i) => {
+    const offset = offsets[i];
+    spawnCharacterAtCharacter(
+      chTemplate.name,
+      player.leader.name,
+      offset?.[0],
+      offset?.[1]
+    );
+  });
+
+  player.party.forEach(chTemplate => {
+    const ch = roomGetCharacterByName(room, chTemplate.name);
+    if (ch) {
+      characterSetFacing(ch, Facing.DOWN);
+      spawnParticleAtCharacter(
+        'EFFECT_TEMPLATE_PORTAL_SPAWN',
+        ch.name,
+        'normal'
+      );
+    }
+  });
 };
 
 /**
@@ -1092,6 +1377,52 @@ export const fadeIn = (ms?: number, skipWait?: boolean) => {
 };
 
 /**
+ * Fade the world screen to black.  Optional ms can be specified for how long the fade
+ * takes.  Optional skipWait can be specified to not wait for this command to finish
+ * before executing the next one.
+ */
+export const fadeOutColor = (
+  r: number,
+  g: number,
+  b: number,
+  ms?: number,
+  skipWait?: boolean
+) => {
+  const localMs = ms ?? 750;
+  const canvasContainer = document.getElementById('fade');
+  if (canvasContainer) {
+    canvasContainer.style.transition = `background-color ${localMs}ms`;
+    canvasContainer.style['background-color'] = `rgba(${r}, ${g}, ${b}, 255)`;
+  }
+  if (!skipWait) {
+    return waitMS(localMs);
+  }
+};
+
+/**
+ * Fade the world screen back in.  Optional ms can be specified for how long the fade
+ * takes.  Optional skipWait can be specified to not wait for this command to finish
+ * before executing the next one.
+ */
+export const fadeInColor = (
+  r: number,
+  g: number,
+  b: number,
+  ms?: number,
+  skipWait?: boolean
+) => {
+  const localMs = ms ?? 1000;
+  const canvasContainer = document.getElementById('fade');
+  if (canvasContainer) {
+    canvasContainer.style.transition = `background-color ${localMs}ms`;
+    canvasContainer.style['background-color'] = `rgba(${r}, ${g}, ${b}, 0)`;
+  }
+  if (!skipWait) {
+    return waitMS(localMs);
+  }
+};
+
+/**
  * Change the room and put the player at the given markerName in the next room.  If not
  * specified, the player is put at MarkerPlayer or if that does not exist (0, 0).
  *
@@ -1109,8 +1440,16 @@ export const changeRoom = (roomName: string, nextRoomMarkerName?: string) => {
     return;
   }
 
-  // TODO Make this use the nextRoomMarkerName & fade
-  initiateOverworld(player, overworldTemplate, nextRoomMarkerName);
+  const overworld = initiateOverworld(
+    player,
+    overworldTemplate,
+    nextRoomMarkerName
+  );
+  // need this here or the transition during a cutscene breaks and the game thinks you are
+  // both in a cutscene and out of one
+  if (overworld) {
+    overworld.triggersEnabled = false;
+  }
 };
 
 /**
@@ -1118,6 +1457,17 @@ export const changeRoom = (roomName: string, nextRoomMarkerName?: string) => {
  * or this text can be overridden by optional itemText param.
  */
 export const acquireItem = (itemName: string, itemText?: string) => {
+  const player = getCurrentPlayer();
+  if (playerAddItem(player, itemName)) {
+    return playDialogue('Narrator', itemText ?? `Acquired: ${itemName}`);
+  }
+};
+
+/**
+ * Give an item to the player.  Dialogue will play indicating the item that was given,
+ * or this text can be overridden by optional itemText param.
+ */
+export const acquireQuestItem = (itemName: string, itemText?: string) => {
   const player = getCurrentPlayer();
   if (playerAddItem(player, itemName)) {
     return playDialogue('Narrator', itemText ?? `Acquired: ${itemName}`);
@@ -1386,8 +1736,22 @@ export const enterCombat = (encounterName: string) => {
   }
 
   overworldHide(getCurrentOverworld());
+  playSoundName('battle_encountered');
   const player = getCurrentPlayer();
-  transitionToBattle(player, encounter, undefined, true);
+  const leaderPos = characterGetPos(player.leader);
+  const leaderFacing = player.leader.facing;
+  const oldRoom = getCurrentRoom();
+  transitionToBattle(
+    player,
+    encounter,
+    getReturnToOverworldBattleCompletionCB(
+      oldRoom,
+      leaderPos,
+      leaderFacing,
+      encounter
+    ),
+    false
+  );
 };
 
 export const panCameraRelativeToPlayer = (
@@ -1399,9 +1763,17 @@ export const panCameraRelativeToPlayer = (
   const duration = ms ?? 1000;
   const player = getCurrentPlayer();
   if (player) {
+    const transform = getCameraTransform();
     const [oX, oY] = playerGetCameraOffset(player);
+    let startX = oX;
+    let startY = oY;
+    if (transform) {
+      const pos = transform.current();
+      startX = pos[0];
+      startY = pos[1];
+    }
     const t = new Transform(
-      [oX, oY, 0],
+      [startX, startY, 0],
       [oX - relX, oY - relY, 0],
       duration,
       TransformEase.EASE_OUT
@@ -1440,10 +1812,34 @@ export const playSound = (soundName: string) => {
   playSoundName(soundName);
 };
 
+export const spawnParticleAtTarget = (
+  template: ParticleTemplate,
+  target: Point,
+  particleMethod: 'normal' | 'weighted' | 'rise'
+) => {
+  const room = getCurrentRoom();
+  if (particleMethod === 'normal') {
+    const particle = particleCreateFromTemplate(target, template);
+    roomAddParticle(room, particle);
+  } else if (particleMethod === 'weighted') {
+    roomAddParticle(
+      room,
+      createWeightedParticle(template, target[0], target[1], template.duration)
+    );
+  } else if (particleMethod === 'rise') {
+    roomAddParticle(
+      room,
+      createRiseParticle(template, target[0], target[1], template.duration)
+    );
+  } else {
+    console.error(`Particle method not known: "${particleMethod}"`);
+  }
+};
+
 export const spawnParticleAtCharacter = (
-  chName: string,
   particleName: string,
-  particleMethod: 'normal' | 'weighted'
+  chName: string,
+  particleMethod: 'normal' | 'weighted' | 'rise'
 ) => {
   const room = getCurrentRoom();
   const ch = roomGetCharacterByName(room, chName);
@@ -1459,18 +1855,66 @@ export const spawnParticleAtCharacter = (
     return;
   }
 
-  if (particleMethod === 'normal') {
-    const [centerPx, centerPy] = characterGetPosCenterPx(ch);
-    const particle = particleCreateFromTemplate([centerPx, centerPy], template);
-    roomAddParticle(room, particle);
-  } else if (particleMethod === 'weighted') {
-    const [centerPx, centerPy] = characterGetPosCenterPx(ch);
-    roomAddParticle(
-      room,
-      createWeightedParticle(template, centerPx, centerPy, 1000)
-    );
-  } else {
-    console.error(`Particle method not known: :${particleMethod}"`);
+  const target = characterGetPosCenterPx(ch);
+  spawnParticleAtTarget(template, target, particleMethod);
+};
+
+export const spawnParticleAtMarker = (
+  particleName: string,
+  markerName: string,
+  particleMethod: 'normal' | 'weighted' | 'rise'
+) => {
+  const room = getCurrentRoom();
+  const template = getParticle(particleName);
+
+  const marker = room.markers[markerName];
+
+  if (!marker) {
+    console.error('Could not find target marker with name: ' + markerName);
+    return;
+  }
+
+  if (!template) {
+    console.error('Could not find particle with name: ' + particleName);
+    return;
+  }
+
+  let [x, y]: Point = isoToPixelCoords(marker.x, marker.y);
+  // this appears to work for any sized particles
+  x += 16;
+  y += 16;
+  spawnParticleAtTarget(template, [x, y], particleMethod);
+};
+
+export const setCharacterText = (text: string) => {
+  const oldText = getUiInterface().appState.overworld.characterText;
+  if (oldText !== text) {
+    setCharacterTextUi(text);
+  }
+};
+
+export const showUISection = (sectionName: string, ...args: any[]) => {
+  if (sectionName === 'BattleUI') {
+    showSection(AppSection.BattleUI, false);
+  } else if (sectionName === 'Modal') {
+    showModal(args[0], () => {
+      sceneStopWaitingUntil(getCurrentScene());
+    });
+    return waitUntil();
+  }
+};
+
+// use only for the tutorial
+export const setBattlePaused = (isPaused: string) => {
+  const battle = getCurrentBattle();
+  if (battle) {
+    if (isPaused === 'true') {
+      battle.isPaused = true;
+      battlePauseTimers(battle);
+    } else {
+      battle.isPaused = false;
+      battleUnpauseTimers(battle);
+    }
   }
 };
 
@@ -1478,6 +1922,7 @@ const commands = {
   playDialogue,
   setConversation2,
   setConversation,
+  setConversationWithoutBars,
   endConversation,
   setConversationSpeaker,
   waitMS,
@@ -1498,13 +1943,21 @@ const commands = {
   walkToOffset,
   setCharacterAtMarker,
   changeTileAtMarker,
+  removeWallAtMarker,
+  removeWallAtTilePosition,
   spawnCharacterAtCharacter,
   spawnCharacterAtMarker,
+  spawnPartyMembersInFormation,
+  spawnPartyMembers,
+  despawnPartyMembers,
   despawnCharacter,
   fadeOut,
   fadeIn,
+  fadeOutColor,
+  fadeInColor,
   changeRoom,
   acquireItem,
+  acquireQuestItem,
   removeItem,
   modifyTokens,
   modifyTickets,
@@ -1522,6 +1975,10 @@ const commands = {
   panCameraBackToPlayer,
   playSound,
   spawnParticleAtCharacter,
+  spawnParticleAtMarker,
+  setCharacterText,
+  showUISection,
+  setBattlePaused,
 };
 
 export default commands;

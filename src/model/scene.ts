@@ -5,6 +5,7 @@ import { setCurrentScene } from 'model/generics';
 interface IScriptStackItem {
   script: Script;
   onScriptCompleted?: () => void;
+  args: any[];
 }
 
 export interface Scene {
@@ -24,7 +25,9 @@ export interface Scene {
 
 export const sceneCreate = (): Scene => {
   const scene = {
-    storage: {} as Record<string, string>,
+    storage: {
+      quest_tutorial_active: 'true',
+    } as Record<string, string>,
     storageOnce: {} as Record<string, string>,
     storageOnceKeys: {} as Record<string, boolean>,
     commands: {} as Record<string, any>,

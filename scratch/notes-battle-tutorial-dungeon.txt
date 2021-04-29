@@ -69,10 +69,10 @@ Ada Get Skill: Swing Normal
 1. Teach How To Attack + How to stagger
   - Single Robot
 
+Proceed to Next Room
+
 2. Teach That You Cannot Act When Enemy Is Acting
   - Double Robot: 1 Fast 1 Slow
-
-Proceed to Next Room
 
 3. Teach that mages must cast before invoking a spell.  Teach that you cannot attack back line without killing front line
   - Double Robot: 1 Front, 1 Mage /w Black Fire Snap

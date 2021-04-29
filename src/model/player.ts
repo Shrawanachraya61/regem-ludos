@@ -13,6 +13,7 @@ export interface Player {
   tickets: number;
   backpack: string[];
   party: Character[];
+  partyStorage: Character[];
   battlePositions: (Character | undefined)[];
 }
 
@@ -22,9 +23,10 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
     leader,
     tokens: 99,
     tickets: 99,
-    backpack: [],
+    backpack: ['Haptic Bracer'],
     party: [leader],
     battlePositions: [leader],
+    partyStorage: [],
   };
   return player;
 };

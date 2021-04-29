@@ -7,6 +7,9 @@ import {
   IArcadeCabinetState,
   IChoicesState,
   IBattleUiState,
+  IOverworldAppState,
+  ModalSection,
+  IModalState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
@@ -57,6 +60,22 @@ const mutations: { [key: string]: MutationFunction } = {
   setChoicesState: (newState: AppState, payload: Partial<IChoicesState>) => {
     Object.assign(newState.choices, payload);
   },
+  setOverworldState: (
+    newState: AppState,
+    payload: Partial<IOverworldAppState>
+  ) => {
+    if (
+      payload.characterText !== undefined &&
+      payload.characterText !== newState.overworld.characterText
+    ) {
+      payload.prevCharacterText = newState.overworld.characterText;
+    }
+
+    Object.assign(newState.overworld, payload);
+  },
+  setModalState: (newState: AppState, payload: Partial<IModalState>) => {
+    Object.assign(newState.modal, payload);
+  },
 };
 
 export const appReducer = function <T>(
@@ -67,6 +86,7 @@ export const appReducer = function <T>(
   const mutation = mutations[action.action];
   if (mutation) {
     mutation(newState, action.payload, oldState);
+    console.log('MUTATE STATE', action);
   } else {
     console.error(
       `Action without a reducer mutation: "${action.action}"`,
@@ -141,12 +161,13 @@ export const showConversation = () => {
   });
 };
 
-export const startConversation = (portrait: string) => {
+export const startConversation = (portrait: string, showBars: boolean) => {
   hideSection(AppSection.Debug);
   showSection(AppSection.Cutscene, false);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
+      showBars,
       portraitCenter: portrait,
       portraitLeft: '',
       portraitRight: '',
@@ -172,6 +193,7 @@ export const startConversation2 = (
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
+      showBars: true,
       portraitLeft,
       portraitRight,
       portraitLeft2: '',
@@ -296,4 +318,32 @@ export const setBattleCharacterSelectedAction = (
 ) => {
   bCh.ch.skillIndex = index;
   renderUi();
+};
+
+export const setCharacterText = (text: string) => {
+  const uiInterface = getUiInterface();
+  if (uiInterface.appState.overworld.characterText === text) {
+    return;
+  }
+
+  const payload: Partial<IOverworldAppState> = {
+    characterText: text,
+  };
+
+  uiInterface.dispatch({
+    action: 'setOverworldState',
+    payload,
+  });
+};
+
+export const showModal = (section: ModalSection, onClose: () => void) => {
+  const payload = {
+    section,
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setModalState',
+    payload,
+  });
+  showSection(AppSection.Modal, false);
 };
