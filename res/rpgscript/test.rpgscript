@@ -82,7 +82,7 @@ Conscience: "I will now look at Ada."
 +setConversationSpeaker("none");
 +lookAtCharacter("Conscience", "Ada");
 +waitMS(1000);
-Conscience: "Ada and I are now gazing wonderously at each other."
+Conscience: "Ada and I are now gazing wondrously at each other."
 Ada: "Please refrain from wording it like that."
 Conscience: "Teehee!"
 Conscience: "The test will now conclude!"
@@ -191,7 +191,6 @@ Ada: "I have jumped."
 +setConversation2("Ada", "Conscience");
 Ada: "This script tests awaitChoice."
 Conscience: "Which choice would you like to pick?"
-// +setConversationSpeaker(none);
 +awaitChoice('This is choice 1', 'This is choice 2', 'This is choice 3');
 +?eq(lastChoiceIndex, 0):{
   Ada: "I have chosen the FIRST choice."
@@ -203,7 +202,6 @@ Conscience: "Which choice would you like to pick?"
   Ada: "I have chosen the THIRD choice."
 }
 Ada: "Thus, I have chosen."
-// +setConversationSpeaker(none);
 +endConversation(100);
 +setConversation(Ada);
 Ada: "Now we will test a question asked by somebody else."
@@ -222,5 +220,78 @@ Ada: "Thus, I have chosen again."
 Ada: "The test will now conclude."
 +endConversation();
 
-@test-fight
-+enterCombat(ENCOUNTER_ONE_VS_ONE);
+@test-giggle-and-sigh
++setConversation("Ada");
+Ada: "I will now giggle."
++setConversationSpeaker(none);
++callScript("utils-character-giggle", "Ada");
+Ada: "I have giggled."
+Ada: "And now I will sigh, because this is so very stupid."
++setConversationSpeaker(none);
++callScript("utils-character-sigh", "Ada");
+Ada: "I have sighed."
++endConversation();
+
+@test-fight-events
++enterCombat(ENCOUNTER_TEST_EVENTS);
+
+@test-fight-event-start
++setConversation2('Ada', 'Bartolo');
+Bartolo: "The battle has begun!"
+Bartolo: "Now you will witness the awesome power of my SUPER R-O-B-O-T-S."
+Ada: "You have no chance of winning this."
++endConversation();
+
+@test-fight-event-damaged
+
+@test-fight-event-end
++setConversation2('Ada', 'Bartolo');
+Bartolo: "Gah!"
+Bartolo: "You may have won THIS battle.  But I will win the NEXT battle."
++endConversation();
+
+@test-fight-event-turn-ended
+
+@test-spawn-party-members
++setConversation("Ada");
+Ada: "Party members will now spawn."
++setConversationSpeaker(none);
++spawnPartyMembers();
+Ada: "The party members have spawned."
+Ada: "They will now despawn."
++setConversationSpeaker(none);
++despawnPartyMembers();
+Ada: "The party members have de-spawned."
++endConversation();
+
+@test-spawn-particle-at-marker
++setConversation("Ada");
+Ada: "A particle will now spawn at MarkerPlayer."
++setConversationSpeaker(none);
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerPlayer, rise);
++waitMS(1000);
+Ada: "A particle should have spawned."
++endConversation();
+
+@test-multi-single-conversation
++setConversation('Ada');
+Ada: "This tests a single conversation portrait mode."
+Ada: "After I talk, then Conscience shall talk, and it should be a smooth transition."
++setConversation('Conscience');
+Conscience: "Whoop! Whoop! I'm in the house now!"
++setConversation('Ada');
+Ada: "How woefully inappropriate, thank you."
++endConversation();
+
+@test-script-jump-multi
++callScript('utils-start-Conscience-dialogue');
+Ada: "This tests that the UI does not glitch out when jumping in a setConversation2."
+Conscience: "I shall speak now!"
++callScript('utils-character-jump', 'Conscience');
+Conscience: "Wheeeeeeeeeeeeeeeeeeeeee!"
+Ada: "You are truly despicable."
++callScript('utils-stop-Conscience-dialogue');
++endConversation();
+
+@test-combat
++enterCombat(ENCOUNTER_TUT_DUNGEON4);

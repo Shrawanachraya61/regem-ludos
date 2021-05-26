@@ -1,0 +1,211 @@
+
+#floor1
+action,this
+@this
++setStorage('overworld', 'floor1');
++setCharacterAtMarker('Ada', 'MarkerPlayer');
++callScript('floor1-closeDoorsAB');
+
+#floor1-skyeIntro
+action,floor1-Skye_intro
+
+#floor1-vendingPanel
+// step,?once():floor1-Skye_pressSecretSwitchWithoutTool
+action,floor1-Skye_pressSecretSwitchWithoutTool
+
+@floor1-intro
+
+@floor1-Skye_intro
++setConversation2('Ada', 'Skye');
+Ada: "Skye?  What are you doing here?"
+Skye: "Grr..."
+Skye: "This DUMB! STUPID. BOX!"
+// Skye kicks the vending machine
+// Skye notices Ada
++setConversationSpeaker('none');
++shakeScreen(750);
++waitMS(1000);
+// +setConversation2('Ada', 'Skye');
+Skye: "GAH! HYA!"
++setConversationSpeaker('none');
++shakeScreen(500);
++waitMS(500);
+// +setConversation2('Ada', 'Skye');
+Skye: "Ouch, that stings!"
++setConversationSpeaker('none');
++waitMS(500);
++setFacing("Skye", "leftup_f");
++waitMS(500);
+Skye: "Oh, hey Ada."
+Skye: "I didn't know you liked to hang out at the Arcade."
+Ada: "I don't really---"
+Skye: "That's cool!  We've gotta go play some games!"
+Ada: "..."
+Skye: "Give me a second, though.  This stupid thing keeps eating my tokens!"
++setConversationSpeaker('none');
++waitMS(500);
++setFacing("Skye", "leftup");
+// Skye kicks the vending machine repeatedly, injuring her foot.
++waitMS(500);
++shakeScreen(750);
++waitMS(1000);
+Skye: "Ouch!"
+Ada: "Perhaps you should find a different machine."
+Ada: "I am guessing that one is... broken?"
++setFacing("Skye", "leftup_f");
+Skye: "What?"
+Skye: "I can't let this thing steal from me!"
+Skye: "I'm GOING to have a drink."
++setFacing("Skye", "leftup");
+Skye: "Mark. My. Words."
+// Skye punches the vending machine.  It rattles but nothing happens.
++setConversationSpeaker('none');
++endConversation(1000);
++shakeScreen(750);
++waitMS(1000);
++setConversation2('Conscience', 'Ada');
++setFacing("Conscience", "up");
++setFacing("Ada", "down");
+Conscience: "That looked like it hurt."
+Ada: "Yes, well, she has always been stubborn."
+// NOTE: considering just dropping the next two lines, feels too cute
+Conscience: "Kind of like a certain someone else."
+Ada: "..."
+Ada: "I have no doubt she would stand around and bloody her knuckles on that machine all day."
+Ada: "However, I do doubt that she will ever get her tokens back."
+Conscience: "Yeah you're probably right..."
++setConversationSpeaker('none');
++waitMS(2000);
+Conscience: "We should help her!"
+Ada: "Out of the question!"
+Ada: "If she wants to be stupid, then let her be."
+Conscience: "Come on!  It's not like you're in any hurry to go see C.A.R.L...A.R.N.O.L.D."
+Conscience: "Bleh!"
++setConversationSpeaker('none');
++waitMS(1000);
+Ada: "THAT, at least, I have to give you."
+Conscience: "I don't even see why I have to convince you of this."
+Conscience: "Skye is your friend.  You should be jumping out of your shoes to help her."
+Ada: "Fine."
+Ada: "But that machine appears broken."
+Conscience: "So then find somebody who can fix it!"
+Conscience: "There's bound to be somebody around here who can help."
++endConversation();
+
+@floor1-Skye_reject
++setConversation2('Ada', 'Skye');
+Skye: "I am not leaving this spot until this supid machine gives me a drink!"
+// Skye kicks the vending machine
+Skye: "Grr.."
++endConversation();
+
+@floor1-Skye_pressSecretSwitchWithoutTool
++setConversation('Ada');
+Ada: "It looks like there's a small compartment that can be opened on the side of this vending machine."
+Ada: "But it needs some sort of tool to unlock it, and I do not have that."
++endConversation()
+
+@floor1-Skye_pressSecretSwitch
++setConversation('Ada');
+// Ada goes up to the vending machine, reaches behind it with the special tool, and hits the reset switch
+Ada: "That should do it."
++endConversation()
+// The vending machine beeps
++setConversation('Ada');
+Skye: "What the...?"
++endConversation()
+// The vending machine spits out a bunch of drinks in rapid succession
++setConversation2('Ada', 'Skye');
+Ada: "Hmm. That was rather effective."
+Skye: "How did you do that?"
+Ada: "The floor manager told me how to fix it."
+Skye: "Nice!"
++setConversationSpeaker('None')
+// Skye picks up a drink from the floor
+Skye: "Hopefully this is good."
++setConversationSpeaker('None')
+// Skye pops open the drink and downs it.
+Skye: "Nice."
+Ada: "Aren't you going to get the rest of those drinks?"
+Skye: "Nah, I only wanted one."
+Ada: "How many tokens did you put in there, though?"
+Skye: "I dunno.  Like a dozen.  Two dozen."
+Ada: "And you are satisfied with one drink?"
+Skye: "Yep!  At least it ended up working out."
+Ada: "Okay then.  To each their own I suppose."
+Skye: "So, did you want to hang out?"
+Ada: "Not right now, Skye."
+Ada: "I am actually supposed to be meeting with Carl-Arnold upstairs."
+Ada: "He said he had something to show me."
+Skye: "Ugh.  I hate that guy."
+Ada: "You are not the only one."
+Ada: "However, he sounded quite eager, so I am curious what he wants to show me."
+Skye: "Well that settles that then.  I had better come with you."
+Ada: "...what?"
+Skye: "I don't trust him for a second.  We need to make sure he doesn't try something stupid."
+// Skye joins the party
++endConversation();
++setConversation2('Ada', 'Conscience');
+Ada: "Somehow I doubt that."
+Conscience: "Oh relax.  It can't hurt having her around."
++endConversation();
+
+#test-roger
+action,this
+@this
++lookAtEachOther('Ada', 'Roger');
++setConversation('Ada');
+Roger: "Hello there."
+Roger: "I am a test construct.  I exist to provide you with someone else to speak to."
+Ada: "It is a pleasure to meet you."
+Roger: "You may speak to me again if you wish."
+Ada: "I may do just that."
+Roger: "That is fine."
+Roger: "This is an example of me saying something rather long.  It's a big chunk of text alright, so be prepared to read a whole lot of nothing."
+Ada: "Yes, you already told me."
++setConversationSpeaker('None');
++waitMS(1000);
+Ada: "..."
+Ada: "Have you nothing further to say?"
+Roger: "The conversation has concluded.  I bid you good day."
++endConversation();
+
+#floor1-closeDoorsAB
+step,this
+@this
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
+
+#floor1-openDoorA
+step,this
+@this
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN2);
++changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN1, 16, 0);
+
+#floor1-openDoorB
+step,this
+@this
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
++changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);
+
+#test-rho
+action,this
+@this
++lookAtEachOther('Ada','Rho');
++setConversation2('Ada','Rho');
+Rho: "..."
++setConversationSpeaker(none);
++waitMS(1000)
+Rho: "Hey! Excuse me. Do you know what this place is?"
+Ada: "I am not too sure.  I have been here for a while now, wandering in circles. Not much seems to exist save for this floor."
+Rho: "That's a little disconcerting.  How are we suppose to leave?"
+Ada: "I do no believe anyone is leaving anytime soon.  You should probably find somehwere comfortable to persist."
+Rho: "Ugh..." 
++endConversation();
+
+#rho-look-area
+step,this
+@this
++lookAtCharacter('Rho','Ada')
