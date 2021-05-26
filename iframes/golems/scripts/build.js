@@ -78,7 +78,7 @@ const build = async () => {
     )} --mangle -o ${__dirname}/../.build/main.js -- ${__dirname}/../.build/main.tmp.js`
   );
   // await execAsync('uglifycss --output public/style.css .build/style.tmp.css');
-  console.log('minify html...');
+  console.log('\nminify html...');
   fs.writeFileSync(
     '.build/index.html',
     minifyHtml(htmlFile, {
@@ -95,7 +95,7 @@ const build = async () => {
     })
   );
 
-  console.log('createElement & error chicanery...');
+  console.log('\ncreateElement & error chicanery...');
   let minifiedFile = String(
     fs.readFileSync(`${__dirname}/../.build/main.js`, {
       encoding: 'utf8',
@@ -146,4 +146,6 @@ const build = async () => {
   console.log(`${bytes}b of ${kb13}b (${((bytes * 100) / kb13).toFixed(2)}%)`);
 };
 
-build();
+build().catch(e => {
+  console.log('Build error', e);
+});
