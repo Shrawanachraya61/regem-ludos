@@ -39,7 +39,7 @@ const mapArray = map.layers[0].data;
 //   }, 'const G_ACTORS_MAP = {};\nconst G_initActors = () => {') + '\n};\n'
 // );
 
-console.log('wrote', __dirname + '/../lib/actors.js');
+// console.log('wrote', __dirname + '/../lib/actors.js');
 
 const path = __dirname + '/map-template.png';
 fs.createReadStream(path)
