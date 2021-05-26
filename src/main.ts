@@ -45,6 +45,7 @@ import {
 import { awaitAllRoomProps, loadDynamicPropsTileset } from 'model/room';
 import { showModal } from 'controller/ui-actions';
 import { ModalSection } from 'model/store';
+import { playMusic } from 'model/sound';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -107,18 +108,25 @@ export const main = async (): Promise<void> => {
   setDrawScale(4);
   initEvents();
   initHooks();
-  console.log('run loop');
-  runMainLoop();
 
-  console.log('initiate overworld');
   const adaTemplate = getCharacter('Ada');
   const player = playerCreate(adaTemplate);
-
   const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
   player.party.push(conscience);
   player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
+  await new Promise<void>(resolve => {
+    const touchSomething = () => {
+      window.removeEventListener('keydown', touchSomething);
+      window.removeEventListener('mousedown', touchSomething);
+      resolve();
+    };
+    window.addEventListener('keydown', touchSomething);
+    window.addEventListener('mousedown', touchSomething);
+  });
+
+  console.log('initiate overworld');
   const query = parseQuery(window.location.search);
   if (query.room) {
     const overworldTemplate = getOverworld(query.room);
@@ -127,6 +135,12 @@ export const main = async (): Promise<void> => {
     initiateOverworld(player, getOverworld('TEST2'));
   }
   enableOverworldControl();
+
+  // load save
+  scene.storage.quest_tutorial_active = true;
+
+  console.log('run loop');
+  runMainLoop();
 
   (document.getElementById('controls') as any).style.display = 'none';
   renderUi();

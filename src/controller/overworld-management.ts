@@ -36,6 +36,7 @@ import {
   overworldEnableTriggers,
   OverworldTemplate,
   createOverworldFromTemplate,
+  overworldShow,
 } from 'model/overworld';
 import { Point3d } from 'utils';
 import {
@@ -57,7 +58,11 @@ import {
 } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
-import { setCharacterText, showSection } from 'controller/ui-actions';
+import {
+  hideSections,
+  setCharacterText,
+  showSection,
+} from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import {
   popKeyHandler,
@@ -68,6 +73,7 @@ import HudGamepad from 'lib/hud-gamepad';
 import { pause, unpause } from './loop';
 import { getImageDataScreenshot } from 'view/draw';
 import { getCanvas } from 'model/canvas';
+import { sceneSetCurrentOverworld } from 'model/scene';
 
 export const initiateOverworld = (
   player: Player,
@@ -87,6 +93,9 @@ export const initiateOverworld = (
     setCurrentOverworld(overworld);
     setRenderBackgroundColor(template.backgroundColor);
 
+    const scene = getCurrentScene();
+    sceneSetCurrentOverworld(scene, template.roomName);
+
     const markerForPos = markerName ? room.markers[markerName] : null;
 
     if (markerForPos) {
@@ -100,21 +109,30 @@ export const initiateOverworld = (
       }
     }
 
+    overworldShow(overworld);
+
     console.log('initiateOverworld trigger', overworld.loadTriggerName);
     if (overworld.loadTriggerName) {
       try {
         console.log('Invoke overworld trigger');
-        const scriptCaller = invokeTrigger(
-          getCurrentScene(),
-          overworld.loadTriggerName,
-          TriggerType.ACTION
-        );
-        if (scriptCaller !== null) {
-          console.log('calling script caller');
-          callTriggerScriptCaller(scriptCaller);
-        } else {
-          console.log('no overworld script caller found for trigger');
-        }
+
+        callScript(getCurrentScene(), overworld.loadTriggerName);
+
+        // const scriptCaller = invokeTrigger(
+        //   getCurrentScene(),
+        //   overworld.loadTriggerName,
+        //   TriggerType.ACTION
+        // );
+        // if (scriptCaller !== null) {
+        //   console.log('calling script caller');
+        //   callTriggerScriptCaller(scriptCaller);
+        // } else {
+        //   console.log(
+        //     'no overworld script caller found for trigger:',
+        //     overworld.loadTriggerName,
+        //     'action'
+        //   );
+        // }
       } catch (e) {
         console.error(e);
       }
@@ -131,28 +149,61 @@ export const enableOverworldControl = () => {
   pushKeyHandler(overworldKeyHandler);
 };
 
-export const callScriptDuringOverworld = async (scriptName: string) => {
+interface IOverworldScriptParams {
+  disableKeys: boolean;
+  hideUi: boolean;
+  setPlayerIdle: boolean;
+}
+
+export const callScriptDuringOverworld = async (
+  scriptName: string,
+  params: IOverworldScriptParams,
+  ...args: any[]
+) => {
   const overworld = getCurrentOverworld();
   overworldDisableTriggers(overworld);
-  disableKeyUpdate();
-  await callScript(getCurrentScene(), scriptName);
+  if (params.disableKeys) {
+    disableKeyUpdate();
+  }
+  if (params.hideUi) {
+    hideSections();
+  }
+  if (params.setPlayerIdle) {
+    characterSetAnimationState(getCurrentPlayer().leader, AnimationState.IDLE);
+  }
+  await callScript(getCurrentScene(), scriptName, args);
   const possiblyDifferentOverworld = getCurrentOverworld();
   overworldEnableTriggers(possiblyDifferentOverworld);
-  enableKeyUpdate();
-  if (possiblyDifferentOverworld.visible) {
+  if (params.disableKeys) {
+    enableKeyUpdate();
+  }
+  if (params.hideUi && possiblyDifferentOverworld.visible) {
     showSection(AppSection.Debug, true);
   }
 };
 
-const callTriggerScriptCaller = async (scriptCaller: () => Promise<void>) => {
+const callTriggerScriptCaller = async (
+  scriptCaller: () => Promise<void>,
+  params: IOverworldScriptParams
+) => {
   const overworld = getCurrentOverworld();
   overworldDisableTriggers(overworld);
-  disableKeyUpdate();
+  if (params.disableKeys) {
+    disableKeyUpdate();
+  }
+  if (params.hideUi) {
+    hideSections();
+  }
+  if (params.setPlayerIdle) {
+    characterSetAnimationState(getCurrentPlayer().leader, AnimationState.IDLE);
+  }
   await scriptCaller();
   const possiblyDifferentOverworld = getCurrentOverworld();
   overworldEnableTriggers(possiblyDifferentOverworld);
-  enableKeyUpdate();
-  if (possiblyDifferentOverworld.visible) {
+  if (params.disableKeys) {
+    enableKeyUpdate();
+  }
+  if (params.hideUi && possiblyDifferentOverworld.visible) {
     showSection(AppSection.Debug, true);
   }
 };
@@ -218,7 +269,11 @@ const checkAndCallTriggerOfType = async (
         if (type === TriggerType.ACTION || type === TriggerType.STEP_FIRST) {
           characterSetAnimationState(leader, AnimationState.IDLE);
         }
-        await callTriggerScriptCaller(scriptCaller);
+        await callTriggerScriptCaller(scriptCaller, {
+          hideUi: false,
+          disableKeys: true,
+          setPlayerIdle: false,
+        });
         return ta.name;
       }
     }
@@ -243,8 +298,11 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
       );
       if (scriptCaller !== null) {
         characterStopAi(ch);
-        characterSetAnimationState(player.leader, AnimationState.IDLE);
-        await callTriggerScriptCaller(scriptCaller);
+        await callTriggerScriptCaller(scriptCaller, {
+          hideUi: true,
+          disableKeys: true,
+          setPlayerIdle: true,
+        });
         characterStartAi(ch);
         return true;
       }
@@ -279,7 +337,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         console.log('DISABLE KEYS');
         disableKeyUpdate();
         // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-tut-battle');
+        await callScript(getCurrentScene(), 'test-combat');
         if (overworld.visible) {
           showSection(AppSection.Debug, true);
         }
@@ -316,38 +374,33 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     }
     case 's': {
       if (getKeyUpdateEnabled()) {
-        console.log('DISABLE KEYS');
-        disableKeyUpdate();
-        pushEmptyKeyHandler();
-        overworldDisableTriggers(overworld);
-        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'intro');
-        // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
-        overworldEnableTriggers(getCurrentOverworld());
-        showSection(AppSection.Debug, true);
-        console.log('ENABLE KEYS');
-        popKeyHandler();
-        enableKeyUpdate();
+        callScriptDuringOverworld('intro', {
+          disableKeys: true,
+          hideUi: true,
+          setPlayerIdle: true,
+        });
       }
       break;
     }
     case 'c': {
       if (getKeyUpdateEnabled()) {
-        console.log('DISABLE KEYS');
-        disableKeyUpdate();
-        pushEmptyKeyHandler();
-        overworldDisableTriggers(overworld);
-        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(
-          getCurrentScene(),
-          'floor1-tut-vr2-battle2-on-after-end'
-        );
-        // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
-        overworldEnableTriggers(getCurrentOverworld());
-        showSection(AppSection.Debug, true);
-        console.log('ENABLE KEYS');
-        popKeyHandler();
-        enableKeyUpdate();
+        callScriptDuringOverworld('floor1-utils-toggle-color-doors', {
+          disableKeys: true,
+          hideUi: true,
+          setPlayerIdle: true,
+        });
+        // console.log('DISABLE KEYS');
+        // disableKeyUpdate();
+        // pushEmptyKeyHandler();
+        // overworldDisableTriggers(overworld);
+        // // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        // await callScript(getCurrentScene(), 'test-script-jump-multi');
+        // // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
+        // overworldEnableTriggers(getCurrentOverworld());
+        // showSection(AppSection.Debug, true);
+        // console.log('ENABLE KEYS');
+        // popKeyHandler();
+        // enableKeyUpdate();
       }
       break;
     }

@@ -20,3 +20,15 @@ export const BATTLE_AI_ATTACK: BattleAI = (
     invokeSkill(bCh, bCh.ch.skills[0]);
   }
 };
+
+// export const BATTLE_AI_CHANNEL: BattleAI = (
+//   battle: Battle,
+//   bCh: BattleCharacter
+// ): void => {
+//   const ch = bCh.ch;
+//   const allegiance = battleGetAllegiance(battle, ch);
+//   const target = battleGetNearestAttackable(battle, allegiance);
+//   if (target) {
+//     invokeSkill(bCh, bCh.ch.skills[0]);
+//   }
+// };

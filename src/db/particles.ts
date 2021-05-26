@@ -121,6 +121,18 @@ export const init = () => {
       strokeColor: colors.BLACK,
     },
   };
+  const EFFECT_TEMPLATE_SHRUG: ParticleTemplate = {
+    duration: 1250,
+    text: '*Shrug*',
+    useOuterCanvas: true,
+    offset: [4, -16],
+    textParams: {
+      size: 24,
+      color: colors.WHITE,
+      align: 'center',
+      strokeColor: colors.BLACK,
+    },
+  };
 
   const EFFECT_TEMPLATE_VR_PORTAL: ParticleTemplate = {
     animName: 'effect_vr_anim',
@@ -149,6 +161,7 @@ export const init = () => {
     EFFECT_TEMPLATE_DEAD32,
     EFFECT_TEMPLATE_RING,
     EFFECT_TEMPLATE_GIGGLE,
+    EFFECT_TEMPLATE_SHRUG,
     EFFECT_TEMPLATE_SIGH,
     EFFECT_TEMPLATE_VR_PORTAL,
     EFFECT_TEMPLATE_PORTAL_SPAWN,

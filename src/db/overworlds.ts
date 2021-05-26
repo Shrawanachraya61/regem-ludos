@@ -14,6 +14,8 @@ import * as floor1TutEntrance from 'map/floor1-tut-entrance.json';
 import * as floor1TutVR1 from 'map/floor1-tut-vr1.json';
 import * as floor1TutVR2 from 'map/floor1-tut-vr2.json';
 import * as floor1TutVR3 from 'map/floor1-tut-vr3.json';
+import * as floor1TutVR3West from 'map/floor1-tut-vr3-west.json';
+import * as floor1TutVR3West2 from 'map/floor1-tut-vr3-west2.json';
 import * as floor2South from 'map/floor2-south.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
 import * as floor2North from 'map/floor2-north.json';
@@ -21,6 +23,7 @@ import * as floor2PrepRoom from 'map/floor2-preproom.json';
 
 const rooms: Record<string, Room> = ((window as any).rooms = {});
 
+// keys on this object are each a roomName
 const overworldToRoom = {
   floor1Outside,
   floor1Atrium,
@@ -29,6 +32,8 @@ const overworldToRoom = {
   floor1TutVR1,
   floor1TutVR2,
   floor1TutVR3,
+  floor1TutVR3West,
+  floor1TutVR3West2,
   floor2South,
   floor2Cafeteria,
   floor2North,
@@ -109,7 +114,12 @@ export const init = async () => {
   }
 
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
+
+  exp.floor1Atrium.music = 'music_atrium';
+
   exp.floor1TutVR1.backgroundColor = colors.DARKBLUE;
   exp.floor1TutVR2.backgroundColor = colors.DARKBLUE;
   exp.floor1TutVR3.backgroundColor = colors.DARKBLUE;
+  exp.floor1TutVR3West.backgroundColor = colors.DARKBLUE;
+  exp.floor1TutVR3West2.backgroundColor = colors.DARKBLUE;
 };

@@ -104,19 +104,13 @@ const build = async () => {
 
   console.log('\nZip (command line)...');
   await execAsync(
-    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip index.html main.js res/* res/snd/* res/snd/foley/* res/img/* res/rpgscript/*`
+    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip index.html main.js res/* res/snd/* res/snd/foley/* res/snd/music/* res/img/* res/bg/* res/rpgscript/*`
   );
   console.log(
     await execAsync(`stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`)
-  );
-  await execAsync(`advzip -z -4 ${__dirname}/../${outputDirName}.zip`);
-  console.log(
-    await execAsync(`stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`)
-  );
-  const result = await execAsync(
-    `stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`
   );
   await execAsync(`mv src.zip dist/Main.zip`);
+  const result = await execAsync(`stat -c '%n %s' dist/main.js`);
   const bytes = parseInt(result.split(' ')[1]);
   const kb13 = 13312;
   console.log(`${bytes}b of ${kb13}b (${((bytes * 100) / kb13).toFixed(2)}%)`);

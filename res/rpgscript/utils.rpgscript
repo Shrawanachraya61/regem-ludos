@@ -1,12 +1,234 @@
+// ARG0 = name of map to transition to
+// ARG1 = name of marker to place player at
+@utils-change-room
++setAnimationState('Ada', 'idle');
++fadeOut(1000, true);
++waitMS(100);
++playSound('change_room');
++waitMS(900);
++changeRoom([ARG0], [ARG1]);
++fadeIn(1000, true);
+
 @utils-start-Conscience-dialogue
 +setFacing('Ada', down);
 +waitMS(250);
 +spawnCharacterAtCharacter('Conscience', 'Ada');
 +walkToOffset('Conscience', 16, 16);
 +lookAtEachOther('Ada', 'Conscience');
++endConversation();
++setConversation2('Ada', 'Conscience');
 
 @utils-stop-Conscience-dialogue
 +setConversationSpeaker("none");
-+walkToOffset("Conscience", -16, -16);
++walkToCharacter("Conscience", "Ada");
 +despawnCharacter("Conscience");
++waitMS(750);
+
+#utils-kiosk-stats-activate
+step,this
+@this
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
+
+#utils-kiosk-stats-deactivate
+step,this
+@this
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
+
+#utils-save-point-activate
+step,this
+action,utils-save-point-activate-action
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
+@utils-save-point-activate-action
++showUISection(Save);
+
+#utils-save-point-deactivate
+step,this
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+
+@utils-vr-step
++playSound(beep);
++setCharacterText('The Haptic Bracer is vibrating.');
+
+// ARG0 = name of map to transition to
+// ARG1 = name of marker to place player at
+// ARG2 = boolean: should spawn party members?
+@utils-transition-to-vr
++setCharacterText('');
++walkToMarker('Ada', MarkerVRLanding);
++setFacing('Ada', 'down');
++playSound('vr_portal_buzz');
++waitMS(500);
++playSound('vr_portal_focus');
++setAnimation('Ada', 'ada_enter_vr_portal');
++waitMS(225);
++playSound('vr_portal_start');
++waitMS(850);
++playSound('battle_jump');
++waitMS(150);
++playSound('battle_jump');
++waitMS(250);
++playSound('battle_jump');
++waitMS(750);
++playSound('battle_encountered');
++fadeOutColor(255, 255, 255, 1000);
++spawnParticleAtCharacter('EFFECT_TEMPLATE_VR_PORTAL', 'Ada', 'normal');
++playSound('vr_portal_zoom');
++fadeInColor(255, 255, 255, 1000);
++waitMS(2000);
++fadeOut();
++playSound('vr_portal_landed');
++changeRoom([ARG0], [ARG1]);
++?is(ARG2):{
+  +spawnPartyMembersInFormation();
+}
++?isnot(ARG2):{
+  +spawnParticleAtCharacter(EFFECT_TEMPLATE_PORTAL_SPAWN, 'Ada', 'normal');
+}
++fadeIn();
+//wait for the spawn particles to finish
 +waitMS(1000);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-jump
++setConversationSpeaker(none);
++playSound('jump_cutscene');
++jump([ARG0]);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-giggle
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(200);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(200);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(1000);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-sigh
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SIGH, [ARG0], 'rise');
++waitMS(1250);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-shrug
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SHRUG, [ARG0], 'rise');
++waitMS(1250);
+
+// ARG0 = name of character to look around
+@utils-character-look-around
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(500);
++setFacing([ARG0], 'rightdown');
++waitMS(100);
++setFacing([ARG0], 'right');
++waitMS(500);
++setFacing([ARG0], 'rightdown');
++waitMS(100);
++setFacing([ARG0], 'down');
++waitMS(500);
++setFacing([ARG0], 'leftdown');
++waitMS(100);
++setFacing([ARG0], 'left');
++waitMS(500);
++setFacing([ARG0], 'leftdown');
++waitMS(100);
++setFacing([ARG0], 'down');
+
+// ARG0 = name of character to spin
+@utils-character-spin
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(500);
++playSound('woosh');
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(33);
++setFacing([ARG0], 'rightup');
++waitMS(33);
++setFacing([ARG0], 'up');
++waitMS(33);
++setFacing([ARG0], 'leftup');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(33);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+
+// ARG0 = name of character to spin
+@utils-character-shake-z
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(500);
+
+@utils-character-shake-x
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(500);
+
+// ARG0 = ch template name
+// ARG1 = marker name
+@utils-spawn-character-at-marker
++setConversationSpeaker(none);
++playSound('spawn_enemy');
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, [ARG1], 'normal');
++waitMS(400);
++spawnCharacterAtMarker([ARG0], [ARG1]);
+
+// ARG0 = ch template name
+@utils-despawn-character
++setConversationSpeaker(none);
++playSound('spawn_enemy');
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, [ARG0], 'normal');
++waitMS(400);
++despawnCharacter([ARG0]);
+
+@utils-get-treasure
++playSound('get_item');
++spawnParticleAtMarker('EFFECT_TEMPLATE_TREASURE', 'MarkerAda0', 'rise');

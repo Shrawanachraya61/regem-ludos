@@ -1,8 +1,11 @@
 Sound,blip,foley/blip.mp3,0.7,zzfx
-Sound,menu_move,foley/menu_move2.mp3,0.7,zzfx
-Sound,menu_select,foley/menu_select.mp3
+Sound,pop,foley/pop.mp3,0.7,zzfx
+Sound,menu_move,foley/menu_move2.mp3,0.5,zzfx
+Sound,menu_select,foley/menu_select2.mp3,
+Sound,menu_cancel,foley/menu_cancel.mp3,0.7,zzfx
 Sound,menu_choice_open,foley/menu_choice_open.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
-Sound,menu_sparkle,foley/menu_sparkle.mp3,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
+Sound,menu_choice_close,foley/menu_choice_open_alert.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
+Sound,menu_sparkle,foley/menu_sparkle2.mp3,0.8,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
 Sound,menu_close,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
 Sound,gain_token,foley/gain_token.mp3
 Sound,insert_token,foley/insert_token.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
@@ -17,7 +20,7 @@ Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
 Sound,battle_encountered,foley/encounter.mp3,jsfxr
 Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
 Sound,woosh_reverse,foley/woosh_reverse.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
-Sound,fanfare,foley/fanfare.mp3,0.45,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,fanfare,foley/fanfare.mp3,0.35,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
 Sound,despawn,foley/despawn.mp3,0.55,jsfxr
 Sound,battle_jump,foley/jump2.mp3,0.9,Attribution https://freesound.org/people/andersmmg/sounds/518970/
 Sound,battle_shoot_arrow,foley/shoot_arrow.mp3,jsfxr
@@ -25,14 +28,18 @@ Sound,battle_swing1,foley/battle_swing1.mp3,0.6,jsfxr
 Sound,battle_swing2,foley/battle_swing2.mp3,0.6,jsfxr
 Sound,battle_swing3,foley/battle_swing3.mp3,0.6,jsfxr
 Sound,battle_swing4,foley/battle_swing4.mp3,0.6,jsfxr
-Sound,battle_armor_hit,foley/battle_armor_hit2.mp3,0.5,jsfxr
-Sound,battle_armor_broken,foley/battle_armor_broken2.mp3,Creative Commons https://freesound.org/people/Andre_Desartistes/sounds/331919/
+Sound,battle_armor_hit,foley/battle_armor_hit3.mp3,0.9,zzfx
+Sound,battle_armor_broken,foley/battle_armor_broken3.mp3,0.9 zzfx
 Sound,battle_arrow_hit,foley/battle_arrow_hit.mp3,jsfxr
 Sound,battle_robot_charge_up,foley/robot_charge_up.mp3,0.9,jsfxr
+Sound,battle_interrupt_channel,foley/battle_interrupt_channel.mp3,0.7,zzfx
+Sound,battle_cast,foley/battle_cast.mp3,0.8,zzfx
+Sound,battle_fire_explosion1,foley/battle_fire_explosion1.mp3,0.9,zzfx
+Sound,battle_evasion,foley/evasion3.mp3,1,fl studio
 Sound,dead,foley/dead3.mp3,1,jsfxr
 Sound,phone_ring,foley/phone_ring.mp3,1,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
-Sound,phone_beep,foley/phone_beep.mp3,1,Creative Commonds https://freesound.org/people/bay_area_bob/sounds/542044/
-Sound,phone_beep_off,foley/phone_beep_off.mp3,1,Creative Commonds https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
+Sound,phone_beep,foley/phone_beep.mp3,1,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
+Sound,phone_beep_off,foley/phone_beep_off.mp3,1,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
 Sound,vr_portal_activate,foley/vr_portal_activate.mp3,0.7,zzfx
 Sound,vr_portal_deactivate,foley/vr_portal_deactivate.mp3,0.7,zzfx
 Sound,vr_portal_beep,foley/vr_portal_beep.mp3,0.8,zzfx
@@ -43,8 +50,17 @@ Sound,vr_portal_focus,foley/vr_portal_focus.mp3,0.7,zzfx
 Sound,vr_portal_start,foley/vr_portal_start.mp3,0.7,zzfx
 Sound,despawn_tut_wall,foley/despawn_tut_wall.mp3,0.7,zzfx
 Sound,terminal_beep,foley/blip.mp3,0.7,zzfx
+Sound,terminal_cancel,foley/terminal_cancel.mp3,0.7,zzfx
 Sound,spawn_enemy,foley/spawn_enemy.mp3,0.7,zzfx
 Sound,change_room,foley/change_room.mp3,1,Attribution https://freesound.org/people/newagesoup/sounds/377830/ 
+Sound,jump_cutscene,foley/jump_cutscene.mp3,0.7,zzfx
+Sound,bass_kicks,foley/bass_kicks2.mp3,1,fl studio
+Sound,robot_channel_start,foley/robot_channel_start.mp3,0.7,zzfx
+Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
+Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
+
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3
+Music,music_atrium,music/atrium3.mp3
+Music,music_outside_arcade,music/outside_arcade2.mp3

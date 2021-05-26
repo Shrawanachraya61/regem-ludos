@@ -8,7 +8,7 @@ import {
 import { colors, style } from 'view/style';
 import { ProgressBarWithRender } from 'view/elements/ProgressBar';
 import { characterGetHpPct } from 'model/character';
-import AnimDiv from 'view/elements/AnimDiv';
+import AnimDiv from 'view/elements/StaticAnimDiv';
 import ActionSelectMenu from './ActionSelectMenu';
 import { useState } from 'preact/hooks';
 import { useBattleSubscriptionWithBattleCharacter } from 'view/hooks';

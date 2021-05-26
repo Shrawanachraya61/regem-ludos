@@ -2,12 +2,15 @@
 import { h } from 'preact';
 import { colors, keyframes, style } from 'view/style';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import AnimDiv from 'view/elements/AnimDiv';
+import AnimDiv from 'view/elements/StaticAnimDiv';
 import { getUiInterface } from 'view/ui';
-import { CutsceneSpeaker } from 'model/store';
+import { AppSection, CutsceneSpeaker } from 'model/store';
 import { getDrawScale } from 'model/canvas';
 import { getCurrentKeyHandler } from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
+import TopBar, { TopBarButtons } from './TopBar';
+import { showSection } from 'controller/ui-actions';
+import { pause, unpause } from 'controller/loop';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -283,6 +286,7 @@ const CutsceneSection = () => {
     if (textBox) {
       textBox.style.transition = '';
       textBox.style.opacity = '0';
+      // textBox.innerHTML = isNoneSpeaker ? '' : cutscene.text;
       textBox.innerHTML = cutscene.text;
       setTimeout(() => {
         textBox.style.transition = 'opacity 0.15s linear';
@@ -333,6 +337,26 @@ const CutsceneSection = () => {
       <BottomBarWrapper
         visible={cutscene.visible && cutscene.showBars && barsVisible}
       ></BottomBarWrapper>
+      <div
+        style={{
+          position: 'absolute',
+          left: '0',
+          top: '0',
+          zIndex: 2,
+          width: '100%',
+        }}
+      >
+        <TopBar
+          buttons={[TopBarButtons.SETTINGS]}
+          onSettingsClick={() => {
+            // pause();
+          }}
+          onSettingsClose={() => {
+            // unpause();
+            showSection(AppSection.Cutscene, true);
+          }}
+        />
+      </div>
       <PortraitWrapper visible={cutscene.visible && barsVisible}>
         {cutscene.portraitLeft !== '' ? (
           <Portrait

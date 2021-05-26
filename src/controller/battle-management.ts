@@ -18,6 +18,11 @@ import {
   battleSubscribeEvent,
   battlePauseActionTimers,
   battleUnpauseActionTimers,
+  battleGetPersistentEffects,
+  PersistentEffectEvent,
+  BattleDamageType,
+  OnBeforeCharacterDamagedCb,
+  PersistentEffectEventParams,
 } from 'model/battle';
 import {
   battleCharacterCreateEnemy,
@@ -32,6 +37,8 @@ import {
   battleCharacterIsStaggered,
   battleCharacterIsCasting,
   battleCharacterSetAnimationIdle,
+  battleCharacterIsChanneling,
+  battleCharacterGetEvasion,
 } from 'model/battle-character';
 import {
   Character,
@@ -46,6 +53,7 @@ import {
   characterSetTransform,
   characterGetPos,
   characterSetPos,
+  characterGetAnimation,
 } from 'model/character';
 import { roomAddParticle, roomAddCharacter, Room } from 'model/room';
 import { getRoom } from 'db/overworlds';
@@ -91,6 +99,7 @@ import {
 import {
   BattleAction,
   BattleActions,
+  BattleActionType,
   createParticleAtCharacter,
   SwingType,
 } from 'controller/battle-actions';
@@ -116,6 +125,7 @@ import {
   stopCurrentMusic,
 } from 'model/sound';
 import { overworldShow } from 'model/overworld';
+import { sceneSetEncounterDefeated } from 'model/scene';
 
 export const transitionToBattle = async (
   player: Player,
@@ -127,10 +137,16 @@ export const transitionToBattle = async (
 
   if (skipIntro) {
     const battle = initiateBattle(player, template);
+    battle.isPaused = true;
+    battlePauseTimers(battle);
     if (template.events?.onBattleStart) {
       await template.events?.onBattleStart(battle);
     }
     showSection(AppSection.BattleUI, true);
+    await invokeAllChannels(battle);
+    battle.isPaused = false;
+    battle.isStarted = true;
+    battleUnpauseTimers(battle);
     return;
   }
 
@@ -145,6 +161,7 @@ export const transitionToBattle = async (
     setGlobalParticleSystem(null);
     popKeyHandler(handler);
     const battle = initiateBattle(player, template);
+    battle.isPaused = true;
     battlePauseTimers(battle);
     fadeIn(250);
 
@@ -186,11 +203,14 @@ export const transitionToBattle = async (
       jumpTimeMs +
         (500 + battle.allies.length * jumpTimeMsStaggered) +
         jumpTimeMsPostLag
-    ).then(() => {
+    ).then(async () => {
       showSection(AppSection.BattleUI, true);
+      battle.isStarted = true;
+      battle.isPaused = false;
       if (template.events?.onBattleStart) {
         template.events?.onBattleStart(battle);
       } else {
+        await invokeAllChannels(battle);
         battleUnpauseTimers(battle);
       }
     });
@@ -285,6 +305,35 @@ export const initiateBattle = (
   console.log('CREATE BATTLE', battle);
 
   return battle;
+};
+
+// used at beginning of fight to start all characters who have an active channel
+export const invokeAllChannels = async (battle: Battle) => {
+  const enemyChannellers = battle.enemies.filter(bCh => {
+    return (
+      battleCharacterGetSelectedSkill(bCh).type === BattleActionType.CHANNEL
+    );
+  });
+  const allyChannellers = battle.allies.filter(bCh => {
+    return (
+      battleCharacterGetSelectedSkill(bCh).type === BattleActionType.CHANNEL
+    );
+  });
+  const allChannellers = enemyChannellers.concat(allyChannellers);
+
+  if (allChannellers.length) {
+    await timeoutPromise(1000);
+  }
+  for (let i = 0; i < allChannellers.length; i++) {
+    const bCh = allChannellers[i];
+    const action = battleCharacterGetSelectedSkill(bCh);
+    if (action) {
+      await action.cb(battle, bCh);
+      bCh.actionTimer.start();
+      bCh.actionTimer.pause();
+      await timeoutPromise(500);
+    }
+  }
 };
 
 export const callScriptDuringBattle = async (scriptName: string) => {
@@ -385,6 +434,10 @@ const assertMayAct = (battle: Battle, bCh: BattleCharacter): boolean => {
     return true;
   }
 
+  if (bCh.actionState === BattleActionState.CHANNELING) {
+    return true;
+  }
+
   // special case, battleCharacterCanAct returns true for the CASTING state, but that
   // should not be the case here. (prevents AI and Player from invoking a skill with a keypress,
   // but allows a character to cast a spell after a cast timer has concluded)
@@ -412,6 +465,9 @@ export const invokeSkill = (bCh: BattleCharacter, skill: BattleAction) => {
 export const beginAction = async (bCh: BattleCharacter): Promise<void> => {
   console.log('begin action', bCh);
   const battle = getCurrentBattle();
+  if (battle.isPaused) {
+    return;
+  }
 
   // no allegiance is acting
   if (battleGetActingAllegiance(battle) === null) {
@@ -433,7 +489,11 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   console.log('end action', bCh);
   const battle = getCurrentBattle();
 
-  if (battleCharacterIsCasting(bCh)) {
+  if (battle.isPaused) {
+    return;
+  }
+
+  if (battleCharacterIsCasting(bCh) || battleCharacterIsChanneling(bCh)) {
   } else {
     battleCharacterSetActonState(bCh, BattleActionState.ACTING);
     const transform = bCh.ch.transform;
@@ -509,17 +569,49 @@ export const endAction = async (bCh: BattleCharacter): Promise<void> => {
   }
 };
 
+export const didEvade = (
+  bCh: BattleCharacter,
+  type: BattleDamageType,
+  evasionMultiplier: number
+) => {
+  const battle = getCurrentBattle();
+  const evasionRate =
+    getEvasionAfterEvasionEffects(
+      battle,
+      bCh,
+      type,
+      battleCharacterGetEvasion(bCh)
+    ) * evasionMultiplier;
+  const randVal = Math.random() * 100;
+  const didEvade = randVal <= evasionRate;
+  console.log('DID evade?', didEvade, randVal, evasionRate);
+  return didEvade;
+};
+
 export const applyStaggerDamage = (
   bCh: BattleCharacter,
   staggerDamage: number
 ) => {
   console.log('apply stagger damage of', staggerDamage, 'to', bCh.ch.name);
+  if (bCh.armor > 0) {
+    staggerDamage = staggerDamage / 2;
+  }
+
   if (battleCharacterIsStaggered(bCh)) {
     bCh.staggerTimer.start();
   } else {
     bCh.staggerGauge.fill(staggerDamage);
     if (bCh.staggerGauge.isFull()) {
       console.log('STAGGER!');
+      if (bCh.staggerSoundName) {
+        playSoundName(bCh.staggerSoundName);
+      }
+      interruptCast(bCh);
+      interruptChannel(bCh);
+      if (bCh.armor) {
+        applyArmorDamage(getCurrentBattle(), bCh, 1, true);
+        bCh.armor = 0;
+      }
       battleInvokeEvent(
         getCurrentBattle(),
         BattleEvent.onCharacterStaggered,
@@ -528,6 +620,7 @@ export const applyStaggerDamage = (
       battleCharacterSetActonState(bCh, BattleActionState.STAGGERED);
       bCh.staggerTimer.start();
       bCh.staggerGauge.empty();
+      bCh.actionTimer.start();
       bCh.actionTimer.pause();
 
       // This particle makes a lot of visual noise, disabling it for now
@@ -592,7 +685,7 @@ export const applySwingDamage = (
     staggerDamage: number;
     attackType: SwingType;
   }
-): void => {
+): boolean => {
   const { damage: baseDamage, staggerDamage } = args;
 
   let particleColor = colors.WHITE;
@@ -600,11 +693,13 @@ export const applySwingDamage = (
   const maxDamage = baseDamage + attacker.ch.stats.POW;
   const minDamage = maxDamage - Math.ceil(maxDamage / 4);
   let damage = Math.floor(getRandBetween(minDamage, maxDamage));
+  let soundName = '';
 
   if (battleCharacterIsStaggered(victim)) {
     damage *= 2;
     particleColor = colors.ORANGE;
     particlePostfix = '!';
+    soundName = 'robot_staggered_damaged';
   } else if (victim.armor > 0) {
     const { nextDamageAmount } = applyArmorDamage(
       battle,
@@ -619,6 +714,7 @@ export const applySwingDamage = (
 
   if (victim.armor <= 0) {
     interruptCast(victim);
+    interruptChannel(victim);
   }
 
   // TODO Evasion
@@ -627,8 +723,21 @@ export const applySwingDamage = (
 
   // TODO Damage Reduction
 
-  damage = Math.max(0, damage);
-  applyDamage(battle, victim, damage, particleColor, particlePostfix);
+  damage = getDamageAfterDamageEffects(
+    battle,
+    victim,
+    BattleDamageType.SWING,
+    Math.max(0, damage)
+  );
+  console.log('APPLY SWING DAMAGE', damage);
+
+  applyDamage(battle, victim, {
+    damage,
+    particleColor,
+    postfix: particlePostfix,
+    soundName,
+  });
+  return true;
 };
 
 export const applyRangeDamage = (
@@ -637,15 +746,19 @@ export const applyRangeDamage = (
   victim: BattleCharacter,
   baseDamage: number,
   staggerDamage: number
-): void => {
+): boolean => {
   let particlePostfix = '';
+  let particleColor = colors.WHITE;
   const maxDamage = baseDamage + Math.floor(attacker.ch.stats.POW / 2);
   const minDamage = maxDamage - Math.ceil(maxDamage / 4);
   let damage = Math.floor(getRandBetween(minDamage, maxDamage));
+  let soundName = '';
 
   if (battleCharacterIsStaggered(victim)) {
     particlePostfix = '!';
+    particleColor = colors.ORANGE;
     damage *= 2;
+    soundName = 'robot_staggered_damaged';
   } else if (victim.armor > 0) {
     const { nextDamageAmount } = applyArmorDamage(
       battle,
@@ -656,13 +769,27 @@ export const applyRangeDamage = (
     damage = nextDamageAmount;
   }
   applyStaggerDamage(victim, staggerDamage);
+  if (victim.armor <= 0) {
+    interruptChannel(victim);
+  }
 
   // TODO Evasion
 
   // TODO Pinned
 
-  damage = Math.max(1, damage);
-  applyDamage(battle, victim, damage, colors.WHITE, particlePostfix);
+  damage = getDamageAfterDamageEffects(
+    battle,
+    victim,
+    BattleDamageType.RANGED,
+    Math.max(0, damage)
+  );
+  applyDamage(battle, victim, {
+    damage,
+    particleColor,
+    soundName,
+    postfix: particlePostfix,
+  });
+  return true;
 };
 
 export const applyMagicDamage = (
@@ -671,8 +798,9 @@ export const applyMagicDamage = (
   victim: BattleCharacter,
   baseDamage: number,
   staggerDamage: number
-): void => {
+): boolean => {
   let particlePostfix = '';
+  let soundName = '';
 
   const maxDamage = baseDamage + attacker.ch.stats.POW;
   const minDamage = maxDamage - Math.ceil(maxDamage / 4);
@@ -681,12 +809,14 @@ export const applyMagicDamage = (
   if (battleCharacterIsStaggered(victim)) {
     particlePostfix = '!';
     damage *= 2;
+    soundName = 'robot_staggered_damaged';
   } else if (victim.armor > 0) {
     applyArmorDamage(battle, victim, damage, false);
   }
   applyStaggerDamage(victim, staggerDamage);
 
   interruptCast(victim);
+  interruptChannel(victim);
 
   // TODO Magic Shield
 
@@ -694,8 +824,19 @@ export const applyMagicDamage = (
 
   // TODO Pinned
 
-  damage = Math.max(1, damage);
-  applyDamage(battle, victim, damage, colors.LIGHTBLUE, particlePostfix);
+  damage = getDamageAfterDamageEffects(
+    battle,
+    victim,
+    BattleDamageType.MAGIC,
+    Math.max(0, damage)
+  );
+  applyDamage(battle, victim, {
+    damage,
+    particleColor: colors.LIGHTBLUE,
+    postfix: particlePostfix,
+    soundName,
+  });
+  return true;
 };
 
 export const resetCooldownTimer = (bCh: BattleCharacter) => {
@@ -717,6 +858,7 @@ export const setCasting = (
   bCh: BattleCharacter,
   castArgs: {
     castTime: number;
+    soundName?: string;
     onCast?: () => Promise<void>;
     onInterrupt?: () => Promise<void>;
   }
@@ -724,6 +866,11 @@ export const setCasting = (
   battleCharacterSetActonState(bCh, BattleActionState.CASTING);
   characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CAST);
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterCasting, bCh);
+  if (castArgs.soundName) {
+    playSoundName(castArgs.soundName);
+  } else {
+    playSoundName('battle_cast');
+  }
 
   const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
   roomAddParticle(
@@ -747,6 +894,7 @@ export const setCasting = (
 
 export const interruptCast = (bCh: BattleCharacter) => {
   if (battleCharacterIsCasting(bCh)) {
+    console.log('INTERRUPT CAST', bCh);
     battleCharacterSetActonState(bCh, BattleActionState.IDLE);
     battleInvokeEvent(
       getCurrentBattle(),
@@ -756,9 +904,33 @@ export const interruptCast = (bCh: BattleCharacter) => {
     bCh.onCastInterrupted();
     const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
     bCh.actionTimer.unpause();
+
+    playSoundName('battle_interrupt_channel');
     roomAddParticle(
       getCurrentRoom(),
-      createStatusParticle('Interrupted', centerPx, centerPy, 'cyan')
+      createStatusParticle('Interrupt!', centerPx, centerPy, 'cyan')
+    );
+  }
+};
+
+export const interruptChannel = (bCh: BattleCharacter) => {
+  if (battleCharacterIsChanneling(bCh)) {
+    console.log('INTERRUPT CHANNEL', bCh);
+    battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+    battleInvokeEvent(
+      getCurrentBattle(),
+      BattleEvent.onCharacterInterrupted,
+      bCh
+    );
+    bCh.onChannelInterrupted();
+    const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+    bCh.actionTimer.start();
+    bCh.actionTimer.unpause();
+
+    playSoundName('battle_interrupt_channel');
+    roomAddParticle(
+      getCurrentRoom(),
+      createStatusParticle('Interrupt!', centerPx, centerPy, 'teal')
     );
   }
 };
@@ -783,13 +955,36 @@ export const completeCast = async (bCh: BattleCharacter) => {
   }
 };
 
+export const applyMiss = (battle: Battle, bCh: BattleCharacter) => {
+  console.log('apply miss to', bCh.ch.name);
+  const currentAnim = characterGetAnimation(bCh.ch);
+  currentAnim.disableSounds();
+  timeoutPromise(150).then(() => currentAnim.enableSounds());
+  playSoundName('battle_evasion');
+  const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+  roomAddParticle(
+    battle.room,
+    createDamageParticle(`Miss!`, centerPx, centerPy, colors.WHITE)
+  );
+
+  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_EVADED);
+  characterOnAnimationCompletion(bCh.ch, () => {
+    battleCharacterSetAnimationIdle(bCh);
+  });
+  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterEvaded, bCh);
+};
+
 export const applyDamage = (
   battle: Battle,
   bCh: BattleCharacter,
-  dmg: number,
-  particleColor: string,
-  postfix?: string
+  params: {
+    damage: number;
+    particleColor: string;
+    soundName?: string;
+    postfix?: string;
+  }
 ): void => {
+  const { damage: dmg, particleColor, postfix, soundName } = params;
   console.log('apply damage to', dmg, bCh.ch.name);
   if (dmg > 0) {
     const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
@@ -811,17 +1006,68 @@ export const applyDamage = (
       battle.room,
       createWeightedParticle(EFFECT_TEMPLATE_GEM, centerPx, centerPy, 1000)
     );
+  } else if (bCh.ch.hp > 0 && soundName) {
+    playSoundName(soundName);
   }
 
   battleCharacterSetAnimationStateAfterTakingDamage(bCh);
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterDamaged, bCh);
 };
 
+export const getDamageAfterDamageEffects = (
+  battle: Battle,
+  victim: BattleCharacter,
+  type: BattleDamageType,
+  damage: number
+) => {
+  const damageEffects = battleGetPersistentEffects(
+    battle,
+    PersistentEffectEvent.onBeforeCharacterDamaged,
+    battleGetAllegiance(battle, victim.ch)
+  );
+  for (let i = 0; i < damageEffects.length; i++) {
+    const damageEffect = damageEffects[
+      i
+    ] as PersistentEffectEventParams<OnBeforeCharacterDamagedCb>;
+    const nextDamage = damageEffect.cb(victim, damage, type);
+    if (nextDamage !== undefined) {
+      damage = nextDamage;
+    }
+  }
+  return Math.max(0, damage);
+};
+
+export const getEvasionAfterEvasionEffects = (
+  battle: Battle,
+  victim: BattleCharacter,
+  type: BattleDamageType,
+  evasion: number
+) => {
+  const evasionEffects = battleGetPersistentEffects(
+    battle,
+    PersistentEffectEvent.onBeforeCharacterEvades,
+    battleGetAllegiance(battle, victim.ch)
+  );
+  for (let i = 0; i < evasionEffects.length; i++) {
+    const evasionEffect = evasionEffects[
+      i
+    ] as PersistentEffectEventParams<OnBeforeCharacterDamagedCb>;
+    const nextEvasion = evasionEffect.cb(victim, evasion, type);
+    if (nextEvasion !== undefined) {
+      evasion = nextEvasion;
+    }
+  }
+  evasion = Math.max(0, evasion);
+  evasion = Math.min(95, evasion);
+  return evasion;
+};
+
 export const getReturnToOverworldBattleCompletionCB = (
   oldRoom: Room,
   leaderPos: Point3d,
   leaderFacing: Facing,
-  template: BattleTemplate
+  template: BattleTemplate,
+  roamer?: Character
 ) => {
   return () => {
     console.log('BATTLE COMPLETED!');
@@ -835,6 +1081,12 @@ export const getReturnToOverworldBattleCompletionCB = (
       const player = getCurrentPlayer();
       characterSetPos(player.leader, leaderPos);
       characterSetFacing(player.leader, leaderFacing);
+      if (roamer) {
+        const roamerName = roamer.name;
+        const scene = getCurrentScene();
+        sceneSetEncounterDefeated(scene, roamerName, oldRoom.name);
+      }
+
       if (template.events?.onAfterBattleEnded) {
         template.events?.onAfterBattleEnded();
       }
@@ -856,10 +1108,11 @@ const checkBattleCompletion = async (battle: Battle) => {
     console.log('VICTORY');
     stopCurrentMusic();
     playSoundName('fanfare');
+    hideSections();
     timeoutPromise(2800).then(() => {
       playMusic('music_battle_victory', true);
+      showSection(AppSection.BattleVictory, true);
     });
-    showSection(AppSection.BattleVictory, true);
     await timeoutPromise(250);
     for (const i in battle.allies) {
       characterSetAnimationState(

@@ -41,7 +41,7 @@ export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
     let cmd: Command | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
-      console.log('EVAL', cmd.conditional);
+      // console.log('EVAL', cmd.conditional);
       if (evalCondition(scene, cmd.conditional)) {
         const commands = sceneGetCommands(scene);
         const commandFunction = commands[cmd.type];
@@ -62,7 +62,7 @@ export const updateScene = (scene: Scene): void => {
             return arg;
           }
         });
-        console.log('next cmd', cmd.type, cmd.args, commandArgs);
+        // console.log('next cmd', cmd.type, cmd.args, commandArgs);
         if (commandFunction(...commandArgs)) {
           break;
         }
@@ -164,12 +164,17 @@ export const evalCondition = (
     } else if (type === 'lt') {
       return args[0] < args[1];
     } else if (type === 'eq') {
-      return (
-        args[0] === args[1] ||
-        scene.storage[args[0]] === args[1] ||
-        scene.storage[args[1]] === args[0] ||
-        scene.storage[args[0]] === scene.storage[args[1]]
-      );
+      const conditions = [
+        args[0] === args[1],
+        scene.storage[args[0]] === args[1],
+        scene.storage[args[1]] === args[0],
+      ];
+      if (typeof args[1] !== 'number') {
+        conditions.push(scene.storage[args[0]] === scene.storage[args[1]]);
+      }
+      return conditions.reduce((prev, curr) => {
+        return curr || prev;
+      }, false);
     } else if (type === 'any') {
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
@@ -286,7 +291,8 @@ export const createAndCallScript = (scene: Scene, src: string) => {
     const script = scripts.tmp;
     script.reset();
     if (scene.currentScript) {
-      scene.scriptStack.unshift({
+      // push to end so that this script runs after the other scripts are done
+      scene.scriptStack.push({
         script: scene.currentScript,
         onScriptCompleted: function () {},
         args: [],

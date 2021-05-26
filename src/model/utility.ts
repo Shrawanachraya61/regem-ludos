@@ -79,9 +79,7 @@ export class Timer {
   }
 
   isComplete(): boolean {
-    return (
-      !this.pausedOverridden && getNow() - this.timestampStart >= this.duration
-    );
+    return !this.pausedOverridden && this.getPctComplete() >= 1;
   }
 
   onCompletion(): Promise<void> {
@@ -104,7 +102,7 @@ export class Timer {
     } else if (diff < 0) {
       diff = -1;
     }
-    return diff / this.duration;
+    return Math.min(1, diff / this.duration);
   }
 
   getDiff() {

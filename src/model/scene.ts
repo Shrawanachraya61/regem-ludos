@@ -12,6 +12,7 @@ export interface Scene {
   storage: Record<string, string | boolean | number>;
   storageOnce: Record<string, string | boolean>;
   storageOnceKeys: Record<string, boolean>;
+  storageEncounters: Record<string, Record<string, boolean>>;
   commands: Record<string, any>;
   currentScript: Script | null;
   currentTrigger: Trigger | null;
@@ -25,11 +26,10 @@ export interface Scene {
 
 export const sceneCreate = (): Scene => {
   const scene = {
-    storage: {
-      quest_tutorial_active: 'true',
-    } as Record<string, string>,
+    storage: {} as Record<string, string>,
     storageOnce: {} as Record<string, string>,
     storageOnceKeys: {} as Record<string, boolean>,
+    storageEncounters: {} as Record<string, Record<string, boolean>>,
     commands: {} as Record<string, any>,
     currentScript: null,
     currentTrigger: null,
@@ -66,4 +66,38 @@ export const sceneHasCommand = (scene: Scene, commandName: string): boolean => {
 
 export const sceneGetCommands = (scene: Scene): Record<string, any> => {
   return scene.commands;
+};
+
+export const sceneSetEncounterDefeated = (
+  scene: Scene,
+  roamerName: string,
+  overworldName: string
+) => {
+  if (scene.storageEncounters[overworldName]) {
+    scene.storageEncounters[overworldName][roamerName] = true;
+  } else {
+    scene.storageEncounters[overworldName] = {
+      [roamerName]: true,
+    } as Record<string, boolean>;
+  }
+};
+
+export const sceneIsEncounterDefeated = (
+  scene: Scene,
+  roamerName: string,
+  overworldName: string
+) => {
+  if (scene.storageEncounters[overworldName]) {
+    return !!scene.storageEncounters[overworldName][roamerName];
+  } else {
+    return false;
+  }
+};
+
+export const sceneSetCurrentOverworld = (scene: Scene, roomName: string) => {
+  scene.storage['current_overworld'] = roomName;
+};
+
+export const sceneGetCurrentOverworldName = (scene: Scene) => {
+  return scene.storage['current_overworld'] ?? 'test2';
 };

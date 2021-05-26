@@ -2,7 +2,7 @@ import { battleStatsCreate, BattleStats } from 'model/battle';
 import { AnimationState, Facing, CharacterTemplate } from 'model/character';
 import { BattleActions } from 'controller/battle-actions';
 
-import { init as initTutorial } from './tutorial';
+import { init as initTutorial } from './tutorial-enemies';
 
 const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {

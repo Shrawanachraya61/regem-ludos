@@ -10,7 +10,7 @@ import {
 } from 'model/battle-character';
 import { style, colors } from 'view/style';
 
-import AnimDiv from 'view/elements/AnimDiv';
+import AnimDiv from 'view/elements/StaticAnimDiv';
 import { ProgressBarWithRender } from 'view/elements/ProgressBar';
 import { characterGetHpPct } from 'model/character';
 import { useRenderLoop } from 'view/hooks';

@@ -1,4 +1,16 @@
-import { Battle, battleStatsCreate, BattleStats } from 'model/battle';
+import {
+  Battle,
+  battleStatsCreate,
+  BattleStats,
+  battleAddPersistentEffect,
+  PersistentEffectEvent,
+  BattleDamageType,
+  battleRemovePersistentEffect,
+  PersistentEffectEventParams,
+  OnBeforeCharacterDamagedCb,
+  BattleAllegiance,
+  OnBeforeCharacterEvadesCb,
+} from 'model/battle';
 import { AnimationState, Facing, CharacterTemplate } from 'model/character';
 import {
   BattleAction,
@@ -9,10 +21,12 @@ import {
   doRange,
   RangeType,
   doSpell,
+  doChannel,
 } from 'controller/battle-actions';
 import { setCasting } from 'controller/battle-management';
 import { BattleCharacter } from 'model/battle-character';
 import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
+import { createAnimation } from 'model/animation';
 
 const COOLDOWN_MOD = 1;
 
@@ -68,7 +82,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       cooldown: 4000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
-        swings: [SwingType.NORMAL],
+        swings: [SwingType.NORMAL, SwingType.NORMAL],
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 1;
@@ -90,7 +104,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       cooldown: 11000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
-        swings: [SwingType.KNOCK_DOWN, SwingType.KNOCK_DOWN],
+        swings: [SwingType.NORMAL, SwingType.KNOCK_DOWN],
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 3;
@@ -174,12 +188,60 @@ export const initBattleActions = (): Record<string, BattleAction> => {
                   baseStagger,
                   particleText: 'Black Fire Snap!',
                   particleTemplate: EFFECT_TEMPLATE_FIREBALL,
+                  soundName: 'battle_fire_explosion1',
                 });
               }
             },
             onInterrupt: async () => {},
           });
         }
+      },
+    },
+    RobotChannelEvasionBuff: {
+      name: 'RobotChannelEvasionBuff',
+      description: 'AI',
+      cooldown: 20000 * COOLDOWN_MOD,
+      type: BattleActionType.CHANNEL,
+      meta: {},
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const persistentEffectCb: OnBeforeCharacterEvadesCb = (
+          bCh: BattleCharacter,
+          currentEvasion: number,
+          damageType: BattleDamageType
+        ) => {
+          console.log(
+            'GOT A EVASION TYPE IN PERSISTENT EFFECT CB',
+            bCh,
+            currentEvasion,
+            damageType
+          );
+          return currentEvasion + 10;
+        };
+        const persistentEffect: PersistentEffectEventParams<OnBeforeCharacterEvadesCb> = {
+          cb: persistentEffectCb,
+          source: bCh,
+          affectedAllegiance: BattleAllegiance.ENEMY,
+          name: 'Evasion+',
+          description: 'Units have 10% increased evasion.',
+          icon: 'effects_channel_buff',
+          anim: createAnimation('effects_channel_buff2'),
+        };
+        battleAddPersistentEffect(
+          battle,
+          PersistentEffectEvent.onBeforeCharacterEvades,
+          persistentEffect
+        );
+        bCh.onChannelInterrupted = async () => {
+          battleRemovePersistentEffect(
+            battle,
+            PersistentEffectEvent.onBeforeCharacterEvades,
+            persistentEffect
+          );
+        };
+        await doChannel(battle, exp.RobotChannelEvasionBuff, bCh, {
+          particleText: 'Evasion+',
+          soundName: 'robot_channel_start',
+        });
       },
     },
   };
@@ -201,6 +263,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingNormalNNStaggerable],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_MELEE_EASY = {
@@ -215,6 +278,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingNormalNNStaggerable],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_MELEE_STAGGERABLE = {
@@ -229,6 +293,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingNormalNNStaggerable],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_MELEE = {
@@ -243,6 +308,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingNormalNN],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_MELEE_SPEEDY = {
@@ -257,6 +323,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingSpeedyN],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_ARMORED = {
@@ -266,12 +333,13 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 28,
-      STAGGER: 5,
+      STAGGER: 12,
     },
     facing: Facing.LEFT,
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingArmoredNK, BattleActions.RobotSwingPierce],
     armor: 1,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_RANGED = {
@@ -286,6 +354,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotRanged],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_MAGE = {
@@ -300,6 +369,22 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotBlackFireSnap],
     armor: 0,
+    staggerSoundName: 'robot_staggered',
+  };
+
+  exp.TUT_ROBOT_CHANNELER = {
+    name: 'Robot Chnl',
+    spriteBase: 'tut_robot_channeler',
+    stats: {
+      ...battleStatsCreate(),
+      HP: 18,
+      STAGGER: 5,
+    },
+    facing: Facing.LEFT,
+    animationState: AnimationState.BATTLE_IDLE,
+    skills: [BattleActions.RobotChannelEvasionBuff],
+    armor: 0,
+    staggerSoundName: 'robot_staggered',
   };
 
   exp.TUT_ROBOT_BOSS = {
@@ -315,5 +400,6 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     animationState: AnimationState.BATTLE_IDLE,
     skills: [BattleActions.RobotSwingArmoredNK, BattleActions.RobotSwingPierce],
     armor: 1,
+    staggerSoundName: 'robot_staggered',
   };
 };

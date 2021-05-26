@@ -1,0 +1,1 @@
+Picture,bg-fog,bg/bg-fog.png,1024,683

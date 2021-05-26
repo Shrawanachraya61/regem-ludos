@@ -34,6 +34,19 @@ step,this
 @this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
 
+#utils-save-point-activate
+step,this
+action,utils-save-point-activate-action
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
+@utils-save-point-activate-action
++showUISection(Save);
+
+#utils-save-point-deactivate
+step,this
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+
 @utils-vr-step
 +playSound(beep);
 +setCharacterText('The Haptic Bracer is vibrating.');
@@ -78,21 +91,36 @@ step,this
 +waitMS(1000);
 
 // ARG0 = name of character to spawn particles at
+@utils-character-jump
++setConversationSpeaker(none);
++playSound('jump_cutscene');
++jump([ARG0]);
+
+// ARG0 = name of character to spawn particles at
 @utils-character-giggle
++setConversationSpeaker(none);
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
 +waitMS(200);
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
 +waitMS(200);
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
-+waitMS(200);
++waitMS(1000);
 
 // ARG0 = name of character to spawn particles at
 @utils-character-sigh
++setConversationSpeaker(none);
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_SIGH, [ARG0], 'rise');
-+waitMS(1500);
++waitMS(1250);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-shrug
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SHRUG, [ARG0], 'rise');
++waitMS(1250);
 
 // ARG0 = name of character to look around
 @utils-character-look-around
++setConversationSpeaker(none);
 +setFacing([ARG0], 'down');
 +waitMS(500);
 +setFacing([ARG0], 'rightdown');
@@ -113,6 +141,7 @@ step,this
 
 // ARG0 = name of character to spin
 @utils-character-spin
++setConversationSpeaker(none);
 +setFacing([ARG0], 'down');
 +waitMS(500);
 +playSound('woosh');
@@ -132,10 +161,74 @@ step,this
 +waitMS(33);
 +setFacing([ARG0], 'down');
 
+// ARG0 = name of character to spin
+@utils-character-shake-z
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(500);
+
+@utils-character-shake-x
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(500);
+
 // ARG0 = ch template name
 // ARG1 = marker name
 @utils-spawn-character-at-marker
++setConversationSpeaker(none);
 +playSound('spawn_enemy');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, [ARG1], 'normal');
 +waitMS(400);
 +spawnCharacterAtMarker([ARG0], [ARG1]);
+
+// ARG0 = ch template name
+@utils-despawn-character
++setConversationSpeaker(none);
++playSound('spawn_enemy');
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, [ARG0], 'normal');
++waitMS(400);
++despawnCharacter([ARG0]);
+
+@utils-get-treasure
++playSound('get_item');
++spawnParticleAtMarker('EFFECT_TEMPLATE_TREASURE', 'MarkerAda0', 'rise');

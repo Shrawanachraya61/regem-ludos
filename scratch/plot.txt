@@ -153,17 +153,17 @@ Epilogue.
 
 Required Portraits:
 
-Ada - Default, Default-Speaking, Angry, Smug/Pleased, Irritated, Confused
-Conscience - Default, Default-Speaking, Smug/Pleased, Confused, Excited, Sarcastic/Knowing (too similar to smug pleased?)
-Carl-Arnold - Default, Default-Speaking, Focused, Crazy, Morally Crushed/Defeated/Crying
-Skye - Default, Default-Speaking, Angry, Eye-Roll, Confused, Grin (like, dumb boy grin)
-Iroha - Default, Default-Speaking, Naive, Intent, Distraught, Happy
-Vivi - Default, Default-Speaking, Focused, Slightly Sad, Slightly Happy
-Bartolo - Default, Default-Speaking, Pushing Glasses Up On Nose, Defeated
-Anjana - Default, Default-Speaking, Eyebrow Raised, Bitter, Confused (Head Tilted Sideways)
-Lotte - Default, Default-Speaking, Glamorous? (idk what this would look like lol), Angry/Jealous, Smug/Pleased, Defeated
-Jesse - Default, Default-Speaking, Morose, Slightly Confused, Slightly Happy
-Johnathan - Default, Default-Speaking, Morose, Slightly Confused, Slightly Happy
+Ada - Default, Exasperated/Resigned, Irritated, Amused, Confused
+Conscience - Default, Smug/Pleased With Self (Aqua makes this kind of face a lot), Curious/Wondering, Excited
+Skye - Default, Generally Pissed Off, Grin (like, dumb boy grin)
+Iroha - Default, Naive, Overly Distraught, Overly Excited/Happy
+Vivi - Default, Focused, Slightly Sad, Whatever an XD face would look like
+Anjana - Default, Eyebrow Raised, Bitter,
+Carl-Arnold - Default, Diabolical, Crazy/Unhinged, Defeated (Morally Crushed/Crying)
+Bartolo - Default, Pushing Glasses Up On Nose, Defeated
+Lotte - Default, Glamorous?, Angry/Jealous, Smug/Pleased, Defeated
+Jesse - Default, Morose/Melancholy, Cheerful
+Johnathan - Default, Eager, Crushed (what he would look like if he learned he couldn't deliver his pizza)
 
 Required Character Animations:
 

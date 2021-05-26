@@ -4,11 +4,14 @@ import { style, colors, keyframes } from 'view/style';
 import CursorIcon from 'view/icons/Cursor';
 import CloseIcon from 'view/icons/Close';
 import { playSoundName } from 'model/sound';
+import { isAuxKey, isCancelKey, isConfirmKey } from 'controller/events';
 
 interface IVerticalMenuProps<T> {
   items: VerticalMenuItem<T>[];
   onItemClick: (value: T) => void;
   onItemClickSound?: string;
+  onAuxClick?: (value: T) => void;
+  onAuxClickSound?: string;
   open: boolean;
   isInactive?: boolean;
   title?: string;
@@ -248,26 +251,32 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
-      console.log('CODE', ev.code);
       if (props.open && !props.isInactive) {
+        console.log('CODE', ev.code);
         let nextIndex = cursorIndex;
         if (ev.code === 'ArrowDown') {
+          playSoundName('menu_move');
           dispatch({ type: 'Increment' });
         } else if (ev.code === 'ArrowUp') {
+          playSoundName('menu_move');
           dispatch({ type: 'Decrement' });
           nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
-        } else if (
-          ev.code === 'Enter' ||
-          ev.code === 'KeyX' ||
-          ev.code === 'Keyx'
-        ) {
+        } else if (isConfirmKey(ev.code)) {
           dispatch({ type: 'Select' });
           if (props.onItemClickSound) {
             playSoundName(props.onItemClickSound);
           }
-        } else if (ev.code === 'Escape') {
+        } else if (isCancelKey(ev.code)) {
           if (props.onClose) {
             props.onClose();
+          }
+        } else if (isAuxKey(ev.code)) {
+          if (props.onAuxClick) {
+            if (props.onAuxClickSound) {
+              playSoundName(props.onAuxClickSound);
+            }
+            const item = props.items[cursorIndex];
+            props.onAuxClick(item.value);
           }
         }
       }

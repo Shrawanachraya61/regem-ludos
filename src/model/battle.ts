@@ -1,22 +1,72 @@
-import { Room } from 'model/room';
+import { Room, roomAddParticle, roomRemoveParticle } from 'model/room';
 import { BattleAI } from 'controller/battle-ai';
-import { BattleCharacter, battleCharacterIsActing } from './battle-character';
-import { CharacterTemplate, Character, AnimationState } from './character';
+import {
+  BattleCharacter,
+  battleCharacterIsActing,
+  battleCharacterIsPreventingTurn,
+} from './battle-character';
+import {
+  CharacterTemplate,
+  Character,
+  AnimationState,
+  characterGetPosCenterPx,
+  characterGetPosTopLeftPx,
+} from './character';
 import { setAtMarker } from 'controller/scene-commands';
 import { getCurrentPlayer } from './generics';
 import { BattleActionType } from 'controller/battle-actions';
+import { Animation } from 'model/animation';
+import { Particle, particleCreateFromTemplate } from 'model/particle';
 
 export interface Battle {
   room: Room;
+  isStarted: boolean;
   isCompleted: boolean;
   allies: BattleCharacter[];
   enemies: BattleCharacter[];
   defeated: BattleCharacter[];
   subscriptions: IBattleSubscriptionHub;
+  persistentEffects: PersistentEffectEventHub;
   targetedEnemyIndex: number;
   targetedEnemyRangeIndex: number;
   isPaused: boolean;
   template?: BattleTemplate;
+}
+
+export enum PersistentEffectEvent {
+  onBeforeCharacterEvades = 'onBeforeCharacterEvades',
+  onBeforeCharacterDamaged = 'onBeforeCharacterDamaged',
+}
+
+export type OnBeforeCharacterEvadesCb = (
+  bCh: BattleCharacter,
+  currentEvasionRate: number,
+  damageType: BattleDamageType
+) => number | undefined;
+
+export type OnBeforeCharacterDamagedCb = (
+  bCh: BattleCharacter,
+  currentDamageValue: number,
+  damageType: BattleDamageType
+) => number | undefined;
+
+export interface PersistentEffectEventParams<T> {
+  cb: T;
+  source: BattleCharacter;
+  description: string;
+  affectedAllegiance: BattleAllegiance;
+  name: string;
+  icon: string;
+  anim: Animation;
+  particle?: Particle;
+}
+
+export interface PersistentEffectEventHub {
+  // for changing the evasion rate when an effect is active
+  [PersistentEffectEvent.onBeforeCharacterEvades]: PersistentEffectEventParams<OnBeforeCharacterEvadesCb>[];
+  // for changing how much damage is dealt to a character after all damage calculations
+  // have been made
+  [PersistentEffectEvent.onBeforeCharacterDamaged]: PersistentEffectEventParams<OnBeforeCharacterDamagedCb>[];
 }
 
 export enum BattleEvent {
@@ -31,8 +81,10 @@ export enum BattleEvent {
   onCharacterPinned = 'onCharacterPinned',
   onCharacterRecovered = 'onCharacterRecovered',
   onCharacterCasting = 'onCharacterCasting',
+  onCharacterChannelling = 'onCharacterChannelling',
   onCharacterSpell = 'onCharacterSpell',
   onCharacterInterrupted = 'onCharacterInterrupted',
+  onCharacterEvaded = 'onCharacterEvaded',
   onCharacterDefeated = 'onCharacterDefeated',
   onMagicShieldDamaged = 'onMagicShieldDamaged',
   onTurnStarted = 'onTurnStarted',
@@ -55,7 +107,9 @@ export interface IBattleSubscriptionHub {
   [BattleEvent.onCharacterRecovered]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterSpell]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterCasting]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterChannelling]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterInterrupted]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterEvaded]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterDefeated]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onMagicShieldDamaged]: ((
     allegiance: BattleAllegiance
@@ -105,6 +159,12 @@ export enum Status {
   DEFEND = 'defend',
 }
 
+export enum BattleDamageType {
+  RANGED = 'ranged',
+  SWING = 'swing',
+  MAGIC = 'magic',
+}
+
 export interface BattleStats {
   POW: number;
   ACC: number;
@@ -135,7 +195,9 @@ export const battleCreate = (
     onCharacterPinned: [],
     onCharacterSpell: [],
     onCharacterCasting: [],
+    onCharacterChannelling: [],
     onCharacterInterrupted: [],
+    onCharacterEvaded: [],
     onCharacterDefeated: [],
     onMagicShieldDamaged: [],
     onTurnStarted: [],
@@ -143,13 +205,20 @@ export const battleCreate = (
     onCompletion: [],
   };
 
+  const persistentEffects: PersistentEffectEventHub = {
+    onBeforeCharacterEvades: [],
+    onBeforeCharacterDamaged: [],
+  };
+
   return {
     room,
+    isStarted: false,
     isCompleted: false,
     enemies,
     defeated: [] as BattleCharacter[],
     allies,
     subscriptions,
+    persistentEffects,
     targetedEnemyIndex: 0,
     targetedEnemyRangeIndex: 0,
     isPaused: false,
@@ -164,7 +233,7 @@ export const battleStatsCreate = (): BattleStats => {
     CON: 1,
     RES: 1,
     SPD: 1,
-    EVA: 0,
+    EVA: 1,
     HP: 10,
     STAGGER: 10,
   };
@@ -320,17 +389,77 @@ export const battleInvokeEvent = (
   });
 };
 
+export function battleAddPersistentEffect<T>(
+  battle: Battle,
+  eventName: PersistentEffectEvent,
+  params: PersistentEffectEventParams<T>
+) {
+  battle.persistentEffects[eventName].push(params as any);
+  // const particle = particleCreate();
+  // particle.timer.start(Infinity);
+
+  const [px, py] = characterGetPosTopLeftPx(params.source.ch);
+  const particle = particleCreateFromTemplate([px, py], {
+    duration: Infinity,
+    opacity: 0.5,
+  });
+  particle.anim = params.anim;
+  particle.anim?.start();
+  params.particle = particle;
+  roomAddParticle(battle.room, particle);
+}
+
+export function battleRemovePersistentEffect<T>(
+  battle: Battle,
+  eventName: PersistentEffectEvent,
+  params: PersistentEffectEventParams<T>
+) {
+  const ind = battle.persistentEffects[eventName].indexOf(params as any);
+  if (ind > -1) {
+    battle.persistentEffects[eventName].splice(ind, 1);
+    if (params.particle) {
+      roomRemoveParticle(battle.room, params.particle);
+    }
+  }
+}
+
+export function battleGetPersistentEffects<T>(
+  battle: Battle,
+  eventName: PersistentEffectEvent,
+  allegiance: BattleAllegiance
+): PersistentEffectEventParams<T>[] {
+  // REALLY IMPORTANT: this has to be a copy or you get bugs when an event removes
+  // itself while the event is firing.
+  const events = battle.persistentEffects[eventName].slice().filter(params => {
+    return params.affectedAllegiance === allegiance;
+  });
+  return events as any;
+}
+
+export function battleGetAllPersistentEffectsForAllegiance<T>(
+  battle: Battle,
+  allegiance: BattleAllegiance
+): PersistentEffectEventParams<T>[] {
+  let ret: PersistentEffectEventParams<T>[] = [];
+  for (const i in battle.persistentEffects) {
+    ret = ret.concat(battle.persistentEffects[i]);
+  }
+  return ret.filter(
+    params => battleGetAllegiance(battle, params.source.ch) === allegiance
+  );
+}
+
 export const battleGetActingAllegiance = (
   battle: Battle
 ): BattleAllegiance | null => {
   const areAlliesActing = battle.allies.reduce((isActing, bCh) => {
-    return isActing || battleCharacterIsActing(bCh);
+    return isActing || battleCharacterIsPreventingTurn(bCh);
   }, false);
   if (areAlliesActing) {
     return BattleAllegiance.ALLY;
   }
   const areEnemiesActing = battle.enemies.reduce((isActing, bCh) => {
-    return isActing || battleCharacterIsActing(bCh);
+    return isActing || battleCharacterIsPreventingTurn(bCh);
   }, false);
   if (areEnemiesActing) {
     return BattleAllegiance.ENEMY;

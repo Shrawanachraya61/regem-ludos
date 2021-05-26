@@ -29,6 +29,7 @@ interface PFPath {
 }
 
 const INFINITY = 9999999;
+let DEBUG = false;
 
 const getConnections = (node: PFNode, graph: PFGraph) => {
   const nodeAbove = graph.nodes[to1dIndex([node.x, node.y - 1], graph.width)];
@@ -36,17 +37,36 @@ const getConnections = (node: PFNode, graph: PFGraph) => {
   const nodeBelow = graph.nodes[to1dIndex([node.x, node.y + 1], graph.width)];
   const nodeRight = graph.nodes[to1dIndex([node.x + 1, node.y], graph.width)];
 
+  if (node.isWall) {
+    return [];
+  }
+
   return [nodeAbove, nodeLeft, nodeBelow, nodeRight]
     .filter(node => {
+      if (DEBUG) {
+        console.log('CHECK GET CONNECTIONS NODE', node);
+      }
       if (node) {
         if (node.isWall) {
+          if (DEBUG) {
+            console.log('-- node is wall');
+          }
           return false;
         }
-        if (nodeBelow && nodeBelow.isWall) {
-          return false;
-        }
-        if (nodeRight && nodeRight.isWall) {
-          return false;
+        // if (nodeBelow && nodeBelow.isWall) {
+        //   if (DEBUG) {
+        //     console.log('-- node below is wall');
+        //   }
+        //   return false;
+        // }
+        // if (nodeRight && nodeRight.isWall) {
+        //   if (DEBUG) {
+        //     console.log('-- node right is wall');
+        //   }
+        //   return false;
+        // }
+        if (DEBUG) {
+          console.log('-- NODE IS CONNECTED!');
         }
         return true;
       } else {
@@ -90,9 +110,15 @@ const setupPFGraph = (start: Point, end: Point, graph: PFGraph) => {
     throw new Error('Cannot setupPFGraph: End point is not in PFGraph');
   }
 
+  const startNode = graph.nodes[to1dIndex(start, graph.width)];
+
   graph.nodes.forEach((node: PFNode) => {
     node.visited = false;
+    // if (node === startNode) {
+    //   DEBUG = true;
+    // }
     node.connections = getConnections(node, graph);
+    DEBUG = false;
   });
 
   return graph;
@@ -175,7 +201,7 @@ export const createPFPath = (start: Point, end: Point, room: Room): PFPath => {
   }
 
   if (ctr === 1000 || openSet.length === 0) {
-    console.log(start, end, graph);
+    console.log(start, end, graph, startNode, endNode);
     console.error('Cannot find path, too long or impossible');
     return pfPath;
   }

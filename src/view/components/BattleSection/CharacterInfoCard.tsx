@@ -8,9 +8,10 @@ import {
   battleCharacterIsActingReady,
   battleCharacterCanAct,
   battleCharacterIsCasting,
+  battleCharacterGetEvasion,
 } from 'model/battle-character';
 import { colors, keyframes, style } from 'view/style';
-import AnimDiv from 'view/elements/AnimDiv';
+import AnimDiv from 'view/elements/StaticAnimDiv';
 import ActionSelectMenu from './ActionSelectMenu';
 import {
   useCursorIndexStateWithKeypress,
@@ -323,7 +324,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
 
   const battle = getCurrentBattle();
   const chName = props.bCh.ch.name;
-  const EVA = 0;
+  const EVA = battleCharacterGetEvasion(props.bCh);
   const portraitName = `${props.bCh.ch.spriteBase}_portrait_f`;
   const selectedAction = props.bCh.ch.skills[props.bCh.ch.skillIndex];
   const chBattleState = props.bCh.actionState;

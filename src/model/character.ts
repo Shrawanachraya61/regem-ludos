@@ -34,6 +34,7 @@ import {
   TILE_HEIGHT_WORLD,
   TILE_WIDTH_WORLD,
   roomGetDistanceToNearestWallInFacingDirection,
+  roomRemoveCharacter,
 } from 'model/room';
 import { RenderObject } from 'model/render-object';
 import { getCtx } from './canvas';
@@ -99,6 +100,7 @@ export enum AnimationState {
   BATTLE_IDLE = 'battle_idle',
   BATTLE_IDLE_RANGED = 'battle_idle_ranged',
   BATTLE_JUMP = 'battle_jump',
+  BATTLE_EVADED = 'battle_evaded',
   BATTLE_ATTACK = 'battle_attack',
   BATTLE_ATTACK_PIERCE = 'battle_attack_p',
   BATTLE_ATTACK_KNOCKDOWN = 'battle_attack_k',
@@ -108,6 +110,7 @@ export enum AnimationState {
   BATTLE_RANGED = 'battle_ranged',
   BATTLE_CAST = 'battle_cast',
   BATTLE_SPELL = 'battle_spell',
+  BATTLE_CHANNEL = 'battle_channel',
   BATTLE_ITEM = 'battle_item',
   BATTLE_FLOURISH = 'battle_flourish',
   BATTLE_DEFEATED = 'battle_defeated',
@@ -160,6 +163,7 @@ export interface Character {
   collisionSize: Point;
   template: CharacterTemplate | null;
   encounter?: BattleTemplate;
+  encounterStuckRetries: number;
   ro?: RenderObject;
 }
 
@@ -180,6 +184,7 @@ export interface CharacterTemplate {
   canGetStuckWhileWalking?: boolean;
   encounterName?: string;
   speed?: number;
+  staggerSoundName?: string;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -221,6 +226,7 @@ export const characterCreate = (name: string): Character => {
     highlighted: false,
     visionRange: 16 * 2,
     collisionSize: [16, 16],
+    encounterStuckRetries: 0,
     template: null,
   };
   ch.ro = {
@@ -837,9 +843,14 @@ export const characterUpdate = (ch: Character): void => {
         if (ch.encounter) {
           characterStopWalking(ch);
           characterStopAi(ch);
-          timeoutPromise(250 + Math.random() * 250).then(() => {
-            characterStartAi(ch);
-          });
+          ch.encounterStuckRetries++;
+          if (ch.encounterStuckRetries > 2) {
+            roomRemoveCharacter(room, ch);
+          } else {
+            timeoutPromise(250 + Math.random() * 250).then(() => {
+              characterStartAi(ch);
+            });
+          }
         }
         // const timer = new Timer(500);
         // timer.awaits.push(() => {

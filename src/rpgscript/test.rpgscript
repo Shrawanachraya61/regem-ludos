@@ -261,7 +261,7 @@ Ada: "The party members have spawned."
 Ada: "They will now despawn."
 +setConversationSpeaker(none);
 +despawnPartyMembers();
-Ada: "The party members have despawned."
+Ada: "The party members have de-spawned."
 +endConversation();
 
 @test-spawn-particle-at-marker
@@ -272,3 +272,26 @@ Ada: "A particle will now spawn at MarkerPlayer."
 +waitMS(1000);
 Ada: "A particle should have spawned."
 +endConversation();
+
+@test-multi-single-conversation
++setConversation('Ada');
+Ada: "This tests a single conversation portrait mode."
+Ada: "After I talk, then Conscience shall talk, and it should be a smooth transition."
++setConversation('Conscience');
+Conscience: "Whoop! Whoop! I'm in the house now!"
++setConversation('Ada');
+Ada: "How woefully inappropriate, thank you."
++endConversation();
+
+@test-script-jump-multi
++callScript('utils-start-Conscience-dialogue');
+Ada: "This tests that the UI does not glitch out when jumping in a setConversation2."
+Conscience: "I shall speak now!"
++callScript('utils-character-jump', 'Conscience');
+Conscience: "Wheeeeeeeeeeeeeeeeeeeeee!"
+Ada: "You are truly despicable."
++callScript('utils-stop-Conscience-dialogue');
++endConversation();
+
+@test-combat
++enterCombat(ENCOUNTER_TUT_DUNGEON4);

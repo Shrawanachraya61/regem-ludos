@@ -1,11 +1,13 @@
 /* @jsx h */
 import { h } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState, useCallback } from 'preact/hooks';
 import { drawAnimation } from 'view/draw';
 import { createAnimation } from 'model/animation';
+import { useRenderLoop } from 'view/hooks';
 
 interface IAnimDivProps {
   animName: string;
+  renderLoopId: string;
   style?: Record<string, string>;
   scale?: number;
   width?: number;
@@ -19,11 +21,9 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
   const height = props.height;
   const s = props.scale;
   const animName = props.animName;
-  useEffect(() => {
+  const loopFunc = useCallback(() => {
     const canvas = canvasRef.current;
-    if (anim.name !== animName) {
-      setAnim(createAnimation(animName));
-    } else if (canvas) {
+    if (canvas) {
       const [w, h] = anim.getSpriteSize(0);
       const scale = s ?? 1;
       canvas.width = (width ?? w) * scale;
@@ -34,6 +34,17 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
       drawAnimation(anim, 0, 0, scale, ctx);
     }
   }, [s, width, height, animName, anim]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (anim.name !== animName) {
+      setAnim(createAnimation(animName));
+    } else if (canvas) {
+      loopFunc();
+    }
+  }, [s, width, height, animName, anim, loopFunc]);
+
+  useRenderLoop(props.renderLoopId, loopFunc);
   return (
     <div>
       <canvas style={props.style} ref={canvasRef}></canvas>

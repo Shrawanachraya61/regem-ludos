@@ -13,6 +13,8 @@ import {
   getCurrentSettings,
   saveSettingsToLS,
 } from 'controller/save-management';
+import { getUiInterface } from 'view/ui';
+import { playSoundName } from 'model/sound';
 
 const Root = style('div', {
   position: 'absolute',
@@ -48,9 +50,10 @@ const SettingsSection = () => {
   }, []);
 
   const handleCloseClick = () => {
-    showSection(AppSection.Debug, true);
-    popKeyHandler();
-    unpause();
+    // showSection(AppSection.Debug, true);
+    const onClose = getUiInterface().appState.settings.onClose;
+    playSoundName('menu_select');
+    onClose();
   };
   return (
     <>

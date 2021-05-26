@@ -17,7 +17,12 @@ import {
 } from 'model/character';
 import { Overworld, overworldHide, overworldShow } from 'model/overworld';
 import { Timer } from 'model/utility';
-import commands, { fadeIn, fadeOut } from 'controller/scene-commands';
+import commands, {
+  despawnCharacter,
+  fadeIn,
+  fadeOut,
+  spawnParticleAtCharacter,
+} from 'controller/scene-commands';
 import {
   Point,
   facingToIncrements,
@@ -28,6 +33,7 @@ import {
   getCurrentOverworld,
   getCurrentPlayer,
   getCurrentRoom,
+  getCurrentScene,
   setCurrentBattle,
   setCurrentRoom,
 } from 'model/generics';
@@ -48,6 +54,7 @@ import { AppSection } from 'model/store';
 import { createParticleAtCharacter } from 'controller/battle-actions';
 import { EFFECT_TEMPLATE_AGGROED } from 'model/particle';
 import { playSoundName } from 'model/sound';
+import { callScript, createAndCallScript } from 'controller/scene-management';
 
 const exp = {} as { [key: string]: OverworldAI };
 export const get = (key: string): OverworldAI => {
@@ -138,7 +145,8 @@ const startEncounterFromRoamer = (ch: Character) => {
         oldRoom,
         leaderPos,
         leaderFacing,
-        encounter
+        encounter,
+        ch
       ),
       false
     );
@@ -174,12 +182,38 @@ export const init = () => {
           () => {}
         );
       } else {
+        const despawnFunc = async () => {
+          if (ch.encounterStuckRetries > 3) {
+            console.log('REMOVE STUCK RETRIES CH', ch);
+            playSoundName('spawn_enemy');
+            spawnParticleAtCharacter(
+              'EFFECT_TEMPLATE_SPAWN',
+              ch.name,
+              'normal'
+            );
+            await timeoutPromise(400);
+            despawnCharacter(ch.name);
+            //           await createAndCallScript(
+            //             scene,
+            //             `
+            // +playSound('spawn_enemy');
+            // +spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, ${ch.name}, 'normal');
+            // +waitMS(400);
+            // +despawnCharacter(${ch.name});
+            //           `
+            //           );
+          } else {
+            t.awaits.push(() => {
+              ch.aiState.halted = false;
+            });
+            characterAddTimer(ch, t);
+          }
+        };
+
         ch.aiState.halted = true;
-        const t = new Timer(500);
-        t.awaits.push(() => {
-          ch.aiState.halted = false;
-        });
-        characterAddTimer(ch, t);
+        const t = new Timer(300);
+        ch.encounterStuckRetries++;
+        despawnFunc();
       }
     };
 

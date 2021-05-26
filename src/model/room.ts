@@ -30,6 +30,8 @@ import {
   createTileRenderObject,
 } from 'model/render-object';
 import { createCanvas } from 'model/canvas';
+import { sceneIsEncounterDefeated } from './scene';
+import { getCurrentOverworld, getCurrentScene } from './generics';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -76,6 +78,7 @@ export interface Room {
   floorTileObjects: RenderObject[];
   floor?: Sprite;
   markers: Record<string, Marker>;
+  taggedMarkers: Marker[];
   triggerActivators: TriggerActivator[];
   visible: boolean;
 }
@@ -255,6 +258,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     characters: [] as Character[],
     particles: [] as Particle[],
     markers: {} as Record<string, Marker>,
+    taggedMarkers: [] as Marker[],
     triggerActivators: [] as TriggerActivator[],
     renderObjects: [] as RenderObject[],
     floorTileObjects: [] as RenderObject[],
@@ -276,7 +280,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
   const addTile = (tiledTileId: number, i: number) => {
     // Tiled sets id to 0 when no tile exists
     if (tiledTileId === 0) {
-      return;
+      // the blank floors_1 tile
+      tiledTileId = 129;
     }
 
     const { sprite, tileWidth, tileHeight } = gidToTileSpriteAndSize(
@@ -286,9 +291,9 @@ export const createRoom = (name: string, tiledJson: any): Room => {
 
     const isWallTileset = sprite.indexOf('wall') > -1;
     const isPropTileset = sprite.indexOf('props') > -1;
+    const isFloorTileset = sprite.indexOf('floors') > -1;
     const isFromTiles2 =
       secondaryTileLayer && data[i] !== secondaryTileLayer.data[i];
-    // const isFromTiles2 = false;
 
     const tile = {
       sprite,
@@ -312,14 +317,38 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         tile.isProp = true;
         tile.isWall = true;
       }
-    } else {
-      let defaultFloorSprite = room.defaultFloorSprite;
 
       if (isFromTiles2) {
         // if a tile came from the Tiles2 layer, then use the tile from below it as the
+        // floor below it (special case for negative Z tiles)
+        const { sprite: floorSprite } = gidToTileSpriteAndSize(
+          tiledJson.tilesets,
+          data[i]
+        );
+        const defaultFloorSprite = floorSprite;
+        const floorTile = {
+          ...tile,
+          tileWidth: 32,
+          tileHeight: 32,
+          sprite: defaultFloorSprite,
+          id: isFromTiles2 ? data[i] || 1 : 1,
+        } as Tile;
+        const roFloor = createTileRenderObject(floorTile);
+        floorTile.ro = roFloor;
+        floorTile.ro.sortY -= 1;
+        tile.floorTileBeneath = floorTile;
+        room.renderObjects.push(roFloor);
+      }
+    } else {
+      let defaultFloorSprite = room.defaultFloorSprite;
+      if (isFromTiles2) {
+        // if a tile came from the Tiles2 layer, then use the tile from below it as the
         // floor sprite.  This way it looks the same as how Tiled sees it.
-        const { sprite } = gidToTileSpriteAndSize(tiledJson.tilesets, data[i]);
-        defaultFloorSprite = sprite;
+        const { sprite: floorSprite } = gidToTileSpriteAndSize(
+          tiledJson.tilesets,
+          data[i]
+        );
+        defaultFloorSprite = floorSprite;
       }
 
       if (tile.isWall && !tile.isProp) {
@@ -430,7 +459,15 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       p => p.name === 'encounterName'
     );
     if (customEncounterName) {
+      const roamerName = chTemplate.name + x + '+' + y;
+      const scene = getCurrentScene();
+
+      if (sceneIsEncounterDefeated(scene, roamerName, room.name)) {
+        return;
+      }
       chTemplate.encounterName = customEncounterName.value;
+      chTemplate.name = roamerName;
+      chTemplate.nameLabel = chTemplate.name;
     } else if (customOverworldAi) {
       console.error(
         `Error, character has an overworldAi but not an encounterName: ${tiledObject.name} `,
@@ -461,6 +498,22 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       y: newY,
     };
     room.markers[tiledObject.name] = marker;
+    room.renderObjects.push(createMarkerRenderObject(marker));
+  };
+
+  const addTaggedMarker = (tiledObject: TiledObject) => {
+    // console.log('Tiled addMarker', tiledObject);
+    const x = tiledObject.x;
+    const y = tiledObject.y;
+    // tiled specifies objects drawn from the bottom, subtract half height to put them in the same visual spot
+    const [xPx, yPy] = isoToPixelCoords(x, y);
+    const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
+    const marker = {
+      name: tiledObject.name,
+      x: newX,
+      y: newY,
+    };
+    room.taggedMarkers.push(marker);
     room.renderObjects.push(createMarkerRenderObject(marker));
   };
 
@@ -535,10 +588,14 @@ export const createRoom = (name: string, tiledJson: any): Room => {
 
   if (objects) {
     objects.forEach((object: TiledObject) => {
+      const isTaggedMarker =
+        object.name.toLowerCase().indexOf('tagmarker') === 0;
       const isMarker = object.name.toLowerCase().indexOf('marker') > -1;
       const isTrigger = object.name.toLowerCase().indexOf('#') === 0;
 
-      if (isMarker) {
+      if (isTaggedMarker) {
+        addTaggedMarker(object);
+      } else if (isMarker) {
         addMarker(object);
       } else if (isTrigger) {
         addTrigger(object);
@@ -626,6 +683,13 @@ export const roomRemoveCharacter = (room: Room, ch: Character) => {
   }
 };
 
+export const roomRemoveParticle = (room: Room, p: Particle) => {
+  const pInd = room.particles.indexOf(p);
+  if (pInd > -1) {
+    room.particles.splice(pInd, 1);
+  }
+};
+
 export const roomShow = (room: Room) => {
   room.visible = true;
 };
@@ -696,4 +760,10 @@ export const roomGetDistanceToNearestWallInFacingDirection = (
     minDistance = Math.min(minDistance, d);
   }
   return minDistance;
+};
+
+export const getAllTagMarkers = (room: Room, name: string) => {
+  return room.taggedMarkers.filter((marker: Marker) => {
+    return marker.name === name;
+  });
 };

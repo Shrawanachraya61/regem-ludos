@@ -2,7 +2,8 @@ import { Polygon } from 'view/draw';
 import { addTimer, getCameraDrawOffset, removeTimer } from 'model/generics';
 import { getDrawScale } from 'model/canvas';
 import { Timer } from 'model/utility';
-import { Facing } from 'model/character';
+import { CharacterTemplate, Facing } from 'model/character';
+import { BattleStats } from 'model/battle';
 
 export const isoToPixelCoords = (
   x: number,
@@ -360,4 +361,21 @@ export const facingToIncrements = (direction: Facing): Point => {
 
 export const to1dIndex = (point: Point, width: number) => {
   return point[1] * width + (point[0] % width);
+};
+
+export const varyStats = (chTemplate: CharacterTemplate): CharacterTemplate => {
+  const stats = chTemplate.stats as BattleStats;
+  const keys = Object.keys(stats);
+  for (let i = 0; i < keys.length; i++) {
+    const statName = keys[i];
+    if (statName === 'STAGGER') {
+      continue;
+    }
+    if (Math.random() > 0.5) {
+      stats[statName]++;
+      i--;
+      continue;
+    }
+  }
+  return chTemplate;
 };

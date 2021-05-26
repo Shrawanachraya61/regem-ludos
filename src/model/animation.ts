@@ -29,6 +29,7 @@ export class Animation {
   timestampStart: number;
   awaits: any[];
   isPaused: boolean;
+  soundsEnabled: boolean;
   timestampPause: number;
   meta: AnimationMetadata | null;
   subLoopAnim: Animation | null;
@@ -39,6 +40,7 @@ export class Animation {
     this.sprites = [];
     this.done = false;
     this.isPaused = false;
+    this.soundsEnabled = true;
     this.timestampPause = 0;
     this.totalDurationMs = 0;
     this.currentSpriteIndex = 0;
@@ -98,6 +100,14 @@ export class Animation {
         this.subLoopAnim.unpause();
       }
     }
+  }
+
+  disableSounds() {
+    this.soundsEnabled = false;
+  }
+
+  enableSounds() {
+    this.soundsEnabled = true;
   }
 
   getDurationMs(): number {
@@ -215,7 +225,10 @@ export class Animation {
             this.currentSpriteIndex >= sound.frame &&
             !sprite.hasPlayedSound
           ) {
-            playSoundName(sound.soundName);
+            if (this.soundsEnabled) {
+              console.log('ANIMATION PLAY SOUND', sound.soundName);
+              playSoundName(sound.soundName);
+            }
             sprite.hasPlayedSound = true;
           }
         });

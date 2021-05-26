@@ -43,7 +43,10 @@ export const useRenderLoop = (name: string, cb?: () => void) => {
 export type KeyboardEventHandler = (ev: KeyboardEvent) => void;
 const inputEventStack: KeyboardEventHandler[] = [];
 
-export const useInputEventStack = (cb: KeyboardEventHandler) => {
+export const useInputEventStack = (
+  cb: KeyboardEventHandler,
+  captures?: any[]
+) => {
   useEffect(() => {
     console.log('Add keyboard event');
     inputEventStack.push(cb);
@@ -54,7 +57,7 @@ export const useInputEventStack = (cb: KeyboardEventHandler) => {
         inputEventStack.splice(ind, 1);
       }
     };
-  }, []);
+  }, captures ?? []);
 };
 
 export const useCursorIndexStateWithKeypress = (

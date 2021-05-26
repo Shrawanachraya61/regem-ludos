@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src/",
+    "target": "ES2018",
+    "outFile": "main.js",
+    "allowJs": true,
+    "lib": [
+      "dom",
+      "ES2018"
+    ],
+    "removeComments": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "jsx": "react",
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "./src"
+  ]
+}

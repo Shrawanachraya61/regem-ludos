@@ -647,11 +647,15 @@ export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
   const url = `${RPGSCRIPT_LOAD_DIR}/${scriptFileName}.rpgscript`;
   console.log('Loading script', url);
   const src = await (await fetch(url)).text();
-  parseRPGScript(src, scene);
+  parseRPGScript(scriptFileName, src, scene);
 };
 
-export const parseRPGScript = (scriptSrc: string, scene: Scene) => {
-  const parser = new ScriptParser(scriptSrc);
+export const parseRPGScript = (
+  scriptName: string,
+  scriptSrc: string,
+  scene: Scene
+) => {
+  const parser = new ScriptParser(scriptName);
   const { triggers: localTriggers, scripts: localScripts } = parser.parse(
     scriptSrc,
     scene

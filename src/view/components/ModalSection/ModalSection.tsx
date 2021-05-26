@@ -6,11 +6,15 @@ import DialogBox from 'view/elements/DialogBox';
 import { style } from 'view/style';
 import { getUiInterface } from 'view/ui';
 import { playSound } from 'controller/scene-commands';
+import { timeoutPromise } from 'utils';
 
 const TUTORIAL_MAX_WIDTH = '500px';
+const INFO_MAX_WIDTH = '256px';
 
 interface ICustomModalProps {
   onClose: () => void;
+  onConfirm?: () => void;
+  text?: string;
 }
 
 const CenterAligned = style('div', () => {
@@ -175,18 +179,81 @@ const TutorialMagic = (props: ICustomModalProps) => {
   );
 };
 
+const TutorialArmor = (props: ICustomModalProps) => {
+  return (
+    <DialogBox
+      title="Tutorial"
+      onClose={props.onClose}
+      maxWidth={TUTORIAL_MAX_WIDTH}
+    >
+      <p>
+        Some particularly difficult enemies have points of <b> Armor</b>. While
+        an enemy has armor, any <b>Swing</b> action will do zero damage to that
+        enemy.
+      </p>
+      <p>
+        There are two primary ways to remove <b> Armor </b> from an enemy. The
+        first is to hit two attacks simultaneously. This breaks one point of
+        armor.
+      </p>
+      <p>
+        The second is to use a <b>Swing</b> action with the PIERCE attribute. A
+        PIERCE <b>Swing</b> action will immediately remove one point of armor
+        when it hits.
+      </p>
+    </DialogBox>
+  );
+};
+
+const InfoModal = (props: ICustomModalProps) => {
+  return (
+    <DialogBox title="Info" onClose={props.onClose} maxWidth={INFO_MAX_WIDTH}>
+      <p>{props.text}</p>
+    </DialogBox>
+  );
+};
+
+const ConfirmModal = (props: ICustomModalProps) => {
+  console.log('RENDER CONFIRM MODAL', props);
+  return (
+    <DialogBox
+      title="Confirm"
+      onClose={props.onClose}
+      onConfirm={props.onConfirm}
+      maxWidth={INFO_MAX_WIDTH}
+    >
+      <p>{props.text}</p>
+    </DialogBox>
+  );
+};
+
 const Modal = () => {
   const modalState = getUiInterface()?.appState.modal;
 
   const section = modalState?.section;
   const onClose = modalState?.onClose;
+  const onConfirm = modalState?.onConfirm;
 
   const handleClose = () => {
+    console.log('HIDE MODAL');
     hideSection(AppSection.Modal);
     playSound('menu_close');
-    if (onClose) {
-      onClose();
-    }
+    timeoutPromise(1).then(() => {
+      if (onClose) {
+        onClose();
+      }
+    });
+  };
+
+  const handleConfirm = () => {
+    console.log('HIDE MODAL CONFIRM');
+    hideSection(AppSection.Modal);
+    playSound('menu_close');
+    timeoutPromise(1).then(() => {
+      if (onConfirm) {
+        onConfirm();
+      }
+    });
   };
 
   let elem: any = null;
@@ -214,6 +281,24 @@ const Modal = () => {
     }
     case ModalSection.TUTORIAL_MAGIC: {
       elem = <TutorialMagic onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.TUTORIAL_ARMOR: {
+      elem = <TutorialArmor onClose={handleClose} />;
+      break;
+    }
+    case ModalSection.INFO: {
+      elem = <InfoModal onClose={handleClose} text={modalState.text} />;
+      break;
+    }
+    case ModalSection.CONFIRM: {
+      elem = (
+        <ConfirmModal
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+          text={modalState.text}
+        />
+      );
       break;
     }
     default: {

@@ -19,6 +19,7 @@ import ArcadeCabinet from './components/ArcadeCabinet';
 import CutsceneChoicesSection from './components/CutsceneChoicesSection';
 import SettingsSection from './components/SettingsSection';
 import ModalSection from './components/ModalSection';
+import SaveSection from './components/SaveSection';
 
 interface UIInterface {
   appState: AppState;
@@ -96,6 +97,9 @@ const App = () => {
       }
       case AppSection.Debug: {
         return <Debug />;
+      }
+      case AppSection.Save: {
+        return <SaveSection key={key} />;
       }
       default: {
         return <div></div>;

@@ -7,6 +7,7 @@ import {
   battleGetTargetedEnemy,
   BattleEvent,
   battleInvokeEvent,
+  BattleDamageType,
 } from 'model/battle';
 import {
   BattleCharacter,
@@ -65,6 +66,8 @@ import {
   applySwingDamage,
   applyMagicDamage,
   applyRangeDamage,
+  didEvade,
+  applyMiss,
 } from 'controller/battle-management';
 import { getCurrentRoom } from 'model/generics';
 import { getIfExists as getAnimMetadata } from 'db/animation-metadata';
@@ -73,7 +76,7 @@ import { Animation } from 'model/animation';
 import { h } from 'preact';
 import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
-import { playSoundName } from 'model/sound';
+import { playSound, playSoundName } from 'model/sound';
 
 export interface BattleAction {
   name: string;
@@ -258,6 +261,28 @@ export const jumpToTarget = async (
   return transform;
 };
 
+export const jumpUp = async (
+  battle: Battle,
+  bCh: BattleCharacter
+): Promise<Transform> => {
+  const ch = bCh.ch;
+  const startPoint = characterGetPos(ch);
+  const endPoint: Point3d = [...startPoint];
+  const transform = new Transform(
+    startPoint,
+    endPoint,
+    400,
+    TransformEase.LINEAR,
+    transformOffsetJumpShort
+  );
+  characterSetTransform(ch, transform);
+  playSoundName('battle_jump');
+  characterSetAnimationState(ch, AnimationState.BATTLE_JUMP);
+  transform.timer.start();
+  await transform.timer.onCompletion();
+  return transform;
+};
+
 export const doSwing = async (
   battle: Battle,
   action: BattleAction,
@@ -294,27 +319,39 @@ export const doSwing = async (
     if (swingType === SwingType.PIERCE) {
       particleTemplate = EFFECT_TEMPLATE_PIERCE_LEFT;
     }
+
     battleCharacterSetAnimationStateAttack(
       bCh,
       BattleActionType.SWING,
       swingType
     );
     const anim = characterGetAnimation(ch);
+
+    let didItHit = true;
+    if (didEvade(target, BattleDamageType.SWING, 1)) {
+      didItHit = false;
+      anim.disableSounds();
+    }
     const particleTimeoutMs = getDurationUntilStrike(anim);
 
     // show effect particles + apply damage after some timeout
     timeoutPromise(particleTimeoutMs).then(() => {
-      const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
-      const particle = particleCreateFromTemplate(
-        [centerPx, centerPy],
-        particleTemplate
-      );
-      roomAddParticle(battle.room, particle);
-      applySwingDamage(battle, bCh, target, {
-        damage: baseDamage,
-        staggerDamage: baseStagger,
-        attackType: swingType,
-      });
+      if (didItHit) {
+        applySwingDamage(battle, bCh, target, {
+          damage: baseDamage,
+          staggerDamage: baseStagger,
+          attackType: swingType,
+        });
+        const [centerPx, centerPy] = characterGetPosCenterPx(target.ch);
+        const particle = particleCreateFromTemplate(
+          [centerPx, centerPy],
+          particleTemplate
+        );
+        roomAddParticle(battle.room, particle);
+      } else {
+        applyMiss(battle, target);
+      }
+      anim.enableSounds();
     });
 
     await anim.onCompletion();
@@ -346,7 +383,13 @@ export const doRange = async (
     baseDamage,
     baseStagger,
     rangeType,
-  }: { baseDamage: number; baseStagger: number; rangeType: RangeType }
+    soundName,
+  }: {
+    baseDamage: number;
+    baseStagger: number;
+    rangeType: RangeType;
+    soundName?: string;
+  }
 ) => {
   const ch = bCh.ch;
   const numRanges = action.meta.ranges?.length ?? 1;
@@ -371,6 +414,12 @@ export const doRange = async (
     battleCharacterSetAnimationStateAttack(bCh, BattleActionType.RANGED);
     const anim = characterGetAnimation(ch);
     const particleSpawnDelayMs = getDurationUntilStrike(anim);
+
+    let didItHit = true;
+    if (didEvade(target, BattleDamageType.SWING, 1)) {
+      didItHit = false;
+      anim.disableSounds();
+    }
 
     // spawn particle when bow is drawn and fired
     timeoutPromise(particleSpawnDelayMs).then(() => {
@@ -400,13 +449,18 @@ export const doRange = async (
 
     // show effect particles + apply damage after some timeout
     timeoutPromise(particleSpawnDelayMs + 75).then(() => {
-      const particle = createParticleAtCharacter(
-        EFFECT_TEMPLATE_RANGED_HIT,
-        target.ch
-      );
-      playSoundName('battle_arrow_hit');
-      roomAddParticle(battle.room, particle);
-      applyRangeDamage(battle, bCh, target, baseDamage, baseStagger);
+      if (didItHit) {
+        applyRangeDamage(battle, bCh, target, baseDamage, baseStagger);
+        const particle = createParticleAtCharacter(
+          EFFECT_TEMPLATE_RANGED_HIT,
+          target.ch
+        );
+        playSoundName(soundName ?? 'battle_arrow_hit');
+        roomAddParticle(battle.room, particle);
+      } else {
+        applyMiss(battle, target);
+      }
+      anim.enableSounds();
     });
 
     await anim.onCompletion();
@@ -437,17 +491,20 @@ export const doSpell = async (
   {
     particleText,
     particleTemplate,
+    soundName,
     baseDamage,
     baseStagger,
   }: {
     particleText: string;
     particleTemplate: ParticleTemplate;
+    soundName?: string;
     baseDamage: number;
     baseStagger: number;
   }
 ) => {
   console.log('DO SPELL', action, bCh);
 
+  await beginAction(bCh);
   await moveForward(battle, bCh);
   const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
   roomAddParticle(
@@ -467,16 +524,49 @@ export const doSpell = async (
   // }
   if (target) {
     const [targetPx, targetPy] = characterGetPosCenterPx(target.ch);
-    console.log('TARGETTING WITH SPELL', target);
     roomAddParticle(
       battle.room,
       particleCreateFromTemplate([targetPx, targetPy], particleTemplate)
     );
+    if (soundName) {
+      playSoundName(soundName);
+    } else {
+      playSoundName('battle_fire_explosion1');
+    }
     // await timeoutPromise(150);
 
     applyMagicDamage(battle, bCh, target, baseDamage, baseStagger);
     await timeoutPromise(2000);
   }
+};
+
+export const doChannel = async (
+  battle: Battle,
+  action: BattleAction,
+  bCh: BattleCharacter,
+  {
+    particleText,
+    soundName,
+  }: {
+    particleText: string;
+    soundName: string;
+  }
+) => {
+  console.log('DO CHANNEL', action, bCh);
+  await beginAction(bCh);
+  battleCharacterSetActonState(bCh, BattleActionState.CHANNELING);
+  await jumpUp(battle, bCh);
+  playSoundName(soundName);
+  characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CHANNEL);
+  await timeoutPromise(100);
+  const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+  battleInvokeEvent(battle, BattleEvent.onCharacterChannelling, bCh);
+  roomAddParticle(
+    getCurrentRoom(),
+    createStatusParticle(particleText, centerPx, centerPy, 'white')
+  );
+  await endAction(bCh);
+  bCh.actionTimer.pause();
 };
 
 export const BattleActions: { [key: string]: BattleAction } = {

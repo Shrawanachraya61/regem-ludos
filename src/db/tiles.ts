@@ -8,6 +8,7 @@ interface TileTemplate {
   pxOffset?: Point;
   size?: Point;
   hasFloorTile?: boolean;
+  floorTile?: string;
 }
 
 const exp = {} as Record<string, TileTemplate>;
@@ -140,17 +141,89 @@ export const init = () => {
     animName: 'tile_vr_portal_passive',
     isWall: true,
   };
+  exp.SAVE_POINT_ACTIVE = {
+    baseSprite: 'props_30',
+    animName: 'tile_save_point_active',
+    isWall: true,
+    isProp: false,
+    size: [32, 64],
+  };
+  exp.SAVE_POINT_PASSIVE = {
+    baseSprite: 'props_30',
+    animName: 'tile_save_point_passive',
+    isWall: true,
+    isProp: false,
+    size: [32, 64],
+  };
+  exp.SAVE_POINT_PASSIVE_INITIAL = {
+    baseSprite: 'props_30',
+    animName: 'tile_save_point_passive_initial',
+    isWall: true,
+    isProp: false,
+  };
+  replacementTemplates.props_30 = 'SAVE_POINT_PASSIVE_INITIAL';
   exp.VR_PORTAL_FLOOR = {
     baseSprite: 'floors_15',
     animName: 'tile_vr_portal_floor_anim',
   };
+  replacementTemplates.floors_15 = 'VR_PORTAL_FLOOR';
   exp.TUT_GATE_FLOOR = {
     baseSprite: 'floors_59',
+    animName: 'floors_59',
     isWall: false,
     hasFloorTile: false,
     size: [32, 32],
     // calculated based on height of the bridge wall tile (I did it manually cuz I'm lazy)
     pxOffset: [0, 48],
   };
-  replacementTemplates.floors_15 = 'VR_PORTAL_FLOOR';
+  exp.TUT_GATE = {
+    baseSprite: 'walls_18',
+    animName: 'walls_18',
+    isWall: true,
+    // hasFloorTile: true,
+    size: [32, 64],
+  };
+  exp.TUT_GATE_YELLOW = {
+    baseSprite: 'walls_19',
+    // animName: 'walls_19',
+    isWall: true,
+    // hasFloorTile: true,
+    floorTile: 'TUT_GATE_FLOOR',
+    size: [32, 64],
+    // pxOffset: [0, -4],
+  };
+  exp.TUT_GATE_BLUE = {
+    baseSprite: 'walls_20',
+    // animName: 'walls_20',
+    isWall: true,
+    floorTile: 'TUT_GATE_FLOOR',
+    // hasFloorTile: true,
+    size: [32, 64],
+  };
+  exp.TUT_GATE_PURPLE = {
+    baseSprite: 'walls_21',
+    // animName: 'walls_21',
+    isWall: true,
+    floorTile: 'TUT_GATE_FLOOR',
+    // hasFloorTile: true,
+    size: [32, 64],
+  };
+  exp.TUT_GATE_RED = {
+    baseSprite: 'walls_22',
+    // animName: 'walls_22',
+    isWall: true,
+    floorTile: 'TUT_GATE_FLOOR',
+    // hasFloorTile: true,
+    size: [32, 64],
+  };
+  exp.HEAL_POOL = {
+    baseSprite: 'props_29',
+    animName: 'tile_heal_pool_anim',
+    isWall: true,
+    isProp: true,
+    // floorTile: 'TUT_GATE_FLOOR',
+    // hasFloorTile: true,
+    size: [32, 64],
+  };
+  replacementTemplates.props_29 = 'HEAL_POOL';
 };

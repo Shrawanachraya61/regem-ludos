@@ -34,12 +34,14 @@ import {
   battleUnsubscribeEvent,
 } from './battle';
 import { playSoundName } from './sound';
+import { getNow } from './generics';
 
 export enum BattleActionState {
   IDLE = 'idle',
   ACTING = 'acting',
   ACTING_READY = 'acting-ready',
   CASTING = 'casting',
+  CHANNELING = 'channeling',
   STAGGERED = 'staggered',
   KNOCKED_DOWN = 'knocked-down',
 }
@@ -63,6 +65,8 @@ export interface BattleCharacter {
   onCanActCb: () => Promise<void>;
   onCast: () => Promise<void>;
   onCastInterrupted: () => Promise<void>;
+  onChannelInterrupted: () => Promise<void>;
+  staggerSoundName?: string;
   ai?: BattleAI;
 }
 
@@ -91,6 +95,7 @@ const battleCharacterCreate = (
     onCanActCb: async function () {},
     onCast: async function () {},
     onCastInterrupted: async function () {},
+    onChannelInterrupted: async function () {},
     ai: undefined,
   };
   return bCh;
@@ -108,6 +113,7 @@ export const battleCharacterCreateEnemy = (
 
   bCh.ai = template.ai;
   bCh.armor = template.armor ?? ch.template?.armor ?? 0;
+  bCh.staggerSoundName = template.chTemplate.staggerSoundName;
 
   return bCh;
 };
@@ -120,11 +126,18 @@ export const battleCharacterCreateAlly = (
   return battleCharacterCreate(ch, args.position);
 };
 
-export const battleCharacterIsActing = (bCh: BattleCharacter) => {
-  return (
-    bCh.actionState === BattleActionState.ACTING ||
-    bCh.actionState === BattleActionState.ACTING_READY
+export const battleCharacterIsPreventingTurn = (bCh: BattleCharacter) => {
+  return [BattleActionState.ACTING, BattleActionState.ACTING_READY].includes(
+    bCh.actionState
   );
+};
+
+export const battleCharacterIsActing = (bCh: BattleCharacter) => {
+  return [
+    BattleActionState.ACTING,
+    BattleActionState.ACTING_READY,
+    BattleActionState.CASTING,
+  ].includes(bCh.actionState);
 };
 
 export const battleCharacterIsActingReady = (bCh: BattleCharacter) => {
@@ -146,6 +159,10 @@ export const battleCharacterIsCasting = (bCh: BattleCharacter) => {
   return bCh.actionState === BattleActionState.CASTING;
 };
 
+export const battleCharacterIsChanneling = (bCh: BattleCharacter) => {
+  return bCh.actionState === BattleActionState.CHANNELING;
+};
+
 export const battleCharacterSetActonState = (
   bCh: BattleCharacter,
   state: BattleActionState
@@ -160,6 +177,9 @@ export const battleCharacterCanAct = (
   if (battle.isPaused) {
     return false;
   }
+  if (bCh.actionState === BattleActionState.CHANNELING) {
+    return true;
+  }
   if (battleCharacterIsActing(bCh)) {
     return false;
   }
@@ -172,7 +192,7 @@ export const battleCharacterCanAct = (
     allegiance === BattleAllegiance.ALLY ? battle.enemies : battle.allies;
   for (let i = 0; i < opposingBattleCharacters.length; i++) {
     const bc = opposingBattleCharacters[i];
-    if (battleCharacterIsActing(bc)) {
+    if (battleCharacterIsPreventingTurn(bc)) {
       return false;
     }
   }
@@ -215,6 +235,10 @@ export const battleCharacterGetSelectedSkill = (
   return skill;
 };
 
+export const battleCharacterGetEvasion = (bCh: BattleCharacter) => {
+  return bCh.ch.stats.EVA;
+};
+
 export const battleCharacterSetAnimationStateAfterTakingDamage = (
   bCh: BattleCharacter
 ) => {
@@ -237,7 +261,11 @@ export const battleCharacterSetAnimationStateAfterTakingDamage = (
 };
 
 export const battleCharacterSetAnimationIdle = (bCh: BattleCharacter) => {
-  if (bCh.ch.weaponEquipState === WeaponEquipState.RANGED) {
+  if (battleCharacterIsChanneling(bCh)) {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CHANNEL);
+  } else if (battleCharacterIsCasting(bCh)) {
+    characterSetAnimationState(bCh.ch, AnimationState.BATTLE_CAST);
+  } else if (bCh.ch.weaponEquipState === WeaponEquipState.RANGED) {
     characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE_RANGED);
   } else {
     characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
@@ -405,7 +433,7 @@ export const updateBattleCharacter = (
       }
 
       bCh.onCanActCb();
-      if (bCh.ai) {
+      if (bCh.ai && !battleCharacterIsChanneling(bCh)) {
         bCh.ai(battle, bCh);
       }
     }

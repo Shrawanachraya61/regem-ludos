@@ -10,6 +10,7 @@ import {
   showChoices,
   setCharacterText as setCharacterTextUi,
   showModal,
+  showSave,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -31,12 +32,15 @@ import {
   characterGetPosBottom,
 } from 'model/character';
 import {
+  getAllTagMarkers,
+  Marker,
   roomAddCharacter,
   roomAddParticle,
   roomGetCharacterByName,
   roomGetTileAt,
   roomGetTileBelow,
   roomRemoveCharacter,
+  Tile,
 } from 'model/room';
 import {
   getCurrentScene,
@@ -54,6 +58,7 @@ import {
   isoToPixelCoords,
   Point,
   Point3d,
+  timeoutPromise,
 } from 'utils';
 import { createAnimation, hasAnimation } from 'model/animation';
 import { initiateOverworld } from 'controller/overworld-management';
@@ -72,7 +77,11 @@ import {
 import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { overworldHide } from 'model/overworld';
-import { playSoundName } from 'model/sound';
+import {
+  playSoundName,
+  stopCurrentMusic,
+  playMusic as playMusicName,
+} from 'model/sound';
 import {
   getReturnToOverworldBattleCompletionCB,
   transitionToBattle,
@@ -255,9 +264,19 @@ export const setConversation2 = (
  *
  */
 export const setConversation = (actorName: string) => {
-  startConversation(`${actorName.toLowerCase()}`, true);
-  playSoundName('dialog_woosh');
-  return waitMS(100);
+  const appState = getUiInterface().appState;
+  if (appState.cutscene.visible) {
+    setCutsceneText('');
+    setConversationSpeaker(CutsceneSpeaker.None);
+    return waitMS(200, () => {
+      startConversation(`${actorName.toLowerCase()}`, true);
+      playSoundName('dialog_woosh');
+    });
+  } else {
+    startConversation(`${actorName.toLowerCase()}`, true);
+    playSoundName('dialog_woosh');
+    return waitMS(100);
+  }
 };
 
 export const setConversationWithoutBars = (actorName: string) => {
@@ -330,7 +349,11 @@ export const endConversation = (ms?: number) => {
  * ![Example Image](../res/docs/setSpeakerExample.png)
  */
 export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
-  setCutsceneText('', speaker);
+  const uiState = getUiInterface().appState;
+
+  if (uiState.sections.includes(AppSection.Cutscene)) {
+    setCutsceneText('', speaker);
+  }
 };
 
 /**
@@ -375,6 +398,8 @@ export const waitMSPreemptible = (ms: number, cb: () => void) => {
     switch (ev.key) {
       case 'Return':
       case 'Enter':
+      case 'X':
+      case 'x':
       case ' ': {
         clearTimeout(scene.waitTimeoutId);
         popKeyHandler(keyHandler);
@@ -429,6 +454,7 @@ const waitForUserInput = (cb?: () => void) => {
       }
     }
   };
+
   pushKeyHandler(keyHandler);
   const _cb = () => {
     scene.isWaitingForInput = false;
@@ -676,6 +702,23 @@ export const setCharacterAt = (
   }
 
   characterSetPos(ch, [x, y, z ?? 0]);
+};
+
+export const offsetCharacter = (
+  chName: string,
+  x: number,
+  y: number,
+  z?: number
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+  const [cX, cY, cZ] = characterGetPos(ch);
+
+  characterSetPos(ch, [cX + x, cY + y, cZ + (z ?? 0)]);
 };
 
 /**
@@ -948,13 +991,17 @@ export const setCharacterAtMarker = (
  * ```
  */
 export const changeTileAtMarker = (
-  markerName: string,
+  markerName: string | Marker,
   tileTemplateName: string,
   xOffset?: number,
   yOffset?: number
 ) => {
   const room = getCurrentRoom();
-  const marker = room.markers[markerName];
+
+  // HACK reusing this for custom function in tut dungeon, needs to accept markerName
+  // or the marker itself
+  const marker =
+    typeof markerName === 'string' ? room.markers[markerName] : markerName;
   const tileTemplate = getTileTemplateIfExists(tileTemplateName);
 
   if (!tileTemplate) {
@@ -993,6 +1040,7 @@ export const changeTileAtMarker = (
     tile.isWall = tileTemplate.isWall ?? tile.isWall;
     tile.isProp = tileTemplate.isProp ?? tile.isProp;
     if (tile.ro) {
+      tile.sprite = tileTemplate.baseSprite;
       tile.ro.sprite = tileTemplate.baseSprite;
       // if (tileTemplate.pxOffset) {
       //   tile.ro.px = (tile.ro.px ?? 0) + tileTemplate.pxOffset[0];
@@ -1007,15 +1055,18 @@ export const changeTileAtMarker = (
         );
         if (ind > -1) {
           room.renderObjects.splice(ind, 1);
+          tile.floorTileBeneath = undefined;
         }
       }
 
-      if (tile.animName !== tileTemplate.animName) {
+      if (tileTemplate.animName && tile.animName !== tileTemplate.animName) {
         if (tileTemplate.animName) {
           tile.animName = tileTemplate.animName;
-          // const anim = createAnimation(tileTemplate.animName);
-          // anim.start();
-          // tile.ro.anim = anim;
+          if (hasAnimation(tile.animName)) {
+            const anim = createAnimation(tileTemplate.animName);
+            anim.start();
+            tile.ro.anim = anim;
+          }
         } else {
           tile.ro.anim = undefined;
         }
@@ -1026,7 +1077,49 @@ export const changeTileAtMarker = (
         tile.tileHeight = tileTemplate.size[1];
       }
 
-      tile.ro = createTileRenderObject(tile);
+      if (tileTemplate.floorTile) {
+        const floorTileTemplate = getTileTemplateIfExists(
+          tileTemplate.floorTile
+        );
+        if (floorTileTemplate) {
+          const floorTile = {
+            ...tile,
+            ...floorTileTemplate,
+            sprite: floorTileTemplate.baseSprite,
+            tileWidth: 32,
+            tileHeight: 32,
+          } as Tile;
+          const roFloor = createTileRenderObject(floorTile);
+          floorTile.ro = roFloor;
+          if (tile.floorTileBeneath) {
+            const ind = room.renderObjects.indexOf(
+              tile.floorTileBeneath?.ro as any
+            );
+            if (ind > -1) {
+              room.renderObjects.splice(ind, 1, roFloor);
+            } else {
+              room.renderObjects.push(roFloor);
+            }
+            tile.floorTileBeneath = floorTile;
+          } else {
+            room.renderObjects.push(roFloor);
+            tile.floorTileBeneath = floorTile;
+          }
+        } else {
+          console.error(
+            `Floor tile specified by tile db for tile ${tileTemplateName} does not exist: `,
+            tileTemplate.floorTile
+          );
+        }
+      }
+
+      const ind = room.renderObjects.indexOf(tile.ro as any);
+      if (ind > -1) {
+        const anim = tile.ro.anim;
+        tile.ro = createTileRenderObject(tile);
+        tile.ro.anim = anim;
+        room.renderObjects.splice(ind, 1, tile.ro);
+      }
     }
   }
 };
@@ -1428,7 +1521,10 @@ export const fadeInColor = (
  *
  * When using a marker, the player will be facing a direction depending on the marker type.
  */
-export const changeRoom = (roomName: string, nextRoomMarkerName?: string) => {
+export const changeRoom = async (
+  roomName: string,
+  nextRoomMarkerName?: string
+) => {
   const player = getCurrentPlayer();
   const overworldTemplate = getOverworld(roomName);
   if (!player) {
@@ -1439,6 +1535,8 @@ export const changeRoom = (roomName: string, nextRoomMarkerName?: string) => {
     console.error('No overworld template exists with name:', roomName);
     return;
   }
+
+  await stopCurrentMusic();
 
   const overworld = initiateOverworld(
     player,
@@ -1750,7 +1848,7 @@ export const enterCombat = (encounterName: string) => {
       leaderFacing,
       encounter
     ),
-    false
+    true
   );
 };
 
@@ -1810,6 +1908,11 @@ export const panCameraBackToPlayer = (ms?: number, skipWait?: boolean) => {
 
 export const playSound = (soundName: string) => {
   playSoundName(soundName);
+};
+
+export const playMusic = async (musicName: string) => {
+  await stopCurrentMusic();
+  playMusicName(musicName, true);
 };
 
 export const spawnParticleAtTarget = (
@@ -1896,13 +1999,23 @@ export const setCharacterText = (text: string) => {
 export const showUISection = (sectionName: string, ...args: any[]) => {
   if (sectionName === 'BattleUI') {
     showSection(AppSection.BattleUI, false);
-  } else if (sectionName === 'Modal') {
-    showModal(args[0], () => {
+  } else if (sectionName === 'Save') {
+    showSave(() => {
       sceneStopWaitingUntil(getCurrentScene());
+      showSection(AppSection.Debug, true);
+    });
+    return waitUntil();
+  } else if (sectionName === 'Modal') {
+    showModal(args[0], {
+      onClose: () => {
+        sceneStopWaitingUntil(getCurrentScene());
+      },
     });
     return waitUntil();
   }
 };
+
+// CUSTOM --------------------------------------------------------------------------------
 
 // use only for the tutorial
 export const setBattlePaused = (isPaused: string) => {
@@ -1914,6 +2027,36 @@ export const setBattlePaused = (isPaused: string) => {
     } else {
       battle.isPaused = false;
       battleUnpauseTimers(battle);
+    }
+  }
+};
+
+// Used in the tutorial room to toggle open/closed all doors with the color of the marker
+export const floor1TutToggleColorDoors = (
+  color: string,
+  shouldChangeState: string
+) => {
+  const changeState = shouldChangeState === 'true';
+
+  if (changeState) {
+    const key = `tut_vr_${color.toLowerCase()}_doors`;
+    const scene = getCurrentScene();
+    const oldValue = Number(scene.storage[key] ?? 0);
+    const newValue = oldValue ? 0 : 1;
+    scene.storage[key] = newValue;
+  }
+
+  const room = getCurrentRoom();
+  const taggedMarkers = getAllTagMarkers(room, `TagMarker${color}`);
+  for (let i = 0; i < taggedMarkers.length; i++) {
+    const marker = taggedMarkers[i];
+    const tile = roomGetTileBelow(room, [marker.x, marker.y]);
+    if (tile) {
+      if (tile.isWall) {
+        changeTileAtMarker(marker, 'TUT_GATE_FLOOR');
+      } else {
+        changeTileAtMarker(marker, `TUT_GATE_${color.toUpperCase()}`);
+      }
     }
   }
 };
@@ -1937,6 +2080,7 @@ const commands = {
   setFacing,
   shakeScreen,
   setCharacterAt,
+  offsetCharacter,
   walkToMarker,
   walkToCharacter,
   setAtMarker,
@@ -1974,11 +2118,15 @@ const commands = {
   panCameraRelativeToPlayer,
   panCameraBackToPlayer,
   playSound,
+  playMusic,
   spawnParticleAtCharacter,
   spawnParticleAtMarker,
   setCharacterText,
   showUISection,
   setBattlePaused,
+
+  // custom scripts
+  floor1TutToggleColorDoors,
 };
 
 export default commands;

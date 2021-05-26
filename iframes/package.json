@@ -3,7 +3,8 @@
   "version": "1.0",
   "license": "MIT",
   "scripts": {
-    "build": "node ../scripts/build-iframes.js tic-tac-toe president invaderz elasticity && yarn build:lib",
+    "build": "node ../scripts/build-iframes.js tic-tac-toe president golems invaderz elasticity && yarn build:lib",
+    "build:js": "node ../scripts/build-iframes.js tic-tac-toe president golems && yarn build:lib",
     "clean": "rm -rf dist",
     "build:lib": "cp -t dist lib.js lib.css"
   },

@@ -10,6 +10,7 @@ export enum AppSection {
   Choices = 'choices',
   Settings = 'settings',
   Modal = 'modal',
+  Save = 'save',
 }
 
 export enum CutsceneSpeaker {
@@ -47,6 +48,7 @@ export interface IArcadeCabinetState {
 
 export interface IChoicesState {
   choiceTexts: string[];
+  keyHandlerInternal: () => void;
 }
 
 export interface IBattleUiState {
@@ -68,10 +70,23 @@ export enum ModalSection {
   TUTORIAL_STAGGER = 'TUTORIAL_STAGGER',
   TUTORIAL_BACK_ROW = 'TUTORIAL_BACK_ROW',
   TUTORIAL_MAGIC = 'TUTORIAL_MAGIC',
+  TUTORIAL_ARMOR = 'TUTORIAL_ARMOR',
+  INFO = 'INFO',
+  CONFIRM = 'CONFIRM',
 }
 
 export interface IModalState {
   section: ModalSection;
+  onClose: () => void;
+  onConfirm?: () => void;
+  text?: string;
+}
+
+export interface ISettingsState {
+  onClose: () => void;
+}
+
+export interface ISaveState {
   onClose: () => void;
 }
 
@@ -83,6 +98,8 @@ export interface AppState {
   arcadeGame: IArcadeCabinetState;
   choices: IChoicesState;
   modal: IModalState;
+  settings: ISettingsState;
+  save: ISaveState;
 }
 
 export const AppStateInitial: AppState = {
@@ -121,9 +138,16 @@ export const AppStateInitial: AppState = {
   },
   choices: {
     choiceTexts: [],
+    keyHandlerInternal: () => {},
   },
   modal: {
     section: ModalSection.TUTORIAL_ATTACK,
+    onClose: () => {},
+  },
+  settings: {
+    onClose: () => {},
+  },
+  save: {
     onClose: () => {},
   },
 };

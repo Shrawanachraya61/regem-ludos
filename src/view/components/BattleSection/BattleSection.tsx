@@ -15,6 +15,7 @@ import {
   BattleAllegiance,
   BattleEvent,
   battleGetActingAllegiance,
+  battleGetAllPersistentEffectsForAllegiance,
   battleGetTargetedEnemy,
   battleSetEnemyTargetIndex,
 } from 'model/battle';
@@ -23,6 +24,7 @@ import { useBattleSubscription } from 'view/hooks';
 import TargetIcon from 'view/icons/Target';
 import ArmorIcon from 'view/icons/Armor';
 import BattleCharacterFollower from './BattleCharacterFollower';
+import ChannelIndicators from './ChannelIndicators';
 
 interface IBattleSectionProps {
   id?: string;
@@ -187,6 +189,8 @@ const BattleSection = (props: IBattleSectionProps) => {
         </PauseButton>
         <OptionsButton>Options</OptionsButton>
       </UpperLeftContainer>
+      <ChannelIndicators allegiance={BattleAllegiance.ENEMY} />
+      <ChannelIndicators allegiance={BattleAllegiance.ALLY} />
       {battle.allies.map((bCh, i) => {
         return (
           <BattleCharacterFollower bCh={bCh} battleIndex={i} isEnemy={false} />

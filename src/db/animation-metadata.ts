@@ -168,4 +168,22 @@ export const init = () => {
       },
     ],
   };
+  exp.tile_save_point_active = {
+    loopFromFrame: 6,
+    sounds: [
+      {
+        soundName: 'vr_portal_activate',
+        frame: 0,
+      },
+    ],
+  };
+  exp.tile_save_point_passive = {
+    loopFromFrame: 6,
+    sounds: [
+      {
+        soundName: 'vr_portal_deactivate',
+        frame: 0,
+      },
+    ],
+  };
 };

@@ -143,6 +143,7 @@ export const init = () => {
       ...battleStatsCreate(),
       HP: 45,
     },
+    speed: 1.5,
   };
   return exp;
 };

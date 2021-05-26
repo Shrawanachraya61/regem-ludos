@@ -17,6 +17,7 @@ import { AppSection } from 'model/store';
 import { pushEmptyKeyHandler } from 'controller/events';
 import CharacterFollower from 'view/elements/CharacterFollower';
 import { getUiInterface } from 'view/ui';
+import TopBar, { TopBarButtons } from './TopBar';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -45,25 +46,7 @@ const CharacterText = style('div', (props: { visible: boolean }) => {
   };
 });
 
-const ArcadeUISection = () => {
-  const handleSettingsClick = () => {
-    showSection(AppSection.Settings, true);
-    pushEmptyKeyHandler();
-    if (!getIsPaused()) {
-      pause();
-    }
-  };
-
-  const handleToggleDebug = () => {
-    if (getTriggersVisible()) {
-      hideTriggers();
-      hideMarkers();
-    } else {
-      showTriggers();
-      showMarkers();
-    }
-  };
-
+const OverworldSection = () => {
   const overworldState = getUiInterface()?.appState.overworld;
 
   if (!overworldState) {
@@ -73,12 +56,22 @@ const ArcadeUISection = () => {
   return (
     <>
       <TopBarWrapper>
-        <Button type={ButtonType.PRIMARY} onClick={handleSettingsClick}>
+        <TopBar
+          buttons={[TopBarButtons.SETTINGS, TopBarButtons.DEBUG]}
+          onSettingsClick={() => {
+            pause();
+          }}
+          onSettingsClose={() => {
+            unpause();
+            showSection(AppSection.Debug, true);
+          }}
+        />
+        {/* <Button type={ButtonType.PRIMARY} onClick={handleSettingsClick}>
           Settings
         </Button>
         <Button type={ButtonType.PRIMARY} onClick={handleToggleDebug}>
           Toggle Debug
-        </Button>
+        </Button> */}
         <CharacterText visible={overworldState.characterText !== ''}>
           {overworldState.characterText || overworldState.prevCharacterText}
         </CharacterText>
@@ -87,4 +80,4 @@ const ArcadeUISection = () => {
   );
 };
 
-export default ArcadeUISection;
+export default OverworldSection;

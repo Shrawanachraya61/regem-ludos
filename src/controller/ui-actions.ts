@@ -10,11 +10,13 @@ import {
   IOverworldAppState,
   ModalSection,
   IModalState,
+  ISettingsState,
+  ISaveState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
 import { overworldShow } from 'model/overworld';
-import { playSoundName } from 'model/sound';
+import { playSound, playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
 
@@ -75,6 +77,12 @@ const mutations: { [key: string]: MutationFunction } = {
   },
   setModalState: (newState: AppState, payload: Partial<IModalState>) => {
     Object.assign(newState.modal, payload);
+  },
+  setSettingsState: (newState: AppState, payload: Partial<ISettingsState>) => {
+    Object.assign(newState.settings, payload);
+  },
+  setSaveState: (newState: AppState, payload: Partial<ISaveState>) => {
+    Object.assign(newState.save, payload);
   },
 };
 
@@ -284,18 +292,18 @@ export const showChoices = (choices: string[]) => {
   showSection(AppSection.Choices, false);
   const payload = {
     choiceTexts: choices,
+    keyHandlerInternal: pushEmptyKeyHandler(),
   };
   getUiInterface().dispatch({
     action: 'setChoicesState',
     payload,
   });
-  pushEmptyKeyHandler();
   playSoundName('menu_choice_open');
 };
 
 export const hideChoices = () => {
   const payload = AppSection.Choices;
-  popKeyHandler();
+  popKeyHandler(getUiInterface().appState.choices.keyHandlerInternal);
   getUiInterface().dispatch({
     action: 'hideSection',
     payload,
@@ -336,14 +344,47 @@ export const setCharacterText = (text: string) => {
   });
 };
 
-export const showModal = (section: ModalSection, onClose: () => void) => {
+export const showModal = (
+  section: ModalSection,
+  modalParams: {
+    onClose: () => void;
+    onConfirm?: () => void;
+    text?: string;
+  }
+) => {
   const payload = {
     section,
-    onClose,
+    onClose: modalParams.onClose,
+    onConfirm: modalParams.onConfirm,
+    text: modalParams.text,
   };
   getUiInterface().dispatch({
     action: 'setModalState',
     payload,
   });
   showSection(AppSection.Modal, false);
+};
+
+export const showSettings = (onClose: () => void) => {
+  playSoundName('menu_choice_open');
+  const payload = {
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setSettingsState',
+    payload,
+  });
+  showSection(AppSection.Settings, false);
+};
+
+export const showSave = (onClose: () => void) => {
+  playSoundName('menu_choice_open');
+  const payload = {
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setSaveState',
+    payload,
+  });
+  showSection(AppSection.Save, false);
 };

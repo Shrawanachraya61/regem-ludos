@@ -9,9 +9,12 @@ import { Trigger } from 'lib/rpgscript';
 import { invokeTrigger } from 'controller/scene-management';
 import { Timer } from './utility';
 import { getRoom } from 'db/overworlds';
+import { playMusic, stopMusic } from './sound';
 
 export interface Overworld {
+  name: string;
   room: Room;
+  music: string;
   visible: boolean;
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
@@ -30,6 +33,7 @@ export interface OverworldTemplate {
   roomName: string;
   backgroundColor: string;
   loadTriggerName?: string;
+  music?: string;
 }
 
 export const createOverworldFromTemplate = (
@@ -45,7 +49,9 @@ export const createOverworldFromTemplate = (
   }
 
   const overworld: Overworld = {
+    name: template.roomName,
     room,
+    music: template.music ?? '',
     visible: true,
     triggersEnabled: true,
     characterCollisionEnabled: true,
@@ -79,9 +85,15 @@ export const overworldCharacterCreate = (
 export const overworldShow = (overworld: Overworld) => {
   overworld.visible = true;
   roomShow(overworld.room);
+  if (overworld.music) {
+    playMusic(overworld.music, true);
+  }
 };
 
 export const overworldHide = (overworld: Overworld) => {
   overworld.visible = false;
   roomHide(overworld.room);
+  if (overworld.music) {
+    stopMusic(overworld.music, 1000);
+  }
 };

@@ -15,71 +15,77 @@
   +setConversationSpeaker(none);
   +setAnimationAndWait('Ada', 'ada_shake_head_down');
   +lookAtEachOther('Ada','Atrium Desk Employee');
-  +waitMS(100);
+  +waitMS(500);
   Ada: "I have not."
-  Atrium Desk Employee: "A newcomer?  Wonderful!  Please allow me to give you the rundown of the place."
-  Atrium Desk Employee: "To start, we have a wide variety of arcade games for you to enjoy.  Each of these machines requires some number of Regem Ludos Tokens to play."
-  Ada: "Where can I obtain these Regem Ludos Tokens?"
-  +setConversationSpeaker(none);
-  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
+  Atrium Desk Employee: "A newcomer?  Wonderful!  Please allow me to give you a brief rundown of our advanced arcade."
+  Ada: "Go ahead."
+  Atrium Desk Employee: "Excellent.  To start, we have a wide variety of arcade games for you to enjoy.  Each of these machines requires some number of Regem Ludos Tokens to play."
   Atrium Desk Employee: "Since you are new, I am happily able to provide you with a courtesy starter pack of 10 Tokens."
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_gesture_rightup);
   +modifyTokens(10);
-  Atrium Desk Employee: "Use those to play one of our many arcade games!"
-  Atrium Desk Employee: "Each game you play will award you Prize Tickets depending on how well you played it."
-  Atrium Desk Employee: "You may use these Prize Tickets to obtain items from one of our resplendent Prize Stands, located on various floors of the arcade."
-  Atrium Desk Employee: "You may also trade in Prize Tickets for Regem Ludos Tokens at an Exchange Stall.  These are the flashing vending machines.  You can't miss them."
+  Atrium Desk Employee: "Use those to play any one of our many arcade games!"
   Ada: "Okay.  Straightforward enough.  What else?"
-  Atrium Desk Employee: "The Regem Ludos Arcade is a very large facility.  It extends a whopping ten stories underground.  Each odd-numbered floor - save for floor 1 - is VR Floor."
-  Ada: "VR Floor?"
+  Atrium Desk Employee: "The Regem Ludos Arcade is a very large facility and features several particularly SPECIAL floors.  These are the primary reason why people come to this arcade. These are the VR floors."
+  Ada: "VR Floors?"
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
-  Atrium Desk Employee: "Yes!  The VR Floors are a primary reason why we are one of the most advanced arcades in the world!"
-  Atrium Desk Employee: "On these floors we are able to create a truly astounding variety of different places and things - all in virtual space!"
-  Atrium Desk Employee: "But be wary!  Many monsters roam these floors.  To proceed further into the arcade, you'll need to fight your way through these monsters!"
-  Atrium Desk Employee: "To get access you'll need a Haptic Bracer, a wearable which is capable of truly immersing you in our intricately-constructed virtual environments."
-  Ada: "Where can I get that?"
-  Atrium Desk Employee: "Go and speak with Instructor Jason over in the area to the east of this room.  He is standing outside of a VR Practice area.  He will be able to give you Haptic Bracer and can provide a full rundown of how to interact with our VR Floors."
-  Atrium Desk Employee: "He can also teach you some helpful tips on how to battle some of the monsters in there."
-  Ada: "Understood."
+  Atrium Desk Employee: "Yes! On these special floors we are able to create a truly astounding variety of different places and things - all in virtual space!"
+  Atrium Desk Employee: "However, to get access you'll need a wearable called a 'Haptic Bracer'."
+  Ada: "Actually, I am only here to see a friend of mine.  He said he is on the second floor.  Can I not just go up there and meet him?"
+  Atrium Desk Employee: "Oh, unfortunately to get access to the upper floors, you'll need to acquire a 'Haptic Bracer'."
+  Atrium Desk Employee: "But don't worry, the Regem Ludos arcade provides all newcomers with one upon entry."
+  Atrium Desk Employee: "Go and speak with Instructor Jason over in the area to the east of this room.  He is standing outside of a VR Practice area."
+  Atrium Desk Employee: "He can teach you some helpful tips on how to battle some of the monsters in VR."
+  +callScript('utils-character-shake-z', 'Ada');
+  Ada: "Wait-- monsters?  I just need to go to the second floor!"
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
-  Atrium Desk Employee: "Great!  That's about it for the rundown.  If you have further questions, don't hesitate to ask!"
+  Atrium Desk Employee: "Yep!  Our VR features an exciting battle system!  You'll have to fight your way through the floors of this arcade to reach the top!"
+  Atrium Desk Employee: "That's about it for the rundown.  If you have further questions, don't hesitate to ask!"
+  Ada: "But what about--?"
   Atrium Desk Employee: "Have a wonderful time here at the Regem Ludos Arcade!"
+  +setConversationSpeaker(none);
+  +waitMS(1000);
+  Ada: "..."
   +setConversationSpeaker(none);
   +setFacing('Atrium Desk Employee', rightup);
   +walkToMarker('Ada', MarkerDeskEmployeeWalk);
   +callScript('utils-start-Conscience-dialogue');
-  +setFacing('Conscience', 'down');
-  +waitMS(500);
-  +setFacing('Conscience', 'rightdown');
-  +waitMS(100);
-  +setFacing('Conscience', 'right');
-  +waitMS(500);
-  +setFacing('Conscience', 'rightdown');
-  +waitMS(100);
-  +setFacing('Conscience', 'down');
-  +waitMS(500);
-  +setFacing('Conscience', 'leftdown');
-  +waitMS(100);
-  +setFacing('Conscience', 'left');
-  +waitMS(500);
-  +setFacing('Conscience', 'leftdown');
-  +waitMS(100);
-  +setFacing('Conscience', 'down');
+  +callScript('utils-character-look-around', 'Conscience');
   +endConversation(100);
   +setConversation2('Ada', 'Conscience');
-  Conscience: "Wow, this place is much more fancy than I thought!"
-  Ada: "I can certainly see why Carl-Arnold likes it."
+  Conscience: "This place is much more fancy than I thought!"
+  Ada: "Fancy.  I suppose that is a good enough word for it."
   +setConversationSpeaker(none);
+  +waitMS(1000);
+  Ada: "So.  I am simply thinking out loud..."
+  Ada: "How about we find a way to sneak up to the second floor and not deal with any of this VR nonsense?"
+  +setConversationSpeaker(none);
+  +waitMS(500);
+  +playSound(aggro_alert);
   +setFacing('Conscience', 'right');
   +waitMS(50);
   +setFacing('Conscience', 'up');
   +waitMS(250);
-  +jump('Conscience');
-  Conscience: "I'm super exited!  I want to check out the VR floor before we go meet him.  Let's go talk to that Instructor Jason guy."
-  Ada: "A solid enough plan."
+  +callScript('utils-character-jump', 'Conscience');
+  Conscience: "No, no, no!"
+  Conscience: "We are DEFINITELY going to the VR.  I want to see it."
+  Ada: "I did not come here to defeat monsters, Conscience.  I just want to find Carl-Arnold and then get out with as little problems as possible."
+  Conscience: "PLEASE!"
+  +setConversationSpeaker(none);
+  +waitMS(1000);
+  Conscience: "PLEASE!!!"
+  +setConversationSpeaker(none);
+  +waitMS(1000);
+  Ada: "I--"
+  +callScript('utils-character-shake-z', 'Conscience');
+  Conscience: "PLEASE!!!!!!"
+  Ada: "Fine!"
+  Ada: "We can go see that Jason guy and get a Haptic Bracer or whatever."
+  Ada: "But then NO MORE side-tracks.  We must go see what Carl-Arnold wants."
+  +callScript('utils-character-jump', 'Conscience');
+  Conscience: "Yay!"
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);
@@ -147,10 +153,12 @@
   +waitMS(500);
 
 #floor1-atrium-employee-jason
+  action,?is(quest_tutorial_active):floor1-atrium-employee-jason-tutorial-active
   // haven't spoken to front desk yet
   action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
   // don't have Haptic Bracer yet
-  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer-complete):floor1-atrium-employee-jason-haptic-bracer
+  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once()):floor1-atrium-employee-jason-haptic-bracer
+  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete)):floor1-atrium-employee-jason-haptic-bracer-ask
   action,floor1-atrium-employee-jason-default
 @floor1-atrium-employee-jason-haptic-bracer
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -168,16 +176,48 @@
   Atrium Employee Jason: "Here you are!"
   +acquireItem('Haptic Bracer');
   Atrium Employee Jason: "Would you like me to run you through how to use it?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'Not yet.');
+  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
+  +?eq(lastChoiceIndex, 0):{
+    Ada: "Sure."
+    +callScript('floor1-atrium-employee-jason-start-tutorial');
+  }
+  +?eq(lastChoiceIndex, 1):{
+    Ada: "Not right now."
+    Atrium Employee Jason: "No worries.  Come back when you're ready."
+  }
   +endConversation();
-@floor1-atrium-employee-jason-haptic-bracer-ask-question
-  Atrium Employee Jason: "Do you want me to show you how to use the Haptic Bracer?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'Not yet.');
+@floor1-atrium-employee-jason-haptic-bracer-ask
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Would you like me to run you through how to use your Haptic Bracer?"
+  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
+  +?eq(lastChoiceIndex, 0):{
+    Ada: "Sure"
+    +callScript('floor1-atrium-employee-jason-start-tutorial');
+  }
+  +?eq(lastChoiceIndex, 1):{
+    Ada: "Not right now."
+    Atrium Employee Jason: "No worries.  Come back when you're ready."
+  }
   +endConversation();
+@floor1-atrium-employee-jason-start-tutorial
+  +setStorage('quest_tutorial_active', true);
+  Atrium Employee Jason: "Excellent!  Follow me please."
+  +setConversationSpeaker('none');
+  +walkToMarker(Atrium Employee Jason, MarkerDoorTut);
+  +setFacing(Atrium Employee Jason, 'rightup');
+  +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, OPEN);
+  +waitMS(500);
+  +despawnCharacter(Atrium Employee Jason);
+  +waitMS(500);
+  +walkToMarker(Ada, MarkerDoorTut);
+  +callScript('utils-change-room', 'floor1TutEntrance', 'MarkerDoor');
+  //pass control to the script in the next room
+  +callScript('floor1-tut-entrance-begin-tut');
 @floor1-atrium-employee-jason-quest-not-started
   +lookAtCharacter('Atrium Employee Jason', 'Ada');
   +setConversation('Ada');
-  Atrium Employee Jason: "Hello! How may I help you today?"
+  Atrium Employee Jason: "Hello!  How may I help you today?"
   Ada: "Hello.  What is that room behind you?"
   Atrium Employee Jason: "That's the VR training room!"
   Ada: "VR?"
@@ -185,6 +225,11 @@
   Atrium Employee Jason: "Then you can come back over here."
   +endConversation();
   // +setDoorStateAtMarker(MarkerDoorVRPractice, RED_DOOR, BCK, OPEN);
+@floor1-atrium-employee-jason-tutorial-active
+  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Are you enjoying the tutorial?"
+  +endConversation();
 
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest

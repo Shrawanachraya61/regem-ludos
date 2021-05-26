@@ -1,12 +1,13 @@
 /* @jsx h */
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
-import { isConfirmKey } from 'controller/events';
+import { isCancelKey, isConfirmKey } from 'controller/events';
 import { useState } from 'lib/preact-hooks';
 import { timeoutPromise } from 'utils';
 import { useEffect } from 'preact/hooks';
+import { playSoundName } from 'model/sound';
 
 const DialogWrapper = style('div', () => {
   return {
@@ -65,14 +66,21 @@ const DialogActionButtons = style('div', () => {
 interface IDialogProps {
   title: string;
   onClose: () => void;
+  onConfirm?: () => void;
+  confirmButtonLabel?: string;
   maxWidth?: string;
   closeButtonLabel?: string;
   children?: any;
 }
 const DialogBox = (props: IDialogProps) => {
-  const [buttonSelected, setButtonSelected] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [buttonSelected, setButtonSelected] = useState(-1);
+  const [buttonCursorPosition, setButtonCursorPosition] = useState(0);
 
-  const handleClosing = () => {
+  const isConfirmWindow = !!props.onConfirm;
+
+  const handleClosing = (cb: () => void) => {
+    setIsClosing(true);
     const elem = document.getElementById('dialog-container');
     if (elem) {
       elem.style.transform = 'scale(0)';
@@ -82,18 +90,68 @@ const DialogBox = (props: IDialogProps) => {
       elem2.style.opacity = '0';
     }
     timeoutPromise(100).then(() => {
-      props.onClose();
+      cb();
     });
   };
+  useInputEventStack(
+    ev => {
+      if (isClosing) {
+        return;
+      }
 
-  useInputEventStack(ev => {
-    if (isConfirmKey(ev.key)) {
-      setButtonSelected(true);
-      timeoutPromise(100).then(() => {
-        handleClosing();
-      });
-    }
-  });
+      if (isConfirmWindow) {
+        if (isCancelKey(ev.key)) {
+          setButtonSelected(1);
+          playSoundName('menu_select');
+          playSoundName('menu_choice_close');
+          handleClosing(() => {
+            props.onClose();
+          });
+        }
+        if (isConfirmKey(ev.key)) {
+          setButtonSelected(buttonCursorPosition);
+          if (buttonCursorPosition === 0) {
+            playSoundName('menu_select');
+            handleClosing(() => {
+              if (props.onConfirm) {
+                props.onConfirm();
+              }
+            });
+          } else {
+            playSoundName('menu_select');
+            playSoundName('menu_choice_close');
+            handleClosing(() => {
+              props.onClose();
+            });
+          }
+        }
+
+        if (ev.key === 'ArrowLeft') {
+          playSoundName('menu_move');
+          setButtonCursorPosition(0);
+        } else if (ev.key === 'ArrowRight') {
+          playSoundName('menu_move');
+          setButtonCursorPosition(1);
+        }
+      } else {
+        if (isCancelKey(ev.key)) {
+          setButtonSelected(0);
+          playSoundName('menu_choice_close');
+          handleClosing(() => {
+            props.onClose();
+          });
+        }
+        if (isConfirmKey(ev.key)) {
+          setButtonSelected(0);
+          playSoundName('menu_select');
+          handleClosing(() => {
+            props.onClose();
+          });
+        }
+      }
+    },
+    [buttonCursorPosition]
+  );
 
   useEffect(() => {
     const elem = document.getElementById('dialog-container');
@@ -112,17 +170,64 @@ const DialogBox = (props: IDialogProps) => {
         <DialogTitle>{props.title}</DialogTitle>
         <DialogContent>{props.children}</DialogContent>
         <DialogActionButtons>
-          <Button
-            type={ButtonType.PRIMARY}
-            style={{
-              marginRight: '1rem',
-            }}
-            onClick={handleClosing}
-            showCursor={true}
-            active={buttonSelected}
-          >
-            {props.closeButtonLabel ?? 'Close'}
-          </Button>
+          {isConfirmWindow ? (
+            <>
+              <Button
+                type={ButtonType.PRIMARY}
+                style={{
+                  marginRight: '1rem',
+                }}
+                onClick={ev => {
+                  ev.stopPropagation();
+                  ev.preventDefault();
+                  handleClosing(() => {
+                    if (props.onConfirm) {
+                      props.onConfirm();
+                    }
+                  });
+                }}
+                showCursor={buttonCursorPosition === 0}
+                active={buttonSelected === 0}
+              >
+                {props.confirmButtonLabel ?? 'OK'}
+              </Button>
+              <Button
+                type={ButtonType.CANCEL}
+                style={{
+                  marginRight: '1rem',
+                }}
+                onClick={ev => {
+                  ev.stopPropagation();
+                  ev.preventDefault();
+                  playSoundName('menu_select');
+                  playSoundName('menu_choice_close');
+                  handleClosing(() => {
+                    props.onClose();
+                  });
+                }}
+                showCursor={buttonCursorPosition === 1}
+                active={buttonSelected === 1}
+              >
+                {props.closeButtonLabel ?? 'Cancel'}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type={ButtonType.PRIMARY}
+              style={{
+                marginRight: '1rem',
+              }}
+              onClick={() => {
+                handleClosing(() => {
+                  props.onClose();
+                });
+              }}
+              showCursor={true}
+              active={buttonSelected === 0}
+            >
+              {props.closeButtonLabel ?? 'Close'}
+            </Button>
+          )}
         </DialogActionButtons>
       </DialogContainer>
     </DialogWrapper>

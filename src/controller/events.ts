@@ -82,7 +82,7 @@ export const initEvents = (): void => {
   });
 };
 
-const keyHandlers: KeyboardHandler[] = [];
+const keyHandlers: KeyboardHandler[] = ((window as any).keyHandlers = []);
 
 type KeyboardHandler = (ev: KeyboardEvent) => void;
 export const getCurrentKeyHandler = (): KeyboardHandler | null =>
@@ -95,7 +95,7 @@ export const pushEmptyKeyHandler = () => {
   keyHandlers.push(handler);
   return handler;
 };
-export const popKeyHandler = (handler?: KeyboardHandler) => {
+export const popKeyHandler = (handler: KeyboardHandler) => {
   if (handler) {
     const ind = keyHandlers.indexOf(handler);
     if (ind > -1) {
@@ -107,5 +107,11 @@ export const popKeyHandler = (handler?: KeyboardHandler) => {
 };
 
 export const isConfirmKey = (key: string) => {
-  return ['Return', 'Enter', ' ', 'x', 'X'].includes(key);
+  return ['Return', 'Enter', ' ', 'x', 'X', 'KeyX'].includes(key);
+};
+export const isCancelKey = (key: string) => {
+  return ['Escape', 'z', 'Z', 'KeyZ'].includes(key);
+};
+export const isAuxKey = (key: string) => {
+  return ['c', 'C', 'KeyC'].includes(key);
 };

@@ -3,7 +3,7 @@ import { getNow, getSoundEnabled, getVolume } from './generics';
 
 const SOUND_PATH_PREFIX = 'res/snd';
 
-const sounds: Record<string, ISoundLoaded> = {};
+const sounds: Record<string, ISoundLoaded> = ((window as any).sounds = {});
 const musicSoundObjects: Record<string, ISound> = {};
 const activeSounds: ISound[] = [];
 
@@ -175,7 +175,7 @@ export const stopMusic = async (musicName: string, fadeMs?: number) => {
   }
 };
 
-export const stopCurrentMusic = (fadeMs?: number) => {
+export const stopCurrentMusic = async (fadeMs?: number) => {
   for (const i in musicSoundObjects) {
     const soundObject = musicSoundObjects[i];
     if (!soundObject.sound.paused) {

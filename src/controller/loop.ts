@@ -51,6 +51,7 @@ import { getDrawScale, getCtx, getScreenSize, getCanvas } from 'model/canvas';
 import { updateScene } from './scene-management';
 import { playerGetCameraOffset } from 'model/player';
 import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
+import { Timer, Transform, TransformEase } from 'model/utility';
 
 export const pause = () => {
   if (getIsPaused()) {
@@ -149,6 +150,21 @@ export const runMainLoop = async (): Promise<void> => {
   //   (window as any).running && setTimeout(() => loop(performance.now()), 100);
   const reLoop = () => (window as any).running && requestAnimationFrame(loop);
 
+  const bgTransform = new Transform(
+    [0, 0, 0],
+    [-684, 0, 0],
+    15000,
+    TransformEase.LINEAR
+  );
+  const restartBgTransform = () => {
+    console.log('RESTART BG TRANSFORM!');
+    bgTransform.timer = new Timer(bgTransform.timer.duration);
+    bgTransform.timer.awaits.push(restartBgTransform);
+    bgTransform.timer.start();
+  };
+  bgTransform.timer.awaits.push(restartBgTransform);
+  bgTransform.timer.start();
+
   const loop = (now: number) => {
     const dt = now - prevNow;
     const fm = dt / sixtyFpsMs;
@@ -183,6 +199,12 @@ export const runMainLoop = async (): Promise<void> => {
       setCameraDrawOffset([roomXOffset, roomYOffset]);
       if (roomVisible) {
         drawRoom(room, [roomXOffset, roomYOffset], undefined, true);
+      }
+
+      const renderables = getRenderables();
+      for (const i in renderables) {
+        const cb = renderables[i];
+        cb();
       }
 
       reLoop();
@@ -295,6 +317,10 @@ export const runMainLoop = async (): Promise<void> => {
     clearScreen();
     clearScreen(getCtx('outer'));
     drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+    bgTransform.update();
+    const p = bgTransform.current();
+    drawSprite('bg-fog', 171 + p[0], 128 + p[1]);
+    // drawSprite('bg-fog', 171, 128);
     if (roomVisible) {
       drawRoom(room, [roomXOffset, roomYOffset]);
     }
