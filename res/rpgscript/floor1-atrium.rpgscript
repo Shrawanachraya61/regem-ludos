@@ -174,7 +174,7 @@
   +walkToMarker(Atrium Employee Jason, MarkerJasonA);
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
   Atrium Employee Jason: "Here you are!"
-  +acquireItem('Haptic Bracer');
+  +acquireItem('HapticBracer');
   Atrium Employee Jason: "Would you like me to run you through how to use it?"
   +awaitChoice('Yes. (Enters Tutorial)', 'No.');
   +?eq(lastChoiceIndex, 0):{
