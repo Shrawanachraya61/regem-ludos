@@ -61,6 +61,7 @@ import { TriggerType } from 'lib/rpgscript';
 import {
   hideSections,
   setCharacterText,
+  showMenu,
   showSection,
 } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
@@ -322,6 +323,15 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         pause();
       }
       break;
+    }
+    case 'Escape': {
+      if (!isPaused) {
+        pause();
+        showMenu(() => {
+          unpause();
+          showSection(AppSection.Debug, true);
+        });
+      }
     }
     case 'X':
     case 'x': {

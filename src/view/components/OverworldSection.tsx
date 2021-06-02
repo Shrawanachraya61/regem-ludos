@@ -57,7 +57,18 @@ const OverworldSection = () => {
     <>
       <TopBarWrapper>
         <TopBar
-          buttons={[TopBarButtons.SETTINGS, TopBarButtons.DEBUG]}
+          buttons={[
+            TopBarButtons.MENU,
+            TopBarButtons.SETTINGS,
+            TopBarButtons.DEBUG,
+          ]}
+          onMenuClick={() => {
+            pause();
+          }}
+          onMenuClose={() => {
+            unpause();
+            showSection(AppSection.Debug, true);
+          }}
           onSettingsClick={() => {
             pause();
           }}
@@ -66,12 +77,6 @@ const OverworldSection = () => {
             showSection(AppSection.Debug, true);
           }}
         />
-        {/* <Button type={ButtonType.PRIMARY} onClick={handleSettingsClick}>
-          Settings
-        </Button>
-        <Button type={ButtonType.PRIMARY} onClick={handleToggleDebug}>
-          Toggle Debug
-        </Button> */}
         <CharacterText visible={overworldState.characterText !== ''}>
           {overworldState.characterText || overworldState.prevCharacterText}
         </CharacterText>

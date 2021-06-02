@@ -6,12 +6,13 @@ import {
 import { BattlePosition } from 'model/battle';
 import { removeIfPresent, isoToPixelCoords, Point } from 'utils';
 import { getScreenSize } from './canvas';
+import { Item, get as getItemStrict, getIfExists as getItem } from 'db/items';
 
 export interface Player {
   leader: Character;
   tokens: number;
   tickets: number;
-  backpack: string[];
+  backpack: Item[];
   party: Character[];
   partyStorage: Character[];
   battlePositions: (Character | undefined)[];
@@ -23,8 +24,8 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
     leader,
     tokens: 99,
     tickets: 99,
-    // backpack: ['Haptic Bracer'],
-    backpack: [],
+    backpack: [getItemStrict('Haptic Bracer')],
+    // backpack: [],
     party: [leader],
     battlePositions: [leader],
     partyStorage: [],
@@ -70,12 +71,15 @@ export const playerGetCameraOffset = (player: Player): Point => {
 };
 
 export const playerAddItem = (player: Player, itemName: string): boolean => {
-  player.backpack.push(itemName);
+  const item = getItem(itemName);
+  if (item) {
+    player.backpack.push(item);
+  }
   return true;
 };
 
 export const playerRemoveItem = (player: Player, itemName: string): boolean => {
-  const ind = player.backpack.indexOf(itemName);
+  const ind = player.backpack.findIndex(item => item.name === itemName);
   if (ind > -1) {
     player.backpack.splice(ind, 1);
     return true;
@@ -84,7 +88,7 @@ export const playerRemoveItem = (player: Player, itemName: string): boolean => {
 };
 
 export const playerHasItem = (player: Player, itemName: string): boolean => {
-  const ind = player.backpack.indexOf(itemName);
+  const ind = player.backpack.findIndex(item => item.name === itemName);
   if (ind > -1) {
     return true;
   }

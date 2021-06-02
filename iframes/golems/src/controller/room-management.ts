@@ -80,6 +80,7 @@ const G_controller_onUnitActed = async (room: Room, unit: Unit) => {
   const player = G_model_getCurrentPlayer();
   unit.disabled = true;
   console.log('IS TURN COMPLETED FOR:', units, isTurnCompleted);
+  const attackedUnit = room.ui.selUnits[room.ui.selUnitI];
   let didKo = false;
   for (let i = 0; i < room.units.length; i++) {
     const u = room.units[i];
@@ -101,6 +102,11 @@ const G_controller_onUnitActed = async (room: Room, unit: Unit) => {
     await G_utils_waitMs(750);
     if (unit.hp > 0 && unit.allegiance === UnitAllegiance.PLAYER) {
       await G_controller_lvlUp(room, unit);
+    } else if (
+      attackedUnit?.hp > 0 &&
+      attackedUnit?.allegiance === UnitAllegiance.PLAYER
+    ) {
+      await G_controller_lvlUp(room, attackedUnit);
     }
   }
 

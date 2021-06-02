@@ -1,9 +1,11 @@
 import { h } from 'preact';
 
-const Cursor = (props: { color: string }): h.JSX.Element => {
+const Cursor = (props: { color: string; angle?: number }): h.JSX.Element => {
   return (
     <svg
-      style="transform: rotate(75deg); filter: drop-shadow(1px 1px 0px #222) drop-shadow(-1px -1px 0px #222);"
+      style={`transform: rotate(${
+        props.angle ?? 75
+      }deg); filter: drop-shadow(1px 1px 0px #222) drop-shadow(-1px -1px 0px #222);`}
       stroke={props.color}
       width="32"
       height="32"

@@ -12,6 +12,7 @@ import {
   IModalState,
   ISettingsState,
   ISaveState,
+  IMenuState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
@@ -77,6 +78,9 @@ const mutations: { [key: string]: MutationFunction } = {
   },
   setModalState: (newState: AppState, payload: Partial<IModalState>) => {
     Object.assign(newState.modal, payload);
+  },
+  setMenuState: (newState: AppState, payload: Partial<IMenuState>) => {
+    Object.assign(newState.menu, payload);
   },
   setSettingsState: (newState: AppState, payload: Partial<ISettingsState>) => {
     Object.assign(newState.settings, payload);
@@ -363,6 +367,18 @@ export const showModal = (
     payload,
   });
   showSection(AppSection.Modal, false);
+};
+
+export const showMenu = (onClose: () => void) => {
+  playSoundName('menu_choice_open');
+  const payload = {
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setMenuState',
+    payload,
+  });
+  showSection(AppSection.Menu, false);
 };
 
 export const showSettings = (onClose: () => void) => {

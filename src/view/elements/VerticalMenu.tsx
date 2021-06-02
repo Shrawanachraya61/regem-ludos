@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState, useEffect, useReducer } from 'preact/hooks';
+import { useState, useEffect, useReducer, useRef } from 'preact/hooks';
 import { style, colors, keyframes } from 'view/style';
 import CursorIcon from 'view/icons/Cursor';
 import CloseIcon from 'view/icons/Close';
@@ -15,18 +15,24 @@ interface IVerticalMenuProps<T> {
   open: boolean;
   isInactive?: boolean;
   title?: string;
+  hideCloseBox?: boolean;
   onClose?: () => void;
   backgroundColor?: string;
   borderColor?: string;
   lineHeight?: MenuLineHeight;
   startingIndex?: number;
   width?: string;
+  maxHeight?: string;
   style?: Record<string, string>;
   hideTitle?: boolean;
 }
 
 interface VerticalMenuItem<T> {
-  label: number | string | h.JSX.Element;
+  label:
+    | number
+    | string
+    | h.JSX.Element
+    | ((props: { cursorIndex: number; i: number }) => h.JSX.Element);
   value: T;
 }
 
@@ -106,8 +112,9 @@ const MenuItem = style(
   'div',
   (props: {
     lineHeight: MenuLineHeight;
-    backgroundColor?: string;
     active: boolean;
+    disabled: boolean;
+    backgroundColor?: string;
     highlighted?: boolean;
   }) => {
     return {
@@ -115,7 +122,7 @@ const MenuItem = style(
       ...getMenuLineHeightStyles(props.lineHeight),
       color: 'white',
       backgroundColor: props.backgroundColor,
-      cursor: 'pointer',
+      cursor: props.disabled ? 'default' : 'pointer',
       // transition: 'transform 0.1s linear',
       filter: props.active ? 'brightness(80%)' : '',
       transform: props.active ? 'translateY(2px)' : '',
@@ -138,19 +145,26 @@ const cursorPulse = keyframes({
     transform: 'translateX(-5px)',
   },
 });
-const CursorRoot = style('div', () => {
-  return {
-    color: colors.WHITE,
-    position: 'absolute',
-    top: '-4px',
-    left: '-32px',
-    animation: `${cursorPulse} 500ms linear infinite`,
-  };
-});
-const Cursor = (): h.JSX.Element => {
+const CursorRoot = style(
+  'div',
+  (props: { offsetX: number; offsetY: number }) => {
+    return {
+      color: colors.WHITE,
+      position: 'absolute',
+      top: -4 + props.offsetY + 'px',
+      left: -32 + props.offsetX + 'px',
+      animation: `${cursorPulse} 500ms linear infinite`,
+    };
+  }
+);
+const Cursor = (props: {
+  offsetX: number;
+  offsetY: number;
+  angle: number;
+}): h.JSX.Element => {
   return (
-    <CursorRoot>
-      <CursorIcon color={colors.BLUE} />
+    <CursorRoot offsetX={props.offsetX} offsetY={props.offsetY}>
+      <CursorIcon color={colors.BLUE} angle={props.angle} />
     </CursorRoot>
   );
 };
@@ -162,6 +176,7 @@ const MenuTitleRoot = style('div', (props: { title?: string }) => ({
   display: 'flex',
   justifyContent: props.title ? 'space-around' : 'center',
   alignItems: 'baseline',
+  textTransform: 'uppercase',
 }));
 const CloseButtonIconWrapper = style(
   'div',
@@ -193,6 +208,7 @@ const TitleTextWrapper = style(
 );
 const MenuTitle = (props: {
   onClick?: () => void;
+  hideCloseBox?: boolean;
   lineHeight?: MenuLineHeight;
   title?: string;
   backgroundColor: string;
@@ -200,7 +216,7 @@ const MenuTitle = (props: {
   const lineHeight = props.lineHeight ?? MenuLineHeight.MEDIUM;
   return (
     <MenuTitleRoot title={props.title}>
-      {props.onClick ? (
+      {props.onClick && !props.hideCloseBox ? (
         <CloseButtonIconWrapper
           backgroundColor={props.backgroundColor}
           onClick={props.onClick}
@@ -217,14 +233,31 @@ const MenuTitle = (props: {
 };
 
 const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
+  const menuRef = useRef<HTMLDivElement>();
+  const DEFAULT_ITEM_HEIGHT = 37;
+
   const [{ cursorIndex, active }, dispatch] = useReducer(
     ({ cursorIndex, active }, action: { type: string; payload?: number }) => {
       let nextIndex = cursorIndex;
       let nextActive = active;
       if (action.type === 'Increment') {
         nextIndex = (nextIndex + 1) % props.items.length;
+        if (menuRef.current && props.maxHeight) {
+          const { height } = menuRef.current.getBoundingClientRect();
+          menuRef.current.scrollTop = Math.max(
+            0,
+            -height + nextIndex * DEFAULT_ITEM_HEIGHT + 2 * DEFAULT_ITEM_HEIGHT
+          );
+        }
       } else if (action.type === 'Decrement') {
         nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
+        if (menuRef.current && props.maxHeight) {
+          const { height } = menuRef.current.getBoundingClientRect();
+          menuRef.current.scrollTop = Math.max(
+            0,
+            -height + nextIndex * DEFAULT_ITEM_HEIGHT + 3 * DEFAULT_ITEM_HEIGHT
+          );
+        }
       } else if (action.type === 'Set') {
         if (!active) {
           nextIndex = action.payload ?? 0;
@@ -252,15 +285,12 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (props.open && !props.isInactive) {
-        console.log('CODE', ev.code);
-        let nextIndex = cursorIndex;
         if (ev.code === 'ArrowDown') {
           playSoundName('menu_move');
           dispatch({ type: 'Increment' });
         } else if (ev.code === 'ArrowUp') {
           playSoundName('menu_move');
           dispatch({ type: 'Decrement' });
-          nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
         } else if (isConfirmKey(ev.code)) {
           dispatch({ type: 'Select' });
           if (props.onItemClickSound) {
@@ -297,44 +327,71 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       open={props.open}
       style={props.style}
     >
-      <MenuItemWrapper key="title" borderColor={props.borderColor}>
+      <MenuItemWrapper
+        key="title"
+        borderColor={props.hideTitle ? 'transparent' : props.borderColor}
+      >
         {props.hideTitle ? null : (
           <MenuTitle
             backgroundColor={props.backgroundColor || colors.BLACK}
             onClick={props.onClose}
+            hideCloseBox={props.hideCloseBox}
             lineHeight={props.lineHeight}
             title={props.title}
           />
         )}
       </MenuItemWrapper>
-      {props.items.map((item: VerticalMenuItem<T>, i: number) => {
-        return (
-          <MenuItemWrapper key={i} borderColor={props.borderColor}>
-            <MenuItem
-              key={i}
-              backgroundColor={props.backgroundColor}
-              highlighted={cursorIndex === i}
-              lineHeight={lineHeight}
-              active={active && cursorIndex === i}
-              onClick={() => {
-                dispatch({ type: 'Set', payload: i });
-                if (props.onItemClickSound) {
-                  playSoundName(props.onItemClickSound);
-                }
-                setTimeout(() => {
-                  dispatch({ type: 'Select' });
-                });
-              }}
-              onMouseOver={() => {
-                dispatch({ type: 'Set', payload: i });
-              }}
-            >
-              {item.label}
-            </MenuItem>
-            {cursorIndex === i ? <Cursor /> : null}
-          </MenuItemWrapper>
-        );
-      })}
+      <div
+        ref={menuRef}
+        style={{
+          width: '100%',
+          height: props.maxHeight ?? '100%',
+          overflowY: props.maxHeight ? 'auto' : 'unset',
+        }}
+      >
+        {props.items.map((item: VerticalMenuItem<T>, i: number) => {
+          return (
+            <MenuItemWrapper key={i} borderColor={props.borderColor}>
+              <MenuItem
+                key={i}
+                backgroundColor={props.backgroundColor}
+                highlighted={cursorIndex === i}
+                lineHeight={lineHeight}
+                active={active && cursorIndex === i && !props.isInactive}
+                disabled={!!props.isInactive}
+                onClick={() => {
+                  if (!props.isInactive) {
+                    dispatch({ type: 'Set', payload: i });
+                    if (props.onItemClickSound) {
+                      playSoundName(props.onItemClickSound);
+                    }
+                    setTimeout(() => {
+                      dispatch({ type: 'Select' });
+                    });
+                  }
+                }}
+                onMouseOver={ev => {
+                  ev.preventDefault();
+                  if (!props.isInactive) {
+                    dispatch({ type: 'Set', payload: i });
+                  }
+                }}
+              >
+                {typeof item.label === 'function'
+                  ? item.label({ cursorIndex, i })
+                  : item.label}
+              </MenuItem>
+              {cursorIndex === i && !props.isInactive ? (
+                <Cursor
+                  offsetX={props.maxHeight ? 40 : 0}
+                  offsetY={props.maxHeight ? 4 : 0}
+                  angle={props.maxHeight ? 62 : 75}
+                />
+              ) : null}
+            </MenuItemWrapper>
+          );
+        })}
+      </div>
     </Root>
   );
 };

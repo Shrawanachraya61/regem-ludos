@@ -74,7 +74,7 @@ const Button = style(
   (props: IButtonProps = { type: ButtonType.NEUTRAL }) => ({
     fontSize: '16px',
     textAlign: 'center',
-    padding: '2px 8px',
+    padding: '4px 10px',
     cursor: props.disabled ? 'unset' : 'pointer',
     // border: props.disabled ? `1px solid ${colors.BLACK}` : 'unset',
     // background: props.disabled
@@ -112,6 +112,19 @@ const Button = style(
       : {}),
   })
 );
+
+export const ButtonContentWithIcon = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '& > svg': {
+      marginRight: '8px',
+      width: '16px',
+      height: '16px',
+    },
+  };
+});
 
 export default (props: IButtonProps & IntrinsicProps) => {
   return (

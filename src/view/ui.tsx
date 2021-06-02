@@ -20,6 +20,7 @@ import CutsceneChoicesSection from './components/CutsceneChoicesSection';
 import SettingsSection from './components/SettingsSection';
 import ModalSection from './components/ModalSection';
 import SaveSection from './components/SaveSection';
+import MenuSection from './components/MenuSection';
 
 interface UIInterface {
   appState: AppState;
@@ -100,6 +101,9 @@ const App = () => {
       }
       case AppSection.Save: {
         return <SaveSection key={key} />;
+      }
+      case AppSection.Menu: {
+        return <MenuSection key={key} />;
       }
       default: {
         return <div></div>;

@@ -174,7 +174,7 @@ const SaveSection = () => {
     <>
       <Root>
         <Card size={CardSize.LARGE}>
-          <ContentSpacer id="settings-spacer">
+          <ContentSpacer id="save-spacer">
             <VerticalMenu
               title="Saves"
               width="100%"

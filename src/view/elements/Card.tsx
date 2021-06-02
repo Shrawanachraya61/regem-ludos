@@ -6,9 +6,10 @@ export enum CardSize {
   SMALL,
   MEDIUM,
   LARGE,
+  XLARGE,
 }
 
-const sizes = {
+export const sizes = {
   [CardSize.SMALL]: {
     width: '256px',
     height: '256px',
@@ -20,6 +21,10 @@ const sizes = {
   [CardSize.LARGE]: {
     width: '512px',
     height: '512px',
+  },
+  [CardSize.XLARGE]: {
+    width: '864px',
+    // height: '864px',
   },
 };
 

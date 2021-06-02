@@ -11,6 +11,7 @@ export enum AppSection {
   Settings = 'settings',
   Modal = 'modal',
   Save = 'save',
+  Menu = 'menu',
 }
 
 export enum CutsceneSpeaker {
@@ -90,6 +91,10 @@ export interface ISaveState {
   onClose: () => void;
 }
 
+export interface IMenuState {
+  onClose: () => void;
+}
+
 export interface AppState {
   sections: AppSection[];
   overworld: IOverworldAppState;
@@ -100,6 +105,7 @@ export interface AppState {
   modal: IModalState;
   settings: ISettingsState;
   save: ISaveState;
+  menu: IMenuState;
 }
 
 export const AppStateInitial: AppState = {
@@ -148,6 +154,9 @@ export const AppStateInitial: AppState = {
     onClose: () => {},
   },
   save: {
+    onClose: () => {},
+  },
+  menu: {
     onClose: () => {},
   },
 };

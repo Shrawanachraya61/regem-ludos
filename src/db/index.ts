@@ -6,8 +6,11 @@ import { init as initTiles } from './tiles';
 import { init as initOverworldAi } from './overworld-ai';
 import { init as initAnimMetadata } from './animation-metadata';
 import { init as initParticles } from './particles';
+import { init as initQuests } from './quests';
+import { init as initItems } from './items';
 
 export default async () => {
+  initQuests();
   initParticles();
   initEnemies();
   initEncounters();
@@ -15,5 +18,6 @@ export default async () => {
   initTiles();
   initOverworldAi();
   initAnimMetadata();
+  initItems();
   await initOverworlds();
 };

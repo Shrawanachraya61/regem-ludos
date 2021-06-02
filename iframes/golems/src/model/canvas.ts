@@ -233,7 +233,8 @@ const G_model_getCanvas = (): HTMLCanvasElement => {
     const globalScale = G_model_getScale();
     const [canvas, ctx] = G_model_createCanvas(
       16 * 16 * globalScale,
-      16 * 16 * globalScale
+      // subtract one row for 1080 screens
+      16 * 15 * globalScale
     );
     canvas.id = 'canv';
     ctx.lineWidth = Math.max(2, globalScale);

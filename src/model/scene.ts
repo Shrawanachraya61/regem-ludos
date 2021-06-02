@@ -26,7 +26,9 @@ export interface Scene {
 
 export const sceneCreate = (): Scene => {
   const scene = {
-    storage: {} as Record<string, string>,
+    storage: {
+      'quest_floor1-main': true,
+    } as Record<string, string | boolean>,
     storageOnce: {} as Record<string, string>,
     storageOnceKeys: {} as Record<string, boolean>,
     storageEncounters: {} as Record<string, Record<string, boolean>>,
