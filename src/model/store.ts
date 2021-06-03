@@ -74,12 +74,13 @@ export enum ModalSection {
   TUTORIAL_ARMOR = 'TUTORIAL_ARMOR',
   INFO = 'INFO',
   CONFIRM = 'CONFIRM',
+  SELECT_PARTY_MEMBER = 'SELECT_PARTY_MEMBER',
 }
 
 export interface IModalState {
   section: ModalSection;
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (v?: any) => void;
   text?: string;
 }
 

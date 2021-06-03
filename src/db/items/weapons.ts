@@ -25,8 +25,32 @@ const COOLDOWN_MOD = 0.25;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
-    AdaTrainingSwing: {
-      name: 'Training Swing',
+    NoWeapon: {
+      name: '(No weapon)',
+      description:
+        "Jump to target and... well... TRY to do something to them without a weapon equipped.  It probably won't be very effective though.",
+      cooldown: 5000 * COOLDOWN_MOD,
+      type: BattleActionType.SWING,
+      meta: {
+        swings: [SwingType.NORMAL],
+        icon: SwordIcon,
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 1;
+        const baseStagger = 1;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doSwing(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            swingType:
+              this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
+    TrainingSwordSwing: {
+      name: 'Training Sword',
       description: 'Jump to target and swing your weapon.',
       cooldown: 5000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
@@ -48,8 +72,8 @@ export const initBattleActions = (): Record<string, BattleAction> => {
         }
       },
     },
-    BowLevel1: {
-      name: 'BowLevel1',
+    TrainingBowShoot: {
+      name: 'Training Bow',
       description: 'Fire an arrow at a target.',
       cooldown: 3000 * COOLDOWN_MOD,
       type: BattleActionType.RANGED,
@@ -109,18 +133,22 @@ export const initBattleActions = (): Record<string, BattleAction> => {
 export const init = (exp: { [key: string]: ItemTemplate }) => {
   const battleActions = initBattleActions();
 
+  exp.NoWeapon = {
+    label: 'No Weapon',
+    description: 'No weapon is equipped.',
+    type: ItemType.WEAPON,
+    skills: [battleActions.NoWeapon],
+  };
   exp.TrainingSword = {
     label: 'Training Sword',
-    icon: BowIcon,
     description: 'A standard issue training sword.',
-    equipType: ItemType.WEAPON,
-    skills: [battleActions.AdaTrainingSwing],
+    type: ItemType.WEAPON,
+    skills: [battleActions.TrainingSwordSwing],
   };
   exp.TrainingBow = {
     label: 'Training Bow',
-    icon: BowIcon,
     description: 'A standard issue training sword.',
-    equipType: ItemType.WEAPON,
-    skills: [battleActions.BowLevel1],
+    type: ItemType.WEAPON,
+    skills: [battleActions.TrainingBowShoot],
   };
 };

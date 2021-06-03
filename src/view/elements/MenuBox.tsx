@@ -28,7 +28,7 @@ const MenuContainer = style('div', (props: { maxWidth?: string }) => {
   return {
     margin: '4px',
     padding: '4px',
-    minWidth: '50%',
+    minWidth: '25%',
     maxWidth: props.maxWidth ?? '90%',
     maxHeight: '1024px',
     border: `2px solid ${colors.BLUE}`,

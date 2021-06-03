@@ -3,17 +3,24 @@ import { h } from 'preact';
 import { hideSection } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import DialogBox from 'view/elements/DialogBox';
-import { style } from 'view/style';
+import MenuBox from 'view/elements/MenuBox';
+import { colors, style } from 'view/style';
 import { getUiInterface } from 'view/ui';
 import { playSound } from 'controller/scene-commands';
 import { timeoutPromise } from 'utils';
+import { getCancelKeyLabel } from 'controller/events';
+import { getCurrentPlayer } from 'model/generics';
+import VerticalMenu from 'view/elements/VerticalMenu';
+import StaticAnimDiv from 'view/elements/StaticAnimDiv';
+import { Character, characterGetHpPct } from 'model/character';
+import ProgressBar from 'view/elements/ProgressBar';
 
 const TUTORIAL_MAX_WIDTH = '500px';
 const INFO_MAX_WIDTH = '256px';
 
 interface ICustomModalProps {
   onClose: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (v?: any) => void;
   text?: string;
 }
 
@@ -214,7 +221,6 @@ const InfoModal = (props: ICustomModalProps) => {
 };
 
 const ConfirmModal = (props: ICustomModalProps) => {
-  console.log('RENDER CONFIRM MODAL', props);
   return (
     <DialogBox
       title="Confirm"
@@ -224,6 +230,144 @@ const ConfirmModal = (props: ICustomModalProps) => {
     >
       <p>{props.text}</p>
     </DialogBox>
+  );
+};
+
+const PartyMember = style(
+  'div',
+  (props: { color?: string; padding?: string }) => {
+    return {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: '93px',
+      background: props.color ?? 'unset',
+      padding: props.padding ?? 'unset',
+      boxSizing: 'border-box',
+      border: props.color ? `2px solid ${colors.DARKGREEN}` : 'unset',
+    };
+  }
+);
+
+const PartyMemberMain = style('div', () => {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // width: '100%',
+    // '& > div': {
+    //   marginRight: '4px',
+    // },
+  };
+});
+
+const PortraitContainer = style('div', () => {
+  return {
+    background: colors.DARKGREY,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderRight: '2px solid ' + colors.BLACK,
+    border: `2px solid ${colors.WHITE}`,
+    width: '93',
+    height: '93',
+    cursor: 'pointer',
+    overflow: 'hidden',
+  };
+});
+
+const CharacterNameLabel = style('div', () => {
+  return {
+    fontSize: '18px',
+    color: colors.BLACK,
+    background: colors.WHITE,
+    // boxShadow: BOX_SHADOW,
+    borderTopLeftRadius: '8px',
+    borderTopRightRadius: '8px',
+    textTransform: 'uppercase',
+    // border: `2px solid ${colors.BLACK}`,
+    padding: '8px',
+    marginBottom: '2px',
+  };
+});
+
+const ChInfoContainer = style('div', () => {
+  return {
+    width: '50%',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  };
+});
+
+const PercentBarWrapper = style(
+  'div',
+  (props: { short: boolean; borderColor?: string }) => {
+    return {
+      // width: ,
+      width: '100%',
+      border: props.short
+        ? 'unset'
+        : `2px solid ${props.borderColor ?? colors.WHITE}`,
+      borderBottom: props.short ? 'unset' : '0px',
+    };
+  }
+);
+
+const SelectPartyMemberModal = (props: ICustomModalProps) => {
+  const player = getCurrentPlayer();
+  const party = player.party;
+  return (
+    <MenuBox
+      title="Select Party Member"
+      onClose={props.onClose}
+      maxWidth={INFO_MAX_WIDTH}
+      closeButtonLabel={'Back ' + getCancelKeyLabel()}
+    >
+      <div style={{}}>
+        <VerticalMenu
+          title="Party"
+          open={true}
+          isInactive={false}
+          items={party.map(ch => {
+            return {
+              label: (
+                <PartyMember>
+                  <ChInfoContainer>
+                    <CharacterNameLabel id={'name-label-' + ch.name}>
+                      {ch.name}
+                    </CharacterNameLabel>
+                    <PercentBarWrapper short={false}>
+                      <ProgressBar
+                        pct={characterGetHpPct(ch)}
+                        backgroundColor={colors.BLACK}
+                        color={colors.GREEN}
+                        height={20}
+                        label={`HP: ${ch.hp}`}
+                      />
+                    </PercentBarWrapper>
+                  </ChInfoContainer>
+                  <PartyMemberMain>
+                    <PortraitContainer>
+                      <StaticAnimDiv
+                        style={{
+                          width: '64',
+                        }}
+                        animName={`${ch.spriteBase.toLowerCase()}_idle_down`}
+                      ></StaticAnimDiv>
+                    </PortraitContainer>
+                  </PartyMemberMain>
+                </PartyMember>
+              ),
+              value: ch,
+            };
+          })}
+          onItemClickSound="menu_select"
+          onItemClick={props.onConfirm as any}
+        />
+      </div>
+    </MenuBox>
   );
 };
 
@@ -297,6 +441,23 @@ const Modal = () => {
           onClose={handleClose}
           onConfirm={handleConfirm}
           text={modalState.text}
+        />
+      );
+      break;
+    }
+    case ModalSection.SELECT_PARTY_MEMBER: {
+      elem = (
+        <SelectPartyMemberModal
+          onClose={handleClose}
+          onConfirm={(ch: Character) => {
+            hideSection(AppSection.Modal);
+            playSound('menu_select');
+            timeoutPromise(1).then(() => {
+              if (onConfirm) {
+                onConfirm(ch);
+              }
+            });
+          }}
         />
       );
       break;

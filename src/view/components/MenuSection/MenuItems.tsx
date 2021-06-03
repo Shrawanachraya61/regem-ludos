@@ -74,7 +74,7 @@ const MenuItems = (props: IMenuItemsProps) => {
                       i === selectedItemIndex ? colors.DARKGREEN : colors.BLACK,
                   }}
                 >
-                  {item.name}
+                  {item.label}
                 </div>
               ),
               value: i,
@@ -88,7 +88,7 @@ const MenuItems = (props: IMenuItemsProps) => {
       </LeftDiv>
       <RightDiv>
         <DescriptionWrapper>
-          <DescriptionName>{selectedItem?.name ?? ''}</DescriptionName>
+          <DescriptionName>{selectedItem?.label ?? ''}</DescriptionName>
           <DescriptionBody>{selectedItem?.description ?? ''}</DescriptionBody>
         </DescriptionWrapper>
       </RightDiv>

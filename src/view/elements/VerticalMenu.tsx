@@ -345,7 +345,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         ref={menuRef}
         style={{
           width: '100%',
-          height: props.maxHeight ?? '100%',
+          height: props.maxHeight ?? 'unset',
           overflowY: props.maxHeight ? 'auto' : 'unset',
         }}
       >

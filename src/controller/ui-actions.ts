@@ -20,6 +20,7 @@ import { overworldShow } from 'model/overworld';
 import { playSound, playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
+import { Character } from 'model/character';
 
 export interface ReducerAction<T> {
   action: string;
@@ -352,7 +353,7 @@ export const showModal = (
   section: ModalSection,
   modalParams: {
     onClose: () => void;
-    onConfirm?: () => void;
+    onConfirm?: (v?: any) => void;
     text?: string;
   }
 ) => {
@@ -367,6 +368,16 @@ export const showModal = (
     payload,
   });
   showSection(AppSection.Modal, false);
+};
+
+export const showPartyMemberSelectModal = (props: {
+  onClose: () => void;
+  onCharacterSelected: (ch: Character) => void;
+}) => {
+  showModal(ModalSection.SELECT_PARTY_MEMBER, {
+    onClose: props.onClose,
+    onConfirm: props.onCharacterSelected,
+  });
 };
 
 export const showMenu = (onClose: () => void) => {

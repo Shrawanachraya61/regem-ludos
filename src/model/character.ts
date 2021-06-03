@@ -42,6 +42,7 @@ import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
+import { Item, get as getItem } from 'db/items';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -136,6 +137,12 @@ export interface Character {
   stats: BattleStats;
   skills: BattleAction[];
   skillIndex: number;
+  equipment: {
+    weapon: Item;
+    accessory1?: Item;
+    accessory2?: Item;
+    armor?: Item;
+  };
   facing: Facing;
   animationState: AnimationState;
   animationOverride: Animation | null;
@@ -185,6 +192,12 @@ export interface CharacterTemplate {
   encounterName?: string;
   speed?: number;
   staggerSoundName?: string;
+  equipment?: {
+    weapon: Item;
+    accessory1?: Item;
+    accessory2?: Item;
+    armor?: Item;
+  };
 }
 
 export const characterCreate = (name: string): Character => {
@@ -205,6 +218,9 @@ export const characterCreate = (name: string): Character => {
     stats: battleStatsCreate(),
     skills: [BattleActions.SWING] as BattleAction[],
     skillIndex: 0,
+    equipment: {
+      weapon: getItem('NoWeapon'),
+    },
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     animationKey: '',
@@ -287,6 +303,9 @@ export const characterCreateFromTemplate = (
   }
   if (template.speed) {
     ch.speed = template.speed;
+  }
+  if (template.equipment) {
+    Object.assign(ch.equipment, template.equipment);
   }
   ch.template = template;
   return ch;

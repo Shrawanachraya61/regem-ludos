@@ -24,7 +24,7 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
     leader,
     tokens: 99,
     tickets: 99,
-    backpack: [getItemStrict('Haptic Bracer')],
+    backpack: [getItemStrict('HapticBracer')],
     // backpack: [],
     party: [leader],
     battlePositions: [leader],

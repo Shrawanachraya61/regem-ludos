@@ -1,6 +1,6 @@
 /* @jsx h */
 import { h } from 'preact';
-import { hideSection } from 'controller/ui-actions';
+import { hideSection, showPartyMemberSelectModal } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import { colors, style } from 'view/style';
@@ -170,7 +170,17 @@ const MenuSection = () => {
   };
 
   const handleMenuCommandItemClick = (section: MenuCommandItem) => {
-    console.log('SET SELECTED SECTION', section);
+    if (section === MenuCommandItem.PARTY) {
+      showPartyMemberSelectModal({
+        onCharacterSelected: ch => {
+          console.log('SELCTED ', ch);
+        },
+        onClose: () => {
+          console.log('clsoe');
+        },
+      });
+      return;
+    }
     setSelectedSection(section);
     setOuterMenuActive(false);
   };
