@@ -24,11 +24,22 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
     leader,
     tokens: 99,
     tickets: 99,
-    backpack: [getItemStrict('HapticBracer')],
+    backpack: [
+      getItemStrict('HapticBracer'),
+      getItemStrict('TrainingSword'),
+      getItemStrict('TrainingSword'),
+      getItemStrict('TrainingSword'),
+      getItemStrict('TrainingSword'),
+      getItemStrict('TrainingSword'),
+      getItemStrict('FeeblePotion'),
+      getItemStrict('FeeblePotion'),
+      getItemStrict('ShieldRing'),
+      getItemStrict('ZoeBracelet'),
+    ],
     // backpack: [],
     party: [leader],
     battlePositions: [leader],
-    partyStorage: [],
+    partyStorage: [leader],
   };
   return player;
 };

@@ -42,7 +42,7 @@ import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
-import { Item, get as getItem } from 'db/items';
+import { Item, get as getItem, ItemType } from 'db/items';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -138,7 +138,7 @@ export interface Character {
   skills: BattleAction[];
   skillIndex: number;
   equipment: {
-    weapon: Item;
+    weapon?: Item;
     accessory1?: Item;
     accessory2?: Item;
     armor?: Item;
@@ -720,6 +720,64 @@ export const characterSetOverworldAi = (ch: Character, ai: OverworldAI) => {
   ch.overworldAi = ai;
   if (ai.onCreate) {
     ai.onCreate(ch);
+  }
+};
+
+export const characterItemIsEquipped = (ch: Character, item: Item) => {
+  for (const i in ch.equipment) {
+    if (ch.equipment[i] === item) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const characterEquipItem = (
+  ch: Character,
+  item: Item,
+  accessoryIndex?: number
+) => {
+  if (item.type === ItemType.WEAPON) {
+    ch.equipment.weapon = item;
+  } else if (item.type === ItemType.ARMOR) {
+    ch.equipment.armor = item;
+  } else if (item.type === ItemType.ACCESSORY) {
+    if (accessoryIndex === 0) {
+      ch.equipment.accessory1 = item;
+    } else if (accessoryIndex === 1) {
+      ch.equipment.accessory2 = item;
+    }
+  }
+
+  ch.skills = [];
+  const weaponSkills = ch.equipment?.weapon?.skills ?? [];
+  const armorSkills = ch.equipment?.armor?.skills ?? [];
+  const skills = weaponSkills.concat(armorSkills);
+  for (const i in skills) {
+    ch.skills.push(skills[i]);
+  }
+};
+
+export const characterUnEquipItem = (
+  ch: Character,
+  item: Item,
+  accessoryIndex?: number
+) => {
+  if (item.type === ItemType.ARMOR) {
+    ch.equipment.armor = undefined;
+  } else if (item.type === ItemType.ACCESSORY) {
+    if (accessoryIndex === 0) {
+      ch.equipment.accessory1 = undefined;
+    } else if (accessoryIndex === 1) {
+      ch.equipment.accessory2 = undefined;
+    }
+  }
+  ch.skills = [];
+  const weaponSkills = ch.equipment?.weapon?.skills ?? [];
+  const armorSkills = ch.equipment?.armor?.skills ?? [];
+  const skills = weaponSkills.concat(armorSkills);
+  for (const i in skills) {
+    ch.skills.push(skills[i]);
   }
 };
 

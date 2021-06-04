@@ -23,6 +23,7 @@ import { getCancelKeyLabel, getConfirmKeyLabel } from 'controller/events';
 
 import MenuItems from './MenuItems';
 import MenuJournal from './MenuJournal';
+import MenuEquipment from './MenuEquipment';
 
 const Root = style('div', {
   position: 'absolute',
@@ -227,6 +228,21 @@ const MenuSection = () => {
                 setOuterMenuActive(true);
               }}
             />
+          </MenuBox>
+        );
+      }
+      case MenuCommandItem.EQUIPMENT: {
+        return (
+          <MenuBox
+            title="Equipment"
+            onClose={() => {
+              // setOuterMenuActive(true);
+            }}
+            maxWidth={cardSizes[CardSize.XLARGE].width}
+            closeButtonLabel={'Back ' + getCancelKeyLabel()}
+            hideClose={true}
+          >
+            <MenuEquipment player={player} />
           </MenuBox>
         );
       }

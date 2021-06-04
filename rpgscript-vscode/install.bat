@@ -1,1 +1,1 @@
-XCOPY /E .  %USERPROFILE%\.vscode\extensions\rpgscript-vscode
+XCOPY /E .  "%USERPROFILE%\.vscode\extensions\rpgscript-vscode"

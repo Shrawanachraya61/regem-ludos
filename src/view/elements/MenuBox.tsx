@@ -1,12 +1,9 @@
 /* @jsx h */
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
-import { isCancelKey, isConfirmKey } from 'controller/events';
-import { useState } from 'lib/preact-hooks';
-import { timeoutPromise } from 'utils';
-import { useEffect } from 'preact/hooks';
+import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
 
 const MenuWrapper = style('div', () => {
@@ -65,11 +62,12 @@ interface IMenuProps {
   onClose: () => void;
   maxWidth?: string;
   closeButtonLabel?: string;
+  hideClose?: boolean;
   children?: any;
 }
 const MenuBox = (props: IMenuProps) => {
   useInputEventStack(ev => {
-    if (isCancelKey(ev.key)) {
+    if (isCancelKey(ev.key) && !props.hideClose) {
       playSoundName('menu_select');
       props.onClose();
     }
@@ -83,20 +81,22 @@ const MenuBox = (props: IMenuProps) => {
       >
         <MenuTitle>{props.title}</MenuTitle>
         <MenuContent>{props.children}</MenuContent>
-        <MenuActionButtons>
-          <Button
-            type={ButtonType.PRIMARY}
-            style={{
-              marginRight: '1rem',
-            }}
-            onClick={() => {
-              playSoundName('menu_select');
-              props.onClose();
-            }}
-          >
-            {props.closeButtonLabel ?? 'Close'}
-          </Button>
-        </MenuActionButtons>
+        {props.hideClose ? null : (
+          <MenuActionButtons>
+            <Button
+              type={ButtonType.PRIMARY}
+              style={{
+                marginRight: '1rem',
+              }}
+              onClick={() => {
+                playSoundName('menu_select');
+                props.onClose();
+              }}
+            >
+              {props.closeButtonLabel ?? 'Close'}
+            </Button>
+          </MenuActionButtons>
+        )}
       </MenuContainer>
     </MenuWrapper>
   );

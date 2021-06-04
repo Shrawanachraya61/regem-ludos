@@ -28,6 +28,21 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
     ],
   };
 
+  exp.Part1MainQuest = {
+    label: 'Main',
+    description: 'Follow employee Jason through the Regem Ludos tutorial.',
+    questStartScriptKey: 'quest_tutorial_active',
+    questEndScriptKey: 'quest_tutorial_complete',
+    steps: [
+      {
+        completedScriptKey: 'quest_tutorial1',
+        label: 'Complete the tutorial.',
+        description:
+          'An employee of the Regem Ludos arcade is providing a tutorial.  This must be completed before access is granted to the upper floors.',
+      },
+    ],
+  };
+
   exp.TicTacToe = {
     label: 'Tic Tac Toe',
     description: 'The sad Tic Tac Toe AI deserves a win.',

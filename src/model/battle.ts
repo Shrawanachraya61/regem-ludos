@@ -175,6 +175,7 @@ export interface BattleStats {
   EVA: number;
   HP: number;
   STAGGER: number; // stagger hp
+  RESV: number;
 }
 
 export const battleCreate = (
@@ -236,6 +237,7 @@ export const battleStatsCreate = (): BattleStats => {
     EVA: 1,
     HP: 10,
     STAGGER: 10,
+    RESV: 10,
   };
 };
 

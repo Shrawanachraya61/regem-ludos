@@ -14,6 +14,7 @@ import VerticalMenu from 'view/elements/VerticalMenu';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { Character, characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
+import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 
 const TUTORIAL_MAX_WIDTH = '500px';
 const INFO_MAX_WIDTH = '256px';
@@ -273,21 +274,6 @@ const PortraitContainer = style('div', () => {
     height: '93',
     cursor: 'pointer',
     overflow: 'hidden',
-  };
-});
-
-const CharacterNameLabel = style('div', () => {
-  return {
-    fontSize: '18px',
-    color: colors.BLACK,
-    background: colors.WHITE,
-    // boxShadow: BOX_SHADOW,
-    borderTopLeftRadius: '8px',
-    borderTopRightRadius: '8px',
-    textTransform: 'uppercase',
-    // border: `2px solid ${colors.BLACK}`,
-    padding: '8px',
-    marginBottom: '2px',
   };
 });
 

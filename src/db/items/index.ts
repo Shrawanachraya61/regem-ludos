@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { init as initWeapons } from './weapons';
 import { init as initQuestItems } from './quest';
 import { init as initAccessories } from './accessories';
+import { init as initConsumables } from './consumables';
 
 import DefaultIcon from 'view/icons/Help';
 import { BattleAction } from 'controller/battle-actions';
@@ -61,6 +62,7 @@ export const init = () => {
   initWeapons(exp);
   initQuestItems(exp);
   initAccessories(exp);
+  initConsumables(exp);
 
   for (const i in exp) {
     const item = exp[i];

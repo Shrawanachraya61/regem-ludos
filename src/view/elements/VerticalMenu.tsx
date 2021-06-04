@@ -8,10 +8,12 @@ import { isAuxKey, isCancelKey, isConfirmKey } from 'controller/events';
 
 interface IVerticalMenuProps<T> {
   items: VerticalMenuItem<T>[];
-  onItemClick: (value: T) => void;
+  onItemClick: (value: T, i?: number) => void;
   onItemClickSound?: string;
   onAuxClick?: (value: T) => void;
   onAuxClickSound?: string;
+  onItemHover?: (value: T, i?: number) => void;
+  onItemHoverSound?: string;
   open: boolean;
   isInactive?: boolean;
   title?: string;
@@ -23,6 +25,7 @@ interface IVerticalMenuProps<T> {
   startingIndex?: number;
   width?: string;
   maxHeight?: string;
+  height?: string;
   style?: Record<string, string>;
   hideTitle?: boolean;
 }
@@ -85,11 +88,13 @@ const Root = style(
     borderColor?: string;
     open: boolean;
     width?: string;
+    height?: string;
   }) => {
     return {
       background: props.backgroundColor,
       position: 'relative',
       width: props.width || '100%',
+      height: props.height || 'unset',
       // height: props.open ? 'unset' : '0px',
       border: `4px double ${props.borderColor}`,
       boxSizing: 'border-box',
@@ -271,8 +276,17 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         }
       } else if (action.type === 'SelectInactive') {
         const item = props.items[cursorIndex];
-        props.onItemClick(item.value);
+        props.onItemClick(item.value, cursorIndex);
         nextActive = false;
+      }
+      if (cursorIndex !== nextIndex) {
+        const item = props.items[nextIndex];
+        if (item && props.onItemHover) {
+          props.onItemHover(item.value, nextIndex);
+          if (props.onItemHoverSound) {
+            playSoundName(props.onItemHoverSound);
+          }
+        }
       }
       return {
         cursorIndex: nextIndex,
@@ -312,6 +326,11 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
+
+    if (cursorIndex >= props.items?.length ?? 0) {
+      console.log('SET CURSOR INDEX', 0);
+      dispatch({ type: 'Set', payload: 0 });
+    }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -324,6 +343,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       backgroundColor={props.backgroundColor ?? colors.BLACK}
       borderColor={props.borderColor ?? colors.WHITE}
       width={props.width}
+      height={props.height}
       open={props.open}
       style={props.style}
     >
