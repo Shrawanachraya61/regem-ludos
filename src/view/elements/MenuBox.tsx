@@ -62,12 +62,17 @@ interface IMenuProps {
   onClose: () => void;
   maxWidth?: string;
   closeButtonLabel?: string;
+  disableKeyboardShortcut?: boolean;
   hideClose?: boolean;
   children?: any;
 }
 const MenuBox = (props: IMenuProps) => {
   useInputEventStack(ev => {
-    if (isCancelKey(ev.key) && !props.hideClose) {
+    if (
+      isCancelKey(ev.key) &&
+      !props.hideClose &&
+      !props.disableKeyboardShortcut
+    ) {
       playSoundName('menu_select');
       props.onClose();
     }

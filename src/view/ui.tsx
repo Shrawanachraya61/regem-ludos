@@ -112,13 +112,19 @@ const App = () => {
   };
 
   const scale = getDrawScale();
+  const width = SCREEN_WIDTH * (scale > 2 ? 2 : scale);
+  const height = SCREEN_HEIGHT * (scale > 2 ? 2 : scale);
+  const isPositionFixed =
+    window.innerHeight < height || window.innerWidth < width;
+
   return (
     <div
       style={{
-        position: 'absolute',
+        position: isPositionFixed ? 'fixed' : 'absolute',
         top: '0px',
-        width: SCREEN_WIDTH * (scale > 2 ? 2 : scale),
-        height: SCREEN_HEIGHT * (scale > 2 ? 2 : scale),
+        left: '0px',
+        width: Math.min(width, window.innerWidth),
+        height: Math.min(height, window.innerHeight),
       }}
     >
       <Root id="ui-sections">

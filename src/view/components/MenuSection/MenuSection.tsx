@@ -236,13 +236,19 @@ const MenuSection = () => {
           <MenuBox
             title="Equipment"
             onClose={() => {
-              // setOuterMenuActive(true);
+              setOuterMenuActive(true);
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
-            closeButtonLabel={'Back ' + getCancelKeyLabel()}
-            hideClose={true}
+            closeButtonLabel={'Back'}
+            disableKeyboardShortcut={true}
+            // hideClose={true}
           >
-            <MenuEquipment player={player} />
+            <MenuEquipment
+              player={player}
+              onClose={() => {
+                setOuterMenuActive(true);
+              }}
+            />
           </MenuBox>
         );
       }
@@ -254,7 +260,8 @@ const MenuSection = () => {
               setOuterMenuActive(true);
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
-            closeButtonLabel={'Back ' + getCancelKeyLabel()}
+            closeButtonLabel={'Back'}
+            disableKeyboardShortcut={true}
           ></MenuBox>
         );
     }

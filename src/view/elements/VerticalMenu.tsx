@@ -178,8 +178,8 @@ const MenuTitleRoot = style('div', (props: { title?: string }) => ({
   textAlign: 'center',
   position: 'relative',
   background: colors.DARKBLUE,
-  display: 'flex',
-  justifyContent: props.title ? 'space-around' : 'center',
+  // display: 'flex',
+  // justifyContent: props.title ? 'space-around' : 'center',
   alignItems: 'baseline',
   textTransform: 'uppercase',
 }));
@@ -193,6 +193,7 @@ const CloseButtonIconWrapper = style(
       background: props.backgroundColor,
       borderRight: `2px solid ${colors.WHITE}`,
       marginTop: `0.15rem`,
+      position: 'absolute',
       '&:hover': {
         filter: 'brightness(120%)',
       },
@@ -207,7 +208,7 @@ const TitleTextWrapper = style(
   (props: { lineHeight: MenuLineHeight }) => {
     return {
       ...getMenuLineHeightStyles(props.lineHeight),
-      width: 'calc(100% - 34px)',
+      // width: 'calc(100% - 34px)',
     };
   }
 );
@@ -328,7 +329,6 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
     window.addEventListener('keydown', handleKeyDown);
 
     if (cursorIndex >= props.items?.length ?? 0) {
-      console.log('SET CURSOR INDEX', 0);
       dispatch({ type: 'Set', payload: 0 });
     }
     return () => {

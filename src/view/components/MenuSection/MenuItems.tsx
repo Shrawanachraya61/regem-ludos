@@ -11,7 +11,7 @@ const InnerRoot = style('div', {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  width: '100%',
+  width: '800px',
   // height: '100%',
 });
 

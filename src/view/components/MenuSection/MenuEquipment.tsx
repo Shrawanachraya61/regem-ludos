@@ -10,6 +10,7 @@ import {
   Character,
   characterEquipItem,
   characterItemIsEquipped,
+  characterUnEquipItem,
 } from 'model/character';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { Item, ItemTemplate, ItemType } from 'db/items';
@@ -20,7 +21,7 @@ const Root = style('div', {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  width: '686px',
+  width: '800px',
   height: '612px',
   // height: '100%',
 });
@@ -167,6 +168,7 @@ enum EquipmentType {
 
 interface IMenuEquipmentProps {
   player: Player;
+  onClose: () => void;
 }
 
 interface IMenuEquipmentState {
@@ -245,10 +247,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
           }}
           hideCloseBox={true}
           onClose={() => {
-            dispatch({
-              type: 'SET_CHARACTER',
-              payload: undefined,
-            });
+            props.onClose();
           }}
         />
       </CharacterSelectWrapper>
@@ -285,10 +284,18 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                 payload: val,
               });
             }}
-            hideCloseBox={true}
+            hideCloseBox={!equipTypeActive && !itemActive}
             onClose={() => {
               dispatch({
                 type: 'SET_CHARACTER',
+                payload: undefined,
+              });
+              dispatch({
+                type: 'SET_EQUIPMENT_TYPE',
+                payload: undefined,
+              });
+              dispatch({
+                type: 'SET_HOVERED_ITEM',
                 payload: undefined,
               });
             }}
@@ -357,23 +364,51 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
             })}
           onItemClickSound="menu_select"
           onItemClick={(val: Item) => {
-            characterEquipItem(menuState.selectedCharacter as Character, val);
+            let meta: any;
+            if (menuState.selectedEquipmentType === EquipmentType.ACCESSORY) {
+              meta = 0;
+            } else if (
+              menuState.selectedEquipmentType === EquipmentType.ACCESSORY2
+            ) {
+              meta = 1;
+            }
+            if (
+              characterItemIsEquipped(
+                menuState.selectedCharacter as Character,
+                val
+              )
+            ) {
+              characterUnEquipItem(
+                menuState.selectedCharacter as Character,
+                val,
+                meta
+              );
+            } else {
+              characterEquipItem(
+                menuState.selectedCharacter as Character,
+                val,
+                meta
+              );
+            }
             dispatch({
               type: 'SET_HOVERED_ITEM',
               payload: undefined,
             });
           }}
           onItemHover={(val: Item) => {
-            // characterEquipItem(menuState.selectedCharacter as Character, val);
             dispatch({
               type: 'SET_HOVERED_ITEM',
               payload: val,
             });
           }}
-          hideCloseBox={true}
+          hideCloseBox={!itemActive}
           onClose={() => {
             dispatch({
               type: 'SET_EQUIPMENT_TYPE',
+              payload: undefined,
+            });
+            dispatch({
+              type: 'SET_HOVERED_ITEM',
               payload: undefined,
             });
           }}
