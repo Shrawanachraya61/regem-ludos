@@ -13,11 +13,12 @@ import {
   ISettingsState,
   ISaveState,
   IMenuState,
+  ILevelUpState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
 import { overworldShow } from 'model/overworld';
-import { playSound, playSoundName } from 'model/sound';
+import { playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
 import { Character } from 'model/character';
@@ -33,7 +34,7 @@ type MutationFunction = (
   oldState?: AppState
 ) => void;
 
-const mutations: { [key: string]: MutationFunction } = {
+const resolvers: { [key: string]: MutationFunction } = {
   hideSections: (newState: AppState) => {
     newState.sections = [];
   },
@@ -89,6 +90,9 @@ const mutations: { [key: string]: MutationFunction } = {
   setSaveState: (newState: AppState, payload: Partial<ISaveState>) => {
     Object.assign(newState.save, payload);
   },
+  setLevelUpState: (newState: AppState, payload: Partial<ILevelUpState>) => {
+    Object.assign(newState.levelUp, payload);
+  },
 };
 
 export const appReducer = function <T>(
@@ -96,7 +100,7 @@ export const appReducer = function <T>(
   action: ReducerAction<T>
 ) {
   const newState = { ...oldState };
-  const mutation = mutations[action.action];
+  const mutation = resolvers[action.action];
   if (mutation) {
     mutation(newState, action.payload, oldState);
     console.log('MUTATE STATE', action);
@@ -354,20 +358,25 @@ export const showModal = (
   modalParams: {
     onClose: () => void;
     onConfirm?: (v?: any) => void;
-    text?: string;
+    body?: any;
   }
 ) => {
+  console.log('SHOW MODAL', section, modalParams);
   const payload = {
     section,
     onClose: modalParams.onClose,
     onConfirm: modalParams.onConfirm,
-    text: modalParams.text,
+    body: modalParams.body,
   };
   getUiInterface().dispatch({
     action: 'setModalState',
     payload,
   });
   showSection(AppSection.Modal, false);
+};
+
+export const hideModal = () => {
+  hideSection(AppSection.Modal);
 };
 
 export const showPartyMemberSelectModal = (props: {
@@ -414,4 +423,16 @@ export const showSave = (onClose: () => void) => {
     payload,
   });
   showSection(AppSection.Save, false);
+};
+
+export const showLevelUp = (onClose: () => void) => {
+  playSoundName('blip');
+  const payload = {
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setLevelUpState',
+    payload,
+  });
+  showSection(AppSection.LevelUp, false);
 };

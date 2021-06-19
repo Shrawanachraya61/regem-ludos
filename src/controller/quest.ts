@@ -7,12 +7,6 @@ import {
 import { Scene } from 'model/scene';
 
 export const questIsActive = (scene: Scene, quest: QuestTemplate) => {
-  console.log(
-    'QUEST IS ACTIVE?',
-    quest,
-    scene.storage[quest.questStartScriptKey],
-    !scene.storage[quest.questEndScriptKey]
-  );
   return (
     scene.storage[quest.questStartScriptKey] &&
     !scene.storage[quest.questEndScriptKey]

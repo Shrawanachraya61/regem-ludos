@@ -16,7 +16,7 @@ import {
   setCasting,
 } from 'controller/battle-management';
 import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
-import { ItemTemplate, ItemType } from '.';
+import { ItemTemplate, ItemType, WeaponType } from '.';
 
 import SwordIcon from 'view/icons/Sword';
 import BowIcon from 'view/icons/RangedNormal';
@@ -28,7 +28,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     NoWeapon: {
       name: '(No weapon)',
       description:
-        "Jump to target and... well... TRY to do something to them without a weapon equipped.  It probably won't be very effective though.",
+        "Jump to target and give 'em a smack.  It probably won't be very effective.",
       cooldown: 5000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
@@ -50,7 +50,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
     },
     TrainingSwordSwing: {
-      name: 'Training Sword',
+      name: 'Swing Sword',
       description: 'Jump to target and swing your weapon.',
       cooldown: 5000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
@@ -73,8 +73,8 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
     },
     TrainingBowShoot: {
-      name: 'Training Bow',
-      description: 'Fire an arrow at a target.',
+      name: 'Shoot Bow',
+      description: 'Fire at the ranged target.',
       cooldown: 3000 * COOLDOWN_MOD,
       type: BattleActionType.RANGED,
       meta: {
@@ -143,12 +143,16 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     label: 'Training Sword',
     description: 'A standard issue training sword.',
     type: ItemType.WEAPON,
+    weaponType: WeaponType.SWORD,
     skills: [battleActions.TrainingSwordSwing],
+    icon: SwordIcon,
   };
   exp.TrainingBow = {
     label: 'Training Bow',
-    description: 'A standard issue training sword.',
+    description: 'A standard issue training bow.',
     type: ItemType.WEAPON,
+    weaponType: WeaponType.BOW,
     skills: [battleActions.TrainingBowShoot],
+    icon: BowIcon,
   };
 };

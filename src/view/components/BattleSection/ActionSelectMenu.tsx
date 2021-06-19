@@ -9,8 +9,10 @@ import { getUiInterface } from 'view/ui';
 import { BattleAction } from 'controller/battle-actions';
 import Button, { ButtonType } from 'view/elements/Button';
 import { BattleCharacter } from 'model/battle-character';
+import { get as getBattleAction } from 'db/battle-actions';
 
 import CursorIcon from 'view/icons/Cursor';
+import { playSoundName } from 'model/sound';
 
 interface IActionSelectMenuProps {
   id?: string;
@@ -77,9 +79,13 @@ const ActionSelectMenu = (props: IActionSelectMenuProps) => {
     }
   };
 
+  const skills = props.bCh.ch.skills?.length
+    ? props.bCh.ch.skills
+    : [getBattleAction('NoWeapon')];
+
   return (
     <Root id={'action-select-menu-' + props.bCh.ch.name}>
-      {props.bCh.ch.skills.map((action, i) => {
+      {skills.map((action, i) => {
         const isActive = props.bCh.ch.skillIndex === i;
         const isSelected = props.cursorIndex === i;
         return (

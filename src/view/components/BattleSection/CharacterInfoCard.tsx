@@ -9,6 +9,7 @@ import {
   battleCharacterCanAct,
   battleCharacterIsCasting,
   battleCharacterGetEvasion,
+  battleCharacterGetSelectedSkill,
 } from 'model/battle-character';
 import { colors, keyframes, style } from 'view/style';
 import AnimDiv from 'view/elements/StaticAnimDiv';
@@ -25,6 +26,7 @@ import {
 import { getCurrentBattle, getIsPaused } from 'model/generics';
 import ActionInfoTooltip from './ActionInfoTooltip';
 import { BattleEvent } from 'model/battle';
+import { get as getBattleAction } from 'db/battle-actions';
 
 import PrimaryInfo from './PrimaryInfo';
 import PrimaryActingWeapon from './PrimaryActingWeapon';
@@ -33,6 +35,7 @@ import PrimaryCasting from './PrimaryCasting';
 import Circle from 'view/icons/Circle';
 import { BattleActionType } from 'controller/battle-actions';
 import SwingPierce from 'view/icons/SwingPierce';
+import { playSoundName } from 'model/sound';
 
 const MAX_WIDTH = '256px';
 const PRIMARY_CONTAINER_WIDTH = '192px';
@@ -269,12 +272,14 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
   const handleSkillSelect = (i: number) => {
     if (!actionMenuDisabled) {
       setBattleCharacterSelectedAction(props.bCh, i);
+      playSoundName('menu_select2');
     }
   };
 
   const handlePrimaryClick = () => {
     if (getIsPaused()) {
       const battle = getCurrentBattle();
+      playSoundName('menu_select');
       setBattleCharacterIndexSelected(battle.allies.indexOf(props.bCh));
     }
   };
@@ -326,7 +331,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
   const chName = props.bCh.ch.name;
   const EVA = battleCharacterGetEvasion(props.bCh);
   const portraitName = `${props.bCh.ch.spriteBase}_portrait_f`;
-  const selectedAction = props.bCh.ch.skills[props.bCh.ch.skillIndex];
+  const selectedAction = battleCharacterGetSelectedSkill(props.bCh);
   const chBattleState = props.bCh.actionState;
   const isInvokingSpell =
     selectedAction.type === BattleActionType.CAST &&
@@ -346,11 +351,14 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
   const actionMenuDisabled =
     battleCharacterIsCasting(props.bCh) || battleCharacterIsActing(props.bCh);
 
+  const cursorSkill =
+    props.bCh.ch.skills[cursorIndex] ?? getBattleAction('NoWeapon');
+
   return (
     <>
       <ActionInfoCardContainer visible={actionMenuOpen}>
         <ActionInfoTooltip characterIndexSelected={props.characterIndex}>
-          {props.bCh.ch.skills[cursorIndex]?.description}
+          {cursorSkill?.description}
         </ActionInfoTooltip>
       </ActionInfoCardContainer>
       <Root expanded={actionMenuOpen}>

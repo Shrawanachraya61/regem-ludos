@@ -8,6 +8,7 @@ import { init as initAnimMetadata } from './animation-metadata';
 import { init as initParticles } from './particles';
 import { init as initQuests } from './quests';
 import { init as initItems } from './items';
+import { init as initBattleActions } from './battle-actions';
 
 export default async () => {
   initQuests();
@@ -19,5 +20,6 @@ export default async () => {
   initOverworldAi();
   initAnimMetadata();
   initItems();
+  initBattleActions();
   await initOverworlds();
 };

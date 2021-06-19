@@ -53,18 +53,18 @@ const getConnections = (node: PFNode, graph: PFGraph) => {
           }
           return false;
         }
-        // if (nodeBelow && nodeBelow.isWall) {
-        //   if (DEBUG) {
-        //     console.log('-- node below is wall');
-        //   }
-        //   return false;
-        // }
-        // if (nodeRight && nodeRight.isWall) {
-        //   if (DEBUG) {
-        //     console.log('-- node right is wall');
-        //   }
-        //   return false;
-        // }
+        if (nodeBelow && nodeBelow.isWall) {
+          if (DEBUG) {
+            console.log('-- node below is wall');
+          }
+          return false;
+        }
+        if (nodeRight && nodeRight.isWall) {
+          if (DEBUG) {
+            console.log('-- node right is wall');
+          }
+          return false;
+        }
         if (DEBUG) {
           console.log('-- NODE IS CONNECTED!');
         }

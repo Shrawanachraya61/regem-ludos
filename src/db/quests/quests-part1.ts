@@ -17,7 +17,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
         completedScriptKey: 'quest_floor1-main-2',
         label: 'Acquire a "Haptic Bracer".',
         description:
-          'Apparently something called a "Haptic Bracer" is required to access further floors of the arcade.  This can be acquired from the employee standing in the eastern side of the atrium.',
+          'Apparently something called a "Haptic Bracer" is required to access further floors of the arcade.  This item can be acquired from the employee standing in the eastern side of the atrium.',
       },
       {
         completedScriptKey: 'quest_floor1-main-3',

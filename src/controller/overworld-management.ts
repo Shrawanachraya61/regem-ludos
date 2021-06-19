@@ -6,6 +6,7 @@ import {
   roomAddCharacter,
   Room,
   TriggerActivator,
+  roomRemoveProp,
 } from 'model/room';
 import {
   setCurrentRoom,
@@ -38,7 +39,7 @@ import {
   createOverworldFromTemplate,
   overworldShow,
 } from 'model/overworld';
-import { Point3d } from 'utils';
+import { Point3d, timeoutPromise } from 'utils';
 import {
   characterSetAnimationState,
   characterSetFacing,
@@ -63,9 +64,13 @@ import {
   setCharacterText,
   showMenu,
   showSection,
+  showSettings,
 } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import {
+  isAuxKey,
+  isCancelKey,
+  isConfirmKey,
   popKeyHandler,
   pushEmptyKeyHandler,
   pushKeyHandler,
@@ -74,7 +79,12 @@ import HudGamepad from 'lib/hud-gamepad';
 import { pause, unpause } from './loop';
 import { getImageDataScreenshot } from 'view/draw';
 import { getCanvas } from 'model/canvas';
-import { sceneSetCurrentOverworld } from 'model/scene';
+import {
+  sceneHasTreasureBeenAcquired,
+  sceneSetCurrentOverworld,
+  sceneSetTreasureAcquired,
+} from 'model/scene';
+import { RenderObject } from 'model/render-object';
 
 export const initiateOverworld = (
   player: Player,
@@ -86,8 +96,17 @@ export const initiateOverworld = (
   if (overworld) {
     const room = overworld.room;
     const leader = player.leader;
-    console.log('ROOM ADD CHARACTER', room, leader);
     roomAddCharacter(room, leader);
+
+    for (let i = 0; i < room.props.length; i++) {
+      const prop = room.props[i];
+      if (
+        prop.isItem &&
+        sceneHasTreasureBeenAcquired(getCurrentScene(), prop.id, overworld.name)
+      ) {
+        roomRemoveProp(room, prop);
+      }
+    }
 
     setCurrentRoom(room);
     setCurrentPlayer(player);
@@ -312,33 +331,87 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
   return false;
 };
 
+const checkAndCallTreasure = async (): Promise<boolean> => {
+  const player = getCurrentPlayer();
+  const room = getCurrentRoom();
+  const leader = player.leader;
+  const scene = getCurrentScene();
+
+  for (let i = 0; i < room.props.length; i++) {
+    const prop = room.props[i];
+    if (!prop.isItem) {
+      continue;
+    }
+    const { x, y } = prop;
+    // prop sprite is 64 px tall, offsets check if Ada's feet are kinda in the middle of the
+    // sprite radius
+    if (characterCollidesWithPoint(leader, [x + 32 + 12, y + 32 + 12, 16])) {
+      // hack: looks weird for some reason without this delay
+      setTimeout(() => {
+        roomRemoveProp(room, prop);
+      }, 100);
+
+      await callScriptDuringOverworld(
+        'utils-get-treasure',
+        {
+          disableKeys: true,
+          hideUi: true,
+          setPlayerIdle: true,
+        },
+        prop.itemName
+      );
+
+      const overworld = getCurrentOverworld();
+      sceneSetTreasureAcquired(scene, prop.id, overworld.name);
+      return true;
+    }
+  }
+  return false;
+};
+
 export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
   const isPaused = getIsPaused();
+
+  if (isCancelKey(ev.key)) {
+    if (!isPaused) {
+      pause();
+      showMenu(() => {
+        unpause();
+        showSection(AppSection.Debug, true);
+      });
+    }
+    return;
+  }
+
+  if (isConfirmKey(ev.key)) {
+    if (!isPaused && overworld.triggersEnabled) {
+      if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
+        if (!(await checkAndCallTalkTrigger())) {
+          await checkAndCallTreasure();
+        }
+      }
+    }
+    return;
+  }
+
+  if (isAuxKey(ev.key)) {
+    if (!isPaused) {
+      pause();
+      showSettings(() => {
+        showSection(AppSection.Debug, true);
+        unpause();
+      });
+    }
+    return;
+  }
+
   switch (ev.key) {
     case ' ': {
       if (isPaused) {
         unpause();
       } else {
         pause();
-      }
-      break;
-    }
-    case 'Escape': {
-      if (!isPaused) {
-        pause();
-        showMenu(() => {
-          unpause();
-          showSection(AppSection.Debug, true);
-        });
-      }
-    }
-    case 'X':
-    case 'x': {
-      if (overworld.triggersEnabled) {
-        if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
-          await checkAndCallTalkTrigger();
-        }
       }
       break;
     }
@@ -382,6 +455,16 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
+    // case 'l': {
+    //   if (getTriggersVisible()) {
+    //     hideTriggers();
+    //     hideMarkers();
+    //   } else {
+    //     showTriggers();
+    //     showMarkers();
+    //   }
+    //   break;
+    // }
     case 's': {
       if (getKeyUpdateEnabled()) {
         callScriptDuringOverworld('intro', {
@@ -389,28 +472,6 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
           hideUi: true,
           setPlayerIdle: true,
         });
-      }
-      break;
-    }
-    case 'c': {
-      if (getKeyUpdateEnabled()) {
-        callScriptDuringOverworld('floor1-utils-toggle-color-doors', {
-          disableKeys: true,
-          hideUi: true,
-          setPlayerIdle: true,
-        });
-        // console.log('DISABLE KEYS');
-        // disableKeyUpdate();
-        // pushEmptyKeyHandler();
-        // overworldDisableTriggers(overworld);
-        // // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        // await callScript(getCurrentScene(), 'test-script-jump-multi');
-        // // await callScript(getCurrentScene(), 'test-spawn-particle-at-marker');
-        // overworldEnableTriggers(getCurrentOverworld());
-        // showSection(AppSection.Debug, true);
-        // console.log('ENABLE KEYS');
-        // popKeyHandler();
-        // enableKeyUpdate();
       }
       break;
     }

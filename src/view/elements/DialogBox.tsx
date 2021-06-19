@@ -5,7 +5,6 @@ import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { isCancelKey, isConfirmKey } from 'controller/events';
 import { useState } from 'lib/preact-hooks';
-import { timeoutPromise } from 'utils';
 import { useEffect } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 
@@ -89,9 +88,10 @@ const DialogBox = (props: IDialogProps) => {
     if (elem2) {
       elem2.style.opacity = '0';
     }
-    timeoutPromise(100).then(() => {
+    setTimeout(() => {
+      console.log('on close in dialog box');
       cb();
-    });
+    }, 100);
   };
   useInputEventStack(
     ev => {
@@ -218,7 +218,9 @@ const DialogBox = (props: IDialogProps) => {
                 marginRight: '1rem',
               }}
               onClick={() => {
+                console.log('handle button click in dialog');
                 handleClosing(() => {
+                  console.log('handle button click in dialog handle closing');
                   props.onClose();
                 });
               }}

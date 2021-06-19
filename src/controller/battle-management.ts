@@ -406,6 +406,7 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
         if (nextIndex === -1) {
           nextIndex = battle.allies.length - 1;
         }
+        playSoundName('menu_select');
         setBattleCharacterIndexSelected(nextIndex);
         ev.preventDefault();
       }

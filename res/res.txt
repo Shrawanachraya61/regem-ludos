@@ -1421,6 +1421,15 @@ AnimSprite,tile_vr_portal_9,125
 AnimSprite,tile_vr_portal_10,125
 AnimSprite,tile_vr_portal_11,125
 AnimSprite,tile_vr_portal_12,125
+Animation,tile_stats_kiosk_menu,true
+AnimSprite,tile_vr_portal_5,125
+AnimSprite,tile_vr_portal_6,125
+AnimSprite,tile_vr_portal_7,125
+AnimSprite,tile_vr_portal_8,125
+AnimSprite,tile_vr_portal_9,125
+AnimSprite,tile_vr_portal_10,125
+AnimSprite,tile_vr_portal_11,125
+AnimSprite,tile_vr_portal_12,125
 Picture,tile_vr_portal_floor,tile_vr_portal_floor.png,32,32
 Animation,tile_vr_portal_floor_anim,true
 AnimSprite,tile_vr_portal_floor_0,500

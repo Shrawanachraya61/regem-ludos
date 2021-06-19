@@ -45,12 +45,7 @@ const AppSettings = () => {
   const volumeMusic = getVolume(SoundType.MUSIC);
 
   return (
-    <Card
-      size={CardSize.MEDIUM}
-      style={{
-        borderTopWidth: '0px',
-      }}
-    >
+    <Card size={CardSize.ADAPTIVE}>
       <VolumeArea>
         <h2>Volume Settings</h2>
         <div>

@@ -70,8 +70,6 @@ const MenuJournal = (props: IMenuJournalProps) => {
   const quests = getAllActiveQuests(scene).concat(getAllCompletedQuests(scene));
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
-  console.log('QUESTS', quests);
-
   const selectedQuest: QuestTemplateWithName | undefined =
     quests[selectedItemIndex];
   const selectedQuestStep = getCurrentQuestStep(scene, selectedQuest?.name);

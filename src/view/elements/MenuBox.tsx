@@ -6,7 +6,7 @@ import { useInputEventStack } from 'view/hooks';
 import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
 
-const MenuWrapper = style('div', () => {
+const MenuWrapper = style('div', (props: { dark?: boolean }) => {
   return {
     transition: 'opacity 100ms',
     position: 'fixed',
@@ -19,10 +19,12 @@ const MenuWrapper = style('div', () => {
     alignItems: 'center',
     zIndex: '2',
     pointerEvents: 'all',
+    background: props.dark ? 'rgba(0, 0, 0, 0.5)' : 'unset',
   };
 });
 const MenuContainer = style('div', (props: { maxWidth?: string }) => {
   return {
+    position: 'relative',
     margin: '4px',
     padding: '4px',
     minWidth: '25%',
@@ -64,6 +66,8 @@ interface IMenuProps {
   closeButtonLabel?: string;
   disableKeyboardShortcut?: boolean;
   hideClose?: boolean;
+  hideTitle?: boolean;
+  dark?: boolean;
   children?: any;
 }
 const MenuBox = (props: IMenuProps) => {
@@ -73,18 +77,18 @@ const MenuBox = (props: IMenuProps) => {
       !props.hideClose &&
       !props.disableKeyboardShortcut
     ) {
-      playSoundName('menu_select');
+      playSoundName('menu_choice_close');
       props.onClose();
     }
   }, []);
 
   return (
-    <MenuWrapper id={'menu-wrapper-' + props.title}>
+    <MenuWrapper id={'menu-wrapper-' + props.title} dark={props.dark}>
       <MenuContainer
         id={'menu-container-' + props.title}
         maxWidth={props.maxWidth}
       >
-        <MenuTitle>{props.title}</MenuTitle>
+        {!props.hideTitle ? <MenuTitle>{props.title}</MenuTitle> : null}
         <MenuContent>{props.children}</MenuContent>
         {props.hideClose ? null : (
           <MenuActionButtons>

@@ -2,9 +2,10 @@ Sound,blip,foley/blip.mp3,0.7,zzfx
 Sound,pop,foley/pop.mp3,0.7,zzfx
 Sound,menu_move,foley/menu_move2.mp3,0.5,zzfx
 Sound,menu_select,foley/menu_select2.mp3,
+Sound,menu_select2,foley/menu_cancel.mp3,0.7,zzfx
 Sound,menu_cancel,foley/menu_cancel.mp3,0.7,zzfx
-Sound,menu_choice_open,foley/menu_choice_open.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
-Sound,menu_choice_close,foley/menu_choice_open_alert.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
+Sound,menu_choice_open,foley/menu_choice_open2.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
+Sound,menu_choice_close,foley/menu_choice_close.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
 Sound,menu_sparkle,foley/menu_sparkle2.mp3,0.8,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
 Sound,menu_close,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
 Sound,gain_token,foley/gain_token.mp3
@@ -58,7 +59,7 @@ Sound,bass_kicks,foley/bass_kicks2.mp3,1,fl studio
 Sound,robot_channel_start,foley/robot_channel_start.mp3,0.7,zzfx
 Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
 Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
-
+Sound,use_item,foley/use_item.mp3,0.7,zzfx
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3

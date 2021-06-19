@@ -18,6 +18,7 @@ import {
   BattleActionState,
   battleCharacterSetAnimationStateAttack,
   battleCharacterSetAnimationIdle,
+  battleCharacterGetSelectedSkill,
 } from 'model/battle-character';
 import {
   Character,
@@ -141,7 +142,7 @@ export const getTransformOffsetFunction = (distance: number) => {
 export const getTarget = (battle: Battle, bCh: BattleCharacter) => {
   const ch = bCh.ch;
   const allegiance = battleGetAllegiance(battle, ch);
-  const selectedAction = bCh.ch.skills[bCh.ch.skillIndex];
+  const selectedAction = battleCharacterGetSelectedSkill(bCh);
   let target: BattleCharacter | null;
   if (allegiance === BattleAllegiance.ALLY) {
     target = battleGetTargetedEnemy(battle, selectedAction.type);

@@ -13,10 +13,11 @@ export interface ItemTemplate {
   label: string;
   description: string;
   type?: ItemType;
+  weaponType?: WeaponType;
   icon?: (...args: any[]) => h.JSX.Element;
   modifiers?: Partial<BattleStats & { armor: number }>;
   skills?: BattleAction[];
-  onUse?: (item: Item) => void;
+  onUse?: (item: Item) => Promise<void>;
 }
 
 export type Item = ItemTemplate;
@@ -31,10 +32,13 @@ export enum ItemType {
   ACCESSORY = 'accessory',
 }
 
-export interface IItemEquip {
-  label: string;
-  description: string;
-  completedScriptKey: string;
+export enum WeaponType {
+  SWORD = 'sword',
+  SPEAR = 'spear',
+  HAMMER = 'hammer',
+  BOW = 'bow',
+  GUN = 'gun',
+  WAND = 'wand',
 }
 
 const exp = {} as { [key: string]: ItemTemplate };

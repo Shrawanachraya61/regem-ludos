@@ -3,10 +3,11 @@ import { h } from 'preact';
 import { colors, IntrinsicProps, style } from 'view/style';
 
 export enum CardSize {
-  SMALL,
-  MEDIUM,
-  LARGE,
-  XLARGE,
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
+  XLARGE = 'xlarge',
+  ADAPTIVE = 'adaptive',
 }
 
 export const sizes = {
@@ -26,9 +27,13 @@ export const sizes = {
     width: '864px',
     // height: '864px',
   },
+  [CardSize.ADAPTIVE]: {
+    width: '100%',
+    // height: '100%',
+  },
 };
 
-const Root = style('div', (props: { size: number }) => {
+const Root = style('div', (props: { size: CardSize }) => {
   return {
     background: colors.DARKGREY,
     border: '2px solid ' + colors.WHITE,

@@ -214,20 +214,17 @@ Atrium Employee Jason: "I will provide you your first ones for now, but you will
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
 +waitMS(100);
-+playSound('get_item');
-+spawnParticleAtMarker('EFFECT_TEMPLATE_TREASURE', 'MarkerAda0', 'rise');
-+waitMS(1000);
-Narrator: "Ada acquired a Training Sword!"
++acquireItem(TrainingSword);
++equipWeaponOrArmor(TrainingSword, Ada);
 +setConversationSpeaker(none);
 +waitMS(100);
-+playSound('get_item');
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_TREASURE', 'Conscience', 'rise');
-+waitMS(1000);
-Narrator: "Conscience acquired a Training Bow!"
++acquireItem(TrainingBow);
++equipWeaponOrArmor(TrainingBow, Conscience);
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'down');
 +waitMS(500);
-Atrium Employee Jason: "I am giving you a sword and a bow, please accept these for now."
+Atrium Employee Jason: "I am giving you a sword and a bow.  They will be automatically equipped."
+Atrium Employee Jason: "Any time you gain a piece of equipment, you may go to the Equipment menu to equip it."
 +setConversationSpeaker(none);
 +lookAtEachOther(Conscience, Ada);
 +endConversation(100);

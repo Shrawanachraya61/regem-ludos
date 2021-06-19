@@ -21,6 +21,7 @@ import SettingsSection from './components/SettingsSection';
 import ModalSection from './components/ModalSection';
 import SaveSection from './components/SaveSection';
 import MenuSection from './components/MenuSection';
+import LevelUpSection from './components/LevelUpSection';
 
 interface UIInterface {
   appState: AppState;
@@ -104,6 +105,9 @@ const App = () => {
       }
       case AppSection.Menu: {
         return <MenuSection key={key} />;
+      }
+      case AppSection.LevelUp: {
+        return <LevelUpSection key={key} />;
       }
       default: {
         return <div></div>;

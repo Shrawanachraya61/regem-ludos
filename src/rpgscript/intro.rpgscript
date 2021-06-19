@@ -34,14 +34,14 @@ Ada: "The Regem Ludos Arcade.  It looks like quite a large building."
 +panCameraBackToPlayer();
 +setAnimationAndWait('Ada', 'ada_phone_down');
 +setAnimation('Ada', 'ada_phone_loop');
-Voice On Phone: "Yes! The very place I asked you to to come! You'll find that it is even larger than it appears."
+Voice On Phone: "Yes! Large grey building, right?  It's actually even bigger than it looks."
 Ada: "Is that so?"
 Ada: "How long is this going to take?  I have better things to do than trying to find you in there."
-Voice on Phone: "Don't you worry your pretty little head about that!"
+Voice on Phone: "Oh, don't worry about that!"
 Voice on Phone: "You brought your... friend with you, right?"
 +setConversationSpeaker('none');
 +setAnimation('Ada', 'ada_phone_rightdown');
-+panCameraRelativeToPlayer(50, 25);
++panCameraRelativeToPlayer(55, 30);
 +setFacing('Conscience', 'down');
 +waitMS(50);
 +setFacing('Conscience', 'rightdown');

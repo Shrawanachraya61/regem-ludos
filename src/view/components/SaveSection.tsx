@@ -106,7 +106,7 @@ const SaveSection = () => {
         setModalVisible(false);
         setSaves(loadSaveListFromLS());
       },
-      text: 'Save created!',
+      body: 'Save created!',
     });
   };
   const handleSaveClick = (saveIndex: number) => {
@@ -129,10 +129,10 @@ const SaveSection = () => {
             setModalVisible(false);
             setSaves(loadSaveListFromLS());
           },
-          text: 'Save created!',
+          body: 'Save created!',
         });
       },
-      text: 'Are you sure you wish to overwrite this save file?',
+      body: 'Are you sure you wish to overwrite this save file?',
     });
   };
   const handleDeleteClick = (saveIndex: number) => {
@@ -151,10 +151,10 @@ const SaveSection = () => {
             setModalVisible(false);
             setSaves(loadSaveListFromLS());
           },
-          text: 'Save deleted!',
+          body: 'Save deleted!',
         });
       },
-      text: 'Are you sure you wish to delete this save file?',
+      body: 'Are you sure you wish to delete this save file?',
     });
   };
 

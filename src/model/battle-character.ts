@@ -35,6 +35,7 @@ import {
 } from './battle';
 import { playSoundName } from './sound';
 import { getNow } from './generics';
+import { get as getBattleAction } from 'db/battle-actions';
 
 export enum BattleActionState {
   IDLE = 'idle',
@@ -231,7 +232,7 @@ export const battleCharacterRemoveStatus = (
 export const battleCharacterGetSelectedSkill = (
   bCh: BattleCharacter
 ): BattleAction => {
-  const skill = bCh.ch.skills[bCh.ch.skillIndex];
+  const skill = bCh.ch.skills[bCh.ch.skillIndex] ?? getBattleAction('NoWeapon');
   return skill;
 };
 

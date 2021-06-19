@@ -20,6 +20,7 @@ import {
   facingToIncrements,
   pxFacingToWorldFacing,
   timeoutPromise,
+  normalize,
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
 import {
@@ -42,7 +43,7 @@ import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
-import { Item, get as getItem, ItemType } from 'db/items';
+import { Item, get as getItem, ItemType, WeaponType } from 'db/items';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -123,6 +124,7 @@ export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
 export interface Character {
   name: string;
   nameLabel: string;
+  fullName: string;
   spriteBase: string;
   x: number;
   y: number;
@@ -133,6 +135,7 @@ export interface Character {
   spriteHeight: number;
   speed: number;
   hp: number;
+  resv: number;
   transform: Transform | null;
   stats: BattleStats;
   skills: BattleAction[];
@@ -143,6 +146,8 @@ export interface Character {
     accessory2?: Item;
     armor?: Item;
   };
+  experience: number;
+  experienceCurrency: number;
   facing: Facing;
   animationState: AnimationState;
   animationOverride: Animation | null;
@@ -153,6 +158,7 @@ export interface Character {
   };
   storedAnimations: { [key: string]: Animation };
   weaponEquipState: WeaponEquipState;
+  weaponEquipTypes: WeaponType[];
   walkTarget: null | Point;
   walkAngle: number;
   walkDistance: number;
@@ -176,6 +182,7 @@ export interface Character {
 
 export interface CharacterTemplate {
   name: string;
+  fullName?: string;
   spriteBase: string;
   nameLabel?: string;
   talkTrigger?: string;
@@ -192,6 +199,7 @@ export interface CharacterTemplate {
   encounterName?: string;
   speed?: number;
   staggerSoundName?: string;
+  weaponEquipTypes?: WeaponType[];
   equipment?: {
     weapon: Item;
     accessory1?: Item;
@@ -204,6 +212,7 @@ export const characterCreate = (name: string): Character => {
   const ch: Character = {
     name,
     nameLabel: name,
+    fullName: '',
     spriteBase: 'ada',
     x: 0,
     y: 0,
@@ -215,6 +224,9 @@ export const characterCreate = (name: string): Character => {
     speed: DEFAULT_SPEED,
     transform: null,
     hp: 10,
+    resv: 10,
+    experience: 0,
+    experienceCurrency: 10,
     stats: battleStatsCreate(),
     skills: [BattleActions.SWING] as BattleAction[],
     skillIndex: 0,
@@ -227,6 +239,7 @@ export const characterCreate = (name: string): Character => {
     animationOverride: null,
     storedAnimations: {},
     weaponEquipState: WeaponEquipState.NORMAL,
+    weaponEquipTypes: [],
     walkTarget: null,
     walkAngle: 0,
     walkDistance: 0,
@@ -266,6 +279,7 @@ export const characterCreateFromTemplate = (
   ch.stats = {
     ...(template.stats || ch.stats),
   };
+  ch.resv = ch.stats.RESV;
   ch.skills = template.skills || ch.skills;
   ch.talkTrigger = template.talkTrigger ?? '';
   ch.tags = template.tags || ([] as string[]);
@@ -306,6 +320,12 @@ export const characterCreateFromTemplate = (
   }
   if (template.equipment) {
     Object.assign(ch.equipment, template.equipment);
+  }
+  if (template.weaponEquipTypes) {
+    ch.weaponEquipTypes = [...template.weaponEquipTypes];
+  }
+  if (template.fullName) {
+    ch.fullName = template.fullName;
   }
   ch.template = template;
   return ch;
@@ -397,9 +417,9 @@ export const characterOverrideAnimation = (
 };
 
 export const characterSetPos = (ch: Character, pt: Point3d): void => {
-  ch.x = pt[0];
-  ch.y = pt[1];
-  ch.z = pt[2];
+  ch.x = Math.floor(pt[0]);
+  ch.y = Math.floor(pt[1]);
+  ch.z = Math.floor(pt[2]);
 };
 
 // waits for animation to complete, then calls the callback.  If an animation is changed while
@@ -487,6 +507,10 @@ export const characterModifyHp = (ch: Character, n: number): void => {
 
 export const characterGetHpPct = (ch: Character): number => {
   return Number((ch.hp / ch.stats.HP).toFixed(2));
+};
+
+export const characterGetResvPct = (ch: Character): number => {
+  return Number((ch.resv / ch.stats.RESV).toFixed(2));
 };
 
 export const characterSetTransform = (
@@ -763,7 +787,9 @@ export const characterUnEquipItem = (
   item: Item,
   accessoryIndex?: number
 ) => {
-  if (item.type === ItemType.ARMOR) {
+  if (item.type === ItemType.WEAPON) {
+    ch.equipment.weapon = undefined;
+  } else if (item.type === ItemType.ARMOR) {
     ch.equipment.armor = undefined;
   } else if (item.type === ItemType.ACCESSORY) {
     if (accessoryIndex === 0) {
@@ -779,6 +805,52 @@ export const characterUnEquipItem = (
   for (const i in skills) {
     ch.skills.push(skills[i]);
   }
+};
+
+export const characterGetStatModifier = (
+  ch: Character,
+  statName: string
+): number => {
+  let mod = 0;
+  for (const i in ch.equipment) {
+    const item: Item | undefined = ch.equipment[i];
+    if (item) {
+      const m = item.modifiers?.[statName];
+      if (m !== undefined) {
+        mod += m;
+      }
+    }
+  }
+  return mod;
+};
+
+export const characterGetStat = (ch: Character, statName: string): number => {
+  const statVal = ch.stats[statName] ?? 0;
+  return statVal + characterGetStatModifier(ch, statName);
+};
+
+const characterGetNextLevelExpThreshold = (level: number) => {
+  // Disgea formula http://howtomakeanrpg.com/a/how-to-make-an-rpg-levels.html
+  return Math.round(0.04 * level ** 3 + 0.8 * level ** 2 + 2 * level);
+};
+
+export const characterGetLevel = (ch: Character) => {
+  let lvl = 1;
+  let threshold = 0;
+  const max = 100;
+  // HACK: I don't want to figure out the inverse of the lvl function *shudders*
+  do {
+    threshold = characterGetNextLevelExpThreshold(lvl);
+    lvl++;
+  } while (threshold < ch.experience || lvl >= max);
+  return lvl - 1;
+};
+
+export const characterGetExperiencePct = (ch: Character) => {
+  const lvl = characterGetLevel(ch);
+  const thresholdPrev = characterGetNextLevelExpThreshold(lvl - 1);
+  const thresholdNext = characterGetNextLevelExpThreshold(lvl);
+  return normalize(ch.experience, thresholdPrev, thresholdNext, 0, 1);
 };
 
 export const characterUpdate = (ch: Character): void => {

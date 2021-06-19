@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState, useEffect, useReducer, useRef } from 'preact/hooks';
+import { useEffect, useReducer, useRef } from 'preact/hooks';
 import { style, colors, keyframes } from 'view/style';
 import CursorIcon from 'view/icons/Cursor';
 import CloseIcon from 'view/icons/Close';
@@ -16,9 +16,11 @@ interface IVerticalMenuProps<T> {
   onItemHoverSound?: string;
   open: boolean;
   isInactive?: boolean;
+  isCursorSelectInactive?: boolean;
   title?: string;
   hideCloseBox?: boolean;
   onClose?: () => void;
+  onCloseSound?: string;
   backgroundColor?: string;
   borderColor?: string;
   lineHeight?: MenuLineHeight;
@@ -104,21 +106,31 @@ const Root = style(
   }
 );
 
-const MenuItemWrapper = style('div', (props: { borderColor?: string }) => {
-  return {
-    position: 'relative',
-    '&:not(:last-child)': {
+const MenuItemWrapper = style(
+  'div',
+  (props: { borderColor: string; useHover: boolean; isInactive: boolean }) => {
+    return {
+      position: 'relative',
       borderBottom: `2px solid ${props.borderColor}`,
-    },
-  };
-});
+      borderLeft: props.useHover ? `2px solid ${colors.BLACK}` : 'unset',
+      borderRight: props.useHover ? `2px solid ${colors.BLACK}` : 'unset',
+      // '&:not(:last-child)': {},
+      '&:hover': props.isInactive
+        ? 'unset'
+        : {
+            borderColor: props.useHover ? colors.YELLOW : props.borderColor,
+          },
+    };
+  }
+);
 
 const MenuItem = style(
   'div',
   (props: {
     lineHeight: MenuLineHeight;
     active: boolean;
-    disabled: boolean;
+    clickDisabled: boolean;
+    selectDisabled: boolean;
     backgroundColor?: string;
     highlighted?: boolean;
   }) => {
@@ -127,7 +139,7 @@ const MenuItem = style(
       ...getMenuLineHeightStyles(props.lineHeight),
       color: 'white',
       backgroundColor: props.backgroundColor,
-      cursor: props.disabled ? 'default' : 'pointer',
+      cursor: props.clickDisabled ? 'default' : 'pointer',
       // transition: 'transform 0.1s linear',
       filter: props.active ? 'brightness(80%)' : '',
       transform: props.active ? 'translateY(2px)' : '',
@@ -154,6 +166,7 @@ const CursorRoot = style(
   'div',
   (props: { offsetX: number; offsetY: number }) => {
     return {
+      pointerEvents: 'none',
       color: colors.WHITE,
       position: 'absolute',
       top: -4 + props.offsetY + 'px',
@@ -166,9 +179,16 @@ const Cursor = (props: {
   offsetX: number;
   offsetY: number;
   angle: number;
+  visibility: 'hidden' | 'unset';
 }): h.JSX.Element => {
   return (
-    <CursorRoot offsetX={props.offsetX} offsetY={props.offsetY}>
+    <CursorRoot
+      offsetX={props.offsetX}
+      offsetY={props.offsetY}
+      style={{
+        visibility: props.visibility,
+      }}
+    >
       <CursorIcon color={colors.BLUE} angle={props.angle} />
     </CursorRoot>
   );
@@ -255,6 +275,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
             -height + nextIndex * DEFAULT_ITEM_HEIGHT + 2 * DEFAULT_ITEM_HEIGHT
           );
         }
+        if (isNaN(nextIndex) || nextIndex < 0) {
+          nextIndex = 0;
+        }
       } else if (action.type === 'Decrement') {
         nextIndex = (nextIndex - 1 + props.items.length) % props.items.length;
         if (menuRef.current && props.maxHeight) {
@@ -263,6 +286,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
             0,
             -height + nextIndex * DEFAULT_ITEM_HEIGHT + 3 * DEFAULT_ITEM_HEIGHT
           );
+        }
+        if (isNaN(nextIndex) || nextIndex < 0) {
+          nextIndex = 0;
         }
       } else if (action.type === 'Set') {
         if (!active) {
@@ -284,7 +310,8 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         const item = props.items[nextIndex];
         if (item && props.onItemHover) {
           props.onItemHover(item.value, nextIndex);
-          if (props.onItemHoverSound) {
+          // HACK check -1 here for resetting cursor index after reusing a vertical menu
+          if (props.onItemHoverSound && cursorIndex > -1) {
             playSoundName(props.onItemHoverSound);
           }
         }
@@ -299,7 +326,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
-      if (props.open && !props.isInactive) {
+      if (props.open && !props.isInactive && !props.isCursorSelectInactive) {
         if (ev.code === 'ArrowDown') {
           playSoundName('menu_move');
           dispatch({ type: 'Increment' });
@@ -313,6 +340,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
           }
         } else if (isCancelKey(ev.code)) {
           if (props.onClose) {
+            if (props.onCloseSound) {
+              playSoundName(props.onCloseSound);
+            }
             props.onClose();
           }
         } else if (isAuxKey(ev.code)) {
@@ -328,18 +358,30 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
     };
     window.addEventListener('keydown', handleKeyDown);
 
+    const cursorIndexLocal = cursorIndex;
     if (cursorIndex >= props.items?.length ?? 0) {
       dispatch({ type: 'Set', payload: 0 });
+    } else {
+      dispatch({ type: 'Set', payload: -1 });
+      setTimeout(() => {
+        dispatch({ type: 'Set', payload: cursorIndexLocal });
+      }, 1);
     }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [props.open, props.isInactive]);
+  }, [
+    props.open,
+    props.isInactive,
+    props.isCursorSelectInactive,
+    props.onAuxClick,
+  ]);
 
   const lineHeight = props.lineHeight || MenuLineHeight.MEDIUM;
 
   return (
     <Root
+      id={'vertical-menu-' + props.title}
       backgroundColor={props.backgroundColor ?? colors.BLACK}
       borderColor={props.borderColor ?? colors.WHITE}
       width={props.width}
@@ -349,7 +391,11 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
     >
       <MenuItemWrapper
         key="title"
-        borderColor={props.hideTitle ? 'transparent' : props.borderColor}
+        borderColor={
+          props.hideTitle ? 'transparent' : props.borderColor ?? colors.WHITE
+        }
+        useHover={false}
+        isInactive={true}
       >
         {props.hideTitle ? null : (
           <MenuTitle
@@ -371,14 +417,27 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
       >
         {props.items.map((item: VerticalMenuItem<T>, i: number) => {
           return (
-            <MenuItemWrapper key={i} borderColor={props.borderColor}>
+            <MenuItemWrapper
+              key={i}
+              borderColor={props.borderColor ?? colors.WHITE}
+              useHover={true}
+              isInactive={Boolean(props.isInactive)}
+            >
               <MenuItem
                 key={i}
                 backgroundColor={props.backgroundColor}
                 highlighted={cursorIndex === i}
                 lineHeight={lineHeight}
-                active={active && cursorIndex === i && !props.isInactive}
-                disabled={!!props.isInactive}
+                active={
+                  active &&
+                  cursorIndex === i &&
+                  !props.isInactive &&
+                  !props.isCursorSelectInactive
+                }
+                clickDisabled={Boolean(props.isInactive)}
+                selectDisabled={Boolean(
+                  props.isInactive || props.isCursorSelectInactive
+                )}
                 onClick={() => {
                   if (!props.isInactive) {
                     dispatch({ type: 'Set', payload: i });
@@ -392,7 +451,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
                 }}
                 onMouseOver={ev => {
                   ev.preventDefault();
-                  if (!props.isInactive) {
+                  if (!props.isInactive && !props.isCursorSelectInactive) {
                     dispatch({ type: 'Set', payload: i });
                   }
                 }}
@@ -401,11 +460,16 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
                   ? item.label({ cursorIndex, i })
                   : item.label}
               </MenuItem>
-              {cursorIndex === i && !props.isInactive ? (
+              {cursorIndex === i ? (
                 <Cursor
                   offsetX={props.maxHeight ? 40 : 0}
                   offsetY={props.maxHeight ? 4 : 0}
                   angle={props.maxHeight ? 62 : 75}
+                  visibility={
+                    props.isInactive || props.isCursorSelectInactive
+                      ? 'hidden'
+                      : 'unset'
+                  }
                 />
               ) : null}
             </MenuItemWrapper>

@@ -3,8 +3,11 @@ import { getNow, getSoundEnabled, getVolume } from './generics';
 
 const SOUND_PATH_PREFIX = 'res/snd';
 
-const sounds: Record<string, ISoundLoaded> = ((window as any).sounds = {});
-const musicSoundObjects: Record<string, ISound> = {};
+export const sounds: Record<
+  string,
+  ISoundLoaded
+> = ((window as any).sounds = {});
+export const musicSoundObjects: Record<string, ISound> = {};
 const activeSounds: ISound[] = [];
 
 export enum SoundType {
@@ -187,6 +190,7 @@ export const stopCurrentMusic = async (fadeMs?: number) => {
 export const playSoundName = (soundName: string, volume?: number) => {
   const soundObj = getSound(soundName);
   if (soundObj) {
+    // console.trace('sound:' + soundName);
     playSound(soundObj, volume);
   }
 };

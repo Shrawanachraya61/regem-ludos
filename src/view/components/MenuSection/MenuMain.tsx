@@ -24,6 +24,7 @@ import { getCancelKeyLabel, getConfirmKeyLabel } from 'controller/events';
 import MenuItems from './MenuItems';
 import MenuJournal from './MenuJournal';
 import MenuEquipment from './MenuEquipment';
+import CharacterStatus from '../CharacterStatus';
 
 const Root = style('div', {
   position: 'absolute',
@@ -64,72 +65,6 @@ const PartyMember = style(
   }
 );
 
-const PartyMemberMain = style('div', () => {
-  return {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    width: '100%',
-    '& > div': {
-      marginRight: '4px',
-    },
-  };
-});
-
-const PortraitContainer = style('div', () => {
-  return {
-    background: colors.DARKGREY,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // borderRight: '2px solid ' + colors.BLACK,
-    border: `2px solid ${colors.WHITE}`,
-    width: '93',
-    height: '93',
-    cursor: 'pointer',
-    overflow: 'hidden',
-  };
-});
-
-const CharacterNameLabel = style('div', () => {
-  return {
-    fontSize: '18px',
-    color: colors.BLACK,
-    background: colors.WHITE,
-    // boxShadow: BOX_SHADOW,
-    borderTopLeftRadius: '8px',
-    borderTopRightRadius: '8px',
-    textTransform: 'uppercase',
-    // border: `2px solid ${colors.BLACK}`,
-    padding: '8px',
-    marginBottom: '2px',
-  };
-});
-
-const ChInfoContainer = style('div', () => {
-  return {
-    width: '50%',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  };
-});
-
-const PercentBarWrapper = style(
-  'div',
-  (props: { short: boolean; borderColor?: string }) => {
-    return {
-      // width: ,
-      width: '100%',
-      border: props.short
-        ? 'unset'
-        : `2px solid ${props.borderColor ?? colors.WHITE}`,
-      borderBottom: props.short ? 'unset' : '0px',
-    };
-  }
-);
-
 const MenuLabel = style('div', (props: { active: boolean }) => {
   return {
     background: props.active ? colors.BLUE : 'unset',
@@ -137,19 +72,38 @@ const MenuLabel = style('div', (props: { active: boolean }) => {
 });
 
 const InnerSection = style('div', {
-  // display: 'flex',
-  // justifyContent: 'center',
-  // alignItems: 'center',
   border: `1px solid ${colors.WHITE}`,
   margin: '2px',
   padding: '8px',
   textAlign: 'center',
-  // fontSize: '22px',
 });
 
-// const MenuCommandItem = style('div', props => {
-//   return {};
-// });
+const SaveInfoArea = style('div', {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  flexDirection: 'column',
+  height: '284px',
+  boxSizing: 'border-box',
+});
+const CurrencyInfoArea = style('div', {
+  background: colors.BLACK,
+  border: `1px solid ${colors.WHITE}`,
+  margin: '-2px 2px',
+  padding: '8px',
+});
+const CurrencyInfo = style('div', {
+  display: 'flex',
+  justifyContent: 'flex-start',
+  '& > div': {
+    marginRight: '16px',
+    width: '80px',
+  },
+});
+
+const PlayTime = () => {
+  const d = new Date();
+  return <div>{d.toISOString()}</div>;
+};
 
 enum MenuCommandItem {
   ITEMS,
@@ -178,6 +132,7 @@ const MenuSection = () => {
         },
         onClose: () => {
           console.log('clsoe');
+          // playSoundName(
         },
       });
       return;
@@ -205,6 +160,7 @@ const MenuSection = () => {
               player={player}
               isInactive={outerMenuActive}
               onClose={() => {
+                playSoundName('menu_choice_close');
                 setOuterMenuActive(true);
               }}
             />
@@ -225,6 +181,7 @@ const MenuSection = () => {
               scene={getCurrentScene()}
               isInactive={outerMenuActive}
               onClose={() => {
+                playSoundName('menu_choice_close');
                 setOuterMenuActive(true);
               }}
             />
@@ -246,9 +203,26 @@ const MenuSection = () => {
             <MenuEquipment
               player={player}
               onClose={() => {
+                playSoundName('menu_choice_close');
                 setOuterMenuActive(true);
               }}
             />
+          </MenuBox>
+        );
+      }
+      case MenuCommandItem.STATUS: {
+        return (
+          <MenuBox
+            title="Status"
+            onClose={() => {
+              playSoundName('menu_choice_close');
+              setOuterMenuActive(true);
+            }}
+            maxWidth={cardSizes[CardSize.XLARGE].width}
+            closeButtonLabel={'Back'}
+            disableKeyboardShortcut={true}
+          >
+            <CharacterStatus ch={getCurrentPlayer().leader} />
           </MenuBox>
         );
       }
@@ -257,6 +231,7 @@ const MenuSection = () => {
           <MenuBox
             title="Menu"
             onClose={() => {
+              playSoundName('menu_choice_close');
               setOuterMenuActive(true);
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
@@ -269,7 +244,8 @@ const MenuSection = () => {
 
   const player = getCurrentPlayer();
 
-  const party = [...player.party, null, null, null, null].slice(0, 4);
+  // ensures that empty spaces show up if no party members are available (so it looks nicer)
+  const party = [...player.party, null, null, null, null].slice(0, 5);
 
   return (
     <Root>
@@ -284,32 +260,7 @@ const MenuSection = () => {
               return {
                 label: (
                   <PartyMember>
-                    {ch ? (
-                      <PartyMemberMain>
-                        <PortraitContainer>
-                          <StaticAnimDiv
-                            style={{
-                              width: '128',
-                            }}
-                            animName={`${ch.name.toLowerCase()}_portrait_f`}
-                          ></StaticAnimDiv>
-                        </PortraitContainer>
-                        <ChInfoContainer id={`ch-info-${ch.name}`}>
-                          <CharacterNameLabel id={'name-label-' + ch.name}>
-                            {ch.name}
-                          </CharacterNameLabel>
-                          <PercentBarWrapper short={false}>
-                            <ProgressBar
-                              pct={characterGetHpPct(ch)}
-                              backgroundColor={colors.BLACK}
-                              color={colors.GREEN}
-                              height={20}
-                              label={`HP: ${ch.hp}`}
-                            />
-                          </PercentBarWrapper>
-                        </ChInfoContainer>
-                      </PartyMemberMain>
-                    ) : null}
+                    {ch ? <CharacterStatus ch={ch} usePortrait={true} /> : null}
                   </PartyMember>
                 ),
                 value: ch,
@@ -317,6 +268,9 @@ const MenuSection = () => {
             })}
             onItemClickSound="menu_select"
             onItemClick={() => {}}
+            onClose={() => {
+              handleCloseClick();
+            }}
           />
           <div
             style={{
@@ -417,6 +371,19 @@ const MenuSection = () => {
                 Close {getCancelKeyLabel()}
               </Button>
             </ConfirmButtonArea>
+            <SaveInfoArea>
+              <CurrencyInfoArea>
+                <CurrencyInfo>
+                  <div>Tickets</div>
+                  <div>{player.tickets}</div>
+                </CurrencyInfo>
+                <CurrencyInfo>
+                  <div>Tokens</div>
+                  <div>{player.tokens}</div>
+                </CurrencyInfo>
+                <PlayTime />
+              </CurrencyInfoArea>
+            </SaveInfoArea>
           </div>
         </InnerRoot>
         <InnerSection>

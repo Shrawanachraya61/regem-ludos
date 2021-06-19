@@ -32,6 +32,7 @@ import {
 import { createCanvas } from 'model/canvas';
 import { sceneIsEncounterDefeated } from './scene';
 import { getCurrentOverworld, getCurrentScene } from './generics';
+import { getIfExists as getItem, Item } from 'db/items';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -90,11 +91,14 @@ export const roomCopy = (room: Room) => {
 };
 
 export interface Prop {
+  id: string;
   sprite: string;
   x: number;
   y: number;
   isDynamic: boolean;
   isFront: boolean;
+  isItem?: boolean;
+  itemName?: string;
   ro?: RenderObject;
 }
 
@@ -407,7 +411,6 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     if (isDynamicProp) {
       if (dynamicPropsTileset) {
         const pictureName = dynamicPropsTileset[propIndex];
-        // console.log('Add dynamic prop', tiledProp, pictureName);
         if (!pictureName) {
           throw new Error(
             `Could not load prop in room definition '${name}', the propIndex '${propIndex}' has no associated tilesetTile. (gid=${gid} startingGid=${propsTilesetsFirstGid})`
@@ -419,21 +422,52 @@ export const createRoom = (name: string, tiledJson: any): Room => {
               pictureName,
               removeFileExtension(pictureName)
             ).then(() => {
-              const prop = {
+              const prop: Prop = {
+                id: `prop,${x},${y}`,
                 x,
                 y,
                 sprite: pictureName,
                 isDynamic: true,
                 isFront: tiledProp.type === 'front',
               };
+              const ro = createPropRenderObject(prop);
+              prop.ro = ro;
               room.props.push(prop);
-              room.renderObjects.push(createPropRenderObject(prop));
+              room.renderObjects.push(ro);
               resolve();
             });
           })
         );
       }
     }
+  };
+
+  const addTreasure = (tiledProp: any) => {
+    const itemTemplateName: string = tiledProp.name.slice(4);
+    const item = getItem(itemTemplateName);
+    if (!item) {
+      throw new Error(
+        `Could not load treasure ${tiledProp.name} in room definition ${name}, no entry for the item is in the db`
+      );
+    }
+
+    const x: number = tiledProp.x - 32 * 2 + 16;
+    const y: number = tiledProp.y - 32 * 2 + 16;
+
+    const prop: Prop = {
+      id: `prop,${x},${y}`,
+      x,
+      y,
+      sprite: 'props_31', // the Present/Gift sprite
+      isDynamic: true,
+      isFront: false,
+      isItem: true,
+      itemName: itemTemplateName,
+    };
+    const ro = createPropRenderObject(prop, true);
+    prop.ro = ro;
+    room.props.push(prop);
+    room.renderObjects.push(ro);
   };
 
   const addCharacter = (tiledObject: TiledObject) => {
@@ -592,6 +626,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         object.name.toLowerCase().indexOf('tagmarker') === 0;
       const isMarker = object.name.toLowerCase().indexOf('marker') > -1;
       const isTrigger = object.name.toLowerCase().indexOf('#') === 0;
+      const isTreasure = object.name.toLowerCase().indexOf('item') === 0;
 
       if (isTaggedMarker) {
         addTaggedMarker(object);
@@ -599,6 +634,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         addMarker(object);
       } else if (isTrigger) {
         addTrigger(object);
+      } else if (isTreasure) {
+        addTreasure(object);
       } else if (object.name) {
         addCharacter(object);
       } else {
@@ -608,7 +645,6 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     });
   }
 
-  // draw the floor to the floor canvas
   room.floorTileObjects = room.floorTileObjects.sort((a, b) => {
     return a.sortY < b.sortY ? -1 : 1;
   });
@@ -687,6 +723,17 @@ export const roomRemoveParticle = (room: Room, p: Particle) => {
   const pInd = room.particles.indexOf(p);
   if (pInd > -1) {
     room.particles.splice(pInd, 1);
+  }
+};
+
+export const roomRemoveProp = (room: Room, prop: Prop) => {
+  const ind = room.props.indexOf(prop);
+  if (ind > -1) {
+    room.props.splice(ind, 1);
+  }
+  const ind2 = room.renderObjects.indexOf(prop.ro as RenderObject);
+  if (ind2 > -1) {
+    room.renderObjects.splice(ind2, 1);
   }
 };
 

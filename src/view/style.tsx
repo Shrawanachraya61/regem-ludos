@@ -19,6 +19,7 @@ export const colors = {
   BROWN: '#A46422',
   ORANGE: '#FAB40B',
   PURPLE: '#9964F9',
+  DARKPURPLE: '#39314B',
   LIGHTBLUE: '#42CAFD',
   BLUE: '#31A2F2',
   DARKBLUE: '#243F72',

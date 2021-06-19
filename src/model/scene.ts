@@ -13,6 +13,7 @@ export interface Scene {
   storageOnce: Record<string, string | boolean>;
   storageOnceKeys: Record<string, boolean>;
   storageEncounters: Record<string, Record<string, boolean>>;
+  storageTreasure: Record<string, Record<string, boolean>>;
   commands: Record<string, any>;
   currentScript: Script | null;
   currentTrigger: Trigger | null;
@@ -32,6 +33,7 @@ export const sceneCreate = (): Scene => {
     storageOnce: {} as Record<string, string>,
     storageOnceKeys: {} as Record<string, boolean>,
     storageEncounters: {} as Record<string, Record<string, boolean>>,
+    storageTreasure: {} as Record<string, Record<string, boolean>>,
     commands: {} as Record<string, any>,
     currentScript: null,
     currentTrigger: null,
@@ -84,6 +86,20 @@ export const sceneSetEncounterDefeated = (
   }
 };
 
+export const sceneSetTreasureAcquired = (
+  scene: Scene,
+  propId: string,
+  overworldName: string
+) => {
+  if (scene.storageTreasure[overworldName]) {
+    scene.storageTreasure[overworldName][propId] = true;
+  } else {
+    scene.storageTreasure[overworldName] = {
+      [propId]: true,
+    } as Record<string, boolean>;
+  }
+};
+
 export const sceneIsEncounterDefeated = (
   scene: Scene,
   roamerName: string,
@@ -91,6 +107,18 @@ export const sceneIsEncounterDefeated = (
 ) => {
   if (scene.storageEncounters[overworldName]) {
     return !!scene.storageEncounters[overworldName][roamerName];
+  } else {
+    return false;
+  }
+};
+
+export const sceneHasTreasureBeenAcquired = (
+  scene: Scene,
+  propId: string,
+  overworldName: string
+) => {
+  if (scene.storageTreasure[overworldName]) {
+    return !!scene.storageTreasure[overworldName][propId];
   } else {
     return false;
   }

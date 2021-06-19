@@ -15,14 +15,18 @@ import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { Character, characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
+import CharacterStatus from '../CharacterStatus';
+import { useState } from 'lib/preact-hooks';
 
+export const MAX_WIDTH = '570px';
 const TUTORIAL_MAX_WIDTH = '500px';
 const INFO_MAX_WIDTH = '256px';
 
-interface ICustomModalProps {
+export interface ICustomModalProps {
   onClose: () => void;
   onConfirm?: (v?: any) => void;
-  text?: string;
+  active?: boolean;
+  body?: any;
 }
 
 const CenterAligned = style('div', () => {
@@ -214,14 +218,18 @@ const TutorialArmor = (props: ICustomModalProps) => {
 };
 
 const InfoModal = (props: ICustomModalProps) => {
+  const body =
+    typeof props.body === 'string' ? <p>{props.body}</p> : props.body;
   return (
     <DialogBox title="Info" onClose={props.onClose} maxWidth={INFO_MAX_WIDTH}>
-      <p>{props.text}</p>
+      {body}
     </DialogBox>
   );
 };
 
 const ConfirmModal = (props: ICustomModalProps) => {
+  const body =
+    typeof props.body === 'string' ? <p>{props.body}</p> : props.body;
   return (
     <DialogBox
       title="Confirm"
@@ -229,7 +237,7 @@ const ConfirmModal = (props: ICustomModalProps) => {
       onConfirm={props.onConfirm}
       maxWidth={INFO_MAX_WIDTH}
     >
-      <p>{props.text}</p>
+      {body}
     </DialogBox>
   );
 };
@@ -250,57 +258,6 @@ const PartyMember = style(
   }
 );
 
-const PartyMemberMain = style('div', () => {
-  return {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    // width: '100%',
-    // '& > div': {
-    //   marginRight: '4px',
-    // },
-  };
-});
-
-const PortraitContainer = style('div', () => {
-  return {
-    background: colors.DARKGREY,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // borderRight: '2px solid ' + colors.BLACK,
-    border: `2px solid ${colors.WHITE}`,
-    width: '93',
-    height: '93',
-    cursor: 'pointer',
-    overflow: 'hidden',
-  };
-});
-
-const ChInfoContainer = style('div', () => {
-  return {
-    width: '50%',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  };
-});
-
-const PercentBarWrapper = style(
-  'div',
-  (props: { short: boolean; borderColor?: string }) => {
-    return {
-      // width: ,
-      width: '100%',
-      border: props.short
-        ? 'unset'
-        : `2px solid ${props.borderColor ?? colors.WHITE}`,
-      borderBottom: props.short ? 'unset' : '0px',
-    };
-  }
-);
-
 const SelectPartyMemberModal = (props: ICustomModalProps) => {
   const player = getCurrentPlayer();
   const party = player.party;
@@ -308,49 +265,32 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
     <MenuBox
       title="Select Party Member"
       onClose={props.onClose}
-      maxWidth={INFO_MAX_WIDTH}
+      // maxWidth={INFO_MAX_WIDTH}
       closeButtonLabel={'Back ' + getCancelKeyLabel()}
+      dark={true}
     >
-      <div style={{}}>
+      <div style={{ width: '600px' }}>
         <VerticalMenu
           title="Party"
           open={true}
-          isInactive={false}
+          isInactive={!props.active}
+          width="600px"
           items={party.map(ch => {
             return {
               label: (
                 <PartyMember>
-                  <ChInfoContainer>
-                    <CharacterNameLabel id={'name-label-' + ch.name}>
-                      {ch.name}
-                    </CharacterNameLabel>
-                    <PercentBarWrapper short={false}>
-                      <ProgressBar
-                        pct={characterGetHpPct(ch)}
-                        backgroundColor={colors.BLACK}
-                        color={colors.GREEN}
-                        height={20}
-                        label={`HP: ${ch.hp}`}
-                      />
-                    </PercentBarWrapper>
-                  </ChInfoContainer>
-                  <PartyMemberMain>
-                    <PortraitContainer>
-                      <StaticAnimDiv
-                        style={{
-                          width: '64',
-                        }}
-                        animName={`${ch.spriteBase.toLowerCase()}_idle_down`}
-                      ></StaticAnimDiv>
-                    </PortraitContainer>
-                  </PartyMemberMain>
+                  <CharacterStatus ch={ch} usePortrait={false} />
                 </PartyMember>
               ),
               value: ch,
             };
           })}
           onItemClickSound="menu_select"
-          onItemClick={props.onConfirm as any}
+          onItemClick={val => {
+            if (props.onConfirm) {
+              props.onConfirm(val);
+            }
+          }}
         />
       </div>
     </MenuBox>
@@ -358,6 +298,7 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
 };
 
 const Modal = () => {
+  const [active, setActive] = useState(true);
   const modalState = getUiInterface()?.appState.modal;
 
   const section = modalState?.section;
@@ -365,25 +306,23 @@ const Modal = () => {
   const onConfirm = modalState?.onConfirm;
 
   const handleClose = () => {
-    console.log('HIDE MODAL');
     hideSection(AppSection.Modal);
-    playSound('menu_close');
-    timeoutPromise(1).then(() => {
+    setTimeout(() => {
       if (onClose) {
         onClose();
       }
-    });
+    }, 1);
   };
 
   const handleConfirm = () => {
-    console.log('HIDE MODAL CONFIRM');
-    hideSection(AppSection.Modal);
-    playSound('menu_close');
-    timeoutPromise(1).then(() => {
-      if (onConfirm) {
-        onConfirm();
-      }
-    });
+    if (active) {
+      hideSection(AppSection.Modal);
+      setTimeout(() => {
+        if (onConfirm) {
+          onConfirm();
+        }
+      }, 1);
+    }
   };
 
   let elem: any = null;
@@ -418,7 +357,7 @@ const Modal = () => {
       break;
     }
     case ModalSection.INFO: {
-      elem = <InfoModal onClose={handleClose} text={modalState.text} />;
+      elem = <InfoModal onClose={handleClose} body={modalState.body} />;
       break;
     }
     case ModalSection.CONFIRM: {
@@ -426,7 +365,7 @@ const Modal = () => {
         <ConfirmModal
           onClose={handleClose}
           onConfirm={handleConfirm}
-          text={modalState.text}
+          body={modalState.body}
         />
       );
       break;
@@ -434,15 +373,17 @@ const Modal = () => {
     case ModalSection.SELECT_PARTY_MEMBER: {
       elem = (
         <SelectPartyMemberModal
+          active={active}
           onClose={handleClose}
           onConfirm={(ch: Character) => {
-            hideSection(AppSection.Modal);
-            playSound('menu_select');
-            timeoutPromise(1).then(() => {
+            if (active) {
+              setActive(false);
               if (onConfirm) {
                 onConfirm(ch);
+              } else {
+                hideSection(AppSection.Modal);
               }
-            });
+            }
           }}
         />
       );

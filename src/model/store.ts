@@ -12,6 +12,7 @@ export enum AppSection {
   Modal = 'modal',
   Save = 'save',
   Menu = 'menu',
+  LevelUp = 'level-up',
 }
 
 export enum CutsceneSpeaker {
@@ -81,7 +82,7 @@ export interface IModalState {
   section: ModalSection;
   onClose: () => void;
   onConfirm?: (v?: any) => void;
-  text?: string;
+  body?: string;
 }
 
 export interface ISettingsState {
@@ -96,6 +97,10 @@ export interface IMenuState {
   onClose: () => void;
 }
 
+export interface ILevelUpState {
+  onClose: () => void;
+}
+
 export interface AppState {
   sections: AppSection[];
   overworld: IOverworldAppState;
@@ -107,6 +112,7 @@ export interface AppState {
   settings: ISettingsState;
   save: ISaveState;
   menu: IMenuState;
+  levelUp: ILevelUpState;
 }
 
 export const AppStateInitial: AppState = {
@@ -158,6 +164,9 @@ export const AppStateInitial: AppState = {
     onClose: () => {},
   },
   menu: {
+    onClose: () => {},
+  },
+  levelUp: {
     onClose: () => {},
   },
 };

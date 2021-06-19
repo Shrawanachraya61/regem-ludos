@@ -107,8 +107,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":496,
-                 "y":340
+                 "x":216,
+                 "y":516
                 }, 
                 {
                  "height":64,
@@ -442,6 +442,18 @@
                  "width":80,
                  "x":124,
                  "y":428
+                }, 
+                {
+                 "gid":201,
+                 "height":32,
+                 "id":64,
+                 "name":"ItemTrainingBow",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":248,
+                 "y":488
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -450,7 +462,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":64,
+ "nextobjectid":65,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",

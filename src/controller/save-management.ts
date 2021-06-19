@@ -28,6 +28,7 @@ export interface ISave {
     storageOnce: Record<string, string | boolean>;
     storageOnceKeys: Record<string, boolean>;
     storageEncounters: Record<string, Record<string, boolean>>;
+    storageTreasure: Record<string, Record<string, boolean>>;
   };
   player: {
     tokens: number;
@@ -125,6 +126,7 @@ export const loadSaveListFromLS = (): ISave[] => {
             storageOnce: save.scene.storageOnce ?? {},
             storageOnceKeys: save.scene.storageOnceKeys ?? {},
             storageEncounters: save.scene.storageEncounters ?? {},
+            storageTreasure: save.scene.storageTreasure ?? {},
           },
           player: {
             tokens: save.player.tokens ?? 0,
@@ -175,6 +177,7 @@ export const createSave = (params: {
       storageOnce: scene.storageOnce ?? {},
       storageOnceKeys: scene.storageOnceKeys ?? {},
       storageEncounters: scene.storageEncounters ?? {},
+      storageTreasure: scene.storageTreasure ?? {},
     },
     player: {
       tokens: player.tokens ?? 0,

@@ -29,6 +29,7 @@ import {
   Facing,
   characterCreateFromTemplate,
   characterCreate,
+  characterEquipItem,
 } from 'model/character';
 import HudGamepad from 'lib/hud-gamepad';
 
@@ -46,6 +47,7 @@ import { awaitAllRoomProps, loadDynamicPropsTileset } from 'model/room';
 import { showModal } from 'controller/ui-actions';
 import { ModalSection } from 'model/store';
 import { playMusic } from 'model/sound';
+import { get as getItem } from 'db/items';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -111,10 +113,21 @@ export const main = async (): Promise<void> => {
 
   const adaTemplate = getCharacter('Ada');
   const player = playerCreate(adaTemplate);
+
+  characterEquipItem(player.leader, getItem('TrainingSword'));
+
   const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
   player.party.push(conscience);
+  // player.party.push(conscience);
+  // player.party.push(conscience);
   player.partyStorage.push(conscience);
+  // player.partyStorage.push(conscience);
+  // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
+
+  player.leader.hp = 10;
+
+  characterEquipItem(conscience, getItem('TrainingBow'));
 
   await new Promise<void>(resolve => {
     const touchSomething = () => {

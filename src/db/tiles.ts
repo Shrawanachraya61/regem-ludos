@@ -135,11 +135,13 @@ export const init = () => {
     baseSprite: 'props_26',
     animName: 'tile_vr_portal_active',
     isWall: true,
+    isProp: false,
   };
   exp.KIOSK_STATS_PASSIVE = {
     baseSprite: 'props_26',
     animName: 'tile_vr_portal_passive',
     isWall: true,
+    isProp: false,
   };
   exp.SAVE_POINT_ACTIVE = {
     baseSprite: 'props_30',

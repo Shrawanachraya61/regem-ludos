@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-const Sword = (props: { color: string }): h.JSX.Element => {
+const Shield = (props: { color: string }): h.JSX.Element => {
   return (
     <svg
       fill={props.color}
@@ -20,4 +20,4 @@ const Sword = (props: { color: string }): h.JSX.Element => {
   );
 };
 
-export default Sword;
+export default Shield;

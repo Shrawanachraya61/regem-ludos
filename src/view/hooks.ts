@@ -60,6 +60,21 @@ export const useInputEventStack = (
   }, captures ?? []);
 };
 
+export const useKeyboardEventListener = (
+  cb: KeyboardEventHandler,
+  captures?: any[]
+) => {
+  useEffect(() => {
+    const handleKeyDown = (ev: KeyboardEvent) => {
+      cb(ev);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, captures);
+};
+
 export const useCursorIndexStateWithKeypress = (
   active: boolean,
   startingIndex: number,

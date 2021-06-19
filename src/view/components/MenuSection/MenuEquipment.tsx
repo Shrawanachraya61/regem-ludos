@@ -3,17 +3,20 @@ import { h } from 'preact';
 import { colors, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { Player } from 'model/player';
-import { useReducer } from 'preact/hooks';
+import { useEffect, useReducer } from 'preact/hooks';
 
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import {
   Character,
   characterEquipItem,
+  characterGetStat,
   characterItemIsEquipped,
   characterUnEquipItem,
 } from 'model/character';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { Item, ItemTemplate, ItemType } from 'db/items';
+import { useReRender } from 'view/hooks';
+import ItemDescription from '../ItemDescription';
 
 const MAX_HEIGHT = '628px';
 
@@ -22,7 +25,7 @@ const Root = style('div', {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   width: '800px',
-  height: '612px',
+  height: '532px',
   // height: '100%',
 });
 
@@ -33,6 +36,8 @@ const CharacterSelectWrapper = style('div', {
 const CharacterListItem = style('div', (props: { selected?: boolean }) => {
   return {
     background: props.selected ? colors.DARKBLUE : colors.BLACK,
+    borderRadius: '80px 0px 80px 0px',
+    borderTopRightRadius: '0px',
   };
 });
 
@@ -58,94 +63,126 @@ const EquipmentTypeLabel = style('div', (props: { selected: boolean }) => {
 
 const EquipmentPreviewWrapper = style('div', {
   border: `1px solid ${colors.WHITE}`,
+  background: colors.DARKGREEN,
+  width: '50%',
+  minHeight: '232px',
+  boxSizing: 'border-box',
 });
 
 const EquipmentPreviewStatsItem = style('div', {
-  padding: '8px',
+  padding: '2px',
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
-  background: colors.DARKGREY_ALT,
+  '& > span': {
+    width: '30px',
+  },
+  '& > label': {
+    textAlign: 'center',
+    width: '32px',
+  },
 });
 
 const ItemSelectWrapper = style('div', {
   width: '33%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  position: 'relative',
 });
 
-const EquipmentPreview = (props: { item?: Item | null; ch?: Character }) => {
-  const modifiers = props.item?.modifiers;
-
+const EquipmentPreview = (props: {
+  hoverItem?: Item;
+  replaceItem?: Item;
+  ch?: Character;
+}) => {
   const conditionalModifier = (modName: string) => {
-    const mod = modifiers?.[modName];
-    if (mod === undefined) {
-      return undefined;
+    const modifiers = props.hoverItem?.modifiers;
+    let mod = modifiers?.[modName];
+    let equipped = false;
+    if (
+      props.hoverItem &&
+      props.ch &&
+      characterItemIsEquipped(props.ch, props.hoverItem) &&
+      mod !== undefined
+    ) {
+      equipped = true;
+    } else {
+      const equippedModifiers = props.replaceItem?.modifiers;
+      const mod2 = equippedModifiers?.[modName];
+      if (mod2 !== undefined) {
+        mod = (mod ?? 0) - mod2;
+      }
+    }
+    const width = '38px';
+    if (mod === undefined || mod === 0) {
+      return <div style={{ width }}></div>;
     } else if (mod > 0) {
-      return <div style={{ color: colors.GREEN }}>+{mod}</div>;
+      return (
+        <div style={{ width, color: colors.BLUE }}>
+          {equipped ? `(+${mod})` : `+${mod}`}
+        </div>
+      );
     } else if (mod < 0) {
-      return <div style={{ color: colors.RED }}>-{mod}</div>;
+      return (
+        <div style={{ width, color: colors.RED }}>
+          {equipped ? `(${mod})` : `${mod}`}
+        </div>
+      );
     }
   };
 
+  const ch = props.ch;
+  if (!ch) {
+    return <EquipmentPreviewWrapper></EquipmentPreviewWrapper>;
+  }
+
+  const stats = [
+    'HP',
+    'STAGGER',
+    'RESV',
+    'POW',
+    'ACC',
+    'FOR',
+    'CON',
+    'RES',
+    'SPD',
+    'EVA',
+  ];
+
   return (
     <EquipmentPreviewWrapper>
-      <EquipmentPreviewStatsItem>
-        <span>HP</span>
-        <label>{props.ch?.stats.HP}</label>
-        {conditionalModifier('HP')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>STAG</span>
-        <label>{props.ch?.stats.STAGGER}</label>
-        {conditionalModifier('STAGGER')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>RESV</span>
-        <label>{props.ch?.stats.RESV}</label>
-        {conditionalModifier('RESV')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>POW</span>
-        <label>{props.ch?.stats.POW}</label>
-        {conditionalModifier('POW')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>ACC</span>
-        <label>{props.ch?.stats.ACC}</label>
-        {conditionalModifier('ACC')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>FOR</span>
-        <label>{props.ch?.stats.FOR}</label>
-        {conditionalModifier('FOR')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>CON</span>
-        <label>{props.ch?.stats.CON}</label>
-        {conditionalModifier('CON')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>RES</span>
-        <label>{props.ch?.stats.RES}</label>
-        {conditionalModifier('RES')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>SPD</span>
-        <label>{props.ch?.stats.SPD}</label>
-        {conditionalModifier('SPD')}
-      </EquipmentPreviewStatsItem>
-      <EquipmentPreviewStatsItem>
-        <span>EVA</span>
-        <label>{props.ch?.stats.EVA}</label>
-        {conditionalModifier('EVA')}
-      </EquipmentPreviewStatsItem>
+      {stats.map(stat => {
+        return (
+          <EquipmentPreviewStatsItem>
+            <span>{stat.slice(0, 4)}</span>
+            <label>{characterGetStat(ch, stat)}</label>
+            {conditionalModifier(stat)}
+          </EquipmentPreviewStatsItem>
+        );
+      })}
     </EquipmentPreviewWrapper>
   );
 };
 
+const EquipmentDescriptionWrapper = style('div', () => {
+  return {
+    width: '150%',
+    position: 'absolute',
+    right: '0px',
+    bottom: '0px',
+    border: '1px solid ' + colors.WHITE,
+    height: '232px',
+    boxSizing: 'border-box',
+    overflowY: 'auto',
+  };
+});
+
 const itemIsEquippedOnAnotherPartyMember = (
   item: Item,
   player: Player,
-  ch: Character
+  ch?: Character
 ) => {
   for (let i = 0; i < player.partyStorage.length; i++) {
     const partyMember = player.partyStorage[i];
@@ -156,6 +193,44 @@ const itemIsEquippedOnAnotherPartyMember = (
       return true;
     }
   }
+  return false;
+};
+
+const accessoryEquipmentTypeToEquipmentKey = (slotType: EquipmentType) => {
+  switch (slotType) {
+    case EquipmentType.ACCESSORY:
+      return 'accessory1';
+    case EquipmentType.ACCESSORY2:
+      return 'accessory2';
+    default:
+      return '';
+  }
+};
+
+const getItemEquippedFromEquipmentType = (
+  type: EquipmentType,
+  ch: Character
+) => {
+  return ch.equipment[accessoryEquipmentTypeToEquipmentKey(type)];
+};
+
+const accessoryIsEquippedInAnotherEquipSlot = (
+  item: Item,
+  ch: Character,
+  currentEquipSlot: EquipmentType
+) => {
+  const accessorySlots = [EquipmentType.ACCESSORY, EquipmentType.ACCESSORY2];
+  const indOfCurrent = accessorySlots.indexOf(currentEquipSlot);
+  if (indOfCurrent > -1) {
+    accessorySlots.splice(indOfCurrent, 1);
+  }
+  for (let i = 0; i < accessorySlots.length; i++) {
+    const slotType = accessorySlots[i];
+    if (ch.equipment[accessoryEquipmentTypeToEquipmentKey(slotType)] === item) {
+      return true;
+    }
+  }
+
   return false;
 };
 
@@ -198,6 +273,8 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
     {} as IMenuEquipmentState
   );
 
+  const reRender = useReRender();
+
   const party = props.player.party;
   const backpack = props.player.backpack;
 
@@ -208,6 +285,60 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
     menuState.selectedCharacter && menuState.selectedEquipmentType
   );
 
+  let itemEquippedInHoveredSlot: Item | undefined;
+  if (menuState.selectedEquipmentType && menuState.selectedCharacter) {
+    itemEquippedInHoveredSlot = getItemEquippedFromEquipmentType(
+      menuState.selectedEquipmentType,
+      menuState.selectedCharacter
+    );
+  }
+
+  const filteredItems = (itemActive ? backpack : []).filter(item => {
+    if (
+      itemIsEquippedOnAnotherPartyMember(
+        item,
+        props.player,
+        menuState.selectedCharacter as Character
+      )
+    ) {
+      return false;
+    }
+
+    if (menuState.selectedEquipmentType === EquipmentType.WEAPON) {
+      const weaponEquipTypes: any[] =
+        menuState.selectedCharacter?.weaponEquipTypes ?? [];
+      return (
+        item.type === ItemType.WEAPON &&
+        weaponEquipTypes.includes(item.weaponType)
+      );
+    } else if (menuState.selectedEquipmentType === EquipmentType.ARMOR) {
+      return item.type === ItemType.ARMOR;
+    } else if (
+      [EquipmentType.ACCESSORY, EquipmentType.ACCESSORY2].includes(
+        menuState.selectedEquipmentType as EquipmentType
+      )
+    ) {
+      return (
+        item.type === ItemType.ACCESSORY &&
+        !accessoryIsEquippedInAnotherEquipSlot(
+          item,
+          menuState.selectedCharacter as Character,
+          menuState.selectedEquipmentType as EquipmentType
+        )
+      );
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (filteredItems.length === 1 && !menuState.hoveredItem) {
+      dispatch({
+        type: 'SET_HOVERED_ITEM',
+        payload: filteredItems[0],
+      });
+    }
+  });
+
   return (
     <Root>
       <CharacterSelectWrapper>
@@ -216,7 +347,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
           height="100%"
           maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
           open={true}
-          isInactive={!chSelectActive}
+          isCursorSelectInactive={!chSelectActive}
           title="Party Member"
           items={party.map(ch => {
             return {
@@ -254,24 +385,72 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
       <CenterWrapper>
         <EquipmentTypeSelectWrapper>
           <VerticalMenu
+            title="Equipment"
             width="100%"
-            height="194px"
-            maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
+            height="268px"
+            // maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
             open={true}
-            isInactive={!equipTypeActive}
-            title="Equipment Type"
+            isCursorSelectInactive={!equipTypeActive}
+            isInactive={!menuState.selectedCharacter}
+            style={{
+              opacity: !menuState.selectedCharacter ? '0.5' : '1',
+            }}
             items={[
               EquipmentType.WEAPON,
               EquipmentType.ARMOR,
               EquipmentType.ACCESSORY,
               EquipmentType.ACCESSORY2,
             ].map(type => {
+              let equippedItemLabel = '(none equipped)';
+              let equippedItemLabelColor = colors.GREY;
+              switch (type) {
+                case EquipmentType.WEAPON: {
+                  equippedItemLabel =
+                    menuState.selectedCharacter?.equipment?.weapon?.label ??
+                    equippedItemLabel;
+                  break;
+                }
+                case EquipmentType.ARMOR: {
+                  equippedItemLabel =
+                    menuState.selectedCharacter?.equipment?.armor?.label ??
+                    equippedItemLabel;
+                  break;
+                }
+                case EquipmentType.ACCESSORY: {
+                  equippedItemLabel =
+                    menuState.selectedCharacter?.equipment?.accessory1?.label ??
+                    equippedItemLabel;
+                  break;
+                }
+                case EquipmentType.ACCESSORY2: {
+                  equippedItemLabel =
+                    menuState.selectedCharacter?.equipment?.accessory2?.label ??
+                    equippedItemLabel;
+                  break;
+                }
+              }
+              if (equippedItemLabel !== '(none equipped)') {
+                equippedItemLabelColor = colors.YELLOW;
+              }
+
               return {
                 label: (
                   <EquipmentTypeLabel
                     selected={menuState.selectedEquipmentType === type}
                   >
-                    {type}
+                    <div>
+                      <b>{type}</b>
+                    </div>
+                    <div
+                      style={{
+                        color: equippedItemLabelColor,
+                        visibility: menuState.selectedCharacter
+                          ? 'visible'
+                          : 'hidden',
+                      }}
+                    >
+                      {equippedItemLabel}
+                    </div>
                   </EquipmentTypeLabel>
                 ),
                 value: type,
@@ -282,6 +461,10 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
               dispatch({
                 type: 'SET_EQUIPMENT_TYPE',
                 payload: val,
+              });
+              dispatch({
+                type: 'SET_HOVERED_ITEM',
+                payload: undefined,
               });
             }}
             hideCloseBox={!equipTypeActive && !itemActive}
@@ -294,75 +477,46 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                 type: 'SET_EQUIPMENT_TYPE',
                 payload: undefined,
               });
-              dispatch({
-                type: 'SET_HOVERED_ITEM',
-                payload: undefined,
-              });
             }}
+            onCloseSound="menu_choice_close"
           />
         </EquipmentTypeSelectWrapper>
         <EquipmentPreview
-          item={menuState.hoveredItem as ItemTemplate | null}
+          hoverItem={menuState.hoveredItem as ItemTemplate}
+          replaceItem={itemEquippedInHoveredSlot}
           ch={menuState.selectedCharacter}
         />
       </CenterWrapper>
       <ItemSelectWrapper>
         <VerticalMenu
+          title="Items"
           width="100%"
-          height="100%"
-          maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
+          // height="100%"
+          maxHeight="223px"
           open={true}
-          isInactive={!itemActive}
-          title="Equipment"
-          items={(itemActive ? backpack : [])
-            .filter(item => {
-              if (
-                itemIsEquippedOnAnotherPartyMember(
-                  item,
-                  props.player,
-                  menuState.selectedCharacter as Character
-                )
-              ) {
-                return false;
-              }
-
-              if (menuState.selectedEquipmentType === EquipmentType.WEAPON) {
-                return item.type === ItemType.WEAPON;
-              } else if (
-                menuState.selectedEquipmentType === EquipmentType.ARMOR
-              ) {
-                return item.type === ItemType.ARMOR;
-              } else if (
-                [EquipmentType.ACCESSORY, EquipmentType.ACCESSORY2].includes(
-                  menuState.selectedEquipmentType as EquipmentType
-                )
-              ) {
-                return item.type === ItemType.ACCESSORY;
-              }
-              return false;
-            })
-            .map(item => {
-              return {
-                label: (
-                  <div
-                    style={{
-                      background:
-                        menuState.selectedCharacter &&
-                        characterItemIsEquipped(
-                          menuState.selectedCharacter,
-                          item
-                        )
-                          ? colors.DARKGREEN
-                          : colors.BLACK,
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                ),
-                value: item,
-              };
-            })}
-          onItemClickSound="menu_select"
+          isCursorSelectInactive={!itemActive}
+          style={{
+            opacity: !menuState.selectedEquipmentType ? '0.5' : '1',
+          }}
+          items={filteredItems.map(item => {
+            return {
+              label: (
+                <div
+                  style={{
+                    background:
+                      menuState.selectedCharacter &&
+                      characterItemIsEquipped(menuState.selectedCharacter, item)
+                        ? colors.DARKGREEN
+                        : colors.BLACK,
+                  }}
+                >
+                  {item.label}
+                </div>
+              ),
+              value: item,
+            };
+          })}
+          onItemClickSound="menu_select2"
           onItemClick={(val: Item) => {
             let meta: any;
             if (menuState.selectedEquipmentType === EquipmentType.ACCESSORY) {
@@ -390,10 +544,11 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                 meta
               );
             }
-            dispatch({
-              type: 'SET_HOVERED_ITEM',
-              payload: undefined,
-            });
+            reRender();
+            // dispatch({
+            //   type: 'SET_HOVERED_ITEM',
+            //   payload: undefined,
+            // });
           }}
           onItemHover={(val: Item) => {
             dispatch({
@@ -412,7 +567,11 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
               payload: undefined,
             });
           }}
+          onCloseSound="menu_choice_close"
         />
+        <EquipmentDescriptionWrapper>
+          <ItemDescription item={menuState.hoveredItem as ItemTemplate} />
+        </EquipmentDescriptionWrapper>
       </ItemSelectWrapper>
     </Root>
   );

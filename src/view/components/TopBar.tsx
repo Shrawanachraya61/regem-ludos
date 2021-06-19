@@ -16,7 +16,12 @@ import {
 } from 'model/generics';
 import { showSection, showSettings, showMenu } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
-import { pushEmptyKeyHandler } from 'controller/events';
+import {
+  getAuxKeyLabel,
+  getCancelKeyLabel,
+  getConfirmKeyLabel,
+  pushEmptyKeyHandler,
+} from 'controller/events';
 import { getUiInterface } from 'view/ui';
 import { playSound } from 'controller/scene-commands';
 import { playSoundName } from 'model/sound';
@@ -86,7 +91,7 @@ const TopBar = (props: ITopBarProps) => {
           <Button type={ButtonType.PRIMARY} onClick={handleMenuClick}>
             <ButtonContentWithIcon>
               <MenuIcon color={colors.WHITE} />
-              Menu
+              Menu {getCancelKeyLabel()}
             </ButtonContentWithIcon>
           </Button>
         ) : null}
@@ -94,13 +99,13 @@ const TopBar = (props: ITopBarProps) => {
           <Button type={ButtonType.PRIMARY} onClick={handleSettingsClick}>
             <ButtonContentWithIcon>
               <GearIcon color={colors.WHITE} />
-              Settings
+              Settings {getAuxKeyLabel()}
             </ButtonContentWithIcon>
           </Button>
         ) : null}
         {props.buttons.includes(TopBarButtons.DEBUG) ? (
           <Button type={ButtonType.SECONDARY} onClick={handleToggleDebug}>
-            Toggle Debug
+            Toggle Debug (d)
           </Button>
         ) : null}
       </TopBarWrapper>

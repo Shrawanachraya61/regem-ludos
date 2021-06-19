@@ -34,14 +34,6 @@ export const getIfExists = (key: string): CharacterTemplate | null => {
 export const init = () => {
   Object.assign(exp, initParty());
 
-  exp.Skye = {
-    name: 'Skye',
-    spriteBase: 'skye',
-    talkTrigger: '',
-    facing: Facing.LEFT_UP,
-    animationState: AnimationState.IDLE,
-  };
-
   exp.Roger = {
     name: 'Roger',
     spriteBase: 'guy2',

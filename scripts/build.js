@@ -104,7 +104,7 @@ const build = async () => {
 
   console.log('\nZip (command line)...');
   await execAsync(
-    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip index.html main.js res/* res/snd/* res/snd/foley/* res/snd/music/* res/img/* res/bg/* res/rpgscript/*`
+    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip index.html main.js res/* res/snd/* res/fonts/* res/snd/foley/* res/snd/music/* res/img/* res/bg/* res/rpgscript/*`
   );
   console.log(
     await execAsync(`stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`)

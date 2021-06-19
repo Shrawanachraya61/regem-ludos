@@ -31,13 +31,17 @@ export interface RenderObject {
   visible: boolean;
 }
 
-export const createPropRenderObject = (prop: Prop): RenderObject => {
+export const createPropRenderObject = (
+  prop: Prop,
+  overrideCorrection?: boolean
+): RenderObject => {
   if (prop.isDynamic) {
     const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
     let [px, py] = isoToPixelCoords(prop.x, prop.y);
 
-    // EWW, EWW GET IT OFF, WHY ARE THESE SO ARBITRARY?
-    if (spriteWidth === 32 && spriteHeight === 32) {
+    if (overrideCorrection) {
+    } else if (spriteWidth === 32 && spriteHeight === 32) {
+      // EWW, EWW GET IT OFF, WHY ARE THESE SO ARBITRARY?
       // works for 32 x 32
       py = py - spriteHeight + 16 + 4 - 4 + 1 - 1;
       px = px - spriteWidth / 2 + 16 + 4 - 4 + 0;

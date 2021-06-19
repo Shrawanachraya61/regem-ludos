@@ -11,6 +11,7 @@ import {
   setCharacterText as setCharacterTextUi,
   showModal,
   showSave,
+  showLevelUp,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -30,6 +31,7 @@ import {
   characterSetAnimationState,
   characterStartAi,
   characterGetPosBottom,
+  characterEquipItem,
 } from 'model/character';
 import {
   getAllTagMarkers,
@@ -67,6 +69,7 @@ import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { getIfExists as getOverworld } from 'db/overworlds';
 import { getIfExists as getEncounter } from 'db/encounters';
 import { getIfExists as getParticle } from 'db/particles';
+import { getIfExists as getItem } from 'db/items';
 import {
   playerAddItem,
   playerRemoveItem,
@@ -95,6 +98,7 @@ import {
 import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
 import { sceneStopWaitingUntil } from 'model/scene';
 import { createTileRenderObject } from 'model/render-object';
+import { pause, unpause } from './loop';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -967,8 +971,8 @@ export const setCharacterAtMarker = (
   if (ch && marker) {
     // this offset puts the character's feet on the bottom of the marker
     const target = [
-      marker.x + (xOffset ?? 0),
-      marker.y + (yOffset ?? 0),
+      Math.floor(marker.x + (xOffset ?? 0)),
+      Math.floor(marker.y + (yOffset ?? 0)),
     ] as Point;
 
     characterSetPos(ch, extrapolatePoint(target));
@@ -1556,8 +1560,16 @@ export const changeRoom = async (
  */
 export const acquireItem = (itemName: string, itemText?: string) => {
   const player = getCurrentPlayer();
+  const item = getItem(itemName);
+  if (!item) {
+    console.error(
+      `Cannot acquire item "${itemName}" no template exists with that name.`
+    );
+    return;
+  }
+
   if (playerAddItem(player, itemName)) {
-    return playDialogue('Narrator', itemText ?? `Acquired: ${itemName}`);
+    return playDialogue('Narrator', itemText ?? `Acquired: ${item.label}`);
   }
 };
 
@@ -2005,7 +2017,15 @@ export const showUISection = (sectionName: string, ...args: any[]) => {
       showSection(AppSection.Debug, true);
     });
     return waitUntil();
+  } else if (sectionName === 'LevelUp') {
+    showLevelUp(() => {
+      sceneStopWaitingUntil(getCurrentScene());
+      showSection(AppSection.Debug, true);
+      unpause();
+    });
+    return waitUntil();
   } else if (sectionName === 'Modal') {
+    console.log('SHOW MODAL SECTION', args);
     showModal(args[0], {
       onClose: () => {
         sceneStopWaitingUntil(getCurrentScene());
@@ -2015,7 +2035,40 @@ export const showUISection = (sectionName: string, ...args: any[]) => {
   }
 };
 
-// CUSTOM --------------------------------------------------------------------------------
+export const pauseOverworld = () => {
+  const overworld = getCurrentOverworld();
+  if (overworld) {
+    pause();
+  }
+};
+
+export const unpauseOverworld = () => {
+  const overworld = getCurrentOverworld();
+  if (overworld) {
+    unpause();
+  }
+};
+
+// only used for tutorial
+export const equipWeaponOrArmor = (itemName: string, chName: string) => {
+  const player = getCurrentPlayer();
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  const item = player.backpack.find(itm => itm.name === itemName);
+  if (!item) {
+    console.error(
+      `Cannot equipWeaponOrArmor '${itemName}', no item of that name is in the Player's backpack`
+    );
+  } else {
+    characterEquipItem(ch, item);
+  }
+};
 
 // use only for the tutorial
 export const setBattlePaused = (isPaused: string) => {
@@ -2030,6 +2083,8 @@ export const setBattlePaused = (isPaused: string) => {
     }
   }
 };
+
+// CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
 export const floor1TutToggleColorDoors = (
@@ -2124,6 +2179,9 @@ const commands = {
   setCharacterText,
   showUISection,
   setBattlePaused,
+  equipWeaponOrArmor,
+  pauseOverworld,
+  unpauseOverworld,
 
   // custom scripts
   floor1TutToggleColorDoors,

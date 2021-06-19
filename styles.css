@@ -1,3 +1,12 @@
+@font-face {
+  font-family: Consolas;
+  src: url(res/fonts/Consolas.woff);
+}
+
+body {
+  font-family: Consolas;
+}
+
 .shake {
   animation: shake 0.5s;
   animation-iteration-count: infinite;
