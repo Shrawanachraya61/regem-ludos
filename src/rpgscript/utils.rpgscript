@@ -45,6 +45,8 @@ action,utils-save-point-activate-action
 @this
 +changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
 @utils-save-point-activate-action
++pauseOverworld();
++playSound(blip);
 +showUISection(Save);
 
 #utils-save-point-deactivate
@@ -236,9 +238,8 @@ step,this
 
 // ARG0 = item template name
 @utils-get-treasure
-+setConversation('Ada');
-+setConversationSpeaker(none);
-+playSound('get_item');
 +spawnParticleAtCharacter('EFFECT_TEMPLATE_TREASURE', 'Ada', 'rise');
-+acquireItem([ARG0])
++playSound('get_item');
++setConversation('Ada');
++acquireItem([ARG0]);
 +endConversation();

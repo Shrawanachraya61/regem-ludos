@@ -13,23 +13,29 @@ import {
   characterGetPosTopLeftPx,
 } from './character';
 import { setAtMarker } from 'controller/scene-commands';
-import { getCurrentPlayer } from './generics';
+import { getCurrentPlayer, getNow } from './generics';
 import { BattleActionType } from 'controller/battle-actions';
 import { Animation } from 'model/animation';
 import { Particle, particleCreateFromTemplate } from 'model/particle';
+import { renderUi } from 'view/ui';
+import { Timer } from './utility';
 
 export interface Battle {
   room: Room;
   isStarted: boolean;
   isCompleted: boolean;
   allies: BattleCharacter[];
+  alliesStorage: BattleCharacter[];
   enemies: BattleCharacter[];
+  enemiesStorage: BattleCharacter[];
   defeated: BattleCharacter[];
   subscriptions: IBattleSubscriptionHub;
   persistentEffects: PersistentEffectEventHub;
   targetedEnemyIndex: number;
   targetedEnemyRangeIndex: number;
   isPaused: boolean;
+  itemTimer: Timer;
+  transitioning: boolean;
   template?: BattleTemplate;
 }
 
@@ -153,6 +159,7 @@ export enum BattleRow {
 export enum BattleAllegiance {
   ALLY = 'ally',
   ENEMY = 'enemy',
+  NONE = 'none',
 }
 
 export enum Status {
@@ -216,13 +223,17 @@ export const battleCreate = (
     isStarted: false,
     isCompleted: false,
     enemies,
+    enemiesStorage: [...enemies],
     defeated: [] as BattleCharacter[],
     allies,
+    alliesStorage: [...allies],
     subscriptions,
     persistentEffects,
     targetedEnemyIndex: 0,
     targetedEnemyRangeIndex: 0,
+    itemTimer: new Timer(10000),
     isPaused: false,
+    transitioning: false,
   };
 };
 
@@ -495,8 +506,14 @@ export const battleSetEnemyTargetIndex = (
   battle: Battle,
   i: number
 ): boolean => {
-  if (battleGetActingAllegiance(battle) === BattleAllegiance.ENEMY) {
-    console.log('Cannot set battle target index during enemy acting phase.');
+  if (
+    [BattleAllegiance.ENEMY, BattleAllegiance.ALLY].includes(
+      battleGetActingAllegiance(battle) as BattleAllegiance
+    )
+  ) {
+    console.log(
+      'Cannot set melee battle target index during enemy/ally acting phase.'
+    );
     return false;
   }
 
@@ -523,9 +540,13 @@ export const battleSetEnemyRangeTargetIndex = (
   battle: Battle,
   i: number
 ): boolean => {
-  if (battleGetActingAllegiance(battle) === BattleAllegiance.ENEMY) {
+  if (
+    [BattleAllegiance.ENEMY, BattleAllegiance.ALLY].includes(
+      battleGetActingAllegiance(battle) as BattleAllegiance
+    )
+  ) {
     console.log(
-      'Cannot set ranged battle target index during enemy acting phase.'
+      'Cannot set ranged battle target index during enemy/ally acting phase.'
     );
     return false;
   }
@@ -561,7 +582,11 @@ export const battlePauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
-  console.log('BATTLE PAUSE');
+  console.log(
+    'BATTLE PAUSE',
+    characters ?? battle.allies.concat(battle.enemies)
+  );
+  battle.itemTimer.pauseOverride();
   (characters ?? battle.allies.concat(battle.enemies)).forEach(
     (bCh: BattleCharacter) => {
       bCh.actionTimer.pauseOverride();
@@ -579,7 +604,11 @@ export const battleUnpauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
-  console.log('BATTLE UNPAUSE');
+  console.log(
+    'BATTLE UNPAUSE',
+    characters ?? battle.allies.concat(battle.enemies)
+  );
+  battle.itemTimer.unpauseOverride();
   (characters ?? battle.allies.concat(battle.enemies)).forEach(
     (bCh: BattleCharacter) => {
       bCh.actionTimer.unpauseOverride();
@@ -629,4 +658,81 @@ export const battleGetDyingCharacters = (battle: Battle) => {
       bCh.isDefeated && bCh.ch.animationState === AnimationState.BATTLE_DEAD
     );
   });
+};
+
+export const battleCycleMeleeTarget = (battle: Battle) => {
+  const meleeTarget = battleGetTargetedEnemy(battle, BattleActionType.SWING);
+  const meleeTargetInd =
+    battle.enemies.indexOf(meleeTarget as BattleCharacter) ?? 0;
+  let nextIndex = meleeTargetInd;
+  let nextBCh = battle.enemies[meleeTargetInd];
+  let ctr = 0;
+  const max = battle.enemies.length;
+  let ret = false;
+  do {
+    ctr++;
+    nextIndex = meleeTargetInd + 1;
+    nextBCh = battle.enemies[nextIndex];
+    if (!nextBCh) {
+      nextIndex = 0;
+      nextBCh = battle.enemies[nextIndex];
+    }
+    if (nextBCh) {
+      if (battleIsEnemyTargetableByMelee(battle, nextIndex)) {
+        ret = battleSetEnemyTargetIndex(battle, nextIndex);
+        break;
+      }
+    }
+  } while (nextBCh && ctr <= max);
+  return ret;
+};
+
+export const battleCycleRangeTarget = (battle: Battle) => {
+  const rangeTarget = battleGetTargetedEnemy(battle, BattleActionType.RANGED);
+  const rangeTargetIndex =
+    battle.enemies.indexOf(rangeTarget as BattleCharacter) ?? 0;
+  let nextIndex = rangeTargetIndex;
+  let nextBCh = battle.enemies[rangeTargetIndex];
+  let ctr = 0;
+  const max = battle.enemies.length;
+  let ret = false;
+  do {
+    ctr++;
+    nextIndex = rangeTargetIndex + 1;
+    nextBCh = battle.enemies[nextIndex];
+    if (!nextBCh) {
+      nextIndex = 0;
+      nextBCh = battle.enemies[nextIndex];
+    }
+    if (nextBCh) {
+      ret = battleSetEnemyRangeTargetIndex(battle, nextIndex);
+    }
+  } while (nextBCh && ctr <= max);
+  return ret;
+};
+
+export const battleGetBattleCharacterFromCharacter = (
+  battle: Battle,
+  ch: Character
+) => {
+  {
+    const bCh = battle.alliesStorage.find(bCh => bCh.ch === ch);
+    if (bCh) {
+      return bCh;
+    }
+  }
+  {
+    const bCh = battle.enemiesStorage.find(bCh => bCh.ch === ch);
+    if (bCh) {
+      return bCh;
+    }
+  }
+
+  return null;
+};
+
+export const battleResetItemTimer = (battle: Battle) => {
+  battle.itemTimer.start();
+  battle.itemTimer.timestampPause = getNow();
+  battle.itemTimer.pauseOverride();
 };

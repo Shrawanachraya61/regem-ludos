@@ -30,6 +30,7 @@ interface IVerticalMenuProps<T> {
   height?: string;
   style?: Record<string, string>;
   hideTitle?: boolean;
+  resetCursor?: boolean;
 }
 
 interface VerticalMenuItem<T> {
@@ -303,8 +304,23 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         }
       } else if (action.type === 'SelectInactive') {
         const item = props.items[cursorIndex];
-        props.onItemClick(item.value, cursorIndex);
+        if (item) {
+          props.onItemClick(item.value, cursorIndex);
+          nextActive = false;
+        }
+      } else if (action.type === 'ResetCursor') {
+        nextIndex = 0;
         nextActive = false;
+
+        const item = props.items[nextIndex];
+        if (item && props.onItemHover) {
+          props.onItemHover(item.value, nextIndex);
+        }
+
+        return {
+          cursorIndex: nextIndex,
+          active: nextActive,
+        };
       }
       if (cursorIndex !== nextIndex) {
         const item = props.items[nextIndex];
@@ -358,14 +374,8 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    const cursorIndexLocal = cursorIndex;
     if (cursorIndex >= props.items?.length ?? 0) {
       dispatch({ type: 'Set', payload: 0 });
-    } else {
-      dispatch({ type: 'Set', payload: -1 });
-      setTimeout(() => {
-        dispatch({ type: 'Set', payload: cursorIndexLocal });
-      }, 1);
     }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -376,6 +386,10 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
     props.isCursorSelectInactive,
     props.onAuxClick,
   ]);
+
+  useEffect(() => {
+    dispatch({ type: 'ResetCursor' });
+  }, [props.resetCursor]);
 
   const lineHeight = props.lineHeight || MenuLineHeight.MEDIUM;
 

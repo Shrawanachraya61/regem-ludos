@@ -21,6 +21,7 @@ import {
   pxFacingToWorldFacing,
   timeoutPromise,
   normalize,
+  tileToWorldCoords,
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
 import {
@@ -117,6 +118,7 @@ export enum AnimationState {
   BATTLE_FLOURISH = 'battle_flourish',
   BATTLE_DEFEATED = 'battle_defeated',
   BATTLE_DEAD = 'battle_dead',
+  BATTLE_REVIVE = 'battle_revive',
 }
 
 export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
@@ -253,7 +255,7 @@ export const characterCreate = (name: string): Character => {
     timers: [] as Timer[],
     tags: [] as string[],
     highlighted: false,
-    visionRange: 16 * 2,
+    visionRange: 24 * 2,
     collisionSize: [16, 16],
     encounterStuckRetries: 0,
     template: null,
@@ -993,13 +995,52 @@ export const characterUpdate = (ch: Character): void => {
           characterStopWalking(ch);
           characterStopAi(ch);
           ch.encounterStuckRetries++;
-          if (ch.encounterStuckRetries > 2) {
+          if (ch.encounterStuckRetries > 10) {
             roomRemoveCharacter(room, ch);
-          } else {
-            timeoutPromise(250 + Math.random() * 250).then(() => {
-              characterStartAi(ch);
-            });
           }
+          timeoutPromise(250 + Math.random() * 250).then(() => {
+            const room = getCurrentRoom();
+            if (room && room.characters.includes(ch)) {
+              const tileBelow = roomGetTileBelow(room, [ch.x, ch.y]);
+              console.log(
+                'This encounter character is stuck, resetting to',
+                tileBelow?.x,
+                tileBelow?.y
+              );
+              if (tileBelow) {
+                const tilePos = extrapolatePoint(
+                  tileToWorldCoords(tileBelow.x, tileBelow.y)
+                );
+                // this is an extremely odd fix that I'm not sure why it works, but it looks
+                // like characters rounding a diagonal wall at the top side sometimes
+                // cut the corner and get stuck in the wall (each dir).  This code bumps them
+                // up to the top of the diagonal which fixes their path.  TODO here
+                // is to move them smoothly up there instead of bumping them
+                if (
+                  ch.facing === Facing.RIGHT ||
+                  ch.facing === Facing.RIGHT_DOWN
+                ) {
+                  tilePos[1] += 4;
+                } else if (
+                  ch.facing === Facing.LEFT ||
+                  ch.facing === Facing.LEFT_DOWN
+                ) {
+                  tilePos[0] += 4;
+                }
+                // else if (
+                //   ch.facing === Facing.UP ||
+                //   ch.facing === Facing.LEFT_UP
+                // ) {
+                //   tilePos[1] += 16;
+                // } else if (ch.facing === Facing.RIGHT_UP) {
+                //   tilePos[0] += 16;
+                // }
+                characterSetPos(ch, tilePos);
+              }
+              characterStartAi(ch);
+            }
+          });
+          // }
         }
         // const timer = new Timer(500);
         // timer.awaits.push(() => {

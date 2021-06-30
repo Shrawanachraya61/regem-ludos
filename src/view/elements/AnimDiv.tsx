@@ -8,7 +8,9 @@ import { useRenderLoop } from 'view/hooks';
 interface IAnimDivProps {
   animName: string;
   renderLoopId: string;
+  id?: string;
   style?: Record<string, string>;
+  rootStyle?: Record<string, string>;
   scale?: number;
   width?: number;
   height?: number;
@@ -46,7 +48,7 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
 
   useRenderLoop(props.renderLoopId, loopFunc);
   return (
-    <div>
+    <div id={props.id} style={props.rootStyle}>
       <canvas style={props.style} ref={canvasRef}></canvas>
     </div>
   );

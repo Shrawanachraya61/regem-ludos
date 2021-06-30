@@ -37,6 +37,7 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
       getItemStrict('TrainingSword'),
       getItemStrict('FeeblePotion'),
       getItemStrict('FeeblePotion'),
+      getItemStrict('RezGem'),
       getItemStrict('ShieldRing'),
       getItemStrict('ZoeBracelet'),
     ],

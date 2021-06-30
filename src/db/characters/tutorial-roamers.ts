@@ -19,6 +19,15 @@ export const init = () => {
     // canGetStuckWhileWalking: true,
   };
 
+  exp.TutRobotRoamer2 = {
+    name: 'TutRobotRoamer1',
+    spriteBase: 'guy3',
+    facing: Facing.LEFT,
+    animationState: AnimationState.IDLE,
+    overworldAi: 'ROAM_WALK_RIGHT_LEFT',
+    // canGetStuckWhileWalking: true,
+  };
+
   exp.TutRobotDummy0 = {
     name: 'TutRobotDummy1',
     spriteBase: 'tut_robot_roamer',

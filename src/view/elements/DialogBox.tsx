@@ -4,8 +4,7 @@ import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { isCancelKey, isConfirmKey } from 'controller/events';
-import { useState } from 'lib/preact-hooks';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 
 const DialogWrapper = style('div', () => {
@@ -25,26 +24,29 @@ const DialogWrapper = style('div', () => {
     pointerEvents: 'all',
   };
 });
-const DialogContainer = style('div', (props: { maxWidth?: string }) => {
-  return {
-    margin: '4px',
-    padding: '4px',
-    minWidth: '50%',
-    maxWidth: props.maxWidth ?? '90%',
-    border: `2px solid ${colors.BLUE}`,
-    background: colors.BGGREY,
-    color: colors.WHITE,
-    transform: 'scale(0)',
-    transition: 'transform 100ms',
-  };
-});
-const DialogTitle = style('div', () => {
+const DialogContainer = style(
+  'div',
+  (props: { maxWidth?: string; danger?: boolean }) => {
+    return {
+      margin: '4px',
+      padding: '4px',
+      minWidth: '50%',
+      maxWidth: props.maxWidth ?? '90%',
+      border: `2px solid ${props.danger ? colors.RED : colors.BLUE}`,
+      background: colors.BGGREY,
+      color: colors.WHITE,
+      transform: 'scale(0)',
+      transition: 'transform 100ms',
+    };
+  }
+);
+const DialogTitle = style('div', (props: { danger?: boolean }) => {
   return {
     margin: '8px',
     padding: '8px',
     fontSize: '32px',
     textTransform: 'uppercase',
-    borderBottom: `2px solid ${colors.BLUE}`,
+    borderBottom: `2px solid ${props.danger ? colors.RED : colors.BLUE}`,
   };
 });
 const DialogContent = style('div', () => {
@@ -69,16 +71,23 @@ interface IDialogProps {
   confirmButtonLabel?: string;
   maxWidth?: string;
   closeButtonLabel?: string;
+  danger?: boolean;
   children?: any;
 }
 const DialogBox = (props: IDialogProps) => {
   const [isClosing, setIsClosing] = useState(false);
   const [buttonSelected, setButtonSelected] = useState(-1);
   const [buttonCursorPosition, setButtonCursorPosition] = useState(0);
+  const [confirmActive, setConfirmActive] = useState(false);
+  const [cancelActive, setCancelActive] = useState(false);
 
   const isConfirmWindow = !!props.onConfirm;
 
   const handleClosing = (cb: () => void) => {
+    if (isClosing || confirmActive || cancelActive) {
+      return;
+    }
+
     setIsClosing(true);
     const elem = document.getElementById('dialog-container');
     if (elem) {
@@ -93,9 +102,10 @@ const DialogBox = (props: IDialogProps) => {
       cb();
     }, 100);
   };
+
   useInputEventStack(
     ev => {
-      if (isClosing) {
+      if (isClosing || confirmActive || cancelActive) {
         return;
       }
 
@@ -103,26 +113,33 @@ const DialogBox = (props: IDialogProps) => {
         if (isCancelKey(ev.key)) {
           setButtonSelected(1);
           playSoundName('menu_select');
-          playSoundName('menu_choice_close');
-          handleClosing(() => {
-            props.onClose();
-          });
+          setCancelActive(true);
+          setTimeout(() => {
+            handleClosing(() => {
+              props.onClose();
+            });
+          }, 100);
         }
         if (isConfirmKey(ev.key)) {
           setButtonSelected(buttonCursorPosition);
           if (buttonCursorPosition === 0) {
             playSoundName('menu_select');
-            handleClosing(() => {
-              if (props.onConfirm) {
-                props.onConfirm();
-              }
-            });
+            setConfirmActive(true);
+            setTimeout(() => {
+              handleClosing(() => {
+                if (props.onConfirm) {
+                  props.onConfirm();
+                }
+              });
+            }, 100);
           } else {
             playSoundName('menu_select');
-            playSoundName('menu_choice_close');
-            handleClosing(() => {
-              props.onClose();
-            });
+            setCancelActive(true);
+            setTimeout(() => {
+              handleClosing(() => {
+                props.onClose();
+              });
+            }, 100);
           }
         }
 
@@ -166,8 +183,12 @@ const DialogBox = (props: IDialogProps) => {
 
   return (
     <DialogWrapper id="dialog-wrapper">
-      <DialogContainer id="dialog-container" maxWidth={props.maxWidth}>
-        <DialogTitle>{props.title}</DialogTitle>
+      <DialogContainer
+        id="dialog-container"
+        maxWidth={props.maxWidth}
+        danger={props.danger}
+      >
+        <DialogTitle danger={props.danger}>{props.title}</DialogTitle>
         <DialogContent>{props.children}</DialogContent>
         <DialogActionButtons>
           {isConfirmWindow ? (
@@ -176,6 +197,8 @@ const DialogBox = (props: IDialogProps) => {
                 type={ButtonType.PRIMARY}
                 style={{
                   marginRight: '1rem',
+                  filter: confirmActive ? 'brightness(80%)' : '',
+                  transform: confirmActive ? 'translateY(2px)' : '',
                 }}
                 onClick={ev => {
                   ev.stopPropagation();
@@ -195,12 +218,13 @@ const DialogBox = (props: IDialogProps) => {
                 type={ButtonType.CANCEL}
                 style={{
                   marginRight: '1rem',
+                  filter: cancelActive ? 'brightness(80%)' : '',
+                  transform: cancelActive ? 'translateY(2px)' : '',
                 }}
                 onClick={ev => {
                   ev.stopPropagation();
                   ev.preventDefault();
                   playSoundName('menu_select');
-                  playSoundName('menu_choice_close');
                   handleClosing(() => {
                     props.onClose();
                   });
@@ -216,6 +240,8 @@ const DialogBox = (props: IDialogProps) => {
               type={ButtonType.PRIMARY}
               style={{
                 marginRight: '1rem',
+                filter: confirmActive ? 'brightness(80%)' : '',
+                transform: confirmActive ? 'translateY(2px)' : '',
               }}
               onClick={() => {
                 console.log('handle button click in dialog');

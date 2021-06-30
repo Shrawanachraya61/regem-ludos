@@ -36,6 +36,7 @@ import {
 import { playSoundName } from './sound';
 import { getNow } from './generics';
 import { get as getBattleAction } from 'db/battle-actions';
+import { getIfExists as getCharacterTemplate } from 'db/characters';
 
 export enum BattleActionState {
   IDLE = 'idle',
@@ -124,7 +125,13 @@ export const battleCharacterCreateAlly = (
     position: BattlePosition;
   }
 ): BattleCharacter => {
-  return battleCharacterCreate(ch, args.position);
+  const bCh = battleCharacterCreate(ch, args.position);
+  const template = getCharacterTemplate(ch.name);
+  if (template) {
+    bCh.staggerSoundName = template.staggerSoundName;
+    bCh.armor = template.armor ?? ch.template?.armor ?? 0;
+  }
+  return bCh;
 };
 
 export const battleCharacterIsPreventingTurn = (bCh: BattleCharacter) => {
@@ -401,10 +408,10 @@ export const updateBattleCharacter = (
 
   if (battleCharacterIsStaggered(bCh)) {
     if (bCh.staggerTimer.isComplete()) {
-      battleCharacterSetActonState(bCh, BattleActionState.IDLE);
-      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_IDLE);
+      battleCharacterSetAnimationIdle(bCh);
       bCh.actionTimer.unpause();
       battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+      battleCharacterSetActonState(bCh, BattleActionState.IDLE);
     }
   }
   if (battleCharacterIsCasting(bCh)) {

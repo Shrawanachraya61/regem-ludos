@@ -22,6 +22,8 @@ import { playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
 import { Character } from 'model/character';
+import { pause, unpause } from './loop';
+import { Battle } from 'model/battle';
 
 export interface ReducerAction<T> {
   action: string;
@@ -249,6 +251,7 @@ export const setCutsceneText = (
 };
 
 export const showArcadeGame = (path: ArcadeGamePath) => {
+  pause();
   const payload = {
     path,
     isGameRunning: false,
@@ -282,6 +285,7 @@ export const setArcadeGameReady = (v: boolean) => {
 };
 
 export const hideArcadeGame = () => {
+  unpause();
   const payload = {
     path: '',
     isGameRunning: false,
@@ -359,6 +363,8 @@ export const showModal = (
     onClose: () => void;
     onConfirm?: (v?: any) => void;
     body?: any;
+    danger?: boolean;
+    filter?: (a: any) => boolean;
   }
 ) => {
   console.log('SHOW MODAL', section, modalParams);
@@ -367,6 +373,8 @@ export const showModal = (
     onClose: modalParams.onClose,
     onConfirm: modalParams.onConfirm,
     body: modalParams.body,
+    danger: modalParams.danger ?? false,
+    filter: modalParams.filter ?? (() => true),
   };
   getUiInterface().dispatch({
     action: 'setModalState',
@@ -382,10 +390,12 @@ export const hideModal = () => {
 export const showPartyMemberSelectModal = (props: {
   onClose: () => void;
   onCharacterSelected: (ch: Character) => void;
+  filter?: (a: any) => boolean;
 }) => {
   showModal(ModalSection.SELECT_PARTY_MEMBER, {
     onClose: props.onClose,
     onConfirm: props.onCharacterSelected,
+    filter: props.filter,
   });
 };
 
@@ -435,4 +445,36 @@ export const showLevelUp = (onClose: () => void) => {
     payload,
   });
   showSection(AppSection.LevelUp, false);
+};
+
+export const showBattleEffect = (
+  bChList: BattleCharacter[],
+  effectAnimName: string
+) => {
+  const payload = {
+    effect: {
+      bChList,
+      effectAnimName,
+      active: true,
+    },
+  };
+  console.log('SHOW BATTLE EFFECT', effectAnimName);
+  getUiInterface().dispatch({
+    action: 'setBattleState',
+    payload,
+  });
+};
+
+export const hideBattleEffect = () => {
+  const payload = {
+    effect: {
+      active: false,
+      effectAnimName: '',
+      bChList: [],
+    },
+  };
+  getUiInterface().dispatch({
+    action: 'setBattleState',
+    payload,
+  });
 };

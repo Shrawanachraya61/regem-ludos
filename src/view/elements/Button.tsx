@@ -82,7 +82,9 @@ const Button = style(
     //   : `linear-gradient(${ButtonTypeToColor[props.type].top}, ${
     //       ButtonTypeToColor[props.type].bottom
     //     })`,
-    background: ButtonTypeToColor[props.type].bottom,
+    background: props.disabled
+      ? colors.GREY
+      : ButtonTypeToColor[props.type].bottom,
     textDecoration: props.selected ? 'underline' : 'unset',
     // borderRadius: props.selected ? '8px 8px 0px 0px' : '8px 8px 8px 8px',
     transition: 'border-radius 250sm',

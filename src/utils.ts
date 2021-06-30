@@ -17,6 +17,10 @@ export const pixelToIsoCoords = (x: number, y: number): [number, number] => {
   return [(2 * y + x) / 2, (2 * y - x) / 2];
 };
 
+export const tileToWorldCoords = (x: number, y: number): Point => {
+  return [x * 16, y * 16];
+};
+
 export const worldToCanvasCoords4by3 = (
   x: number,
   y: number,

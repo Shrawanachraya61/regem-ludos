@@ -51,17 +51,27 @@ Ada: "Interesting.  How do you suppose it works?  Did he get transported there w
 Conscience: "I dunno...  I don't really care though."
 Conscience: "But I do wanna go check it out!" 
 Ada: "Conscience, wait a moment."
-Ada: "If that portal takes us into a true VR like this arcade claims... What exactly does that mean for you?"
+Ada: "If that portal takes us into a... a 'VR Realm' like this arcade claims, what exactly does that mean for you?"
+Conscience: "I dunno."
+Ada: "I mean, is he going to be able to see you in there?"
 Conscience: "Not sure, honestly.  We should find out!"
-Ada: "That is not very reassuring."
+Ada: "You do not seem very concerned about this."
+Ada: "What if they think you are some kind of virus and try to kick you out?"
+Conscience: "Nah, they wouldn't do that!"
+Conscience: "Would they?"
++setConversationSpeaker(none);
++waitMS(750);
 +callScript('utils-character-shake-z', 'Ada');
++waitMS(500);
 Ada: "Just promise me that you will refrain from wandering off somewhere."
-Conscience: "I wouldn't DREAM of it."
+Ada: "Stick by me, okay."
+Conscience: "I wouldn't DREAM of leaving your side!"
 Ada: "And you will let me know if there is something WRONG, right?"
 Conscience: "Immediately!"
 +setConversationSpeaker(none);
++waitMS(250);
 +setAnimationAndWait('Ada', 'ada_shake_head_down');
-+lookAtEachOther('Ada','Atrium Desk Employee');
++lookAtEachOther('Ada','Conscience');
 +waitMS(750);
 Ada: "To the portal then, I suppose."
 +callScript('utils-stop-Conscience-dialogue');
@@ -285,17 +295,17 @@ Atrium Employee Jason: "Defeat this robot in order to proceed with the tutorial.
 @floor1-tut-vr2-battle1-on-after-end
 +setAnimationState(Ada, idle);
 +lookAtEachOther(Ada, Atrium Employee Jason);
-+setConversation('Conscience');
++setConversation('Ada');
 Atrium Employee Jason: "Nice work!  You handled yourself very well for a new player."
 +lookAtEachOther(Conscience, Atrium Employee Jason);
-Conscience: "Yeah!  She's quite practiced in all sorts of games."
-+lookAtEachOther(Ada, Conscience);
-+endConversation(100);
-+setConversation('Ada');
-Ada: "I suppose you could say that..."
+Ada: "This does not seem TOO difficult..."
 +lookAtEachOther(Conscience, Atrium Employee Jason);
 +lookAtCharacter(Ada, Atrium Employee Jason);
-Atrium Employee Jason: "Im going to spawn another robot to fight.  This one is a bit different than the last. "
+Atrium Employee Jason: "Not at first, of course."
+Atrium Employee Jason: "But some of the upper floors... sheesh.  You have to wonder what the developers were thinking!"
++setConversationSpeaker(none);
++waitMS(1000);
+Atrium Employee Jason: "Anyway, Im going to spawn another robot for you to fight.  This one is a bit different than the last. "
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
 +waitMS(500);
@@ -324,8 +334,6 @@ Atrium Employee Jason: "This robot looks similar to the last one, but it has a v
 +lookAtEachOther(Ada, Atrium Employee Jason);
 +setConversation('Ada');
 Atrium Employee Jason: "Nice work, again!"
-Ada: "That was not very difficult..."
-Atrium Employee Jason: "With that done, we can proceed."
 Atrium Employee Jason: "Please follow me to the next section of the tutorial."
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
@@ -384,7 +392,7 @@ Atrium Employee Jason: "Ready to go?"
 +setConversationSpeaker(none);
 +callScript('utils-character-jump', 'Conscience');
 Conscience: "I want to try this time!"
-Atrium Employee Jason: "Yes, please do.  You'll probably need to team up against these ones."
+Atrium Employee Jason: "Yes, please do.  You'll need to team up against these ones."
 +setConversationSpeaker(none);
 +setFacing(Conscience, 'rightup');
 +waitMS(500);
@@ -422,7 +430,7 @@ Atrium Employee Jason: "I just have one more to show you while we're over on thi
 +setFacing(Ada, 'rightup');
 +setFacing(Conscience, 'rightup');
 +waitMS(500);
-Atrium Employee Jason: "Check out the ones that can cast MAGIC."
+Atrium Employee Jason: "Check out these ones which can cast MAGIC."
 +setConversationSpeaker(none);
 +waitMS(500);
 +enterCombat(ENCOUNTER_TUT3);

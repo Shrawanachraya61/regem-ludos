@@ -29,11 +29,14 @@ import MeleeTargetIcon from 'view/icons/TargetMelee';
 import RangeTargetIcon from 'view/icons/Target';
 import ArmorIcon from 'view/icons/Armor';
 import { BattleActionType } from 'controller/battle-actions';
+import AnimDiv from 'view/elements/AnimDiv';
+import { getDrawScale } from 'model/canvas';
 
 interface IBattleCharacterProps {
   bCh: BattleCharacter;
   battleIndex: number;
   isEnemy: boolean;
+  animName?: string;
 }
 
 const targetRotate = keyframes({
@@ -185,6 +188,23 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
         bCh.ch.highlighted = false;
       }}
     >
+      {props.animName ? (
+        <AnimDiv
+          id={bCh.ch.name + '_anim-div'}
+          animName={props.animName}
+          renderLoopId={bCh.ch.name + '_' + props.animName}
+          scale={4}
+          // width={128}
+          // height={100}
+          rootStyle={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '128px',
+            height: '128px',
+          }}
+        ></AnimDiv>
+      ) : null}
       {targetedByMelee && targetsVisible ? (
         <TargetIndicatorContainer>
           {/* <span>Target</span> */}

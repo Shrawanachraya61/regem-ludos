@@ -16,7 +16,7 @@ import BattleSection from './components/BattleSection';
 import CutsceneSection from './components/CutsceneSection';
 
 import ArcadeCabinet from './components/ArcadeCabinet';
-import CutsceneChoicesSection from './components/CutsceneChoicesSection';
+import CutsceneChoicesSection from './components/CutsceneSection/CutsceneChoicesSection';
 import SettingsSection from './components/SettingsSection';
 import ModalSection from './components/ModalSection';
 import SaveSection from './components/SaveSection';

@@ -294,6 +294,9 @@ const checkAndCallTriggerOfType = async (
           disableKeys: true,
           setPlayerIdle: false,
         });
+        if (type === TriggerType.ACTION) {
+          showSection(AppSection.Debug, false);
+        }
         return ta.name;
       }
     }
@@ -346,11 +349,7 @@ const checkAndCallTreasure = async (): Promise<boolean> => {
     // prop sprite is 64 px tall, offsets check if Ada's feet are kinda in the middle of the
     // sprite radius
     if (characterCollidesWithPoint(leader, [x + 32 + 12, y + 32 + 12, 16])) {
-      // hack: looks weird for some reason without this delay
-      setTimeout(() => {
-        roomRemoveProp(room, prop);
-      }, 100);
-
+      roomRemoveProp(room, prop);
       await callScriptDuringOverworld(
         'utils-get-treasure',
         {
@@ -386,10 +385,15 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
 
   if (isConfirmKey(ev.key)) {
     if (!isPaused && overworld.triggersEnabled) {
-      if (!(await checkAndCallTriggerOfType(TriggerType.ACTION))) {
-        if (!(await checkAndCallTalkTrigger())) {
-          await checkAndCallTreasure();
-        }
+      if (await checkAndCallTriggerOfType(TriggerType.ACTION)) {
+        showSection(AppSection.Debug, true);
+        return;
+      } else if (await checkAndCallTriggerOfType(TriggerType.ACTION)) {
+        showSection(AppSection.Debug, true);
+        return;
+      } else if (await checkAndCallTreasure()) {
+        showSection(AppSection.Debug, true);
+        return;
       }
     }
     return;

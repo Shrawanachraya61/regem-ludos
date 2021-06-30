@@ -1,4 +1,5 @@
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
+import { BattleCharacter } from './battle-character';
 
 export enum AppSection {
   BattleUI = 'battleMenu',
@@ -58,6 +59,11 @@ export interface IBattleUiState {
   paused: boolean;
   characterIndexSelected: number;
   targetIndexSelected: number;
+  effect: {
+    active: boolean;
+    bChList: BattleCharacter[];
+    effectAnimName: string;
+  };
 }
 
 export interface IOverworldAppState {
@@ -83,6 +89,8 @@ export interface IModalState {
   onClose: () => void;
   onConfirm?: (v?: any) => void;
   body?: string;
+  danger: boolean;
+  filter: (a: any) => boolean;
 }
 
 export interface ISettingsState {
@@ -143,6 +151,11 @@ export const AppStateInitial: AppState = {
     targetIndexSelected: 0,
     disabled: false,
     paused: false,
+    effect: {
+      active: false,
+      bChList: [],
+      effectAnimName: '',
+    },
   },
   arcadeGame: {
     path: '',
@@ -156,6 +169,8 @@ export const AppStateInitial: AppState = {
   modal: {
     section: ModalSection.TUTORIAL_ATTACK,
     onClose: () => {},
+    danger: false,
+    filter: () => true,
   },
   settings: {
     onClose: () => {},

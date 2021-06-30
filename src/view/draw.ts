@@ -349,12 +349,12 @@ export const drawCharacter = (
     //   // visionPolygon.push([pointX, pointY]);
     // }
 
-    // drawPolygon(visionPolygon, 'white', 1, getCtx('outer'));
+    // // drawPolygon(visionPolygon, 'white', 1, getCtx('outer'));
 
-    // top left of a character
+    // // top left of a character
     // drawCircle(px, py, 5, 'red');
 
-    // where the game thinks the character is
+    // // where the game thinks the character is
     // const [x, y] = characterGetPos(ch);
     // const [aX, aY] = isoToPixelCoords(...characterGetPos(ch));
     // const [visX, visY] = characterGetVisionPoint(ch);
@@ -372,10 +372,11 @@ export const drawCharacter = (
     // );
     // drawCircle(aX, aY, 5, 'blue');
 
-    // // where the game thinks the character's feet are
+    // // // where the game thinks the character's feet are
     // const [fX, fY] = isoToPixelCoords(...characterGetPosBottom(ch));
     // drawCircle(fX, fY, 5, 'orange');
   }
+
   // {
   //   const [x, y] = characterGetPosBottom(ch);
   //   const [px, py] = isoToPixelCoords(x, y, z);
@@ -390,6 +391,7 @@ export const drawCharacter = (
   //   // const yOffset = 8;
   //   // const xOffset = 16 + 8;
   //   drawRect(px, py, 4, 4, 'blue');
+  //   drawRect(px + 16, py + 29, 4, 4, 'cyan');
   // }
 };
 
@@ -446,14 +448,14 @@ export const drawRoom = (
   const leader = player.leader;
 
   // DEBUG highlight stuff that sees Ada
-  // for (let i = 0; i < room.characters.length; i++) {
-  //   const ch = room.characters[i];
-  //   if (ch !== leader && characterCanSeeOther(ch, leader)) {
-  //     ch.highlighted = true;
-  //   } else {
-  //     ch.highlighted = false;
-  //   }
-  // }
+  for (let i = 0; i < room.characters.length; i++) {
+    const ch = room.characters[i];
+    if (ch !== leader && characterCanSeeOther(ch, leader)) {
+      ch.highlighted = true;
+    } else {
+      ch.highlighted = false;
+    }
+  }
 
   // if (!isPaused) {
   //   for (let i = 0; i < particles.length; i++) {
@@ -594,40 +596,42 @@ export const drawRoom = (
 
   ctx.restore();
 
-  const [x, y] = characterGetPos(leader);
-  drawText(
-    `POS: ${x.toFixed(0)}, ${y.toFixed(0)}`,
-    20,
-    164,
-    {
-      color: 'white',
-      size: 32,
-    },
-    outerCtx
-  );
+  if (getMarkersVisible()) {
+    const [x, y] = characterGetPos(leader);
+    drawText(
+      `POS: ${x.toFixed(0)}, ${y.toFixed(0)}`,
+      20,
+      164,
+      {
+        color: 'white',
+        size: 32,
+      },
+      outerCtx
+    );
 
-  const [px, py] = isoToPixelCoords(x, y);
-  const [pxO, pyO] = pxToCanvasCoords4by3(px, py);
-  drawText(
-    `OPos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
-    20,
-    194,
-    {
-      color: 'white',
-      size: 32,
-    },
-    outerCtx
-  );
+    const [px, py] = isoToPixelCoords(x, y);
+    const [pxO, pyO] = pxToCanvasCoords4by3(px, py);
+    drawText(
+      `OPos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
+      20,
+      194,
+      {
+        color: 'white',
+        size: 32,
+      },
+      outerCtx
+    );
 
-  const tile = roomGetTileBelow(room, [x, y]);
-  drawText(
-    `TPos: ${tile?.x.toFixed(0)}, ${tile?.y.toFixed(0)}`,
-    20,
-    224,
-    {
-      color: 'white',
-      size: 32,
-    },
-    outerCtx
-  );
+    const tile = roomGetTileBelow(room, [x, y]);
+    drawText(
+      `TPos: ${tile?.x.toFixed(0)}, ${tile?.y.toFixed(0)}`,
+      20,
+      224,
+      {
+        color: 'white',
+        size: 32,
+      },
+      outerCtx
+    );
+  }
 };

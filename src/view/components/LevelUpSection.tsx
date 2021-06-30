@@ -39,19 +39,74 @@ interface CostObj {
   stat: string;
   ticketCost: number;
   lvlCost: number;
+  desc: string;
 }
 
 const STATS_COSTS: CostObj[] = [
-  { stat: 'HP', ticketCost: 1, lvlCost: 2 },
-  { stat: 'STAGGER', ticketCost: 2, lvlCost: 1 },
-  { stat: 'RESV', ticketCost: 2, lvlCost: 2 },
-  { stat: 'POW', ticketCost: 4, lvlCost: 2 },
-  { stat: 'ACC', ticketCost: 4, lvlCost: 1 },
-  { stat: 'FOR', ticketCost: 2, lvlCost: 1 },
-  { stat: 'CON', ticketCost: 2, lvlCost: 1 },
-  // { stat: 'RES', ticketCost: 2, lvlCost: 1 },
-  { stat: 'SPD', ticketCost: 2, lvlCost: 1 },
-  { stat: 'EVA', ticketCost: 1, lvlCost: 1 },
+  {
+    stat: 'HP',
+    ticketCost: 1,
+    lvlCost: 2,
+    desc: 'Hit Points. The number of Hit Points a character has.',
+  },
+  {
+    stat: 'STAGGER',
+    ticketCost: 2,
+    lvlCost: 1,
+    desc:
+      'Stagger.  The more of this, the longer it takes to become staggered.',
+  },
+  {
+    stat: 'RESV',
+    ticketCost: 2,
+    lvlCost: 2,
+    desc:
+      'Reserve.  A representation of how much energy a character has before becoming exhausted.',
+  },
+  {
+    stat: 'POW',
+    ticketCost: 4,
+    lvlCost: 2,
+    desc: 'Power.  More of this means more damage when attacking.',
+  },
+  {
+    stat: 'ACC',
+    ticketCost: 4,
+    lvlCost: 1,
+    desc: 'Accuracy.  More of this means higher chance of critical hits.',
+  },
+  {
+    stat: 'FOR',
+    ticketCost: 2,
+    lvlCost: 1,
+    desc:
+      'Fortitude.  More of this means a character takes less damage from Weapon-based attacks.',
+  },
+  {
+    stat: 'CON',
+    ticketCost: 2,
+    lvlCost: 1,
+    desc:
+      'Constitution.  Determines what kind of armor a character can wear.  The mor CON, the better quality armor.',
+  },
+  {
+    stat: 'RES',
+    ticketCost: 2,
+    lvlCost: 1,
+    desc: 'Resistance.  Determines damage reduction from Wand-based attacks.',
+  },
+  {
+    stat: 'SPD',
+    ticketCost: 2,
+    lvlCost: 1,
+    desc: 'Speed.  More of this reduces cooldown timer of abilities.',
+  },
+  {
+    stat: 'EVA',
+    ticketCost: 1,
+    lvlCost: 1,
+    desc: 'Evasion.  Each point of EVA adds 1% chance to dodge an attack.',
+  },
 ];
 
 const INITIAL_STATE = {
@@ -63,6 +118,7 @@ const INITIAL_STATE = {
   FOR: 0,
   CON: 0,
   SPD: 0,
+  RES: 0,
   EVA: 0,
 };
 
@@ -118,6 +174,15 @@ const LevelUpContainer = style('div', () => {
   return {
     border: '1px solid ' + colors.WHITE,
     background: colors.BLACK,
+  };
+});
+
+const ConfirmButton = style('div', () => {
+  return {
+    background: colors.DARKGREEN,
+    border: '1px solid ' + colors.WHITE,
+    borderRadius: '26px',
+    padding: '4px',
   };
 });
 
@@ -192,6 +257,10 @@ const LevelUpModal = () => {
   const [currentCostObjIndex, setCurrentCostObj] = useState(0);
   const [confirmVisible, setConfirmVisible] = useState(false);
 
+  // HACK: only used to re-render the level up menu after confirm close so the cursor doesn't
+  // get lost
+  const [levelUpVisible, setLevelUpVisible] = useState(true);
+
   const [upgrades, setUpgrades] = useState(INITIAL_STATE);
 
   useKeyboardEventListener(ev => {
@@ -215,14 +284,19 @@ const LevelUpModal = () => {
       showModal(ModalSection.CONFIRM, {
         onClose: () => {
           setConfirmVisible(false);
+          setLevelUpVisible(false);
+          setTimeout(() => {
+            setLevelUpVisible(true);
+          }, 1);
         },
         onConfirm: () => {
-          playSound('menu_sparkle');
+          playSound('terminal_cancel');
           setConfirmVisible(false);
-          onConfirm();
+          setLocalTickets(player.tickets);
           setCh(undefined);
         },
-        body: 'Do you wish to confirm this set of stat increases?',
+        body: 'Do you wish to disregard this set of stat increases?',
+        danger: true,
       });
     } else {
       playSound('blip');
@@ -238,6 +312,10 @@ const LevelUpModal = () => {
       for (const statName in upgrades) {
         ch.stats[statName] += upgrades[statName];
       }
+      if (ch.hp > 0) {
+        ch.hp += upgrades.HP;
+      }
+      ch.resv += upgrades.RESV;
     }
   };
 
@@ -274,6 +352,7 @@ const LevelUpModal = () => {
   };
 
   const partySelectVisible = Boolean(!ch);
+  const currentCostObj = STATS_COSTS[currentCostObjIndex];
 
   return (
     <MenuBox
@@ -282,44 +361,37 @@ const LevelUpModal = () => {
       onClose={() => {
         handleBackClick();
       }}
-      closeButtonLabel={(ch ? 'Confirm ' : 'Close ') + getCancelKeyLabel()}
+      closeButtonLabel={'Back ' + getCancelKeyLabel()}
       maxWidth={MAX_WIDTH}
       dark={true}
       disableKeyboardShortcut={true}
     >
       <Primary>
-        <AnimDiv
-          animName="tile_stats_kiosk_menu"
-          renderLoopId="stats-kiosk"
-          scale={4}
-          style={{
-            transform: 'translateY(-20px)',
-          }}
-        ></AnimDiv>
+        {partySelectVisible ? (
+          <AnimDiv
+            animName="tile_stats_kiosk_menu"
+            renderLoopId="stats-kiosk"
+            scale={4}
+            style={{
+              transform: 'translateY(-20px)',
+            }}
+          ></AnimDiv>
+        ) : null}
         <Info>
           {partySelectVisible ? (
             <>
               <p>Welcome to the Regem Ludos Improvement Kiosk!</p>
-              <p>
-                You are currently signed in as <b>{player.leader.fullName}</b>.
-                If this is incorrect, please report this incident to the front
-                desk.
-              </p>
               <p>To begin, please select one of your party members.</p>
             </>
           ) : (
             <>
-              <p>
+              <p style={{ width: '520px' }}>
                 You have selected <b>{ch?.fullName}</b>.
               </p>
-              <p>
-                You may now spend <b>LVL Points</b> to increase your stats. A
-                small fee of <b>Tickets</b> are also required for the
-                improvement.
-              </p>
-              <p>
-                If you make a mistake during this process, please contact the
-                front desk.
+              <p style={{ color: colors.YELLOW, height: '54px' }}>
+                {currentCostObj
+                  ? `${currentCostObj.stat}: ${currentCostObj.desc}`
+                  : null}
               </p>
             </>
           )}
@@ -378,55 +450,86 @@ const LevelUpModal = () => {
               title="Stats"
               hideTitle={true}
               isInactive={confirmVisible}
+              resetCursor={levelUpVisible}
               open={true}
-              items={STATS_COSTS.map(costObj => {
-                const { lvlCost, ticketCost, stat } = costObj;
-                return {
-                  label: (
-                    <StatRow>
-                      <div>
-                        {stat} {ch?.stats?.[stat]}
-                      </div>
-                      <div>{upgrades[stat] ? '+' + upgrades[stat] : ''}</div>
-                      <StatRowCosts>
+              items={[
+                ...STATS_COSTS.map(costObj => {
+                  const { lvlCost, ticketCost, stat } = costObj;
+                  return {
+                    label: (
+                      <StatRow>
                         <div>
-                          <Number value={lvlCost <= localLvlPoints ? 1 : 0}>
-                            LVL Cost {lvlCost}
-                          </Number>
-                          ,
+                          {stat} {ch?.stats?.[stat]}
                         </div>
-                        <div>
-                          <Number value={ticketCost <= localTickets ? 1 : 0}>
-                            Ticket Cost: {ticketCost}
-                          </Number>
-                        </div>
-                        <Button
-                          type={ButtonType.CANCEL}
-                          style={{
-                            fontSize: '12px',
-                          }}
-                          onClick={ev => {
-                            ev.stopPropagation();
-                            unImproveStat(costObj);
-                          }}
-                        >
-                          Undo {getAuxKeyLabel()}
-                        </Button>
-                      </StatRowCosts>
-                    </StatRow>
-                  ),
-                  value: costObj,
-                };
-              })}
+                        <div>{upgrades[stat] ? '+' + upgrades[stat] : ''}</div>
+                        <StatRowCosts>
+                          <div>
+                            <Number value={lvlCost <= localLvlPoints ? 1 : 0}>
+                              LVL Cost: {lvlCost}
+                            </Number>
+                            ,
+                          </div>
+                          <div>
+                            <Number value={ticketCost <= localTickets ? 1 : 0}>
+                              Ticket Cost: {ticketCost}
+                            </Number>
+                          </div>
+                          <Button
+                            type={ButtonType.CANCEL}
+                            disabled={upgrades[stat] === 0}
+                            style={{
+                              fontSize: '12px',
+                            }}
+                            onClick={ev => {
+                              ev.stopPropagation();
+                              unImproveStat(costObj);
+                            }}
+                          >
+                            Undo {getAuxKeyLabel()}
+                          </Button>
+                        </StatRowCosts>
+                      </StatRow>
+                    ),
+                    value: costObj,
+                  };
+                }),
+                {
+                  label: <ConfirmButton>Confirm!</ConfirmButton>,
+                  value: null,
+                },
+              ]}
               onItemClick={costObj => {
-                improveStat(costObj);
+                if (costObj) {
+                  improveStat(costObj);
+                } else {
+                  let hasUpgrade = false;
+                  for (const i in upgrades) {
+                    if (upgrades[i] > 0) {
+                      hasUpgrade = true;
+                      break;
+                    }
+                  }
+                  if (hasUpgrade) {
+                    playSound('menu_sparkle');
+                    onConfirm();
+                  } else {
+                    playSound('blip');
+                  }
+                  setCh(undefined);
+                }
               }}
               onAuxClick={() => {
                 const costObj = STATS_COSTS[currentCostObjIndex];
-                unImproveStat(costObj);
+                if (costObj) {
+                  unImproveStat(costObj);
+                }
               }}
               onItemHover={costObj => {
-                setCurrentCostObj(STATS_COSTS.indexOf(costObj));
+                if (costObj) {
+                  setCurrentCostObj(STATS_COSTS.indexOf(costObj));
+                } else {
+                  setCurrentCostObj(-1);
+                }
               }}
             />
           </LevelUpContainer>

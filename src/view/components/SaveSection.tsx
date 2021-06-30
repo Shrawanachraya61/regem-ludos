@@ -4,8 +4,14 @@ import { colors, style } from 'view/style';
 import { showModal, showSection } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize } from 'view/elements/Card';
-import { unpause } from 'controller/loop';
-import { popKeyHandler, isCancelKey, isAuxKey } from 'controller/events';
+import { pause, unpause } from 'controller/loop';
+import {
+  popKeyHandler,
+  isCancelKey,
+  isAuxKey,
+  getCancelKeyLabel,
+  getAuxKeyLabel,
+} from 'controller/events';
 import { useEffect, useState, useCallback } from 'lib/preact-hooks';
 import { getUiInterface } from 'view/ui';
 import { playSoundName } from 'model/sound';
@@ -128,6 +134,7 @@ const SaveSection = () => {
           onClose: () => {
             setModalVisible(false);
             setSaves(loadSaveListFromLS());
+            pause();
           },
           body: 'Save created!',
         });
@@ -154,6 +161,7 @@ const SaveSection = () => {
           body: 'Save deleted!',
         });
       },
+      danger: true,
       body: 'Are you sure you wish to delete this save file?',
     });
   };
@@ -206,7 +214,7 @@ const SaveSection = () => {
                             handleDeleteClick(i);
                           }}
                         >
-                          Delete
+                          Delete {getAuxKeyLabel()}
                         </Button>
                       </SaveFile>
                     ),
@@ -234,7 +242,7 @@ const SaveSection = () => {
             />
             <ConfirmButtonArea>
               <Button type={ButtonType.PRIMARY} onClick={handleCloseClick}>
-                Close
+                Close {getCancelKeyLabel()}
               </Button>
             </ConfirmButtonArea>
           </ContentSpacer>

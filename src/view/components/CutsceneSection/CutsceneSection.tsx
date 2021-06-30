@@ -6,11 +6,11 @@ import AnimDiv from 'view/elements/StaticAnimDiv';
 import { getUiInterface } from 'view/ui';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { getDrawScale } from 'model/canvas';
-import { getCurrentKeyHandler } from 'controller/events';
+import { getCurrentKeyHandler, isAuxKey, isCancelKey } from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
-import TopBar, { TopBarButtons } from './TopBar';
-import { showSection } from 'controller/ui-actions';
-import { pause, unpause } from 'controller/loop';
+import TopBar, { TopBarButtons } from '../TopBar';
+import { showSection, showSettings } from 'controller/ui-actions';
+import { useKeyboardEventListener } from 'view/hooks';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -295,6 +295,17 @@ const CutsceneSection = () => {
     }
   });
 
+  useKeyboardEventListener(ev => {
+    if (
+      isAuxKey(ev.key) &&
+      !getUiInterface().appState.sections.includes(AppSection.Settings)
+    ) {
+      showSettings(() => {
+        showSection(AppSection.Cutscene, true);
+      });
+    }
+  });
+
   const cutscene = getUiInterface().appState.cutscene;
 
   let textBoxAlign: TextBoxAlign = 'center';
@@ -348,11 +359,8 @@ const CutsceneSection = () => {
       >
         <TopBar
           buttons={[TopBarButtons.SETTINGS]}
-          onSettingsClick={() => {
-            // pause();
-          }}
+          onSettingsClick={() => {}}
           onSettingsClose={() => {
-            // unpause();
             showSection(AppSection.Cutscene, true);
           }}
         />

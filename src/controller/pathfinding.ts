@@ -32,17 +32,24 @@ const INFINITY = 9999999;
 let DEBUG = false;
 
 const getConnections = (node: PFNode, graph: PFGraph) => {
-  const nodeAbove = graph.nodes[to1dIndex([node.x, node.y - 1], graph.width)];
-  const nodeLeft = graph.nodes[to1dIndex([node.x - 1, node.y], graph.width)];
-  const nodeBelow = graph.nodes[to1dIndex([node.x, node.y + 1], graph.width)];
-  const nodeRight = graph.nodes[to1dIndex([node.x + 1, node.y], graph.width)];
+  const nodeAbove = getNodeAt(graph, node.x, node.y - 1);
+  const nodeLeft = getNodeAt(graph, node.x - 1, node.y);
+  const nodeBelow = getNodeAt(graph, node.x, node.y + 1);
+  const nodeRight = getNodeAt(graph, node.x + 1, node.y);
 
-  if (node.isWall) {
-    return [];
-  }
+  // if (node.isWall) {
+  //   return [];
+  // }
 
   return [nodeAbove, nodeLeft, nodeBelow, nodeRight]
     .filter(node => {
+      if (!node) {
+        return false;
+      }
+
+      const nodeBelow = getNodeAt(graph, node?.x ?? -1, node?.y ?? -1 + 1);
+      const nodeRight = getNodeAt(graph, node?.x ?? -1 + 1, node?.y ?? -1);
+
       if (DEBUG) {
         console.log('CHECK GET CONNECTIONS NODE', node);
       }
@@ -75,7 +82,7 @@ const getConnections = (node: PFNode, graph: PFGraph) => {
     })
     .map(n => {
       const connection: PFNodeConnection = {
-        node: n,
+        node: n as PFNode,
         cost: 1,
       };
       return connection;
@@ -101,6 +108,16 @@ const createPFGraphFromRoom = (room: Room): PFGraph => {
     }),
   };
   return graph;
+};
+
+const getNodeAt = (graph: PFGraph, x: number, y: number) => {
+  if (x < 0 || x >= graph.width) {
+    return null;
+  }
+  if (y < 0 || y >= graph.height) {
+    return null;
+  }
+  return graph.nodes[to1dIndex([x, y], graph.width)];
 };
 
 const setupPFGraph = (start: Point, end: Point, graph: PFGraph) => {

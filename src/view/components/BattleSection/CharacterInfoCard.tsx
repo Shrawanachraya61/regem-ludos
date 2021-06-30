@@ -36,6 +36,7 @@ import Circle from 'view/icons/Circle';
 import { BattleActionType } from 'controller/battle-actions';
 import SwingPierce from 'view/icons/SwingPierce';
 import { playSoundName } from 'model/sound';
+import { allyIndexToKey } from 'controller/battle-management';
 
 const MAX_WIDTH = '256px';
 const PRIMARY_CONTAINER_WIDTH = '192px';
@@ -43,8 +44,6 @@ const PRIMARY_CONTAINER_HEIGHT = '96px';
 const PORTRAIT_WIDTH = '152px';
 const ACTION_MENU_HEIGHT = 146;
 const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
-
-const keyMapping = ['X', 'C', 'Z', 'V'];
 
 const Root = style('div', (props: { expanded: boolean }) => {
   return {
@@ -170,7 +169,7 @@ const BottomRowContainer = style(
     return {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: props.actionsEnabled ? 'flex-end' : 'center',
+      // alignItems: props.actionsEnabled ? 'flex-end' : 'center',
       position: 'relative',
     };
   }
@@ -222,10 +221,12 @@ const BottomRowSelectedActionName = style('div', () => {
     textAlign: 'center',
     width: PRIMARY_CONTAINER_WIDTH,
     padding: '2px 8px',
-    background: `linear-gradient(${colors.GREY}, ${colors.BGGREY})`,
+    background: colors.BGGREY,
+    height: '22px',
     borderRadius: '8px',
     boxShadow: BOX_SHADOW,
     marginTop: '8px',
+    marginRight: '2px',
   };
 });
 
@@ -249,15 +250,6 @@ const BottomRowActionMenuWrapper = style(
     };
   }
 );
-
-const BottomSwapButtonWrapper = style('div', () => {
-  return {
-    color: colors.WHITE,
-    fontSize: '16px',
-    width: PRIMARY_CONTAINER_HEIGHT,
-    marginLeft: '32px',
-  };
-});
 
 interface ICharacterInfoCardProps {
   id?: string;
@@ -289,6 +281,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
     props.bCh,
     BattleEvent.onCharacterReady,
     () => {
+      playSoundName('battle_ready');
       render();
     }
   );
@@ -373,7 +366,7 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
           <PrimaryRoot
             id="primary-root"
             onClick={handlePrimaryClick}
-            ready={chBattleState === BattleActionState.IDLE}
+            ready={battleCharacterCanAct(battle, props.bCh)}
           >
             <PortraitContainer id={`portrait-${portraitName}`}>
               <AnimDiv
@@ -405,9 +398,18 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
           actionsEnabled={actionMenuOpen}
           id={'bottom-row-ctr-' + props.bCh.ch.name}
         >
-          {actionMenuOpen ? (
-            <BottomSwapButtonWrapper>SWAP</BottomSwapButtonWrapper>
-          ) : null}
+          <BottomRowButtonIcon
+            active={
+              (battleCharacterCanAct(battle, props.bCh) ||
+                battleCharacterIsActingReady(props.bCh)) &&
+              !getIsPaused()
+            }
+          >
+            <Circle color={colors.GREY}></Circle>
+            <BottomRowButtonIconText>
+              {allyIndexToKey(battle.alliesStorage.indexOf(props.bCh))}
+            </BottomRowButtonIconText>
+          </BottomRowButtonIcon>
           <BottomRowActionMenuWrapper expanded={actionMenuOpen}>
             <ActionSelectMenu
               bCh={props.bCh}
@@ -417,20 +419,6 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
               disabled={actionMenuDisabled}
             />
           </BottomRowActionMenuWrapper>
-          {actionMenuOpen ? null : (
-            <BottomRowButtonIcon
-              active={
-                (battleCharacterCanAct(battle, props.bCh) ||
-                  battleCharacterIsActingReady(props.bCh)) &&
-                !getIsPaused()
-              }
-            >
-              <Circle color={colors.GREY}></Circle>
-              <BottomRowButtonIconText>
-                {keyMapping[props.characterIndex]}
-              </BottomRowButtonIconText>
-            </BottomRowButtonIcon>
-          )}
           {actionMenuOpen ? null : (
             <BottomRowSelectedActionName>
               {selectedAction.name}

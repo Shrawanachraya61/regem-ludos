@@ -1,7 +1,12 @@
 /* @jsx h */
-import { getCurrentBattle, getIsPaused } from 'model/generics';
-import { h } from 'preact';
-import { style, colors, keyframes } from 'view/style';
+import { h, Fragment } from 'preact';
+import { useState } from 'preact/hooks';
+import {
+  getCurrentBattle,
+  getCurrentPlayer,
+  getIsPaused,
+} from 'model/generics';
+import { style, colors } from 'view/style';
 import { pause, unpause } from 'controller/loop';
 
 import CharacterInfoCard from './CharacterInfoCard';
@@ -13,18 +18,33 @@ import { getDrawScale } from 'model/canvas';
 import { Character } from 'model/character';
 import {
   BattleAllegiance,
+  battleCycleMeleeTarget,
+  battleCycleRangeTarget,
   BattleEvent,
   battleGetActingAllegiance,
   battleGetAllPersistentEffectsForAllegiance,
   battleGetTargetedEnemy,
   battleSetEnemyTargetIndex,
 } from 'model/battle';
-import { useState } from 'lib/preact-hooks';
-import { useBattleSubscription } from 'view/hooks';
-import TargetIcon from 'view/icons/Target';
+import { useBattleSubscription, useKeyboardEventListener } from 'view/hooks';
 import ArmorIcon from 'view/icons/Armor';
+import MeleeTargetIcon from 'view/icons/TargetMelee';
+import RangeTargetIcon from 'view/icons/Target';
 import BattleCharacterFollower from './BattleCharacterFollower';
 import ChannelIndicators from './ChannelIndicators';
+import TopBar, { TopBarButtons } from '../TopBar';
+import {
+  setBattleCharacterIndexSelected,
+  showSection,
+} from 'controller/ui-actions';
+import { AppSection } from 'model/store';
+import VerticalMenu from 'view/elements/VerticalMenu';
+import { isCancelKey, isPauseKey } from 'controller/events';
+import { playSoundName } from 'model/sound';
+import BattleItems from './BattleItems';
+import BattleTurnIndicator from './BattleTurnIndicator';
+
+const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
 
 interface IBattleSectionProps {
   id?: string;
@@ -39,6 +59,17 @@ const Root = style('div', () => {
     width: '100%',
     height: '100%',
     pointerEvents: 'none',
+  };
+});
+
+const PauseTextSection = style('div', () => {
+  return {
+    position: 'absolute',
+    left: '0',
+    top: '168px',
+    fontSize: '18px',
+    width: '100%',
+    textAlign: 'right',
   };
 });
 
@@ -71,67 +102,55 @@ const EnemyInfoCardsContainer = style('div', () => {
   };
 });
 
-const UpperLeftContainer = style('div', () => {
+const BattleMenuContainer = style('div', (props: { visible: boolean }) => {
+  const width = 250;
   return {
     position: 'absolute',
-    left: '0px',
-    top: '0px',
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     pointerEvents: 'all',
+    margin: '32px',
+    left: '0',
+    top: '64px',
+    width: width + 'px',
+    transform: props.visible
+      ? 'translateX(0)'
+      : `translateX(-${width + 32 + 12}px)`,
+    transition: 'transform 200ms ease-out',
+    boxShadow: BOX_SHADOW,
   };
 });
 
-const PauseButton = style('div', () => {
+const BattleMenuItem = style('div', (props: { disabled?: boolean }) => {
   return {
-    color: colors.WHITE,
-    background: 'rgba(0, 0, 0, 0.5)',
-    border: `2px solid ${colors.WHITE}`,
-    padding: '32px',
-    fontSize: '24px',
-    borderRadius: '8px',
-    textAlign: 'center',
-    minWidth: '161px',
-    cursor: 'pointer',
-    pointerEvents: 'all',
-    '&:hover': {
-      filter: 'brightness(120%)',
-    },
-    '&:active': {
-      filter: 'brightness(80%)',
-    },
-  };
-});
-
-const OptionsButton = style('div', () => {
-  return {
-    pointerEvents: 'all',
-    color: colors.WHITE,
-    background: 'rgba(0, 0, 0, 0.5)',
-    border: `2px solid ${colors.WHITE}`,
     padding: '8px',
-    fontSize: '16px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    '&:hover': {
-      filter: 'brightness(120%)',
-    },
-    '&:active': {
-      filter: 'brightness(80%)',
-    },
+    pointerEvents: props.disabled ? 'none' : 'inherit',
+    background: props.disabled ? colors.BGGREY : 'unset',
+    borderRadius: '4px',
+    color: props.disabled ? colors.GREY : 'unset',
+  };
+});
+
+const TargetIconContainer = style('div', () => {
+  return {
+    width: '32px',
+    height: '32px',
+    display: 'inline-block',
+    transform: 'translateY(10px)',
     marginLeft: '8px',
   };
 });
+
 const BattleSection = (props: IBattleSectionProps) => {
   const battle = getCurrentBattle();
   const uiState = getUiInterface().appState.battle;
+  const [menuState, setMenuState] = useState('');
 
   const isPaused = getIsPaused();
+  const isEffectActive = uiState.effect.active;
 
-  const [currentlyActingAllegiance, setCurrentlyActingAllegiance] = useState(
-    null
-  );
+  const [
+    currentlyActingAllegiance,
+    setCurrentlyActingAllegiance,
+  ] = useState<null | BattleAllegiance>(null);
   useBattleSubscription(
     getCurrentBattle(),
     BattleEvent.onTurnStarted,
@@ -145,24 +164,94 @@ const BattleSection = (props: IBattleSectionProps) => {
     setCurrentlyActingAllegiance(null);
   });
 
-  const isPlayerActing = currentlyActingAllegiance === BattleAllegiance.ALLY;
+  useKeyboardEventListener(
+    ev => {
+      if (isEffectActive) {
+        return;
+      }
 
-  const clickPauseButton = () => {
-    if (getIsPaused()) {
-      unpause();
-    } else {
-      pause();
-    }
+      if (isPaused && menuState === '') {
+        if (isCancelKey(ev.key) || isPauseKey(ev.key)) {
+          playSoundName('woosh_reverse');
+          unpause();
+        } else if (ev.key === 'ArrowLeft') {
+          if (battleCycleMeleeTarget(battle)) {
+            playSoundName('menu_select');
+          } else {
+            playSoundName('menu_cancel');
+          }
+          renderUi();
+        } else if (ev.key === 'ArrowRight') {
+          if (battleCycleRangeTarget(battle)) {
+            playSoundName('menu_select');
+          } else {
+            playSoundName('menu_cancel');
+          }
+          renderUi();
+        }
+      } else if (isPaused && menuState === 'actions') {
+        if (ev.key === 'Tab' || ev.key === 'ArrowLeft') {
+          const uiState = getUiInterface().appState.battle;
+          const battle = getCurrentBattle();
+          let nextIndex =
+            (uiState.characterIndexSelected + 1) % battle.allies.length;
+          if (nextIndex === -1) {
+            nextIndex = battle.allies.length - 1;
+          }
+          playSoundName('menu_select');
+          setBattleCharacterIndexSelected(nextIndex);
+          ev.preventDefault();
+        } else if (ev.key === 'ArrowRight') {
+          const uiState = getUiInterface().appState.battle;
+          let nextIndex = uiState.characterIndexSelected - 1;
+          if (nextIndex === -1) {
+            nextIndex = 0;
+          }
+          playSoundName('menu_select');
+          setBattleCharacterIndexSelected(nextIndex);
+          ev.preventDefault();
+        } else if (isCancelKey(ev.key)) {
+          playSoundName('menu_select2');
+          setMenuState('');
+        }
+      }
+    },
+    [isPaused, menuState, isEffectActive]
+  );
+
+  const isActionsVisible = menuState === 'actions';
+  const areBattleMenuItemsDisabled =
+    battleGetActingAllegiance(getCurrentBattle()) !== null;
+
+  const selectedStyles = {
+    background: colors.DARKGREEN,
   };
+
+  console.log(
+    'RENDER BATTLE SECTION',
+    isPaused,
+    isEffectActive,
+    uiState.effect
+  );
 
   return (
     <Root id="battle-section-root">
       <CharacterInfoCardsContainer id="ch-info-cards-ctr">
         {battle.allies.map((bCh, i) => {
+          // HACK: I hate this so much but it fixes a problem where there's a ui de-sync
+          // when a character starts the battle with 0 hp
+          if (bCh.shouldRemove) {
+            return <div></div>;
+          }
+
           return (
             <CharacterInfoCard
               bCh={bCh}
-              isSelected={uiState.characterIndexSelected === i && isPaused}
+              isSelected={
+                isActionsVisible &&
+                uiState.characterIndexSelected === i &&
+                isPaused
+              }
               characterIndex={i}
               key={bCh.ch.name}
               id={'ch-info-card-' + bCh.ch.name}
@@ -183,24 +272,196 @@ const BattleSection = (props: IBattleSectionProps) => {
           );
         })}
       </EnemyInfoCardsContainer>
-      <UpperLeftContainer>
-        <PauseButton onClick={clickPauseButton}>
-          {isPaused ? 'Unpause' : 'Pause'}
-        </PauseButton>
-        <OptionsButton>Options</OptionsButton>
-      </UpperLeftContainer>
       <ChannelIndicators allegiance={BattleAllegiance.ENEMY} />
       <ChannelIndicators allegiance={BattleAllegiance.ALLY} />
-      {battle.allies.map((bCh, i) => {
+      {battle.alliesStorage.map(bCh => {
+        console.log(
+          'ALLY',
+          bCh.ch.name,
+          isEffectActive,
+          uiState.effect.bChList.includes(bCh)
+        );
         return (
-          <BattleCharacterFollower bCh={bCh} battleIndex={i} isEnemy={false} />
+          <BattleCharacterFollower
+            bCh={bCh}
+            battleIndex={battle.alliesStorage.indexOf(bCh)}
+            isEnemy={false}
+            animName={
+              isEffectActive && uiState.effect.bChList.includes(bCh)
+                ? uiState.effect.effectAnimName
+                : undefined
+            }
+          />
         );
       })}
-      {battle.enemies.map((bCh, i) => {
+      {battle.enemies.map(bCh => {
         return (
-          <BattleCharacterFollower bCh={bCh} battleIndex={i} isEnemy={true} />
+          <BattleCharacterFollower
+            bCh={bCh}
+            battleIndex={battle.enemiesStorage.indexOf(bCh)}
+            isEnemy={true}
+            animName={
+              isEffectActive && uiState.effect.bChList.includes(bCh)
+                ? uiState.effect.effectAnimName
+                : undefined
+            }
+          />
         );
       })}
+      <PauseTextSection>
+        {isPaused ? (
+          <>
+            <p style={{ marginRight: '8px' }}>
+              Press Left Arrow to cycle Melee Target.
+              <TargetIconContainer>
+                <MeleeTargetIcon color={colors.YELLOW} />
+              </TargetIconContainer>
+            </p>
+            <p style={{ marginRight: '8px' }}>
+              Press Right Arrow to cycle Range Target.
+              <TargetIconContainer>
+                <RangeTargetIcon color={colors.RED} />
+              </TargetIconContainer>
+            </p>
+          </>
+        ) : null}
+      </PauseTextSection>
+      {!isEffectActive ? (
+        <>
+          <TopBar
+            buttons={[
+              TopBarButtons.BATTLE_MENU,
+              TopBarButtons.SETTINGS,
+              TopBarButtons.DEBUG,
+            ]}
+            onSettingsClick={() => {
+              pause();
+            }}
+            onSettingsClose={() => {
+              showSection(AppSection.BattleUI, true);
+            }}
+            onMenuClick={() => {
+              if (isPaused) {
+                playSoundName('woosh_reverse');
+                unpause();
+              } else {
+                playSoundName('woosh');
+                pause();
+              }
+            }}
+          />
+          <BattleMenuContainer visible={isPaused}>
+            <VerticalMenu
+              width="100%"
+              open={true}
+              isCursorSelectInactive={!isPaused || menuState !== ''}
+              title="Battle Menu"
+              items={[
+                {
+                  label: (
+                    <BattleMenuItem
+                      style={
+                        menuState === 'resume'
+                          ? selectedStyles
+                          : { color: colors.BLUE }
+                      }
+                    >
+                      Resume
+                    </BattleMenuItem>
+                  ),
+                  value: 'resume',
+                },
+                {
+                  label: (
+                    <BattleMenuItem
+                      style={
+                        menuState === 'actions' ? selectedStyles : undefined
+                      }
+                      disabled={areBattleMenuItemsDisabled}
+                    >
+                      Actions
+                    </BattleMenuItem>
+                  ),
+                  value: 'actions',
+                },
+                {
+                  label: (
+                    <BattleMenuItem
+                      style={menuState === 'items' ? selectedStyles : undefined}
+                      disabled={
+                        areBattleMenuItemsDisabled ||
+                        // cant use isComplete because a timer cannot be complete if pauseOverridden which will always
+                        // be the case in this menu
+                        battle.itemTimer.getPctComplete() < 1
+                      }
+                    >
+                      Items{' '}
+                      {battle.itemTimer.getPctComplete() >= 1
+                        ? ''
+                        : (
+                            (battle.itemTimer.duration -
+                              battle.itemTimer.getDiff()[0]) /
+                            1000
+                          ).toFixed(2) + 's'}
+                    </BattleMenuItem>
+                  ),
+                  value: 'items',
+                },
+                {
+                  label: (
+                    <BattleMenuItem
+                      // style={
+                      //   menuState === 'flee'
+                      //     ? selectedStyles
+                      //     : { color: colors.YELLOW }
+                      // }
+                      disabled={areBattleMenuItemsDisabled}
+                    >
+                      Flee
+                    </BattleMenuItem>
+                  ),
+                  value: 'flee',
+                },
+              ]}
+              onItemClickSound="menu_select"
+              onItemClick={(val: string) => {
+                if (val === 'resume') {
+                  playSoundName('woosh_reverse');
+                  unpause();
+                  setMenuState('');
+                } else if (!areBattleMenuItemsDisabled) {
+                  if (
+                    val === 'items' &&
+                    battle.itemTimer.getPctComplete() < 1
+                  ) {
+                    playSoundName('menu_cancel');
+                  } else {
+                    setMenuState(val);
+                  }
+                } else {
+                  playSoundName('menu_cancel');
+                }
+              }}
+              onClose={() => {
+                playSoundName('woosh_reverse');
+                setMenuState('');
+                unpause();
+              }}
+            />
+          </BattleMenuContainer>
+        </>
+      ) : null}
+      {menuState === 'items' && !isEffectActive ? (
+        <BattleItems
+          player={getCurrentPlayer()}
+          onClose={() => {
+            setMenuState('');
+          }}
+        />
+      ) : null}
+      <BattleTurnIndicator
+        allegiance={currentlyActingAllegiance ?? BattleAllegiance.NONE}
+      />
     </Root>
   );
 };

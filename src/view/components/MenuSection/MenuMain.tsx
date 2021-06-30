@@ -24,6 +24,7 @@ import { getCancelKeyLabel, getConfirmKeyLabel } from 'controller/events';
 import MenuItems from './MenuItems';
 import MenuJournal from './MenuJournal';
 import MenuEquipment from './MenuEquipment';
+import MenuParty from './MenuPositions';
 import CharacterStatus from '../CharacterStatus';
 
 const Root = style('div', {
@@ -125,18 +126,6 @@ const MenuSection = () => {
   };
 
   const handleMenuCommandItemClick = (section: MenuCommandItem) => {
-    if (section === MenuCommandItem.PARTY) {
-      showPartyMemberSelectModal({
-        onCharacterSelected: ch => {
-          console.log('SELCTED ', ch);
-        },
-        onClose: () => {
-          console.log('clsoe');
-          // playSoundName(
-        },
-      });
-      return;
-    }
     setSelectedSection(section);
     setOuterMenuActive(false);
   };
@@ -219,10 +208,32 @@ const MenuSection = () => {
               setOuterMenuActive(true);
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
-            closeButtonLabel={'Back'}
+            closeButtonLabel={'Back ' + getCancelKeyLabel()}
             disableKeyboardShortcut={true}
           >
             <CharacterStatus ch={getCurrentPlayer().leader} />
+          </MenuBox>
+        );
+      }
+      case MenuCommandItem.PARTY: {
+        return (
+          <MenuBox
+            title="Battle Positions"
+            onClose={() => {
+              setOuterMenuActive(true);
+            }}
+            maxWidth={cardSizes[CardSize.XLARGE].width}
+            closeButtonLabel={'Back ' + getCancelKeyLabel()}
+            disableKeyboardShortcut={true}
+          >
+            <MenuParty
+              player={player}
+              isInactive={false}
+              onClose={() => {
+                playSoundName('menu_choice_close');
+                setOuterMenuActive(true);
+              }}
+            />
           </MenuBox>
         );
       }
@@ -260,7 +271,16 @@ const MenuSection = () => {
               return {
                 label: (
                   <PartyMember>
-                    {ch ? <CharacterStatus ch={ch} usePortrait={true} /> : null}
+                    {ch ? (
+                      <CharacterStatus
+                        ch={ch}
+                        usePortrait={true}
+                        style={{
+                          filter:
+                            ch.hp <= 0 ? 'sepia(1) brightness(0.5)' : 'unset',
+                        }}
+                      />
+                    ) : null}
                   </PartyMember>
                 ),
                 value: ch,
@@ -342,7 +362,7 @@ const MenuSection = () => {
                         selectedSection === MenuCommandItem.PARTY
                       }
                     >
-                      Party
+                      Positions
                     </MenuLabel>
                   ),
                   value: MenuCommandItem.PARTY,

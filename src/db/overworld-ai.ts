@@ -28,6 +28,7 @@ import {
   facingToIncrements,
   truncatePoint3d,
   timeoutPromise,
+  pxFacingToWorldFacing,
 } from 'utils';
 import {
   getCurrentOverworld,
@@ -84,7 +85,8 @@ export interface OverworldAI {
 }
 
 // from some position, seek in the provided direction for a wall and return the position
-// that is just before hitting the wall
+// that is just before hitting the wall, when seeking down or right, skip at the tile one
+// before the wall (cuz my rendering system kinda sucks)
 const findNextLinearWalkPosition = (
   room: Room,
   startingPoint: Point,
@@ -98,11 +100,14 @@ const findNextLinearWalkPosition = (
     );
     return [0, 0];
   }
-  const [incrementX, incrementY] = facingToIncrements(direction);
+  const [incrementX, incrementY] = facingToIncrements(
+    pxFacingToWorldFacing(direction)
+  );
 
   let loopCtr = 0;
   let xOffset = startingPoint[0];
   let yOffset = startingPoint[1];
+  let useDecrement = true;
   do {
     if (tile) {
       const nextTile = roomGetTileAt(
@@ -111,6 +116,21 @@ const findNextLinearWalkPosition = (
         tile.y + incrementY
       );
       if (nextTile && !nextTile.isWall) {
+        if (incrementX > 0) {
+          const nextTileRight = roomGetTileAt(room, nextTile.x + 1, nextTile.y);
+          if (nextTileRight?.isWall) {
+            useDecrement = false;
+            break;
+          }
+        }
+        if (incrementY > 0) {
+          const nextTileDown = roomGetTileAt(room, nextTile.x, nextTile.y + 1);
+          if (nextTileDown?.isWall) {
+            useDecrement = false;
+            break;
+          }
+        }
+
         tile = nextTile;
         xOffset += 16 * incrementX;
         yOffset += 16 * incrementY;
@@ -120,11 +140,21 @@ const findNextLinearWalkPosition = (
     }
     loopCtr++;
   } while (loopCtr < 100);
-  // move back half a tile to adjust for potentially embedding the ch into the tile
-  xOffset -= 8 * incrementX;
-  yOffset -= 8 * incrementY;
-  // xOffset = Math.floor(xOffset);
-  // yOffset = Math.floor(yOffset);
+
+  if (useDecrement) {
+    // move back half a tile to adjust for potentially embedding the ch into the tile
+    xOffset -= 8 * incrementX;
+    yOffset -= 8 * incrementY;
+  }
+
+  // HACK push stuff further towards bottom walls because the walking system is funky.
+  // I direction it's tile size (16) - weird z index offset (3 ish)
+  // direction is in SCREEN direction, left on the screen is down left for WORLD direction
+  if (direction === Facing.LEFT_DOWN) {
+    yOffset += 13;
+  } else if (direction === Facing.RIGHT_DOWN) {
+    xOffset += 13;
+  }
 
   return [xOffset, yOffset];
 };
@@ -165,6 +195,8 @@ export const init = () => {
       const room = getCurrentRoom();
       const startPoint = characterGetPos(ch);
       const targetPoint = characterGetPos(getCurrentPlayer().leader);
+      targetPoint[0];
+      targetPoint[1];
       const tileStart = roomGetTileBelow(room, truncatePoint3d(startPoint));
       const tileTarget = roomGetTileBelow(room, truncatePoint3d(targetPoint));
       const pfPath = createPFPath(
@@ -178,11 +210,12 @@ export const init = () => {
       if (firstPointInPath) {
         characterSetWalkTarget(
           ch,
-          [firstPointInPath[0], firstPointInPath[1]],
+          [firstPointInPath[0] - 7, firstPointInPath[1] - 7],
           () => {}
         );
       } else {
         const despawnFunc = async () => {
+          console.log('despawn func?');
           if (ch.encounterStuckRetries > 3) {
             console.log('REMOVE STUCK RETRIES CH', ch);
             playSoundName('spawn_enemy');
@@ -193,15 +226,6 @@ export const init = () => {
             );
             await timeoutPromise(400);
             despawnCharacter(ch.name);
-            //           await createAndCallScript(
-            //             scene,
-            //             `
-            // +playSound('spawn_enemy');
-            // +spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, ${ch.name}, 'normal');
-            // +waitMS(400);
-            // +despawnCharacter(${ch.name});
-            //           `
-            //           );
           } else {
             t.awaits.push(() => {
               ch.aiState.halted = false;
@@ -251,11 +275,8 @@ export const init = () => {
       const nextMarker = ch.aiState.nextMarker as number;
       ch.aiState.nextMarker = (nextMarker + 1) % 2;
 
-      const target = findNextLinearWalkPosition(
-        room,
-        [chX, chY],
-        nextMarker === 0 ? direction1 : direction2
-      );
+      const facing = nextMarker === 0 ? direction1 : direction2;
+      const target = findNextLinearWalkPosition(room, [chX, chY], facing);
       characterSetWalkTarget(ch, target, cb);
     };
 
@@ -263,7 +284,7 @@ export const init = () => {
       onCreate: (ch: Character) => {
         ch.aiState.isWaiting = true;
         ch.aiState.nextMarker = 1;
-        const t = new Timer(500);
+        const t = new Timer(1000);
         t.awaits.push(() => {
           chWalkToNextPosition(ch, () => {
             ch.aiState.isWaiting = false;
@@ -274,7 +295,7 @@ export const init = () => {
       update: (ch: Character) => {
         if (!ch.aiState.isWaiting) {
           ch.aiState.isWaiting = true;
-          const t = new Timer(600);
+          const t = new Timer(1000);
           t.awaits.push(() => {
             chWalkToNextPosition(ch, () => {
               ch.aiState.isWaiting = false;
@@ -293,6 +314,7 @@ export const init = () => {
             },
             ch
           );
+          // ch.speed = 1.6;
           roomAddParticle(getCurrentRoom(), particle);
           characterClearTimers(ch);
           characterStopWalking(ch);

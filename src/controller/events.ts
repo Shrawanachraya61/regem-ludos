@@ -117,4 +117,6 @@ export const getCancelKeyLabel = () => '(Z)';
 export const isAuxKey = (key: string) => {
   return ['c', 'C', 'KeyC'].includes(key);
 };
+export const getPauseKeyLabel = () => '(Space)';
+export const isPauseKey = (key: string) => [' '].includes(key);
 export const getAuxKeyLabel = () => '(C)';

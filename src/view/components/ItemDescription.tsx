@@ -4,6 +4,7 @@ import { colors, style } from 'view/style';
 import { Item } from 'db/items';
 import Button, { ButtonType } from 'view/elements/Button';
 import { playSoundName } from 'model/sound';
+import { getConfirmKeyLabel } from 'controller/events';
 
 const Root = style('div', () => {
   return {
@@ -90,7 +91,7 @@ const ItemDescription = (props: IItemDescriptionProps) => {
             }
           }}
         >
-          Use
+          Use {getConfirmKeyLabel()}
         </Button>
       ) : null}
       <EquipmentDescriptionText>

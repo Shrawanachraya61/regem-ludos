@@ -17,6 +17,7 @@ import {
   getGlobalParticleSystem,
   getCameraTransform,
   setCameraTransform,
+  isPauseRenderingEnabled,
 } from 'model/generics';
 import { createAnimation } from 'model/animation';
 import {
@@ -100,7 +101,6 @@ export const unpause = () => {
     return;
   }
   setIsPaused(false);
-  renderUi();
   getAllTimers().forEach(t => {
     t.unpauseOverride();
   });
@@ -135,6 +135,8 @@ export const unpause = () => {
     battleUnpauseTimers(battle);
     battle.isPaused = false;
   }
+
+  renderUi();
 };
 
 export const runMainLoop = async (): Promise<void> => {
@@ -197,8 +199,21 @@ export const runMainLoop = async (): Promise<void> => {
         }
       }
       setCameraDrawOffset([roomXOffset, roomYOffset]);
+
+      if (isPauseRenderingEnabled()) {
+        drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+        bgTransform.update();
+        const p = bgTransform.current();
+        drawSprite('bg-fog', 171 + p[0], 128 + p[1]);
+      }
+
       if (roomVisible) {
-        drawRoom(room, [roomXOffset, roomYOffset], undefined, true);
+        drawRoom(
+          room,
+          [roomXOffset, roomYOffset],
+          undefined,
+          !isPauseRenderingEnabled()
+        );
       }
 
       const renderables = getRenderables();
@@ -334,3 +349,17 @@ export const runMainLoop = async (): Promise<void> => {
   };
   loop(startTime);
 };
+
+// export const renderFrame = () => {
+//   const [screenW, screenH] = getScreenSize();
+
+//   clearScreen();
+//   clearScreen(getCtx('outer'));
+//   drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+//   drawRoom(room, [roomXOffset, roomYOffset]);
+//   const renderables = getRenderables();
+//   for (const i in renderables) {
+//     const cb = renderables[i];
+//     cb();
+//   }
+// };

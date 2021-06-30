@@ -81,6 +81,7 @@ export const isKeyDown = (key: string): boolean => {
 let isPaused = false;
 export const getIsPaused = (): boolean => isPaused;
 export const setIsPaused = (n: boolean): void => {
+  // console.trace('set paused', n);
   isPaused = n;
 };
 
@@ -184,3 +185,8 @@ let playerWallGlowEnabled = true;
 export const getPlayerWallGlowEnabled = () => playerWallGlowEnabled;
 export const setPlayerWallGlowEnabled = (b: boolean) =>
   (playerWallGlowEnabled = b);
+
+let pauseRendering = false;
+export const enablePauseRendering = () => (pauseRendering = true);
+export const disablePauseRendering = () => (pauseRendering = false);
+export const isPauseRenderingEnabled = () => pauseRendering;

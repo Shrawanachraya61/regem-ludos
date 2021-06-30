@@ -156,6 +156,7 @@ interface ICharacterStatusProps {
   hideExp?: boolean;
   hideWeapons?: boolean;
   hideCurrencies?: boolean;
+  style?: Record<string, string>;
 }
 
 const CharacterStatus = (props: ICharacterStatusProps) => {
@@ -212,7 +213,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
   ];
 
   return (
-    <Root>
+    <Root style={props.style}>
       <PrimaryRoot>
         <PortraitContainer>
           {props.usePortrait ? (

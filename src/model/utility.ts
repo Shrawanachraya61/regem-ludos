@@ -91,6 +91,10 @@ export class Timer {
     });
   }
 
+  forceComplete() {
+    this.timestampStart = -999999;
+  }
+
   getPctComplete(): number {
     let now = getNow();
     if (this.isPaused()) {

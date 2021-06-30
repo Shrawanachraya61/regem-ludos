@@ -78,7 +78,6 @@
   Ada: "How about we find a way to sneak up to the second floor and not deal with any of this VR nonsense?"
   +setConversationSpeaker(none);
   +waitMS(500);
-  +playSound(aggro_alert);
   +setFacing('Conscience', 'right');
   +waitMS(50);
   +setFacing('Conscience', 'up');

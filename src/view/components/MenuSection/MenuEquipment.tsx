@@ -3,7 +3,7 @@ import { h } from 'preact';
 import { colors, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { Player } from 'model/player';
-import { useEffect, useReducer } from 'preact/hooks';
+import { useEffect, useReducer, useState } from 'preact/hooks';
 
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import {
@@ -273,6 +273,8 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
     {} as IMenuEquipmentState
   );
 
+  const [hoverMenuSwitch, resetHoverMenuSwitch] = useState(true);
+
   const reRender = useReRender();
 
   const party = props.player.party;
@@ -466,6 +468,10 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                 type: 'SET_HOVERED_ITEM',
                 payload: undefined,
               });
+              resetHoverMenuSwitch(true);
+              setTimeout(() => {
+                resetHoverMenuSwitch(false);
+              }, 1);
             }}
             hideCloseBox={!equipTypeActive && !itemActive}
             onClose={() => {
@@ -494,6 +500,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
           // height="100%"
           maxHeight="223px"
           open={true}
+          resetCursor={hoverMenuSwitch}
           isCursorSelectInactive={!itemActive}
           style={{
             opacity: !menuState.selectedEquipmentType ? '0.5' : '1',

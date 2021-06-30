@@ -81,12 +81,13 @@ Ada: "..."
 Ada: "He is so *difficult*."
 +endConversation();
 +setConversation2('Ada', 'Conscience');
-Conscience: "Was that Carl-Arnold?  That's what, the fifth time he's called you today?  He seems kind of excited for this."
+Conscience: "Was that Carl-Arnold?  That's what, the fifth time he's called you today?  He seems really excited for this."
 +setFacing('Ada', 'rightdown');
-Ada: "I cannot even remember why I agreed to meet him here.  Honestly, I have half a mind to turn around and leave."
+Ada: "I cannot even remember why I agreed to meet him here.  Knowing him, this could end up being a complete waste of time."
+Ada: "Honestly, I have half a mind to turn around and leave."
 Conscience: "Aw c'mon.  We walked all the way over here.  We might as well go and see what he wants."
 +setFacing('Conscience', 'rightup');
-Conscience: "At the very least, it's an arcade!  There's got to be something in there that was worth the trip."
+Conscience: "At the very least, we're standing outside an arcade!  There's got to be something in there that was worth the trip."
 +setFacing('Ada', 'rightup');
 +setConversationSpeaker('none');
 +panCameraRelativeToPlayer(80, -100, 1500);
@@ -101,6 +102,7 @@ Ada: "It does not particularly look like I imagined an arcade would look."
 +waitMS(750);
 +callScript('utils-character-sigh', 'Ada');
 Ada: "Fine.  Let us get this over with."
+Ada: "I hope I do not regret this..."
 +setConversationSpeaker('none');
 +callScript('utils-stop-Conscience-dialogue');
 +endConversation();

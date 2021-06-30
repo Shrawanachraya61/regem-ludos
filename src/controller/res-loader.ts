@@ -147,14 +147,17 @@ class AssetLoader {
   }
 }
 
-export const loadRes = async () => {
+export const loadRes = async (loadingTick?: () => void) => {
   const text = await (await fetch('res/res.txt')).text();
   const foley = await (await fetch('res/res-foley.txt')).text();
   const bg = await (await fetch('res/res-bg.txt')).text();
+  if (loadingTick) {
+    loadingTick();
+  }
   const loader = new AssetLoader();
   return Promise.all([
-    loader.loadAssets(text),
-    loader.loadAssets(foley),
-    loader.loadAssets(bg),
+    loader.loadAssets(text).then(loadingTick || function () {}),
+    loader.loadAssets(foley).then(loadingTick || function () {}),
+    loader.loadAssets(bg).then(loadingTick || function () {}),
   ]);
 };

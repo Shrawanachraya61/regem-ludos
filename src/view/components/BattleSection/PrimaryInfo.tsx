@@ -36,6 +36,7 @@ const PercentBarContainer = style('div', () => {
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginBottom: '4px',
+    fontSize: '12px',
   };
 });
 

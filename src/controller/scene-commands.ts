@@ -1699,6 +1699,7 @@ export const runArcadeCabinetGame = (gameName: string) => {
 
   overworldHide(getCurrentOverworld());
   playSoundName('start_arcade_game');
+  pause();
   showArcadeGame(gamePath);
 };
 
@@ -2015,6 +2016,7 @@ export const showUISection = (sectionName: string, ...args: any[]) => {
     showSave(() => {
       sceneStopWaitingUntil(getCurrentScene());
       showSection(AppSection.Debug, true);
+      unpause();
     });
     return waitUntil();
   } else if (sectionName === 'LevelUp') {

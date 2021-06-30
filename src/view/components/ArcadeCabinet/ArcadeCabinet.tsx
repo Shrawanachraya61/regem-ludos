@@ -33,6 +33,9 @@ import './GameTicTacToe';
 import './GamePresident';
 import './GameInvaderz';
 import './GameElasticity';
+import { unpause } from 'controller/loop';
+import { useKeyboardEventListener } from 'view/hooks';
+import { isCancelKey } from 'controller/events';
 
 export enum SDLKeyID {
   Enter = 13,
@@ -222,6 +225,12 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const isGameRunning = getUiInterface().appState.arcadeGame.isGameRunning;
   const isGameReady = getUiInterface().appState.arcadeGame.isGameReady;
 
+  useKeyboardEventListener(ev => {
+    if (isCancelKey(ev.key)) {
+      hideArcadeGame();
+    }
+  });
+
   return (
     <CabinetWrapper>
       <CabinetHeader>
@@ -230,6 +239,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             <Button
               type={ButtonType.CANCEL}
               onClick={() => {
+                unpause();
                 hideArcadeGame();
               }}
               style={{

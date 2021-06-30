@@ -20,7 +20,6 @@ const SettingsSection = () => {
   }, []);
 
   const handleCloseClick = () => {
-    // showSection(AppSection.Debug, true);
     const onClose = getUiInterface().appState.settings.onClose;
     playSoundName('menu_choice_close');
     onClose();
@@ -32,6 +31,7 @@ const SettingsSection = () => {
         onClose={() => {
           handleCloseClick();
         }}
+        dark={true}
         // maxWidth={'600px'}
         closeButtonLabel={'Back ' + getCancelKeyLabel()}
       >

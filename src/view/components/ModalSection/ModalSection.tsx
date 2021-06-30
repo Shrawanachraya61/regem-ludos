@@ -27,6 +27,8 @@ export interface ICustomModalProps {
   onConfirm?: (v?: any) => void;
   active?: boolean;
   body?: any;
+  danger?: boolean;
+  filter?: (a: any) => boolean;
 }
 
 const CenterAligned = style('div', () => {
@@ -236,6 +238,7 @@ const ConfirmModal = (props: ICustomModalProps) => {
       onClose={props.onClose}
       onConfirm={props.onConfirm}
       maxWidth={INFO_MAX_WIDTH}
+      danger={props.danger}
     >
       {body}
     </DialogBox>
@@ -246,6 +249,7 @@ const PartyMember = style(
   'div',
   (props: { color?: string; padding?: string }) => {
     return {
+      position: 'relative',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -276,10 +280,37 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
           isInactive={!props.active}
           width="600px"
           items={party.map(ch => {
+            const isValid = party
+              .filter(props.filter || (() => true))
+              .includes(ch);
             return {
               label: (
                 <PartyMember>
-                  <CharacterStatus ch={ch} usePortrait={false} />
+                  <CharacterStatus
+                    ch={ch}
+                    usePortrait={false}
+                    style={{
+                      filter: isValid ? 'unset' : 'blur(1px) brightness(0.5)',
+                    }}
+                  />
+                  {!isValid ? (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        background:
+                          'linear-gradient(90deg, rgba(169,59,59,1) 0%, rgba(169,59,59,0) 100%)',
+                        width: '100%',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '18px',
+                        height: '106px',
+                      }}
+                    >
+                      Select Another Character
+                    </div>
+                  ) : null}
                 </PartyMember>
               ),
               value: ch,
@@ -287,8 +318,13 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
           })}
           onItemClickSound="menu_select"
           onItemClick={val => {
-            if (props.onConfirm) {
+            if (
+              props.onConfirm &&
+              party.filter(props.filter || (() => true)).includes(val)
+            ) {
               props.onConfirm(val);
+            } else {
+              playSound('terminal_cancel');
             }
           }}
         />
@@ -366,6 +402,7 @@ const Modal = () => {
           onClose={handleClose}
           onConfirm={handleConfirm}
           body={modalState.body}
+          danger={modalState.danger}
         />
       );
       break;
@@ -385,6 +422,7 @@ const Modal = () => {
               }
             }
           }}
+          filter={modalState.filter}
         />
       );
       break;

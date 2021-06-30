@@ -23,6 +23,11 @@ import {
   BattleDamageType,
   OnBeforeCharacterDamagedCb,
   PersistentEffectEventParams,
+  battleGetTargetedEnemy,
+  battleIsEnemyTargetableByMelee,
+  battleSetEnemyTargetIndex,
+  battleCycleMeleeTarget,
+  battleCycleRangeTarget,
 } from 'model/battle';
 import {
   battleCharacterCreateEnemy,
@@ -161,6 +166,7 @@ export const transitionToBattle = async (
     setGlobalParticleSystem(null);
     popKeyHandler(handler);
     const battle = initiateBattle(player, template);
+    battle.transitioning = true;
     battle.isPaused = true;
     battlePauseTimers(battle);
     fadeIn(250);
@@ -168,34 +174,36 @@ export const transitionToBattle = async (
     const jumpTimeMs = 500;
     const jumpTimeMsPostLag = 500;
     const jumpTimeMsStaggered = 250;
-    battle.allies.forEach((bCh, i) => {
-      const endPoint = characterGetPos(bCh.ch);
-      const startPoint = [
-        endPoint[0] - 16 * 6,
-        endPoint[1] + 16 * 6,
-        0,
-      ] as Point3d;
-      const transform = new Transform(
-        startPoint,
-        endPoint,
-        jumpTimeMs,
-        TransformEase.LINEAR,
-        transformOffsetJumpFar
-      );
-      characterSetTransform(bCh.ch, transform);
-      transform.timer.pause();
+    battle.allies
+      .filter(bCh => bCh.ch.hp > 0)
+      .forEach((bCh, i) => {
+        const endPoint = characterGetPos(bCh.ch);
+        const startPoint = [
+          endPoint[0] - 16 * 6,
+          endPoint[1] + 16 * 6,
+          0,
+        ] as Point3d;
+        const transform = new Transform(
+          startPoint,
+          endPoint,
+          jumpTimeMs,
+          TransformEase.LINEAR,
+          transformOffsetJumpFar
+        );
+        characterSetTransform(bCh.ch, transform);
+        transform.timer.pause();
 
-      timeoutPromise(500 + i * jumpTimeMsStaggered).then(() => {
-        if (i === 0) {
-          playSoundName('battle_jump');
-        }
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
-        bCh.ch.transform?.timer.unpause();
-        timeoutPromise(jumpTimeMs).then(() => {
-          battleCharacterSetAnimationIdle(bCh);
+        timeoutPromise(500 + i * jumpTimeMsStaggered).then(() => {
+          if (i === 0) {
+            playSoundName('battle_jump');
+          }
+          characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
+          bCh.ch.transform?.timer.unpause();
+          timeoutPromise(jumpTimeMs).then(() => {
+            battleCharacterSetAnimationIdle(bCh);
+          });
         });
       });
-    });
 
     // use timeoutPromise so that the battle can take over control of the timeouts
     // (like if the user pauses during the intro, the battle can pause this timer too)
@@ -207,6 +215,7 @@ export const transitionToBattle = async (
       showSection(AppSection.BattleUI, true);
       battle.isStarted = true;
       battle.isPaused = false;
+      battle.transitioning = false;
       if (template.events?.onBattleStart) {
         template.events?.onBattleStart(battle);
       } else {
@@ -245,14 +254,30 @@ export const initiateBattle = (
   });
 
   const battle = battleCreate(room, allies, enemies);
+  battle.itemTimer.forceComplete();
   battle.template = template;
 
-  battle.allies.forEach(resetCooldownTimer);
+  // battle.allies = battle.allies.filter(bCh => bCh.ch.hp > 0);
+
+  battle.allies.forEach(bCh => {
+    if (bCh.ch.hp > 0) {
+      resetCooldownTimer(bCh);
+    } else {
+      bCh.isDefeated = true;
+      bCh.shouldRemove = true;
+    }
+  });
   battle.enemies.forEach(resetCooldownTimer);
+  battle.alliesStorage.forEach(ally => {
+    characterSetFacing(ally.ch, Facing.RIGHT);
+  });
 
   battle.allies.forEach(ally => {
-    characterSetFacing(ally.ch, Facing.RIGHT);
-    battleCharacterSetAnimationIdle(ally);
+    if (ally.ch.hp > 0) {
+      battleCharacterSetAnimationIdle(ally);
+    } else {
+      characterSetAnimationState(ally.ch, AnimationState.BATTLE_DEAD);
+    }
   });
 
   setCurrentPlayer(player);
@@ -316,6 +341,7 @@ export const invokeAllChannels = async (battle: Battle) => {
   });
   const allyChannellers = battle.allies.filter(bCh => {
     return (
+      bCh.ch.hp > 0 &&
       battleCharacterGetSelectedSkill(bCh).type === BattleActionType.CHANNEL
     );
   });
@@ -353,9 +379,50 @@ export const callScriptDuringBattle = async (scriptName: string) => {
   }
 };
 
+export const keyToAllyIndex = (key: string): number | undefined => {
+  const keys = {
+    d: 0,
+    c: 1,
+    s: 2,
+    x: 3,
+    a: 4,
+    z: 5,
+  };
+  return keys[key.toLowerCase()];
+};
+
+export const allyIndexToKey = (ind: number): string | undefined => {
+  const keys = ['d', 'c', 's', 'x', 'a', 'z'];
+  return keys[ind]?.toUpperCase();
+};
+
 export const battleKeyHandler = async (ev: KeyboardEvent) => {
   const battle = getCurrentBattle();
   const isPaused = getIsPaused();
+  // hack: there's gotta be a better way
+  const isOtherMenuOpen = getUiInterface().appState.sections.length > 1;
+  if (isOtherMenuOpen) {
+    return;
+  }
+
+  if (battle.transitioning) {
+    return;
+  }
+
+  const isBattleKey = /^[azsxdcAZSXDC]$/.test(ev.key);
+  if (!isPaused && isBattleKey) {
+    const key = ev.key.toLowerCase();
+
+    const bCh = battle.alliesStorage[keyToAllyIndex(key) ?? -1];
+
+    if (bCh?.ch.hp > 0) {
+      const skill = battleCharacterGetSelectedSkill(bCh);
+      invokeSkill(bCh, skill);
+    }
+
+    return;
+  }
+
   switch (ev.key) {
     case 'd': {
       if (getTriggersVisible()) {
@@ -367,27 +434,9 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
-    case 'x':
-    case 'X': {
-      if (!isPaused) {
-        const bCh = battle.allies[0];
-        const skill = battleCharacterGetSelectedSkill(bCh);
-        invokeSkill(bCh, skill);
-      }
-      break;
-    }
-    case 'c':
-    case 'C': {
-      if (!isPaused) {
-        const bCh = battle.allies[1];
-        const skill = battleCharacterGetSelectedSkill(bCh);
-        invokeSkill(bCh, skill);
-      }
-      break;
-    }
     case 'q':
     case 'Q': {
-      const bCh = battle.allies[0];
+      const bCh = battle.alliesStorage[0];
       const particle = createParticleAtCharacter(
         {
           ...EFFECT_TEMPLATE_DEAD32,
@@ -397,25 +446,47 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
       roomAddParticle(battle.room, particle);
       break;
     }
-    case 'Tab': {
-      if (isPaused) {
-        const uiState = getUiInterface().appState.battle;
-        const battle = getCurrentBattle();
-        let nextIndex =
-          (uiState.characterIndexSelected + 1) % battle.allies.length;
-        if (nextIndex === -1) {
-          nextIndex = battle.allies.length - 1;
+    case 'ArrowLeft': {
+      if (!isPaused) {
+        if (battleCycleMeleeTarget(battle)) {
+          playSoundName('menu_select');
+        } else {
+          playSoundName('menu_cancel');
         }
-        playSoundName('menu_select');
-        setBattleCharacterIndexSelected(nextIndex);
-        ev.preventDefault();
+        renderUi();
       }
       break;
     }
+    case 'ArrowRight': {
+      if (!isPaused) {
+        if (battleCycleRangeTarget(battle)) {
+          playSoundName('menu_select');
+        } else {
+          playSoundName('menu_cancel');
+        }
+        renderUi();
+      }
+      break;
+    }
+    // case 'Tab': {
+    //   if (isPaused) {
+    //     const uiState = getUiInterface().appState.battle;
+    //     const battle = getCurrentBattle();
+    //     let nextIndex =
+    //       (uiState.characterIndexSelected + 1) % battle.allies.length;
+    //     if (nextIndex === -1) {
+    //       nextIndex = battle.allies.length - 1;
+    //     }
+    //     playSoundName('menu_select');
+    //     setBattleCharacterIndexSelected(nextIndex);
+    //     ev.preventDefault();
+    //   }
+    //   break;
+    // }
     case ' ': {
       if (isPaused) {
-        playSoundName('woosh_reverse');
-        unpause();
+        // playSoundName('woosh_reverse');
+        // unpause();
       } else {
         playSoundName('woosh');
         pause();
@@ -459,6 +530,7 @@ export const invokeSkill = (bCh: BattleCharacter, skill: BattleAction) => {
     return;
   }
 
+  bCh.canActSignaled = false;
   skill.cb(battle, bCh);
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterAction, bCh);
 };
@@ -604,8 +676,12 @@ export const applyStaggerDamage = (
     bCh.staggerGauge.fill(staggerDamage);
     if (bCh.staggerGauge.isFull()) {
       console.log('STAGGER!');
+      bCh.canActSignaled = false;
       if (bCh.staggerSoundName) {
+        console.log('PLAY STAGGER SOUND', bCh.staggerSoundName);
         playSoundName(bCh.staggerSoundName);
+      } else {
+        console.error('NO STAGGER SOUND SPECIFIED FOR BCH', bCh);
       }
       interruptCast(bCh);
       interruptChannel(bCh);
@@ -1149,6 +1225,8 @@ export const updateBattle = (battle: Battle): void => {
       i--;
     }
   }
+
+  battle.itemTimer.update();
 
   if (!battle.isCompleted) {
     checkBattleCompletion(battle);

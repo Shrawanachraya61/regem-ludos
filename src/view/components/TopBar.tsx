@@ -20,6 +20,7 @@ import {
   getAuxKeyLabel,
   getCancelKeyLabel,
   getConfirmKeyLabel,
+  getPauseKeyLabel,
   pushEmptyKeyHandler,
 } from 'controller/events';
 import { getUiInterface } from 'view/ui';
@@ -33,6 +34,7 @@ const TopBarWrapper = style('div', {
   top: '0px',
   width: '100%',
   display: 'flex',
+  pointerEvents: 'none',
   zIndex: 1,
   '& > div': {
     marginRight: '4px',
@@ -43,6 +45,7 @@ export enum TopBarButtons {
   SETTINGS = 'settings',
   DEBUG = 'debug',
   MENU = 'menu',
+  BATTLE_MENU = 'battle-menu',
 }
 
 interface ITopBarProps {
@@ -88,15 +91,35 @@ const TopBar = (props: ITopBarProps) => {
     <>
       <TopBarWrapper>
         {props.buttons.includes(TopBarButtons.MENU) ? (
-          <Button type={ButtonType.PRIMARY} onClick={handleMenuClick}>
+          <Button
+            style={{ pointerEvents: 'all' }}
+            type={ButtonType.PRIMARY}
+            onClick={handleMenuClick}
+          >
             <ButtonContentWithIcon>
               <MenuIcon color={colors.WHITE} />
               Menu {getCancelKeyLabel()}
             </ButtonContentWithIcon>
           </Button>
         ) : null}
+        {props.buttons.includes(TopBarButtons.BATTLE_MENU) ? (
+          <Button
+            style={{ pointerEvents: 'all' }}
+            type={ButtonType.PRIMARY}
+            onClick={props.onMenuClick}
+          >
+            <ButtonContentWithIcon>
+              <MenuIcon color={colors.WHITE} />
+              Menu {getPauseKeyLabel()}
+            </ButtonContentWithIcon>
+          </Button>
+        ) : null}
         {props.buttons.includes(TopBarButtons.SETTINGS) ? (
-          <Button type={ButtonType.PRIMARY} onClick={handleSettingsClick}>
+          <Button
+            style={{ pointerEvents: 'all' }}
+            type={ButtonType.PRIMARY}
+            onClick={handleSettingsClick}
+          >
             <ButtonContentWithIcon>
               <GearIcon color={colors.WHITE} />
               Settings {getAuxKeyLabel()}
@@ -104,7 +127,11 @@ const TopBar = (props: ITopBarProps) => {
           </Button>
         ) : null}
         {props.buttons.includes(TopBarButtons.DEBUG) ? (
-          <Button type={ButtonType.SECONDARY} onClick={handleToggleDebug}>
+          <Button
+            style={{ pointerEvents: 'all' }}
+            type={ButtonType.SECONDARY}
+            onClick={handleToggleDebug}
+          >
             Toggle Debug (d)
           </Button>
         ) : null}

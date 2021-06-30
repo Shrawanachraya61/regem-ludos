@@ -48,6 +48,7 @@ import { showModal } from 'controller/ui-actions';
 import { ModalSection } from 'model/store';
 import { playMusic } from 'model/sound';
 import { get as getItem } from 'db/items';
+import { colors } from 'view/style';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -61,6 +62,21 @@ function parseQuery(queryString: string): Record<string, string> {
   }
   return query;
 }
+
+const loadingTick = () => {
+  const loading = document.getElementById('page-loading-progress');
+  if (loading) {
+    const div = document.createElement('div');
+    div.style.background = colors.DARKBLUE;
+    div.style.border = '1px solid ' + colors.WHITE;
+    div.style.width = '16px';
+    div.style.height = '32px';
+    div.style.margin = '4px 0px';
+    div.style['border-radius'] = '4px';
+    loading.appendChild(div);
+    // loading.style.color = '#42CAFD';
+  }
+};
 
 export const main = async (): Promise<void> => {
   // Mount this first so that appInterface is MOST LIKELY set when loading the overworld,
@@ -83,19 +99,25 @@ export const main = async (): Promise<void> => {
   await loadRPGScript('floor1-tut', scene);
   await loadRPGScript('intro', scene);
 
+  loadingTick();
+
   console.log('load res');
-  await loadRes();
+  await loadRes(loadingTick);
   // Need this loaded to load rooms, some props need height info to load properly
   await loadDynamicPropsTileset();
 
   console.log('init db');
   await initDb();
 
+  loadingTick();
+
   // loading db might load some prop images dynamically, this waits for those to load
   await awaitAllRoomProps();
 
   console.log('load tiles');
   await loadTiles();
+
+  loadingTick();
 
   try {
     const settings = loadSettingsFromLS();
@@ -125,9 +147,14 @@ export const main = async (): Promise<void> => {
   // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
-  player.leader.hp = 10;
+  player.leader.hp = 0;
 
   characterEquipItem(conscience, getItem('TrainingBow'));
+
+  const loading = document.getElementById('page-loading');
+  if (loading) {
+    loading.style.display = 'none';
+  }
 
   await new Promise<void>(resolve => {
     const touchSomething = () => {
@@ -137,7 +164,17 @@ export const main = async (): Promise<void> => {
     };
     window.addEventListener('keydown', touchSomething);
     window.addEventListener('mousedown', touchSomething);
+
+    const pressAnyKey = document.getElementById('page-press-any-key');
+    if (pressAnyKey) {
+      pressAnyKey.style.display = 'flex';
+    }
   });
+
+  const pressAnyKey = document.getElementById('page-press-any-key');
+  if (pressAnyKey) {
+    pressAnyKey.style.display = 'none';
+  }
 
   console.log('initiate overworld');
   const query = parseQuery(window.location.search);

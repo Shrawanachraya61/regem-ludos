@@ -12,12 +12,13 @@ export interface ItemTemplate {
   name?: string;
   label: string;
   description: string;
+  effectDescription?: string;
   type?: ItemType;
   weaponType?: WeaponType;
   icon?: (...args: any[]) => h.JSX.Element;
   modifiers?: Partial<BattleStats & { armor: number }>;
   skills?: BattleAction[];
-  onUse?: (item: Item) => Promise<void>;
+  onUse?: (item: Item, isBattle?: boolean) => Promise<void>;
 }
 
 export type Item = ItemTemplate;
