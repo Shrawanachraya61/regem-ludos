@@ -3,7 +3,7 @@ Sound,pop,foley/pop.mp3,0.7,zzfx
 Sound,menu_move,foley/menu_move2.mp3,0.5,zzfx
 Sound,menu_select,foley/menu_select2.mp3,
 Sound,menu_select2,foley/menu_cancel.mp3,0.7,zzfx
-Sound,menu_cancel,foley/menu_cancel.mp3,0.7,zzfx
+Sound,menu_cancel,foley/terminal_cancel.mp3,0.7,zzfx
 Sound,menu_choice_open,foley/menu_choice_open2.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
 Sound,menu_choice_close,foley/menu_choice_close.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
 Sound,menu_sparkle,foley/menu_sparkle2.mp3,0.8,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
@@ -35,12 +35,14 @@ Sound,battle_arrow_hit,foley/battle_arrow_hit.mp3,jsfxr
 Sound,battle_robot_charge_up,foley/robot_charge_up.mp3,0.9,jsfxr
 Sound,battle_interrupt_channel,foley/battle_interrupt_channel.mp3,0.7,zzfx
 Sound,battle_cast,foley/battle_cast.mp3,0.8,zzfx
-Sound,battle_fire_explosion1,foley/battle_fire_explosion1.mp3,0.9,zzfx
+Sound,battle_fire_explosion1,foley/battle_fire_explosion1_1.mp3,1,zzfx
 Sound,battle_evasion,foley/evasion3.mp3,1,fl studio
+Sound,battle_ready,foley/battle_ready2.mp3,0.7,zzfx
+Sound,battle_staggered1,foley/battle_staggered1_2.mp3,0.9,zzfx
 Sound,dead,foley/dead3.mp3,1,jsfxr
-Sound,phone_ring,foley/phone_ring.mp3,1,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
-Sound,phone_beep,foley/phone_beep.mp3,1,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
-Sound,phone_beep_off,foley/phone_beep_off.mp3,1,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
+Sound,phone_ring,foley/phone_ring.mp3,0.9,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
+Sound,phone_beep,foley/phone_beep.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
+Sound,phone_beep_off,foley/phone_beep_off.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
 Sound,vr_portal_activate,foley/vr_portal_activate.mp3,0.7,zzfx
 Sound,vr_portal_deactivate,foley/vr_portal_deactivate.mp3,0.7,zzfx
 Sound,vr_portal_beep,foley/vr_portal_beep.mp3,0.8,zzfx
@@ -60,6 +62,7 @@ Sound,robot_channel_start,foley/robot_channel_start.mp3,0.7,zzfx
 Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
 Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
 Sound,use_item,foley/use_item.mp3,0.7,zzfx
+Sound,rez,foley/rez.mp3,1.0,fl studio
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3

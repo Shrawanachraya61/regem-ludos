@@ -48,6 +48,14 @@
     <div>
       <canvas id=controls width=1000 height=1000></canvas>
       <div class=touch></div>
+      <div id=page-loading>
+        <div>Loading...</div>
+        <img src=res/img/flower.svg alt=loading id=page-loading-icon>
+        <div id=page-loading-progress></div>
+      </div>
+      <div id=page-press-any-key style=display:none>
+        <div>Press Any Key</div>
+      </div>
     </div>
   </body>
   <footer>
@@ -64,6 +72,10 @@
         },
       });
       requirejs(['main'], a => {
+        const loading = document.getElementById('page-loading');
+        if (loading) {
+          loading.style.color="#42CAFD";
+        }
         a.main();
       });
     </script>
