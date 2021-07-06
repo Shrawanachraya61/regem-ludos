@@ -44,6 +44,7 @@ export const init = () => {
     facing: Facing.DOWN,
     animationState: AnimationState.IDLE,
     weaponEquipTypes: [WeaponType.SWORD],
+    collisionSize: 8,
     speed: 1.5,
   };
 

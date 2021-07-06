@@ -1,6 +1,7 @@
 import { OverworldTemplate } from 'model/overworld';
 import { Room, createRoom, roomCopy } from 'model/room';
 import { colors } from 'view/style';
+import { TransformEase, Transform, Timer } from 'model/utility';
 
 import * as battle1Json from 'map/battle1.json';
 import * as battleTut1 from 'map/battle-tut1.json';
@@ -38,6 +39,9 @@ const overworldToRoom = {
   floor2Cafeteria,
   floor2North,
   floor2PrepRoom,
+
+  battle1: battle1Json,
+  battleTut1,
 };
 
 const loadRoom = async (roomName: string, json: any) => {
@@ -47,8 +51,8 @@ const loadRoom = async (roomName: string, json: any) => {
 export const loadRooms = async (): Promise<void> => {
   console.log('loading rooms');
 
-  await loadRoom('battle1', battle1Json);
-  await loadRoom('battleTut1', battleTut1);
+  // await loadRoom('battle1', battle1Json);
+  // await loadRoom('battleTut1', battleTut1);
 
   await loadRoom('test', testJson);
   await loadRoom('test2', test2Json);
@@ -95,31 +99,68 @@ export const getIfExists = (key: string): OverworldTemplate | null => {
 export const init = async () => {
   await loadRooms();
 
-  exp.TEST = {
-    roomName: 'test',
-    backgroundColor: 'black',
+  const STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM = new Transform(
+    [0, 0, 0],
+    [-684, 0, 0],
+    30000,
+    TransformEase.LINEAR
+  );
+
+  const setTransformTiming = (t: Transform, ms: number) => {
+    const newT = Transform.copy(t);
+    t.timer = new Timer(ms);
+    t.timer.start();
+    return newT;
   };
-  exp.TEST2 = {
+
+  exp.test = {
+    roomName: 'test',
+    backgroundColor: colors.GREY,
+  };
+  exp.test2 = {
     roomName: 'test2',
     loadTriggerName: 'floor1',
-    backgroundColor: 'black',
+    backgroundColor: colors.GREY,
   };
 
   for (const roomName in overworldToRoom) {
     exp[roomName] = {
       roomName,
       loadTriggerName: roomName,
-      backgroundColor: 'black',
+      backgroundColor: colors.GREY,
     };
   }
 
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
 
-  exp.floor1Atrium.music = 'music_atrium';
+  Object.assign(exp.floor1Atrium, {
+    backgroundColor: colors.BLACK,
+    music: 'music_atrium',
+  });
 
-  exp.floor1TutVR1.backgroundColor = colors.DARKBLUE;
-  exp.floor1TutVR2.backgroundColor = colors.DARKBLUE;
-  exp.floor1TutVR3.backgroundColor = colors.DARKBLUE;
-  exp.floor1TutVR3West.backgroundColor = colors.DARKBLUE;
-  exp.floor1TutVR3West2.backgroundColor = colors.DARKBLUE;
+  Object.assign(exp.floor1TutVR1, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
+  Object.assign(exp.floor1TutVR2, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
+  Object.assign(exp.floor1TutVR3, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
+  Object.assign(exp.floor1TutVR3West, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
+  Object.assign(exp.floor1TutVR3West2, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
 };

@@ -26,6 +26,7 @@ import MenuJournal from './MenuJournal';
 import MenuEquipment from './MenuEquipment';
 import MenuParty from './MenuPositions';
 import CharacterStatus from '../CharacterStatus';
+import MenuLoad from './MenuLoad';
 
 const Root = style('div', {
   position: 'absolute',
@@ -83,7 +84,7 @@ const SaveInfoArea = style('div', {
   display: 'flex',
   justifyContent: 'flex-end',
   flexDirection: 'column',
-  height: '284px',
+  height: '247px',
   boxSizing: 'border-box',
 });
 const CurrencyInfoArea = style('div', {
@@ -112,6 +113,7 @@ enum MenuCommandItem {
   STATUS,
   PARTY,
   JOURNAL,
+  LOAD,
   QUIT,
 }
 
@@ -232,6 +234,26 @@ const MenuSection = () => {
               onClose={() => {
                 playSoundName('menu_choice_close');
                 setOuterMenuActive(true);
+              }}
+            />
+          </MenuBox>
+        );
+      }
+      case MenuCommandItem.LOAD: {
+        return (
+          <MenuBox
+            title="Load"
+            onClose={() => {
+              setOuterMenuActive(true);
+            }}
+            maxWidth={cardSizes[CardSize.XLARGE].width}
+            closeButtonLabel={'Back ' + getCancelKeyLabel()}
+            disableKeyboardShortcut={true}
+          >
+            <MenuLoad
+              onClose={() => {
+                // playSoundName('menu_choice_close');
+                handleCloseClick();
               }}
             />
           </MenuBox>
@@ -366,6 +388,19 @@ const MenuSection = () => {
                     </MenuLabel>
                   ),
                   value: MenuCommandItem.PARTY,
+                },
+                {
+                  label: (
+                    <MenuLabel
+                      active={
+                        !outerMenuActive &&
+                        selectedSection === MenuCommandItem.LOAD
+                      }
+                    >
+                      Load
+                    </MenuLabel>
+                  ),
+                  value: MenuCommandItem.LOAD,
                 },
                 {
                   label: (

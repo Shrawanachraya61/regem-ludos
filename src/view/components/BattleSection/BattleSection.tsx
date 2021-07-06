@@ -43,6 +43,7 @@ import { isCancelKey, isPauseKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
 import BattleItems from './BattleItems';
 import BattleTurnIndicator from './BattleTurnIndicator';
+import { fleeBattle } from 'controller/battle-management';
 
 const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
 
@@ -435,6 +436,9 @@ const BattleSection = (props: IBattleSectionProps) => {
                     battle.itemTimer.getPctComplete() < 1
                   ) {
                     playSoundName('menu_cancel');
+                  } else if (val === 'flee') {
+                    unpause();
+                    fleeBattle(battle);
                   } else {
                     setMenuState(val);
                   }

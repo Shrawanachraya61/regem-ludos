@@ -1,11 +1,29 @@
 import {
+  getCurrentOverworld,
   getCurrentPlayer,
   getCurrentScene,
+  getDurationPlayed,
+  getTimeLoaded,
   getVolume,
+  setDurationPlayed,
+  setTimeLoaded,
   setVolume,
 } from 'model/generics';
 import { SoundType } from 'model/sound';
 import { randomId } from 'utils';
+import { getIfExists as getItem, Item } from 'db/items';
+import { getIfExists as getCharacter } from 'db/characters';
+import { getIfExists as getOverworld } from 'db/overworlds';
+import {
+  Character,
+  characterCreateFromTemplate,
+  characterEquipItem,
+  characterGetPos,
+  characterSetFacing,
+  Facing,
+} from 'model/character';
+import { BattleStats } from 'model/battle';
+import { initiateOverworld } from './overworld-management';
 
 const APP_LS_PREFIX = 'regem_ludos_';
 const APP_SETTINGS_KEY = 'settings';
@@ -23,6 +41,9 @@ export interface ISave {
   timestampSaved: Date;
   timestampLoaded: Date;
   durationPlayed: number;
+  overworld: {
+    name: string;
+  };
   scene: {
     storage: Record<string, string | boolean | number>;
     storageOnce: Record<string, string | boolean>;
@@ -33,11 +54,30 @@ export interface ISave {
   player: {
     tokens: number;
     tickets: number;
-    // leader;
-    // backpack: [];
-    // party: [];
-    // battlePositions: [];
-    // partyStorage: [];
+    backpack: string[];
+    leader: number;
+    party: number[];
+    battlePositions: number[];
+    partyStorage: ICharacterSave[];
+  };
+}
+
+interface ICharacterSave {
+  stats: BattleStats;
+  hp: number;
+  resv: number;
+  x: number;
+  y: number;
+  z: number;
+  name: string;
+  facing: Facing;
+  experience: number;
+  experienceCurrency: number;
+  equipment: {
+    weapon: number;
+    accessory1: number;
+    accessory2: number;
+    armor: number;
   };
 }
 
@@ -121,6 +161,9 @@ export const loadSaveListFromLS = (): ISave[] => {
           timestampSaved: new Date(save.timestampSaved),
           timestampLoaded: new Date(save.timestampLoaded),
           durationPlayed: save.durationPlayed,
+          overworld: {
+            name: save.overworld.name ?? '',
+          },
           scene: {
             storage: save.scene.storage ?? {},
             storageOnce: save.scene.storageOnce ?? {},
@@ -131,11 +174,11 @@ export const loadSaveListFromLS = (): ISave[] => {
           player: {
             tokens: save.player.tokens ?? 0,
             tickets: save.player.tickets ?? 0,
-            // leader;
-            // backpack: [];
-            // party: [];
-            // battlePositions: [];
-            // partyStorage: [];
+            backpack: save.player.backpack ?? [],
+            leader: save.player.leader ?? 0,
+            party: save.player.party ?? [],
+            battlePositions: save.player.battlePositions ?? [],
+            partyStorage: save.player.partyStorage ?? [],
           },
         };
       }
@@ -170,8 +213,12 @@ export const createSave = (params: {
   const save: ISave = {
     id: params.saveId,
     timestampSaved: new Date(),
-    timestampLoaded: new Date(),
-    durationPlayed: params.durationPlayed,
+    timestampLoaded: params.lastTimestampLoaded,
+    durationPlayed:
+      params.durationPlayed + +new Date() - +params.lastTimestampLoaded,
+    overworld: {
+      name: getCurrentOverworld().name,
+    },
     scene: {
       storage: scene.storage ?? {},
       storageOnce: scene.storageOnce ?? {},
@@ -182,11 +229,15 @@ export const createSave = (params: {
     player: {
       tokens: player.tokens ?? 0,
       tickets: player.tickets ?? 0,
-      // leader;
-      // backpack: [];
-      // party: [];
-      // battlePositions: [];
-      // partyStorage: [];
+      backpack: player.backpack.map(item => item.name ?? ''),
+      leader: player.partyStorage.indexOf(player.leader),
+      partyStorage: player.partyStorage.map(ch =>
+        characterToICharacterSave(ch, player.backpack)
+      ),
+      party: player.party.map(ch => player.partyStorage.indexOf(ch)),
+      battlePositions: player.battlePositions.map(ch =>
+        player.partyStorage.indexOf(ch as Character)
+      ),
     },
   };
 
@@ -217,16 +268,18 @@ export const saveGame = (saveIndex: number) => {
   if (saveIndex >= saveList.length) {
     const save = createSave({
       saveId: randomId(),
-      durationPlayed: 0,
-      lastTimestampLoaded: new Date(),
+      durationPlayed: getDurationPlayed(),
+      lastTimestampLoaded: new Date(getTimeLoaded()),
     });
+    console.log('CREATE SAVE', save);
     saveList.push(save);
   } else {
     const oldSave = saveList[saveIndex];
+    console.log('CREATE SAVE2', oldSave);
     const save = createSave({
-      saveId: randomId(),
-      durationPlayed: oldSave.durationPlayed,
-      lastTimestampLoaded: new Date(),
+      saveId: oldSave.id,
+      durationPlayed: getDurationPlayed(),
+      lastTimestampLoaded: new Date(getTimeLoaded()),
     });
     saveList[saveIndex] = save;
   }
@@ -248,6 +301,160 @@ export const loadGame = (save: ISave) => {
   scene.storageEncounters = {
     ...save.scene.storageEncounters,
   };
+  scene.storageTreasure = {
+    ...save.scene.storageTreasure,
+  };
   player.tokens = save.player.tokens;
   player.tickets = save.player.tickets;
+  player.backpack = save.player.backpack
+    .map(itemName => {
+      const item = getItem(itemName);
+      if (item) {
+        return item;
+      } else {
+        console.error(
+          'Failed to load item from save: ',
+          itemName,
+          'item is not in db.'
+        );
+        return null;
+      }
+    })
+    .filter(item => !!item) as Item[];
+  player.partyStorage = save.player.partyStorage.map(chSave =>
+    iCharacterSaveToCharacter(chSave, player.backpack)
+  );
+  player.party = save.player.party.map(i => player.partyStorage[i]);
+  player.battlePositions = save.player.battlePositions.map(
+    i => player.partyStorage[i]
+  );
+  player.leader = player.partyStorage[save.player.leader];
+
+  const pos = characterGetPos(player.leader);
+
+  const overworldName = save.overworld.name;
+  const overworldTemplate = getOverworld(overworldName);
+  if (overworldTemplate) {
+    initiateOverworld(player, overworldTemplate);
+  } else {
+    throw new Error(
+      `Could not load save, overworld template not found in db: ${overworldName}`
+    );
+  }
+
+  player.leader.x = pos[0];
+  player.leader.y = pos[1];
+  player.leader.z = pos[2];
+
+  setTimeLoaded(+new Date());
+  setDurationPlayed(save.durationPlayed);
+};
+
+const characterToICharacterSave = (
+  ch: Character,
+  backpack: Item[]
+): ICharacterSave => {
+  return {
+    stats: {
+      POW: ch.stats.POW,
+      ACC: ch.stats.ACC,
+      FOR: ch.stats.FOR,
+      CON: ch.stats.CON,
+      RES: ch.stats.RES,
+      SPD: ch.stats.SPD,
+      EVA: ch.stats.EVA,
+      STAGGER: ch.stats.STAGGER,
+      HP: ch.stats.HP,
+      RESV: ch.stats.RESV,
+    },
+    hp: ch.hp,
+    resv: ch.resv,
+    x: ch.x,
+    y: ch.y,
+    z: ch.z,
+    name: ch.name,
+    facing: ch.facing,
+    experience: ch.experience,
+    experienceCurrency: ch.experienceCurrency,
+    equipment: {
+      weapon: backpack.indexOf(ch.equipment.weapon as Item),
+      accessory1: backpack.indexOf(ch.equipment.accessory1 as Item),
+      accessory2: backpack.indexOf(ch.equipment.accessory2 as Item),
+      armor: backpack.indexOf(ch.equipment.armor as Item),
+    },
+  };
+};
+
+const iCharacterSaveToCharacter = (
+  chSave: ICharacterSave,
+  backpack: Item[]
+): Character => {
+  const chTemplate = getCharacter(chSave.name);
+  if (!chTemplate) {
+    throw new Error(
+      'Cannot transform saved character to character: "' +
+        chSave.name +
+        '" does not exist in db.'
+    );
+  }
+
+  const ch = characterCreateFromTemplate(chTemplate);
+
+  ch.stats = chSave.stats;
+  ch.hp = chSave.hp;
+  ch.resv = chSave.resv;
+  ch.x = chSave.x;
+  ch.y = chSave.y;
+  ch.z = chSave.z;
+  ch.experience = chSave.experience;
+  ch.experienceCurrency = chSave.experienceCurrency;
+
+  if (chSave.equipment.weapon >= 0) {
+    const ind = chSave.equipment.weapon;
+    const item = backpack[ind];
+    if (item) {
+      characterEquipItem(ch, item);
+    } else {
+      console.error(
+        `Failed to equip weapon for ${ch.name} weaponInd=${ind}, index out of bounds`
+      );
+    }
+  }
+  if (chSave.equipment.accessory1 >= 0) {
+    const ind = chSave.equipment.accessory1;
+    const item = backpack[ind];
+    if (item) {
+      characterEquipItem(ch, item, 0);
+    } else {
+      console.error(
+        `Failed to equip accessory1 for ${ch.name} accessory1=${ind}, index out of bounds`
+      );
+    }
+  }
+  if (chSave.equipment.accessory2 >= 0) {
+    const ind = chSave.equipment.accessory2;
+    const item = backpack[ind];
+    if (item) {
+      characterEquipItem(ch, item, 1);
+    } else {
+      console.error(
+        `Failed to equip accessory2 for ${ch.name} accessory2=${ind}, index out of bounds`
+      );
+    }
+  }
+  if (chSave.equipment.armor >= 0) {
+    const ind = chSave.equipment.armor;
+    const item = backpack[ind];
+    if (item) {
+      characterEquipItem(ch, item);
+    } else {
+      console.error(
+        `Failed to equip armor for ${ch.name} armor=${ind}, index out of bounds`
+      );
+    }
+  }
+
+  characterSetFacing(ch, chSave.facing);
+
+  return ch;
 };

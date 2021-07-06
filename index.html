@@ -58,15 +58,17 @@
       <div class="touch"></div>
       <div id="page-loading">
         <div>Loading...</div>
-        <img src="res/img/flower.svg" alt="loading" id="page-loading-icon"></img>
+        <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
         <div id="page-loading-progress"></div>
       </div>
-      <div id="page-press-any-key" style="display:none">
+      <div id="page-press-any-key" style="display: none">
         <div>Press Any Key</div>
       </div>
     </div>
   </body>
   <footer>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script> -->
+    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
     <script src="almond.js"></script>
     <script src="main.js"></script>
     <script>
@@ -82,7 +84,7 @@
       requirejs(['main'], a => {
         const loading = document.getElementById('page-loading');
         if (loading) {
-          loading.style.color="#42CAFD";
+          loading.style.color = '#42CAFD';
         }
         a.main();
       });

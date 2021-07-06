@@ -107,8 +107,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":452,
-                 "y":384
+                 "x":160,
+                 "y":536
                 }, 
                 {
                  "height":64,
@@ -384,6 +384,18 @@
                  "width":68,
                  "x":56,
                  "y":480
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":68,
+                 "name":"Rho",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":460,
+                 "y":108
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -392,10 +404,10 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":68,
+ "nextobjectid":69,
  "orientation":"isometric",
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.0",
  "tileheight":16,
  "tilesets":[
         {
@@ -452,6 +464,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":40
 }

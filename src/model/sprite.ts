@@ -1,6 +1,8 @@
 import { drawSprite } from 'view/draw';
 import { createCanvas } from 'model/canvas';
 import { TILE_WIDTH, TILE_HEIGHT } from 'model/room';
+import { getZipImageData } from 'controller/res-loader';
+import { shouldUseZip } from './generics';
 
 export type Sprite = [
   HTMLCanvasElement | HTMLImageElement,
@@ -27,16 +29,25 @@ export const createSprite = (
 export const loadImage = async (
   fileName: string
 ): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve(img);
-    };
-    img.onerror = () => {
-      reject('Failed to load image: ' + fileName);
-    };
-    img.src = 'res/' + fileName;
-  });
+  if (shouldUseZip() && !fileName.includes('/')) {
+    const img = getZipImageData(fileName);
+    if (img) {
+      return img;
+    } else {
+      throw new Error('Failed to load ZIP image: ' + fileName);
+    }
+  } else {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve(img);
+      };
+      img.onerror = () => {
+        reject('Failed to load image: ' + fileName);
+      };
+      img.src = 'res/' + fileName;
+    });
+  }
 };
 
 export enum SpriteModification {

@@ -3,7 +3,7 @@ import { h, render } from 'preact';
 import { useEffect, useState, useReducer } from 'preact/hooks';
 import { colors, style } from 'view/style';
 
-import { getIsPaused } from 'model/generics';
+import { getCurrentPlayer, getIsPaused } from 'model/generics';
 import { AppState, AppStateInitial, AppSection } from 'model/store';
 import { appReducer } from 'controller/ui-actions';
 import { getDrawScale, SCREEN_WIDTH, SCREEN_HEIGHT } from 'model/canvas';
@@ -22,6 +22,9 @@ import ModalSection from './components/ModalSection';
 import SaveSection from './components/SaveSection';
 import MenuSection from './components/MenuSection';
 import LevelUpSection from './components/LevelUpSection';
+
+import { initiateBattle } from 'controller/battle-management';
+import { get as getBattle } from 'db/encounters';
 
 interface UIInterface {
   appState: AppState;
@@ -104,6 +107,12 @@ const App = () => {
         return <SaveSection key={key} />;
       }
       case AppSection.Menu: {
+        // const battle = initiateBattle(
+        //   getCurrentPlayer(),
+        //   getBattle('ENCOUNTER_TUT_DUNGEON1')
+        // );
+        // battlePauseTimers(battle);
+        // return <BattleConclusion key={key} isVictory={true} />;
         return <MenuSection key={key} />;
       }
       case AppSection.LevelUp: {

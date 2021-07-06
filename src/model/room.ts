@@ -33,15 +33,22 @@ import { createCanvas } from 'model/canvas';
 import { sceneIsEncounterDefeated } from './scene';
 import { getCurrentOverworld, getCurrentScene } from './generics';
 import { getIfExists as getItem, Item } from 'db/items';
+import { Transform, TransformEase } from './utility';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
 export const TILE_WIDTH_WORLD = 16;
 export const TILE_HEIGHT_WORLD = 16;
 
-// given an x, y in tile coordinates, return the isometric pixel coordinates
+// given an x, y in tile coordinates, return the world x and y coordinates
 export const tilePosToWorldPos = (x: number, y: number): Point => {
   return [(x * TILE_WIDTH) / 2, (y * TILE_HEIGHT) / 2];
+};
+
+export const getAllTagMarkers = (room: Room, name: string) => {
+  return room.taggedMarkers.filter((marker: Marker) => {
+    return marker.name === name;
+  });
 };
 
 const isWallProp = (sprite: string) => {
@@ -82,6 +89,8 @@ export interface Room {
   taggedMarkers: Marker[];
   triggerActivators: TriggerActivator[];
   visible: boolean;
+  bgImage: string;
+  bgTransform: Transform;
 }
 
 export const roomCopy = (room: Room) => {
@@ -269,6 +278,13 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     floor: createSprite(floorCanvas),
     defaultFloorSprite: 'floors_1', //TODO make this a room param
     visible: true,
+    bgImage: '',
+    bgTransform: new Transform(
+      [0, 0, 0],
+      [0, 0, 0],
+      1000,
+      TransformEase.LINEAR
+    ),
   };
 
   console.log(
@@ -809,8 +825,43 @@ export const roomGetDistanceToNearestWallInFacingDirection = (
   return minDistance;
 };
 
-export const getAllTagMarkers = (room: Room, name: string) => {
-  return room.taggedMarkers.filter((marker: Marker) => {
-    return marker.name === name;
-  });
+export const roomDoCharactersOccupySameTile = (
+  room: Room,
+  ch1: Character,
+  ch2: Character
+): boolean => {
+  const tileBelow1 = roomGetTileBelow(room, [ch1.x, ch1.y]);
+  const tileBelow2 = roomGetTileBelow(room, [ch2.x, ch2.y]);
+
+  if (tileBelow1 && tileBelow2) {
+    if (tileBelow1 === tileBelow2) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const roomGetEmptyAdjacentTile = (room: Room, ch: Character) => {
+  const adjacentTiles = [
+    roomGetTileBelow(room, [ch.x + TILE_WIDTH_WORLD, ch.y]),
+    roomGetTileBelow(room, [ch.x, ch.y + TILE_HEIGHT_WORLD]),
+    roomGetTileBelow(room, [ch.x - TILE_WIDTH_WORLD, ch.y]),
+    roomGetTileBelow(room, [ch.x, ch.y - TILE_HEIGHT_WORLD]),
+  ];
+
+  for (let i = 0; i < adjacentTiles.length; i++) {
+    const tile = adjacentTiles[i];
+    if (tile && !tile.isWall && !tile.isProp) {
+      const tileDown = roomGetTileAt(room, tile.x, tile.y + 1);
+      const tileRight = roomGetTileAt(room, tile.x + 1, tile.y);
+      if (tileDown?.isWall) {
+        continue;
+      }
+      if (tileRight?.isWall) {
+        continue;
+      }
+      return tile;
+    }
+  }
+  return null;
 };

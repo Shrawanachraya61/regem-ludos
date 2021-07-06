@@ -61,7 +61,7 @@ import {
   characterGetAnimation,
 } from 'model/character';
 import { roomAddParticle, roomAddCharacter, Room } from 'model/room';
-import { getRoom } from 'db/overworlds';
+import { getRoom, get as getRoomTemplate } from 'db/overworlds';
 import {
   setCurrentRoom,
   getCurrentRoom,
@@ -117,6 +117,7 @@ import { createBattleTransitionParticleSystem } from 'model/particle-system';
 import { getImageDataScreenshot } from 'view/draw';
 import { fadeIn, fadeOut } from './scene-commands';
 import {
+  Timer,
   Transform,
   TransformEase,
   transformOffsetJumpFar,
@@ -240,6 +241,20 @@ export const initiateBattle = (
 ): Battle => {
   const room = getRoom(template.roomName);
   room.characters = [];
+
+  const roomTemplate = getRoomTemplate(template.roomName);
+  room.bgImage = roomTemplate.backgroundImage ?? '';
+  if (roomTemplate.backgroundTransform) {
+    room.bgTransform = Transform.copy(roomTemplate.backgroundTransform);
+  }
+  const bgTransform = room.bgTransform;
+  const restartBgTransform = () => {
+    bgTransform.timer = new Timer(bgTransform.timer.duration);
+    bgTransform.timer.awaits.push(restartBgTransform);
+    bgTransform.timer.start();
+  };
+  bgTransform.timer.awaits.push(restartBgTransform);
+  bgTransform.timer.start();
 
   const enemies = template.enemies.map((t: BattleTemplateEnemy) => {
     const ch = characterCreateFromTemplate(t.chTemplate);
@@ -1206,6 +1221,62 @@ const checkBattleCompletion = async (battle: Battle) => {
     console.log('DEFEAT!');
     showSection(AppSection.BattleDefeated, true);
   }
+};
+
+export const fleeBattle = (battle: Battle) => {
+  if (battle.template?.disableFlee) {
+    console.error('Cannot flee a battle which has flee disabled.');
+    return;
+  }
+
+  hideSections();
+  battle.isCompleted = true;
+  battle.transitioning = true;
+  popKeyHandler(battleKeyHandler);
+  battlePauseActionTimers(battle);
+  stopCurrentMusic();
+
+  const jumpTimeMs = 500;
+  const jumpTimeMsPostLag = 500;
+  const jumpTimeMsStaggered = 250;
+  battle.allies
+    .filter(bCh => bCh.ch.hp > 0)
+    .forEach((bCh, i) => {
+      const startPoint = characterGetPos(bCh.ch);
+      const endPoint = [
+        startPoint[0] - 16 * 6,
+        startPoint[1] + 16 * 6,
+        0,
+      ] as Point3d;
+      const transform = new Transform(
+        startPoint,
+        endPoint,
+        jumpTimeMs,
+        TransformEase.LINEAR,
+        transformOffsetJumpFar
+      );
+      characterSetTransform(bCh.ch, transform);
+      transform.timer.pause();
+
+      timeoutPromise(500 + i * jumpTimeMsStaggered).then(() => {
+        if (i === 0) {
+          playSoundName('battle_jump');
+        }
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_JUMP);
+        bCh.ch.transform?.timer.unpause();
+      });
+    });
+
+  timeoutPromise(
+    jumpTimeMs +
+      (500 + battle.allies.length * jumpTimeMsStaggered) +
+      jumpTimeMsPostLag
+  ).then(async () => {
+    battle.isStarted = true;
+    battle.isPaused = false;
+    battle.transitioning = false;
+    battleInvokeEvent(battle, BattleEvent.onCompletion, battle);
+  });
 };
 
 export const updateBattle = (battle: Battle): void => {

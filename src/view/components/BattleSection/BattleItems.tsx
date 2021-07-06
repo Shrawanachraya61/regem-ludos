@@ -14,6 +14,7 @@ import { getCancelKeyLabel } from 'controller/events';
 import { battleResetItemTimer } from 'model/battle';
 import { getCurrentBattle } from 'model/generics';
 import { renderUi } from 'view/ui';
+import { sortItems } from 'utils';
 
 const MAX_HEIGHT = '628px';
 
@@ -49,9 +50,11 @@ const BattleItems = (props: IBattleItemsProps) => {
   const [menuOpen, setMenuOpen] = useState(true);
 
   const backpack = props.player.backpack.sort();
-  const filteredBackpack = backpack.filter(item => {
-    return item.type === ItemType.USABLE;
-  });
+  const filteredBackpack = backpack
+    .filter(item => {
+      return item.type === ItemType.USABLE;
+    })
+    .sort(sortItems);
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const selectedItem = filteredBackpack[selectedItemIndex];

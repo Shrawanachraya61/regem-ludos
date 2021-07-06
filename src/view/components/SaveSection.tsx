@@ -29,6 +29,7 @@ import { getCurrentScene } from 'model/generics';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { playSound } from 'controller/scene-commands';
+import SaveGameListItem from 'view/components/SaveGameListItem';
 
 const MAX_SAVES = 4;
 
@@ -57,41 +58,12 @@ const ConfirmButtonArea = style('div', {
   padding: '8px',
 });
 
-const SaveFile = style('div', (props: { color?: string; padding?: string }) => {
+const ConfirmButton = style('div', () => {
   return {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '64px',
-    background: props.color ?? 'unset',
-    padding: props.padding ?? 'unset',
-    boxSizing: 'border-box',
-    border: props.color ? `2px solid ${colors.DARKGREEN}` : 'unset',
-  };
-});
-
-const SaveFileMain = style('div', () => {
-  return {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    '& > div': {
-      marginRight: '4px',
-    },
-  };
-});
-
-const PortraitContainer = style('div', () => {
-  return {
-    background: colors.DARKGREY,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRight: '2px solid ' + colors.BLACK,
-    width: '64',
-    height: '64',
-    cursor: 'pointer',
-    overflow: 'hidden',
+    background: colors.DARKGREEN,
+    border: '1px solid ' + colors.WHITE,
+    borderRadius: '26px',
+    padding: '4px',
   };
 });
 
@@ -168,7 +140,7 @@ const SaveSection = () => {
 
   const handleCloseClick = () => {
     const onClose = getUiInterface().appState.save.onClose;
-    playSoundName('menu_choice_close');
+    playSoundName('menu_select');
     onClose();
   };
 
@@ -192,31 +164,11 @@ const SaveSection = () => {
                 .map((save: ISave, i: number) => {
                   return {
                     label: (
-                      <SaveFile>
-                        <SaveFileMain>
-                          <PortraitContainer>
-                            <StaticAnimDiv
-                              style={{ width: '128' }}
-                              animName={'ada_portrait'}
-                            ></StaticAnimDiv>
-                          </PortraitContainer>
-                          Duration: {save.durationPlayed}
-                        </SaveFileMain>
-                        <Button
-                          style={{
-                            minWidth: 'unset',
-                            fontSize: '12px',
-                          }}
-                          type={ButtonType.CANCEL}
-                          onClick={ev => {
-                            ev.stopPropagation();
-                            ev.preventDefault();
-                            handleDeleteClick(i);
-                          }}
-                        >
-                          Delete {getAuxKeyLabel()}
-                        </Button>
-                      </SaveFile>
+                      <SaveGameListItem
+                        save={save}
+                        i={i}
+                        handleDeleteClick={i => handleDeleteClick(i)}
+                      />
                     ),
                     value: i,
                   };
@@ -226,9 +178,9 @@ const SaveSection = () => {
                     ? [
                         {
                           label: (
-                            <SaveFile color={colors.DARKBLUE} padding={'8px'}>
-                              + New Save
-                            </SaveFile>
+                            // <SaveFile color={colors.DARKBLUE} padding={'8px'}>
+                            <ConfirmButton>+ New Save</ConfirmButton>
+                            // </SaveFile>
                           ),
                           value: saves.length,
                         },

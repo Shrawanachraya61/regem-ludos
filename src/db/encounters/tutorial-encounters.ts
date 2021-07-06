@@ -14,12 +14,15 @@ import { CharacterTemplate } from 'model/character';
 import { callScriptDuringBattle } from 'controller/battle-management';
 import { callScriptDuringOverworld } from 'controller/overworld-management';
 import { getCurrentBattle } from 'model/generics';
+import { get as getItem } from 'db/items';
 
 import { varyStats } from 'utils';
 
 export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT1 = {
     roomName: 'battleTut1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_EASY'),
@@ -43,6 +46,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT1_5 = {
     roomName: 'battleTut1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_STAGGERABLE'),
@@ -69,6 +74,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT2 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
@@ -97,6 +104,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT3 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
@@ -128,6 +137,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT4 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
@@ -164,6 +175,11 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON1 = {
     roomName: 'battleTut1',
+    baseExperience: 5,
+    baseTokens: 1,
+    getDrops: () => {
+      return [getItem('FeeblePotion'), getItem('RezGem')];
+    },
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
@@ -180,6 +196,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON2 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
@@ -196,6 +214,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON3 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
@@ -217,6 +237,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON4 = {
     roomName: 'battleTut1',
+    baseExperience: 2,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
@@ -243,6 +265,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_BOSS = {
     roomName: 'battleTut1',
+    baseExperience: 10,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),

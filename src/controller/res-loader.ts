@@ -1,6 +1,12 @@
 import { Animation, createAnimationBuilder } from 'model/animation';
 import { loadImageAsSpritesheet, SpriteModification } from 'model/sprite';
 import { loadSound, SoundType } from 'model/sound';
+import { shouldUseZip } from 'model/generics';
+
+const JSZip = (window as any).JSZip;
+
+const zipImages = {};
+const zipAudio = {};
 
 class AssetLoader {
   async processAssetFile(text: string): Promise<void> {
@@ -154,10 +160,87 @@ export const loadRes = async (loadingTick?: () => void) => {
   if (loadingTick) {
     loadingTick();
   }
+
+  if (shouldUseZip()) {
+    const zips = await Promise.all([
+      fetchZipArchive('res/images.zip'),
+      fetchZipArchive('res/snd/foley/foley.zip'),
+    ]);
+    const imagesArchive = zips[0];
+    await processZipImagesArchiveJSZip(imagesArchive);
+    const soundsArchive = zips[1];
+    await processZipSoundArchiveJSZip(soundsArchive);
+  }
+
   const loader = new AssetLoader();
   return Promise.all([
     loader.loadAssets(text).then(loadingTick || function () {}),
     loader.loadAssets(foley).then(loadingTick || function () {}),
     loader.loadAssets(bg).then(loadingTick || function () {}),
   ]);
+};
+
+const processZipImagesArchiveJSZip = async imagesArchive => {
+  return Promise.all(
+    Object.keys(imagesArchive.files).map(async imageName => {
+      const zip = imagesArchive.files[imageName];
+      const blob = new Blob([await zip.async('arraybuffer')], {
+        type: 'image/png',
+      });
+      const imgData = URL.createObjectURL(blob);
+      const image = document.createElement('img');
+      image.src = imgData;
+      zipImages[imageName] = image;
+    })
+  ).catch(e => {
+    console.error('Failed to fetch images archive', e);
+  });
+};
+
+const processZipSoundArchiveJSZip = async soundsArchive => {
+  return Promise.all(
+    Object.keys(soundsArchive.files).map(async soundName => {
+      const zip = soundsArchive.files[soundName];
+      const blob = new Blob([await zip.async('arraybuffer')], {
+        type: 'audio/mpeg',
+      });
+      const soundData = URL.createObjectURL(blob);
+      const audio = new Audio(soundData);
+      audio.autoplay = false;
+      zipAudio[soundName] = audio;
+    })
+  ).catch(e => {
+    console.error('Failed to fetch sounds archive', e);
+  });
+};
+
+const fetchZipArchive = async (url: string) => {
+  const zip: any = await fetch(url)
+    .then(function (response) {
+      if (response.status === 200 || response.status === 0) {
+        return Promise.resolve(response.blob());
+      } else {
+        return Promise.reject(new Error(response.statusText));
+      }
+    })
+    .then(JSZip.loadAsync);
+  return zip;
+};
+
+export const getZipImageData = (imageName: string): HTMLImageElement | null => {
+  const imgData = zipImages[imageName];
+  if (imgData) {
+    return imgData;
+  } else {
+    return null;
+  }
+};
+
+export const getZipAudioData = (audioName: string): HTMLAudioElement | null => {
+  const audioData = zipAudio[audioName];
+  if (audioName) {
+    return audioData;
+  } else {
+    return null;
+  }
 };

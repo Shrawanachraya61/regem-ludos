@@ -239,6 +239,17 @@ export class Transform {
     this.timer.start();
   }
 
+  static copy(t: Transform): Transform {
+    const newT = new Transform(
+      [t.startX, t.startY, t.startZ],
+      [t.endX, t.endY, t.endZ],
+      t.timer.duration,
+      t.ease,
+      t.offsetFunc
+    );
+    return newT;
+  }
+
   start(): Point3d {
     return [this.startX, this.startY, this.endZ];
   }

@@ -9,6 +9,7 @@ interface IProgressBarProps {
   pct?: number;
   height: number;
   label: string;
+  transitionDuration?: number;
 }
 
 interface IProgressBarRenderProps extends IProgressBarProps {
@@ -58,6 +59,9 @@ const ProgressBar = (props: IProgressBarProps): h.JSX.Element => {
         backgroundColor={props.color}
         style={{
           transform: `scaleX(${props.pct ?? 0})`,
+          transition: props.transitionDuration
+            ? `transform ${props.transitionDuration}ms ease-out`
+            : 'unset',
         }}
       ></Inner>
       <Label>{props.label}</Label>

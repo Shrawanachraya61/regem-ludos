@@ -14,6 +14,8 @@ import {
   getCurrentScene,
   getCurrentPlayer,
   getCurrentRoom,
+  setUseZip,
+  setTimeLoaded,
 } from 'model/generics';
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
@@ -79,25 +81,29 @@ const loadingTick = () => {
 };
 
 export const main = async (): Promise<void> => {
+  setUseZip(true);
+  console.time('load');
+
   // Mount this first so that appInterface is MOST LIKELY set when loading the overworld,
   // which may depend on that being loaded because it calls the load trigger for a room
   // when it starts.
   // Still, it's loose.  This depends on the ui mounting fully in the time it takes
   // for the rest of the app to load.  This is probably fine, but is not definitive.
-  console.log('mount ui');
   mountUi();
 
   console.log('load rpgscript');
   initScene();
   const scene = getCurrentScene();
-  await loadRPGScript('quest', scene);
-  await loadRPGScript('test2', scene);
-  await loadRPGScript('test', scene);
-  await loadRPGScript('example', scene);
-  await loadRPGScript('utils', scene);
-  await loadRPGScript('floor1-atrium', scene);
-  await loadRPGScript('floor1-tut', scene);
-  await loadRPGScript('intro', scene);
+  await Promise.all([
+    loadRPGScript('quest', scene),
+    loadRPGScript('test2', scene),
+    loadRPGScript('test', scene),
+    loadRPGScript('example', scene),
+    loadRPGScript('utils', scene),
+    loadRPGScript('floor1-atrium', scene),
+    loadRPGScript('floor1-tut', scene),
+    loadRPGScript('intro', scene),
+  ]);
 
   loadingTick();
 
@@ -136,7 +142,7 @@ export const main = async (): Promise<void> => {
   const adaTemplate = getCharacter('Ada');
   const player = playerCreate(adaTemplate);
 
-  characterEquipItem(player.leader, getItem('TrainingSword'));
+  characterEquipItem(player.leader, player.backpack[0]);
 
   const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
   player.party.push(conscience);
@@ -145,16 +151,20 @@ export const main = async (): Promise<void> => {
   player.partyStorage.push(conscience);
   // player.partyStorage.push(conscience);
   // player.partyStorage.push(conscience);
+  // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
   player.leader.hp = 0;
 
-  characterEquipItem(conscience, getItem('TrainingBow'));
+  characterEquipItem(conscience, player.backpack[1]);
 
   const loading = document.getElementById('page-loading');
   if (loading) {
     loading.style.display = 'none';
   }
+
+  console.timeEnd('load');
+  setTimeLoaded(+new Date());
 
   await new Promise<void>(resolve => {
     const touchSomething = () => {
@@ -182,7 +192,7 @@ export const main = async (): Promise<void> => {
     const overworldTemplate = getOverworld(query.room);
     initiateOverworld(player, overworldTemplate);
   } else {
-    initiateOverworld(player, getOverworld('TEST2'));
+    initiateOverworld(player, getOverworld('test2'));
   }
   enableOverworldControl();
 

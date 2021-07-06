@@ -138,6 +138,9 @@ export const createTileRenderObject = (
   let sprite = tile.sprite;
   if (isFloor) {
     // if this is a phat tile that needs to be pushed down instead of up.
+    // the floor tileset has both "flat" floors and "cube" floors.  The cube floors
+    // need to be pushed down the py axis (world z axis) so that the top of the floor
+    // aligns correctly
     if (!isNaN(localTileIndex) && localTileIndex >= 56) {
       py += 16;
     }

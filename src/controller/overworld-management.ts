@@ -7,6 +7,8 @@ import {
   Room,
   TriggerActivator,
   roomRemoveProp,
+  roomDoCharactersOccupySameTile,
+  roomGetEmptyAdjacentTile,
 } from 'model/room';
 import {
   setCurrentRoom,
@@ -39,7 +41,7 @@ import {
   createOverworldFromTemplate,
   overworldShow,
 } from 'model/overworld';
-import { Point3d, timeoutPromise } from 'utils';
+import { Point3d, tileToWorldCoords, timeoutPromise } from 'utils';
 import {
   characterSetAnimationState,
   characterSetFacing,
@@ -51,6 +53,9 @@ import {
   characterCollidesWithRect,
   characterStopAi,
   characterStartAi,
+  characterSetWalkTarget,
+  characterSetWalkTargetAsync,
+  characterCollidesWithOther,
 } from 'model/character';
 import {
   invokeTrigger,
@@ -71,6 +76,7 @@ import {
   isAuxKey,
   isCancelKey,
   isConfirmKey,
+  isPauseKey,
   popKeyHandler,
   pushEmptyKeyHandler,
   pushKeyHandler,
@@ -85,6 +91,7 @@ import {
   sceneSetTreasureAcquired,
 } from 'model/scene';
 import { RenderObject } from 'model/render-object';
+import { Timer } from 'model/utility';
 
 export const initiateOverworld = (
   player: Player,
@@ -112,6 +119,15 @@ export const initiateOverworld = (
     setCurrentPlayer(player);
     setCurrentOverworld(overworld);
     setRenderBackgroundColor(template.backgroundColor);
+
+    const bgTransform = room.bgTransform;
+    const restartBgTransform = () => {
+      bgTransform.timer = new Timer(bgTransform.timer.duration);
+      bgTransform.timer.awaits.push(restartBgTransform);
+      bgTransform.timer.start();
+    };
+    bgTransform.timer.awaits.push(restartBgTransform);
+    bgTransform.timer.start();
 
     const scene = getCurrentScene();
     sceneSetCurrentOverworld(scene, template.roomName);
@@ -169,10 +185,31 @@ export const enableOverworldControl = () => {
   pushKeyHandler(overworldKeyHandler);
 };
 
+export const pauseOverworldAi = () => {
+  const overworld = getCurrentOverworld();
+  if (overworld) {
+    const room = overworld.room;
+    room.characters.forEach(ch => {
+      characterStopAi(ch);
+    });
+  }
+};
+
+export const resumeOverworldAi = () => {
+  const overworld = getCurrentOverworld();
+  if (overworld) {
+    const room = overworld.room;
+    room.characters.forEach(ch => {
+      characterStartAi(ch);
+    });
+  }
+};
+
 interface IOverworldScriptParams {
   disableKeys: boolean;
   hideUi: boolean;
   setPlayerIdle: boolean;
+  pause?: boolean;
 }
 
 export const callScriptDuringOverworld = async (
@@ -190,6 +227,9 @@ export const callScriptDuringOverworld = async (
   }
   if (params.setPlayerIdle) {
     characterSetAnimationState(getCurrentPlayer().leader, AnimationState.IDLE);
+  }
+  if (params.pause) {
+    pause();
   }
   await callScript(getCurrentScene(), scriptName, args);
   const possiblyDifferentOverworld = getCurrentOverworld();
@@ -321,6 +361,19 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
       );
       if (scriptCaller !== null) {
         characterStopAi(ch);
+
+        if (
+          roomDoCharactersOccupySameTile(room, ch, leader) ||
+          characterCollidesWithOther(ch, leader)
+        ) {
+          const tile = roomGetEmptyAdjacentTile(room, ch);
+          if (tile) {
+            await characterSetWalkTargetAsync(
+              leader,
+              tileToWorldCoords(tile.x, tile.y)
+            );
+          }
+        }
         await callTriggerScriptCaller(scriptCaller, {
           hideUi: true,
           disableKeys: true,
@@ -356,6 +409,7 @@ const checkAndCallTreasure = async (): Promise<boolean> => {
           disableKeys: true,
           hideUi: true,
           setPlayerIdle: true,
+          pause: false,
         },
         prop.itemName
       );
@@ -372,7 +426,7 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
   const isPaused = getIsPaused();
 
-  if (isCancelKey(ev.key)) {
+  if (isCancelKey(ev.key) || isPauseKey(ev.key)) {
     if (!isPaused) {
       pause();
       showMenu(() => {
@@ -394,6 +448,9 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       } else if (await checkAndCallTreasure()) {
         showSection(AppSection.Debug, true);
         return;
+      } else if (await checkAndCallTalkTrigger()) {
+        showSection(AppSection.Debug, true);
+        return;
       }
     }
     return;
@@ -411,14 +468,14 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   }
 
   switch (ev.key) {
-    case ' ': {
-      if (isPaused) {
-        unpause();
-      } else {
-        pause();
-      }
-      break;
-    }
+    // case ' ': {
+    //   if (isPaused) {
+    //     unpause();
+    //   } else {
+    //     pause();
+    //   }
+    //   break;
+    // }
     case 'b': {
       if (getKeyUpdateEnabled()) {
         console.log('DISABLE KEYS');
@@ -566,7 +623,7 @@ export const updateOverworld = (overworld: Overworld): void => {
       vy += 1;
     }
 
-    if (isMoving) {
+    if (isMoving || leader.walkTarget) {
       characterSetAnimationState(leader, AnimationState.WALK);
     } else {
       characterSetAnimationState(leader, AnimationState.IDLE);

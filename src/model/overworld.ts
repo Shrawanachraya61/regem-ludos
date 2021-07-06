@@ -7,7 +7,7 @@ import {
 } from 'model/character';
 import { Trigger } from 'lib/rpgscript';
 import { invokeTrigger } from 'controller/scene-management';
-import { Timer } from './utility';
+import { Timer, Transform, TransformEase } from './utility';
 import { getRoom } from 'db/overworlds';
 import { playMusic, stopMusic } from './sound';
 
@@ -32,6 +32,8 @@ export interface OverworldCharacter {
 export interface OverworldTemplate {
   roomName: string;
   backgroundColor: string;
+  backgroundImage?: string;
+  backgroundTransform?: Transform;
   loadTriggerName?: string;
   music?: string;
 }
@@ -46,6 +48,11 @@ export const createOverworldFromTemplate = (
       template.roomName
     );
     return null;
+  }
+
+  room.bgImage = template.backgroundImage ?? '';
+  if (template.backgroundTransform) {
+    room.bgTransform = Transform.copy(template.backgroundTransform);
   }
 
   const overworld: Overworld = {

@@ -190,3 +190,19 @@ let pauseRendering = false;
 export const enablePauseRendering = () => (pauseRendering = true);
 export const disablePauseRendering = () => (pauseRendering = false);
 export const isPauseRenderingEnabled = () => pauseRendering;
+
+export let useZip = true;
+export const shouldUseZip = () => useZip;
+export const setUseZip = (v: boolean) => (useZip = v);
+
+export let timeLoaded = +new Date();
+export const getTimeLoaded = () => timeLoaded;
+export const setTimeLoaded = (s: number) => {
+  timeLoaded = s;
+};
+
+export let durationPlayed = 0;
+export const getDurationPlayed = () => durationPlayed;
+export const setDurationPlayed = (s: number) => {
+  durationPlayed = s;
+};

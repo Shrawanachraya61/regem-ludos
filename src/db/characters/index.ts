@@ -50,6 +50,7 @@ export const init = () => {
     talkTrigger: 'test-rho',
     facing: Facing.DOWN,
     animationState: AnimationState.IDLE,
+    collisionSize: 8,
   };
 
   exp.Sigma = {

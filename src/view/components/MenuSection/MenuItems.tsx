@@ -14,6 +14,7 @@ import PotionIcon from 'view/icons/Potion';
 import { playSound, playSoundName } from 'model/sound';
 import { ItemType } from 'db/items';
 import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
+import { sortItems } from 'utils';
 
 const MAX_HEIGHT = '628px';
 
@@ -83,25 +84,27 @@ const MenuItems = (props: IMenuItemsProps) => {
   const [filterIndex, setFilterIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(true);
 
-  const backpack = props.player.backpack.sort();
-  const filteredBackpack = backpack.filter(item => {
-    switch (filterIndex) {
-      case 1: {
-        return item.type === ItemType.USABLE;
+  const backpack = props.player.backpack;
+  const filteredBackpack = backpack
+    .filter(item => {
+      switch (filterIndex) {
+        case 1: {
+          return item.type === ItemType.USABLE;
+        }
+        case 2: {
+          return [ItemType.WEAPON, ItemType.ARMOR, ItemType.ACCESSORY].includes(
+            item.type as ItemType
+          );
+        }
+        case 3: {
+          return item.type === ItemType.QUEST;
+        }
+        default: {
+          return true;
+        }
       }
-      case 2: {
-        return [ItemType.WEAPON, ItemType.ARMOR, ItemType.ACCESSORY].includes(
-          item.type as ItemType
-        );
-      }
-      case 3: {
-        return item.type === ItemType.QUEST;
-      }
-      default: {
-        return true;
-      }
-    }
-  });
+    })
+    .sort(sortItems);
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const selectedItem = filteredBackpack[selectedItemIndex];

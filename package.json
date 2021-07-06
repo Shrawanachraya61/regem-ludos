@@ -6,14 +6,17 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server ./dist -o index.html -g -p 8081",
-    "build": "cross-env NODE_ENV=production yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript",
+    "build": "cross-env NODE_ENV=production yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript && yarn zip",
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
     "build:rpgscript": "cp -r src/rpgscript/* res/rpgscript/",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
     "tsc": "tsc -v",
-    "watch": "tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
+    "zip": "yarn zip:foley && yarn zip:images",
+    "zip:foley": " (cd res/snd/foley && zip foley.zip *.mp3)",
+    "zip:images": "(cd res && zip images.zip *.png)",
+    "watch": "yarn zip && tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {
@@ -30,6 +33,7 @@
     "html-minifier": "^4.0.0",
     "http-server": "^0.12.3",
     "hud-gamepad": "^0.5.9",
+    "jszip": "^3.6.0",
     "prettier": "^2.2.1",
     "terser": "^4.6.11",
     "typedoc": "^0.20.16",

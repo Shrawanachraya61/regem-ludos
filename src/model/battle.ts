@@ -19,6 +19,7 @@ import { Animation } from 'model/animation';
 import { Particle, particleCreateFromTemplate } from 'model/particle';
 import { renderUi } from 'view/ui';
 import { Timer } from './utility';
+import { Item } from 'db/items';
 
 export interface Battle {
   room: Room;
@@ -135,6 +136,10 @@ export interface BattleTemplateEnemy {
 export interface BattleTemplate {
   roomName: string;
   enemies: BattleTemplateEnemy[];
+  baseExperience: number;
+  baseTokens: number;
+  getDrops?: () => Item[];
+  disableFlee?: boolean;
   events?: {
     onBattleStart?: (battle: Battle) => Promise<void>;
     onBattleEnd?: (battle: Battle) => Promise<void>;
@@ -735,4 +740,17 @@ export const battleResetItemTimer = (battle: Battle) => {
   battle.itemTimer.start();
   battle.itemTimer.timestampPause = getNow();
   battle.itemTimer.pauseOverride();
+};
+
+export const battleGetRewards = (battle: Battle) => {
+  let items: Item[] = [];
+  if (battle.template?.getDrops) {
+    items = battle.template?.getDrops();
+  }
+  const experience = battle.template?.baseExperience ?? 1;
+  return {
+    items,
+    experience,
+    tokens: battle.template?.baseTokens ?? 0,
+  };
 };

@@ -1,5 +1,6 @@
+import { getZipAudioData } from 'controller/res-loader';
 import { normalize, normalizeClamp, timeoutPromise } from 'utils';
-import { getNow, getSoundEnabled, getVolume } from './generics';
+import { getNow, getSoundEnabled, getVolume, shouldUseZip } from './generics';
 
 const SOUND_PATH_PREFIX = 'res/snd';
 
@@ -17,7 +18,9 @@ export enum SoundType {
 
 interface ISoundLoaded {
   sound: HTMLAudioElement;
+  nodes: Node[];
   audio: Node;
+  nodeI: number;
   soundDuration: number;
   soundType: SoundType;
   volumeModifier: number;
@@ -35,63 +38,88 @@ export const loadSound = async (
   type: SoundType,
   volumeModifier: number
 ) => {
-  url = `${SOUND_PATH_PREFIX}/${url}`;
-  return new Promise((resolve, reject) => {
-    const sound = new Audio(url);
-    sound.autoplay = false;
-    const onLoad = () => {
-      sound.oncanplay = null;
-      sound.currentTime = 99999999999;
-      const soundDuration = sound.currentTime;
+  const addSound = (sound: HTMLAudioElement) => {
+    sound.oncanplay = null;
+    sound.currentTime = 99999999999;
+    const soundDuration = sound.currentTime;
+    sound.currentTime = 0;
+    sound.onended = function () {
+      sound.pause();
       sound.currentTime = 0;
-      sound.onended = function () {
-        sound.pause();
-        sound.currentTime = 0;
-      };
-      sounds[name] = {
-        sound,
-        audio: sound,
-        soundDuration,
-        soundType: type,
-        volumeModifier,
-      };
-      // console.log('sound loaded', name, url);
-      if (type === SoundType.MUSIC) {
-        console.log('Adding music track', name, getSound(name));
-        musicSoundObjects[name] = getSound(name) as ISound;
-      }
-      clearTimeout(timeoutId);
-      resolve(sound);
     };
-    sound.oncanplay = sound.onloadeddata = onLoad;
-    const timeoutId = setTimeout(() => {
-      console.error('Sound load timed out:', name, url);
-      onLoad();
-    }, 3000);
-
-    sound.addEventListener('error', (e: Event) => {
-      console.error('sound error', e);
-      reject(
-        'Cannot load sound: name="' +
-          name +
-          '", url="' +
-          url +
-          '", type=' +
-          type
+    sounds[name] = {
+      sound,
+      audio: sound,
+      nodes: [sound],
+      nodeI: 0,
+      soundDuration,
+      soundType: type,
+      volumeModifier,
+    };
+    // console.log('sound loaded', name, url);
+    if (type === SoundType.MUSIC) {
+      console.log('Adding music track', name, getSound(name));
+      musicSoundObjects[name] = getSound(name) as ISound;
+    } else {
+      sounds[name].nodes.push(
+        sound.cloneNode()
+        // sound.cloneNode(),
+        // sound.cloneNode()
       );
+    }
+  };
+
+  if (shouldUseZip() && url.includes('foley')) {
+    const soundPath = url.slice(6);
+    const sound = getZipAudioData(soundPath);
+    if (sound) {
+      addSound(sound);
+    } else {
+      console.error('failed to load sound from zip:', url, soundPath);
+    }
+  } else {
+    url = `${SOUND_PATH_PREFIX}/${url}`;
+    return new Promise((resolve, reject) => {
+      const sound = new Audio(url);
+      sound.autoplay = false;
+      const onLoad = () => {
+        addSound(sound);
+        clearTimeout(timeoutId);
+        resolve(sound);
+      };
+      sound.oncanplay = sound.onloadeddata = onLoad;
+      const timeoutId = setTimeout(() => {
+        console.error('Sound load timed out:', name, url);
+        onLoad();
+      }, 3000);
+
+      sound.addEventListener('error', (e: Event) => {
+        console.error('sound error', e);
+        reject(
+          'Cannot load sound: name="' +
+            name +
+            '", url="' +
+            url +
+            '", type=' +
+            type
+        );
+      });
+      sound.src = url;
     });
-    sound.src = url;
-  });
+  }
 };
 
 export const getSound = (soundName: string): ISound | null => {
   const soundObj = sounds[soundName];
   if (soundObj) {
+    const audio = soundObj.nodes[soundObj.nodeI];
+    soundObj.nodeI = (soundObj.nodeI + 1) % soundObj.nodes.length;
     const s: ISound = {
       duration: 0,
       ...soundObj,
       //soundDuration merged in from soundObj
-      audio: soundObj.audio.cloneNode(true),
+      // audio: soundObj.audio.cloneNode(true),
+      audio,
       soundName,
       lastStartTimestamp: getNow(),
     };

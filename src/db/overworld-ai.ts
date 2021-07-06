@@ -14,6 +14,7 @@ import {
   characterCollidesWithOther,
   characterSetPos,
   characterSetFacing,
+  characterGetCollisionCircle,
 } from 'model/character';
 import { Overworld, overworldHide, overworldShow } from 'model/overworld';
 import { Timer } from 'model/utility';
@@ -29,6 +30,7 @@ import {
   truncatePoint3d,
   timeoutPromise,
   pxFacingToWorldFacing,
+  calculateDistance,
 } from 'utils';
 import {
   getCurrentOverworld,
@@ -56,6 +58,7 @@ import { createParticleAtCharacter } from 'controller/battle-actions';
 import { EFFECT_TEMPLATE_AGGROED } from 'model/particle';
 import { playSoundName } from 'model/sound';
 import { callScript, createAndCallScript } from 'controller/scene-management';
+import { sceneIsWaiting } from 'model/scene';
 
 const exp = {} as { [key: string]: OverworldAI };
 export const get = (key: string): OverworldAI => {
@@ -148,7 +151,7 @@ const findNextLinearWalkPosition = (
   }
 
   // HACK push stuff further towards bottom walls because the walking system is funky.
-  // I direction it's tile size (16) - weird z index offset (3 ish)
+  // it's tile size (16) - weird z index offset (3 ish)
   // direction is in SCREEN direction, left on the screen is down left for WORLD direction
   if (direction === Facing.LEFT_DOWN) {
     yOffset += 13;
@@ -195,19 +198,24 @@ export const init = () => {
       const room = getCurrentRoom();
       const startPoint = characterGetPos(ch);
       const targetPoint = characterGetPos(getCurrentPlayer().leader);
-      targetPoint[0];
-      targetPoint[1];
       const tileStart = roomGetTileBelow(room, truncatePoint3d(startPoint));
       const tileTarget = roomGetTileBelow(room, truncatePoint3d(targetPoint));
+
       const pfPath = createPFPath(
         [tileStart?.x || 0, tileStart?.y || 0],
         [tileTarget?.x || 0, tileTarget?.y || 0],
         getCurrentRoom()
       );
       const roomPath = pfPathToRoomPath(pfPath);
-      const firstPointInPath = roomPath[1];
+      const firstPointInPath = roomPath[1] ?? roomPath[0];
+
       // walk towards the first position in the path
       if (firstPointInPath) {
+        // HACK negative offsets prevent the character from z-fighting walls
+        // on the back side.  Otherwise they walk too close to the wall and clip
+        // into it.  These numbers also affect the offset fix hack in the character
+        // update function.  As these become more negative, the character is liable
+        // to get stuck on the bottom part of walls and needs a fix to push them down.
         characterSetWalkTarget(
           ch,
           [firstPointInPath[0] - 7, firstPointInPath[1] - 7],
@@ -215,9 +223,14 @@ export const init = () => {
         );
       } else {
         const despawnFunc = async () => {
-          console.log('despawn func?');
           if (ch.encounterStuckRetries > 3) {
-            console.log('REMOVE STUCK RETRIES CH', ch);
+            const leader = getCurrentPlayer().leader;
+            console.log(
+              'DESPAWN ENCOUNTER',
+              roomGetTileBelow(room, [ch.x, ch.y]),
+              roomGetTileBelow(room, [leader.x, leader.y]),
+              pfPath
+            );
             playSoundName('spawn_enemy');
             spawnParticleAtCharacter(
               'EFFECT_TEMPLATE_SPAWN',
@@ -233,6 +246,11 @@ export const init = () => {
             characterAddTimer(ch, t);
           }
         };
+
+        const scene = getCurrentScene();
+        if (sceneIsWaiting(scene) || scene.currentScript) {
+          return;
+        }
 
         ch.aiState.halted = true;
         const t = new Timer(300);
@@ -253,6 +271,10 @@ export const init = () => {
       update: (ch: Character) => {
         if (!ch.aiState.halted && !ch.walkTarget) {
           chWalkAtPlayer(ch);
+        }
+        const scene = getCurrentScene();
+        if (sceneIsWaiting(scene) || scene.currentScript) {
+          return;
         }
         if (
           !ch.aiState.encountered &&
@@ -306,7 +328,6 @@ export const init = () => {
         const player = getCurrentPlayer();
         const leader = player.leader;
         if (characterCanSeeOther(ch, leader)) {
-          // SAW THAT CHARACTER BRO
           playSoundName('aggro_alert');
           const particle = createParticleAtCharacter(
             {
@@ -314,7 +335,7 @@ export const init = () => {
             },
             ch
           );
-          // ch.speed = 1.6;
+          ch.speed = 1.6;
           roomAddParticle(getCurrentRoom(), particle);
           characterClearTimers(ch);
           characterStopWalking(ch);

@@ -41,6 +41,8 @@ export const getIfExists = (key: string): BattleTemplate | null => {
 export const init = () => {
   exp.ENCOUNTER_ONE_VS_ONE = {
     roomName: 'battle1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
@@ -52,6 +54,8 @@ export const init = () => {
 
   exp.ENCOUNTER_ONE_VS_TWO = {
     roomName: 'battle1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
@@ -68,6 +72,8 @@ export const init = () => {
 
   exp.ENCOUNTER_ONE_VS_THREE = {
     roomName: 'battle1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
@@ -89,6 +95,8 @@ export const init = () => {
 
   exp.ENCOUNTER_TEST_EVENTS = {
     roomName: 'battleTut1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE'),
@@ -110,6 +118,8 @@ export const init = () => {
 
   exp.ENCOUNTER_TEST_MULTI_DEATH = {
     roomName: 'battleTut1',
+    baseExperience: 1,
+    baseTokens: 1,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_REALLY_EASY'),

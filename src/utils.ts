@@ -4,6 +4,7 @@ import { getDrawScale } from 'model/canvas';
 import { Timer } from 'model/utility';
 import { CharacterTemplate, Facing } from 'model/character';
 import { BattleStats } from 'model/battle';
+import { Item } from 'db/items';
 
 export const isoToPixelCoords = (
   x: number,
@@ -382,4 +383,33 @@ export const varyStats = (chTemplate: CharacterTemplate): CharacterTemplate => {
     }
   }
   return chTemplate;
+};
+
+export const sortItems = (a: Item, b: Item) => {
+  return a.label < b.label ? -1 : 1;
+};
+
+export const msToTimeLabel = (duration: number) => {
+  const portions: string[] = [];
+
+  const msInHour = 1000 * 60 * 60;
+  const hours = Math.trunc(duration / msInHour);
+  if (hours > 0) {
+    portions.push(hours + 'h');
+    duration = duration - hours * msInHour;
+  }
+
+  const msInMinute = 1000 * 60;
+  const minutes = Math.trunc(duration / msInMinute);
+  if (minutes > 0) {
+    portions.push(minutes + 'm');
+    duration = duration - minutes * msInMinute;
+  }
+
+  const seconds = Math.trunc(duration / 1000);
+  if (seconds > 0) {
+    portions.push(seconds + 's');
+  }
+
+  return portions.join(' ');
 };

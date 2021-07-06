@@ -37,6 +37,8 @@ import {
   TILE_WIDTH_WORLD,
   roomGetDistanceToNearestWallInFacingDirection,
   roomRemoveCharacter,
+  roomGetEmptyAdjacentTile,
+  Room,
 } from 'model/room';
 import { RenderObject } from 'model/render-object';
 import { getCtx } from './canvas';
@@ -176,6 +178,7 @@ export interface Character {
   highlighted: boolean;
   visionRange: number;
   collisionSize: Point;
+  collisionOffset: Point;
   template: CharacterTemplate | null;
   encounter?: BattleTemplate;
   encounterStuckRetries: number;
@@ -202,6 +205,8 @@ export interface CharacterTemplate {
   speed?: number;
   staggerSoundName?: string;
   weaponEquipTypes?: WeaponType[];
+  collisionSize?: number;
+  collisionOffset?: Point;
   equipment?: {
     weapon: Item;
     accessory1?: Item;
@@ -227,7 +232,7 @@ export const characterCreate = (name: string): Character => {
     transform: null,
     hp: 10,
     resv: 10,
-    experience: 0,
+    experience: 2,
     experienceCurrency: 10,
     stats: battleStatsCreate(),
     skills: [BattleActions.SWING] as BattleAction[],
@@ -257,6 +262,7 @@ export const characterCreate = (name: string): Character => {
     highlighted: false,
     visionRange: 24 * 2,
     collisionSize: [16, 16],
+    collisionOffset: [0, 0],
     encounterStuckRetries: 0,
     template: null,
   };
@@ -329,6 +335,12 @@ export const characterCreateFromTemplate = (
   if (template.fullName) {
     ch.fullName = template.fullName;
   }
+  if (template.collisionSize !== undefined) {
+    ch.collisionSize = [template.collisionSize, template.collisionSize];
+  }
+  if (template.collisionOffset !== undefined) {
+    ch.collisionOffset = template.collisionOffset.slice() as Point;
+  }
   ch.template = template;
   return ch;
 };
@@ -374,6 +386,7 @@ export const characterSetAnimationState = (
 ): void => {
   ch.animationState = animState;
   const newAnimKey = characterGetAnimKey(ch);
+
   if (newAnimKey !== ch.animationKey) {
     if (ch.animationPromise) {
       ch.animationPromise.reject();
@@ -585,6 +598,15 @@ export const characterSetWalkTarget = (
   }
 };
 
+export const characterSetWalkTargetAsync = async (
+  ch: Character,
+  point: Point
+) => {
+  return new Promise<void>(resolve => {
+    characterSetWalkTarget(ch, point, resolve);
+  });
+};
+
 export const characterHasWalkTarget = (ch: Character) => {
   return !!ch.walkTarget;
 };
@@ -725,17 +747,24 @@ export const characterCanSeeOther = (
 };
 
 export const characterCollidesWithOther = (ch: Character, other: Character) => {
+  return circleCircleCollision(
+    characterGetCollisionCircle(ch),
+    characterGetCollisionCircle(other)
+  );
+  //  (
+  // circleRectCollision(
+  //   [x2, y2, chR2],
+  //   [x - chW / 2, y - chH / 2, chW, chH]
+  // ) !== 'none'
+  // );
+};
+
+// used only for character -> character collision
+export const characterGetCollisionCircle = (ch: Character): Point3d => {
   const [x, y] = characterGetPos(ch);
   const [chW, chH] = ch.collisionSize;
-  // const chR = Math.min(ch.collisionSize[0] / 2, ch.collisionSize[1] / 2);
-  const [x2, y2] = characterGetPos(other);
-  const chR2 = Math.min(other.collisionSize[0] / 2, other.collisionSize[1] / 2);
-  return (
-    circleRectCollision(
-      [x2, y2, chR2],
-      [x - chW / 2, y - chH / 2, chW, chH]
-    ) !== 'none'
-  );
+  const chR = Math.min(chW / 2, chH / 2);
+  return [x + ch.collisionOffset[0], y + ch.collisionOffset[1], chR];
 };
 
 export const characterClearTimers = (ch: Character) => {
@@ -836,16 +865,24 @@ const characterGetNextLevelExpThreshold = (level: number) => {
   return Math.round(0.04 * level ** 3 + 0.8 * level ** 2 + 2 * level);
 };
 
-export const characterGetLevel = (ch: Character) => {
+export const characterGetLevel = (ch: Character | number) => {
   let lvl = 1;
   let threshold = 0;
   const max = 100;
+
+  const exp: number = (ch as any)?.experience || ch;
+
+  if (exp < 3) {
+    return 1;
+  }
+
   // HACK: I don't want to figure out the inverse of the lvl function *shudders*
-  do {
-    threshold = characterGetNextLevelExpThreshold(lvl);
+  threshold = characterGetNextLevelExpThreshold(lvl);
+  while (exp >= threshold && lvl < max) {
     lvl++;
-  } while (threshold < ch.experience || lvl >= max);
-  return lvl - 1;
+    threshold = characterGetNextLevelExpThreshold(lvl);
+  }
+  return lvl;
 };
 
 export const characterGetExperiencePct = (ch: Character) => {
@@ -854,6 +891,22 @@ export const characterGetExperiencePct = (ch: Character) => {
   const thresholdNext = characterGetNextLevelExpThreshold(lvl);
   return normalize(ch.experience, thresholdPrev, thresholdNext, 0, 1);
 };
+
+// console.log('LVL', characterGetNextLevelExpThreshold(1), characterGetLevel(3));
+
+// console.log(
+//   'THRESHOLDS',
+//   characterGetNextLevelExpThreshold(1),
+//   characterGetNextLevelExpThreshold(2),
+//   characterGetNextLevelExpThreshold(3),
+//   characterGetNextLevelExpThreshold(4),
+//   characterGetNextLevelExpThreshold(5),
+//   characterGetLevel(0),
+//   characterGetLevel(3),
+//   characterGetLevel(8),
+//   characterGetLevel(14),
+//   characterGetLevel(23)
+// );
 
 export const characterUpdate = (ch: Character): void => {
   const room = getCurrentRoom();
@@ -918,50 +971,63 @@ export const characterUpdate = (ch: Character): void => {
       angle += 360;
     }
     characterSetFacingFromAngle(ch, angle);
-    if (isPersonCharacter(ch)) {
-      const tile = roomGetTileBelow(room, [ch.x, ch.y]);
-      let tileBelowY1: Tile | null = null;
-      let tileBelowX1: Tile | null = null;
-      let tileBelowXY1: Tile | null = null;
-      if (tile) {
-        // tile.highlighted = true;
-        // if (ch.name === 'Ada') {
-        //   console.log(
-        //     tile.x,
-        //     tile.y,
-        //     tile.x,
-        //     Math.floor((ch.y + 8) / TILE_HEIGHT_WORLD)
-        //   );
-        // }
-
-        tileBelowY1 = roomGetTileAt(
-          room,
-          tile.x,
-          Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
-        );
-        tileBelowX1 = roomGetTileAt(
-          room,
-          Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
-          tile.y
-        );
-        tileBelowXY1 = roomGetTileAt(
-          room,
-          Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
-          Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
-        );
-      }
-      const isObstructedByWall =
-        isPrimaryWall(tileBelowY1) ||
-        isPrimaryWall(tileBelowX1) ||
-        isPrimaryWall(tileBelowXY1);
-      if (tile?.isWall || isObstructedByWall) {
-        // if (tile && tileBelowY1) {
-        //   tile.highlighted = true;
-        //   tileBelowY1.highlighted = true;
-        // }
+    if (isLeaderCharacter(ch)) {
+      if (isChObstructedByWall(ch, room)) {
         ch.x = prevX;
         ch.y = prevY;
+        if (isChObstructedByWall(ch, room)) {
+          console.log(
+            'Leader is standing in a wall, warping to nearest adj tile.'
+          );
+          const tile = roomGetTileBelow(room, [ch.x, ch.y]);
+          const adjTile = roomGetEmptyAdjacentTile(room, ch);
+          if (tile && adjTile) {
+            characterSetPos(ch, [
+              ...tileToWorldCoords(adjTile.x, adjTile.y),
+              ch.z,
+            ]);
+            return;
+          }
+        }
       }
+
+      // const tile = roomGetTileBelow(room, [ch.x, ch.y]);
+      // let tileBelowY1: Tile | null = null;
+      // let tileBelowX1: Tile | null = null;
+      // let tileBelowXY1: Tile | null = null;
+      // if (tile) {
+      //   // if (isWallOrProp(tile)) {
+
+      //   // }
+      //   tileBelowY1 = roomGetTileAt(
+      //     room,
+      //     tile.x,
+      //     Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+      //   );
+      //   tileBelowX1 = roomGetTileAt(
+      //     room,
+      //     Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+      //     tile.y
+      //   );
+      //   tileBelowXY1 = roomGetTileAt(
+      //     room,
+      //     Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+      //     Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+      //   );
+      // }
+      // const isObstructedByWall =
+      //   isWallOrProp(tileBelowY1) ||
+      //   isWallOrProp(tileBelowX1) ||
+      //   isWallOrProp(tileBelowXY1);
+      // if (tile?.isWall || isObstructedByWall) {
+      //   // if (tile && tileBelowY1) {
+      //   //   tile.highlighted = true;
+      //   //   tileBelowY1.highlighted = true;
+      //   // }
+      //   // if (ch.x !== prevX || ch.y !== prevY) {
+      //   ch.x = prevX;
+      //   ch.y = prevY;
+      // }
       // ch.x = parseFloat(ch.x.toFixed(2));
       // ch.y = parseFloat(ch.y.toFixed(2));
     } else {
@@ -985,7 +1051,7 @@ export const characterUpdate = (ch: Character): void => {
         // roomGetTileBelow(room, [ch.x + sz, ch.y + sz]),
       ];
       const isObstructedByWall = tiles.reduce(
-        (prev, tile) => prev || isPrimaryWall(tile),
+        (prev, tile) => prev || isWallOrProp(tile),
         false
       );
       if (isObstructedByWall) {
@@ -995,7 +1061,7 @@ export const characterUpdate = (ch: Character): void => {
           characterStopWalking(ch);
           characterStopAi(ch);
           ch.encounterStuckRetries++;
-          if (ch.encounterStuckRetries > 10) {
+          if (ch.encounterStuckRetries > 50) {
             roomRemoveCharacter(room, ch);
           }
           timeoutPromise(250 + Math.random() * 250).then(() => {
@@ -1058,12 +1124,63 @@ export const characterUpdate = (ch: Character): void => {
   }
   ch.vx = 0;
   ch.vy = 0;
+
+  const leader = getCurrentPlayer().leader;
+  if (ch !== leader && characterCollidesWithOther(ch, leader)) {
+    console.log('collides with leader');
+  }
 };
 
-const isPrimaryWall = (tile: Tile | null) => {
+const isWallOrProp = (tile: Tile | null) => {
   return tile?.isWall && !tile?.isProp;
 };
 
-const isPersonCharacter = (ch: Character) => {
+const isLeaderCharacter = (ch: Character) => {
   return ch.spriteBase === 'ada';
+};
+
+const isChObstructedByWall = (ch: Character, room: Room) => {
+  const tile = roomGetTileBelow(room, [ch.x, ch.y]);
+  let tileBelowY1: Tile | null = null;
+  let tileBelowX1: Tile | null = null;
+  let tileBelowXY1: Tile | null = null;
+  if (tile) {
+    // if (isWallOrProp(tile)) {
+    //   console.log(
+    //     'Leader is standing in a wall, warping to nearest adj tile.'
+    //   );
+    //   const adjTile = roomGetEmptyAdjacentTile(room, ch);
+    //   if (adjTile) {
+    //     characterSetPos(ch, [...tileToWorldCoords(tile.x, tile.y), ch.z]);
+    //     return;
+    //   }
+    // }
+    tileBelowY1 = roomGetTileAt(
+      room,
+      tile.x,
+      Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+    );
+    tileBelowX1 = roomGetTileAt(
+      room,
+      Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+      tile.y
+    );
+    tileBelowXY1 = roomGetTileAt(
+      room,
+      Math.floor((ch.x + 22) / TILE_WIDTH_WORLD),
+      Math.floor((ch.y + 22) / TILE_HEIGHT_WORLD)
+    );
+  }
+  const isObstructedByWall =
+    isWallOrProp(tileBelowY1) ||
+    isWallOrProp(tileBelowX1) ||
+    isWallOrProp(tileBelowXY1);
+  if (tile?.isWall || isObstructedByWall) {
+    // if (tile && tileBelowY1) {
+    //   tile.highlighted = true;
+    //   tileBelowY1.highlighted = true;
+    // }
+    // if (ch.x !== prevX || ch.y !== prevY) {
+    return true;
+  }
 };

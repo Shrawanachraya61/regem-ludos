@@ -21,6 +21,7 @@ import {
   Character,
   characterCanSeeOther,
   characterGetAnimation,
+  characterGetCollisionCircle,
   characterGetPos,
   characterGetPosBottom,
   characterGetPosTopLeft,
@@ -335,6 +336,15 @@ export const drawCharacter = (
       ctx.globalCompositeOperation = 'source-over';
     }
 
+    // DEBUG Collision Circles
+    const [x, y, chR] = characterGetCollisionCircle(ch);
+    // const [x2, y2] = characterGetPos(other);
+    // const chR2 = Math.min(
+    //   other.collisionSize[0] / 2,
+    //   other.collisionSize[1] / 2
+    // );
+    drawPolygon(circleToPolygonPx(x, y, chR), 'black', 1, getCtx('outer'));
+
     // DEBUG Draw circles where the game thinks the ch is
     // HACK this math is so convoluted, but whatever it somehow works for 32px sprites
     // const visionPolygon: Point[] = [];
@@ -448,14 +458,14 @@ export const drawRoom = (
   const leader = player.leader;
 
   // DEBUG highlight stuff that sees Ada
-  for (let i = 0; i < room.characters.length; i++) {
-    const ch = room.characters[i];
-    if (ch !== leader && characterCanSeeOther(ch, leader)) {
-      ch.highlighted = true;
-    } else {
-      ch.highlighted = false;
-    }
-  }
+  // for (let i = 0; i < room.characters.length; i++) {
+  //   const ch = room.characters[i];
+  //   if (ch !== leader && characterCanSeeOther(ch, leader)) {
+  //     ch.highlighted = true;
+  //   } else {
+  //     ch.highlighted = false;
+  //   }
+  // }
 
   // if (!isPaused) {
   //   for (let i = 0; i < particles.length; i++) {
