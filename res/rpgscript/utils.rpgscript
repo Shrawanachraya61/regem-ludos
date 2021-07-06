@@ -26,8 +26,13 @@
 
 #utils-kiosk-stats-activate
 step,this
+action,utils-kiosk-status-activate-action
 @this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
+@utils-kiosk-status-activate-action
++pauseOverworld();
++playSound(blip);
++showUISection(LevelUp);
 
 #utils-kiosk-stats-deactivate
 step,this
@@ -40,6 +45,8 @@ action,utils-save-point-activate-action
 @this
 +changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
 @utils-save-point-activate-action
++pauseOverworld();
++playSound(blip);
 +showUISection(Save);
 
 #utils-save-point-deactivate
@@ -229,6 +236,10 @@ step,this
 +waitMS(400);
 +despawnCharacter([ARG0]);
 
+// ARG0 = item template name
 @utils-get-treasure
++spawnParticleAtCharacter('EFFECT_TEMPLATE_TREASURE', 'Ada', 'rise');
 +playSound('get_item');
-+spawnParticleAtMarker('EFFECT_TEMPLATE_TREASURE', 'MarkerAda0', 'rise');
++setConversation('Ada');
++acquireItem([ARG0]);
++endConversation();

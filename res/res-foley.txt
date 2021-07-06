@@ -63,6 +63,8 @@ Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
 Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
 Sound,use_item,foley/use_item.mp3,0.7,zzfx
 Sound,rez,foley/rez.mp3,1.0,fl studio
+Sound,level_up,foley/level_up.mp3,0.8,zzfx
+Sound,exp_gain,foley/exp_gain2.mp3,1.0,fl studio
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3
