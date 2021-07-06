@@ -6,7 +6,7 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server ./dist -o index.html -g -p 8081",
-    "build": "cross-env NODE_ENV=production yarn clean && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript && yarn zip",
+    "build": "cross-env NODE_ENV=production yarn clean && yarn zip && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript",
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
