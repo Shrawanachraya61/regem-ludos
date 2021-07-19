@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "Logger.h"
 #include "Store.h"
+#include "Timer.h"
+#include <algorithm>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -10,10 +12,11 @@ extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void enableSound() {
   SDL2Wrapper::Window::soundEnabled = true;
+  int volumePct = SDL2Wrapper::Window::soundPercent;
   if (Mix_PlayingMusic()) {
-    Mix_VolumeMusic(MIX_MAX_VOLUME);
+    Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
   }
-  Mix_Volume(-1, MIX_MAX_VOLUME);
+  Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Enable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
@@ -24,6 +27,16 @@ void disableSound() {
   }
   Mix_Volume(-1, 0);
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Disable sound" << std::endl;
+}
+EMSCRIPTEN_KEEPALIVE
+void setVolume(int volumePct) {
+  SDL2Wrapper::Window::soundPercent = volumePct;
+  if (Mix_PlayingMusic()) {
+    Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
+  }
+  Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
+  SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
+      << "Set volume:" << volumePct << "%" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
 void setKeyDown(int key) {
@@ -57,7 +70,8 @@ namespace SDL2Wrapper {
 int Window::instanceCount = 0;
 Uint64 Window::now = 0;
 bool Window::soundEnabled = true;
-const double Window::targetFrameMS = 16.66666;
+int Window::soundPercent = 100;
+const double Window::targetFrameMS = 16.0;
 Window* Window::globalWindow = nullptr;
 
 void windowThrowError(const std::string& errorMessage) {
@@ -128,7 +142,7 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
                      std::string(SDL_GetError()));
     throw new std::runtime_error("");
   }
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 2048) < 0) {
     Logger(ERROR) << "SDL_mixer could not initialize! "
                   << std::string(Mix_GetError()) << std::endl;
     soundForcedDisabled = true;
@@ -153,6 +167,10 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
 
 Events& Window::getEvents() { return events; }
 
+void Window::setBackgroundColor(const SDL_Color& color) {
+  SDL_SetRenderDrawColor(renderer.get(), color.r, color.g, color.b, color.a);
+}
+
 void Window::setCurrentFont(const std::string& fontName, const int sz) {
   currentFontName = fontName;
   currentFontSize = sz;
@@ -165,8 +183,11 @@ Uint64 Window::staticGetNow() { return Window::now; }
 const double Window::getNow() const { return SDL_GetPerformanceCounter(); }
 const double Window::getDeltaTime() const { return deltaTime; }
 const double Window::getFrameRatio() const {
-  double d = deltaTime / Window::targetFrameMS;
-  return d;
+  double sum = 0;
+  for (double r : pastFrameRatios) {
+    sum += r;
+  }
+  return sum / pastFrameRatios.size();
 }
 void Window::setAnimationFromDefinition(const std::string& name,
                                         Animation& anim) const {
@@ -186,7 +207,21 @@ void Window::playSound(const std::string& name) {
   }
 
   Mix_Chunk* sound = Store::getSound(name);
-  Mix_PlayChannel(-1, sound, 0);
+  int channel = Mix_PlayChannel(-1, sound, 0);
+  if (channel == -1) {
+    Logger(WARN) << "Unable to play sound in channel.  sound=" << name
+                 << " err=" << SDL_GetError() << std::endl;
+    return;
+  }
+  Mix_Volume(channel,
+             double(Window::soundPercent) / 100.0 * double(MIX_MAX_VOLUME));
+  soundChannels[name] = channel;
+}
+void Window::stopSound(const std::string& name) {
+  if (soundChannels.find(name) != soundChannels.end()) {
+    int channel = soundChannels[name];
+    Mix_HaltChannel(channel);
+  }
 }
 void Window::playMusic(const std::string& name) {
   if (soundForcedDisabled) {
@@ -237,25 +272,33 @@ SDL_Texture* Window::getTextTexture(const std::string& text,
 void Window::drawSprite(const std::string& name,
                         const int x,
                         const int y,
-                        const bool centered) {
+                        const bool centered,
+                        const double angleDeg,
+                        const std::pair<double, double> scale) {
   const Sprite& sprite = Store::getSprite(name);
   SDL_Texture* tex = sprite.image;
   SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(tex, globalAlpha);
+
+  double scaledX = double(sprite.cw) * scale.first;
+  double scaledY = double(sprite.ch) * scale.second;
   SDL_Rect pos = {x + (centered ? -sprite.cw / 2 : 0),
                   y + (centered ? -sprite.ch / 2 : 0),
-                  sprite.cw,
-                  sprite.ch};
+                  static_cast<int>(floor(scaledX)),
+                  static_cast<int>(floor(scaledY))};
   SDL_Rect clip = {sprite.cx, sprite.cy, sprite.cw, sprite.ch};
   SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
-  SDL_RenderCopy(renderer.get(), tex, &clip, &pos);
+  SDL_RenderCopyEx(
+      renderer.get(), tex, &clip, &pos, angleDeg, NULL, SDL_FLIP_NONE);
 }
 
 void Window::drawAnimation(Animation& anim,
                            const int x,
                            const int y,
                            const bool centered,
-                           const bool updateAnim) {
+                           const bool updateAnim,
+                           const double angle,
+                           const std::pair<double, double> scale) {
   if (anim.isInitialized()) {
     drawSprite(anim.getCurrentSpriteName(), x, y, centered);
     if (updateAnim) {
@@ -297,9 +340,9 @@ void Window::drawTextCentered(const std::string& text,
 }
 
 void Window::renderLoop() {
-  Uint64 now = SDL_GetPerformanceCounter();
+  Uint64 nowMicroSeconds = SDL_GetPerformanceCounter();
   double freq = (double)SDL_GetPerformanceFrequency();
-  Window::now = (now * 1000) / freq;
+  now = (nowMicroSeconds * 1000) / freq;
 
   if (!freq) {
     freq = 1;
@@ -307,10 +350,16 @@ void Window::renderLoop() {
   if (firstLoop) {
     deltaTime = 16.6666;
     firstLoop = false;
+    pastFrameRatios.push_back(1.0);
   } else {
-    deltaTime = (now - lastFrameTime) * 1000 / freq;
+    deltaTime = (nowMicroSeconds - lastFrameTime) * 1000 / freq;
   }
-  lastFrameTime = now;
+  lastFrameTime = nowMicroSeconds;
+  double d = deltaTime / Window::targetFrameMS;
+  pastFrameRatios.push_back(std::min(d, 2.0));
+  if (pastFrameRatios.size() > 10) {
+    pastFrameRatios.pop_front();
+  }
 
   SDL_Event e;
   while (SDL_PollEvent(&e) != 0) {
@@ -390,4 +439,5 @@ void Window::startRenderLoop(std::function<bool(void)> cb) {
   }
 #endif
 }
+
 } // namespace SDL2Wrapper

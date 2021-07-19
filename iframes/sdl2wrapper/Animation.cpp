@@ -1,5 +1,6 @@
 #include "Animation.h"
 #include "Logger.h"
+#include "Store.h"
 #include "Window.h"
 
 #include <cmath>
@@ -47,9 +48,22 @@ Animation& Animation::operator=(const Animation& a) {
 
 bool Animation::isInitialized() const { return sprites.size() > 0; }
 
-const std::string& Animation::getCurrentSpriteName() const {
+const std::string Animation::getCurrentSpriteName() const {
   if (spriteIndex >= 0 && spriteIndex < sprites.size()) {
-    return sprites[spriteIndex].first;
+    const std::string spriteName = sprites[spriteIndex].first;
+    if (Store::spriteExists(spriteName)) {
+      return spriteName;
+    } else {
+#ifdef __EMSCRIPTEN__
+      Logger(WARN) << "Invalid spriteName=" << spriteName << " in anim=" << name
+                   << std::endl;
+      return "invisible";
+#else
+      Logger(ERROR) << "Cannot get current sprite name from anim=" << name
+                    << " spriteName=" << spriteName << std::endl;
+      throw std::string("Animation error.");
+#endif
+    }
   } else {
     Logger(WARN) << "Cannot get current sprite name because spriteIndex is out "
                     "of bounds: "

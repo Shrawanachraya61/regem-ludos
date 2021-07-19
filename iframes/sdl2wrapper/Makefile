@@ -1,4 +1,4 @@
-SDL2_WRAPPER_CODE=Animation.cpp AssetLoader.cpp Events.cpp SDL2Includes.cpp Sprite.cpp Store.cpp Timer.cpp Gauge.cpp Window.cpp
+SDL2_WRAPPER_CODE=Animation.cpp AssetLoader.cpp Events.cpp SDL2Includes.cpp Sprite.cpp Store.cpp Timer.cpp Gauge.cpp Sound.cpp Window.cpp
 SDL2_WRAPPER_SRC=$(SDL2_WRAPPER_CODE:.cpp=.o)
 FLAGS=-g -Wall -std=c++17
 

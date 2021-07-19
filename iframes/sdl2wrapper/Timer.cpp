@@ -28,17 +28,17 @@ void Timer::update() {
   }
 }
 FuncTimer::FuncTimer(const Window& windowA,
-                     int maxFrames,
+                     int maxTimeMs,
                      std::function<void()> cbA)
-    : Timer(windowA, maxFrames), cb(cbA) {}
+    : Timer(windowA, maxTimeMs), cb(cbA) {}
 void FuncTimer::remove() {
   if (!removeFlag) {
     cb();
   }
   Timer::remove();
 }
-BoolTimer::BoolTimer(const Window& windowA, int maxFrames, bool& refA)
-    : Timer(windowA, maxFrames), ref(refA) {}
+BoolTimer::BoolTimer(const Window& windowA, int maxTimeMs, bool& refA)
+    : Timer(windowA, maxTimeMs), ref(refA) {}
 void BoolTimer::remove() {
   if (!removeFlag) {
     ref = !ref;

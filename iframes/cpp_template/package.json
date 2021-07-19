@@ -1,9 +1,0 @@
-{
-  "name": "arcade_bounce_paddle",
-  "version": "1.0",
-  "license": "MIT",
-  "scripts": {
-    "build": "cd src && make js"
-  },
-  "dependencies": {}
-}

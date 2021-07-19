@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <title>GLB/GLTF Sprite Maker</title>
+    <style>
+      body {
+        background: black;
+        margin: 0px;
+        color: white;
+      }
+
+      .main {
+        position: absolute;
+        width: 100%;
+        /* height: 100%; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .ui {
+        color: white;
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 0px 16px;
+      }
+
+      input {
+        width: 45px;
+        display: inline-block;
+      }
+      label {
+        min-width: 100px;
+        display: inline-block;
+      }
+      button {
+        margin: 16px 0px;
+        padding: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main" id="main">
+      <canvas id="c" width="1024" height="1024"></canvas>
+      <canvas id="cc" width="512" height="512" style="display:none; border: 1px solid white;"></canvas>
+    </div>
+    <div class="ui">
+      <h4>Model Controls</h4>
+      <div>
+        <label for="plane">Show Plane</label>
+        <input name="plane" type="checkbox" onclick="handleShowPlaneClick(this)"></input>
+      </div>
+      <div>
+        <label for="rot-reverse">Rot. Reverse</label>
+        <input name="rot-reverse" type="checkbox" onclick="handleRotAxisDirectionClick(this)"></input>
+      </div>
+      <div>
+        <label for="rot-axis">Rot. Axis</label>
+        <select name="rot-axis" value="y" onchange="handleRotAxisChange(this)">
+          <option value="y">Y</option>
+          <option value="z">Z</option>
+          <option value="x">X</option>
+        </select>
+      </div>  
+      <div>
+        <button id="generate" onclick="handleResetCameraClick(this)">Reset Camera</button>
+      </div>
+      <h4>Sprite Generation</h4>
+      <div>
+        <label for="width">Sprite Width</label>
+        <input id="width" name="width" type="number" value="64" ></input>
+      </div>
+      <div>
+        <label for="height">Sprite Height</label>
+        <input id="height" name="height" type="number" value="64" ></input>
+      </div>
+      <div>
+        <label for="frames">Sprite Frames</label>
+        <input id="frames" name="frames" type="number" value="20" ></input>
+      </div>
+      <div>
+        <label for="frameDuration">Frame MS</label>
+        <input id="frameDuration" name="frameDuration" type="number" value="100" ></input>
+      </div>
+      <div>
+        <button id="generate" onclick="handleGenerateClick(this)">Generate!</button>
+      </div>
+      <h4>Sprite Controls</h4>
+      <div>
+        <label for="range">Scale</label>
+        <input type="range" onclick="handleSpriteScaleChange(this)" min="1" max="8" value="1"></input>
+      </div> 
+      <div>
+        <button id="hide-spritesheet" onclick="handleHideSpritesheetClick(this)">Hide Spritesheet</button>
+      </div>
+    </div>
+  </body>
+
+  <footer>
+    <script type="module" src="index.js"></script>
+  </footer>
+</html>

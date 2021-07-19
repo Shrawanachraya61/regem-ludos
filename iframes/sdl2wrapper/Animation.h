@@ -25,7 +25,7 @@ public:
   Animation& operator=(const Animation& a);
 
   bool isInitialized() const;
-  const std::string& getCurrentSpriteName() const;
+  const std::string getCurrentSpriteName() const;
   std::string toString() const;
   unsigned int getAnimIndex() const;
 

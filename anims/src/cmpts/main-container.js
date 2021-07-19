@@ -104,7 +104,6 @@ export default () => {
 
   display.resize(window.innerWidth, window.innerHeight);
   const animationAreaVisible = imageName && display.pictures[imageName];
-
   return (
     <div
       onDrop={() => {

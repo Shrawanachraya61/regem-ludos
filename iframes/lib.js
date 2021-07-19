@@ -7,6 +7,14 @@ function LIB() {
     gameStarted: false,
   };
 
+  this.BUTTON_LEFT = 1073741904;
+  this.BUTTON_RIGHT = 1073741903;
+  this.BUTTON_UP = 1073741906;
+  this.BUTTON_DOWN = 1073741905;
+  this.BUTTON_SHIFT = 1073742049;
+  this.BUTTON_ENTER = 13;
+  this.BUTTON_SPACE = 32;
+
   this.toggleSound = function () {
     if (config.soundEnabled) {
       console.log('[IFRAME] Disable sound');
@@ -233,7 +241,8 @@ var Module = {
       if (isArcadeCabinet) {
         Lib.disableModuleControls();
       }
-      Lib.notifyGameReady();
+      // This should be notified from inside the program itself
+      // Lib.notifyGameReady();
     },
   ],
   canvas: (function () {

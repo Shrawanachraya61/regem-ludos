@@ -1,0 +1,394 @@
+#
+invisible
+noloop
+invisible_0 100
+
+#
+player_missile
+loop
+missile_0 75
+missile_1 75
+missile_2 75
+
+#
+player_shield
+loop
+player_shield_0 100
+player_shield_1 100
+
+#
+player_bullet
+loop
+player_bullet_0 75
+player_bullet_1 75
+player_bullet_2 75
+player_bullet_3 75
+player_bullet_4 75
+player_bullet_5 75
+player_bullet_6 75
+
+#
+player_bullet_big
+loop
+player_bullet_big_0 100
+player_bullet_big_1 100
+player_bullet_big_2 100
+player_bullet_big_3 100
+player_bullet_big_4 100
+player_bullet_big_5 100
+player_bullet_big_6 100
+player_bullet_big_7 100
+player_bullet_big_8 100
+player_bullet_big_9 100
+player_bullet_big_10 100
+player_bullet_big_11 100
+player_bullet_big_12 100
+player_bullet_big_13 100
+player_bullet_big_14 100
+player_bullet_big_15 100
+player_bullet_big_16 100
+player_bullet_big_17 100
+player_bullet_big_18 100
+player_bullet_big_19 100
+player_bullet_big_20 100
+player_bullet_big_21 100
+player_bullet_big_22 100
+player_bullet_big_23 100
+player_bullet_big_24 100
+player_bullet_big_25 100
+player_bullet_big_26 100
+player_bullet_big_27 100
+player_bullet_big_28 100
+player_bullet_big_29 100
+
+#
+enemy_bullet
+loop
+enemy_bullet_0 75
+enemy_bullet_1 75
+enemy_bullet_2 75
+enemy_bullet_3 75
+enemy_bullet_4 75
+enemy_bullet_5 75
+enemy_bullet_6 75
+
+#
+asteroid128
+loop
+asteroid128_0 100
+asteroid128_1 100
+asteroid128_2 100
+asteroid128_3 100
+asteroid128_4 100
+asteroid128_5 100
+asteroid128_6 100
+asteroid128_7 100
+asteroid128_8 100
+asteroid128_9 100
+asteroid128_10 100
+asteroid128_11 100
+asteroid128_12 100
+asteroid128_13 100
+asteroid128_14 100
+asteroid128_15 100
+asteroid128_16 100
+asteroid128_17 100
+asteroid128_18 100
+asteroid128_19 100
+asteroid128_20 100
+asteroid128_21 100
+asteroid128_22 100
+asteroid128_23 100
+asteroid128_24 100
+asteroid128_25 100
+asteroid128_26 100
+asteroid128_27 100
+asteroid128_28 100
+asteroid128_29 100
+
+
+#
+asteroid1
+loop
+asteroid1_0 100
+asteroid1_1 100
+asteroid1_2 100
+asteroid1_3 100
+asteroid1_4 100
+asteroid1_5 100
+asteroid1_6 100
+asteroid1_7 100
+asteroid1_8 100
+asteroid1_9 100
+asteroid1_10 100
+asteroid1_11 100
+asteroid1_12 100
+asteroid1_13 100
+asteroid1_14 100
+asteroid1_15 100
+asteroid1_16 100
+asteroid1_17 100
+asteroid1_18 100
+asteroid1_19 100
+
+#
+asteroid2
+loop
+asteroid2_0 100
+asteroid2_1 100
+asteroid2_2 100
+asteroid2_3 100
+asteroid2_4 100
+asteroid2_5 100
+asteroid2_6 100
+asteroid2_7 100
+asteroid2_8 100
+asteroid2_9 100
+asteroid2_10 100
+asteroid2_11 100
+asteroid2_12 100
+asteroid2_13 100
+asteroid2_14 100
+asteroid2_15 100
+asteroid2_16 100
+asteroid2_17 100
+asteroid2_18 100
+asteroid2_19 100
+
+#
+asteroid3
+loop
+asteroid3_0 100
+asteroid3_1 100
+asteroid3_2 100
+asteroid3_3 100
+asteroid3_4 100
+asteroid3_5 100
+asteroid3_6 100
+asteroid3_7 100
+asteroid3_8 100
+asteroid3_9 100
+asteroid3_10 100
+asteroid3_11 100
+asteroid3_12 100
+asteroid3_13 100
+asteroid3_14 100
+asteroid3_15 100
+asteroid3_16 100
+asteroid3_17 100
+asteroid3_18 100
+asteroid3_19 100
+
+#
+mine
+loop
+mine_0 100
+mine_1 100
+mine_2 100
+mine_3 100
+mine_4 100
+mine_5 100
+mine_6 100
+mine_7 100
+mine_8 100
+mine_9 100
+mine_10 100
+mine_11 100
+mine_12 100
+mine_13 100
+mine_14 100
+mine_15 100
+mine_16 100
+mine_17 100
+mine_18 100
+mine_19 100
+
+#
+steel_ball
+loop
+steel_ball_0 100
+steel_ball_1 100
+steel_ball_2 100
+steel_ball_3 100
+steel_ball_4 100
+steel_ball_5 100
+steel_ball_6 100
+steel_ball_7 100
+steel_ball_8 100
+steel_ball_9 100
+steel_ball_10 100
+steel_ball_11 100
+steel_ball_12 100
+steel_ball_13 100
+steel_ball_14 100
+steel_ball_15 100
+steel_ball_16 100
+steel_ball_17 100
+steel_ball_18 100
+steel_ball_19 100
+
+#
+heart
+loop
+heart_0 100
+heart_1 100
+heart_2 100
+heart_3 100
+heart_4 100
+heart_5 100
+heart_6 100
+heart_7 100
+heart_8 100
+heart_9 100
+heart_10 100
+heart_11 100
+heart_12 100
+heart_13 100
+heart_14 100
+heart_15 100
+heart_16 100
+heart_17 100
+heart_18 100
+heart_19 100
+
+#
+candy
+loop
+candy_0 100
+candy_1 100
+candy_2 100
+candy_3 100
+candy_4 100
+candy_5 100
+candy_6 100
+candy_7 100
+candy_8 100
+candy_9 100
+candy_10 100
+candy_11 100
+candy_12 100
+candy_13 100
+candy_14 100
+candy_15 100
+candy_16 100
+candy_17 100
+candy_18 100
+candy_19 100
+
+#
+star
+loop
+star_0 100
+star_1 100
+star_2 100
+star_3 100
+star_4 100
+star_5 100
+star_6 100
+star_7 100
+star_8 100
+star_9 100
+star_10 100
+star_11 100
+star_12 100
+star_13 100
+star_14 100
+star_15 100
+star_16 100
+star_17 100
+star_18 100
+star_19 100
+
+#
+diamond
+loop
+diamond_0 100
+diamond_1 100
+diamond_2 100
+diamond_3 100
+diamond_4 100
+diamond_5 100
+diamond_6 100
+diamond_7 100
+diamond_8 100
+diamond_9 100
+diamond_10 100
+diamond_11 100
+diamond_12 100
+diamond_13 100
+diamond_14 100
+diamond_15 100
+diamond_16 100
+diamond_17 100
+diamond_18 100
+diamond_19 100
+
+#
+enemy_ship
+loop
+enemy_ship_0 60
+enemy_ship_1 60
+enemy_ship_2 60
+enemy_ship_3 60
+enemy_ship_4 60
+enemy_ship_5 60
+enemy_ship_6 60
+enemy_ship_7 60
+enemy_ship_8 60
+enemy_ship_9 60
+enemy_ship_10 60
+enemy_ship_11 60
+enemy_ship_12 60
+enemy_ship_13 60
+enemy_ship_14 60
+enemy_ship_15 60
+enemy_ship_16 60
+enemy_ship_17 60
+enemy_ship_18 60
+enemy_ship_19 60
+
+#
+yes
+loop
+yes_0 100
+yes_1 100
+yes_2 100
+yes_3 100
+yes_4 100
+yes_5 100
+yes_6 50
+yes_7 50
+yes_8 50
+yes_9 50
+yes_10 50
+yes_11 50
+yes_12 50
+yes_13 50
+yes_14 50
+yes_15 50
+yes_16 50
+yes_17 50
+yes_18 50
+yes_19 50
+
+#
+explosion
+noloop
+explosion_0 75
+explosion_1 75
+explosion_2 75
+explosion_3 75
+explosion_4 75
+explosion_5 75
+explosion_6 75
+
+#
+explosion2
+noloop
+explosion2_0 75
+explosion2_1 75
+explosion2_2 75
+explosion2_3 75
+explosion2_4 75
+explosion2_5 75
+explosion2_6 75

@@ -12,6 +12,8 @@
 namespace SDL2Wrapper {
 
 class Store {
+  static unsigned int numSoundChunks;
+
   Store();
   ~Store();
   static SDL_Renderer* rendererPtr;
@@ -29,6 +31,7 @@ class Store {
   static std::unordered_map<std::string,
                             std::unique_ptr<Mix_Chunk, SDL_Deleter>>
       sounds;
+  static std::unordered_map<std::string, unsigned int> soundInds;
   static std::unordered_map<std::string,
                             std::unique_ptr<Mix_Music, SDL_Deleter>>
       musics;
@@ -61,6 +64,7 @@ public:
   static SDL_Texture* getTexture(const std::string& name);
   static SDL_Texture* getTextTexture(const std::string& name);
   static Sprite& getSprite(const std::string& name);
+  static bool spriteExists(const std::string& name);
   static AnimationDefinition& getAnimationDefinition(const std::string& name);
   static TTF_Font*
   getFont(const std::string& name, const int sz, const bool isOutline = false);

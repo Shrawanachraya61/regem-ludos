@@ -83,9 +83,13 @@
           Lib.handleButtonUp(13);
         }, 1);
       }
-      function end() {
-        Lib.disableModuleControls();
-      }
+    function end() {
+      Lib.disableModuleControls();
+    }
+    window.notifyHighScore = function(val) {
+      console.log('HIGH SCORE', val);
+      Lib.notifyGameCompleted(val);
+    }
     </script>
     <script type="text/javascript" src="../lib.js"></script>
   </footer>

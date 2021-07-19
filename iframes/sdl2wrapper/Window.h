@@ -1,8 +1,7 @@
 #pragma once
 
-#include <memory>
-
 #include <functional>
+#include <memory>
 
 #include "SDL2Includes.h"
 
@@ -37,6 +36,7 @@ class Window {
   bool firstLoop;
   Uint64 lastFrameTime = 0;
   bool shouldRender = true;
+  std::deque<double> pastFrameRatios;
 
   static int instanceCount;
 
@@ -49,10 +49,12 @@ public:
   Uint32 colorkey;
   bool soundForcedDisabled;
   bool isInputEnabled = true;
+  std::map<std::string, int> soundChannels;
 
   static Uint64 now;
   static const double targetFrameMS;
   static bool soundEnabled;
+  static int soundPercent;
   static Window* globalWindow;
   static Window& getGlobalWindow();
 
@@ -77,18 +79,27 @@ public:
   void disableSound();
   void enableSound();
   void playSound(const std::string& name);
+  void stopSound(const std::string& name);
   void playMusic(const std::string& name);
   void stopMusic();
+
+  void setBackgroundColor(const SDL_Color& color);
 
   void drawSprite(const std::string& name,
                   const int x,
                   const int y,
-                  const bool centered = true);
-  void drawAnimation(Animation& anim,
-                     const int x,
-                     const int y,
-                     const bool centered = true,
-                     const bool updateAnim = true);
+                  const bool centered = true,
+                  const double angleDeg = 0,
+                  const std::pair<double, double> scale = std::make_pair(1.0,
+                                                                         1.0));
+  void drawAnimation(
+      Animation& anim,
+      const int x,
+      const int y,
+      const bool centered = true,
+      const bool updateAnim = true,
+      const double angleDeg = 0,
+      const std::pair<double, double> scale = std::make_pair(1.0, 1.0));
   void drawText(const std::string& text,
                 const int x,
                 const int y,
@@ -100,4 +111,5 @@ public:
   void renderLoop();
   void startRenderLoop(std::function<bool(void)> cb);
 };
+
 } // namespace SDL2Wrapper

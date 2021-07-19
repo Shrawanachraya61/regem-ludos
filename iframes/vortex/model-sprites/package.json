@@ -1,0 +1,14 @@
+{
+  "name": "model-sprites",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "http-server -o index.html?model=player_ship -g -p 8084"
+  },
+  "devDependencies": {
+    "eslint": "^7.30.0",
+    "http-server": "^0.12.3",
+    "prettier": "^2.3.2"
+  }
+}

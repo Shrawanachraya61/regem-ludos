@@ -1,0 +1,12 @@
+{
+  "name": "arcade_cpp_vortex",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "(node debug.script.js && cd .. && http-server -p 9029 -o /vortex/dist/?tap=true)",
+    "build": "yarn clean && (cd src && make js) && yarn mv",
+    "mv": "mkdir -p dist && cp -t dist/ public/*",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {}
+}

@@ -3,6 +3,8 @@
 #include <algorithm>
 
 namespace SDL2Wrapper {
+
+unsigned int Store::numSoundChunks = 2;
 SDL_Renderer* Store::rendererPtr = nullptr;
 std::unordered_map<std::string, std::unique_ptr<SDL_Texture, SDL_Deleter>>
     Store::textures;
@@ -15,6 +17,7 @@ std::unordered_map<std::string, std::unique_ptr<TTF_Font, SDL_Deleter>>
     Store::fonts;
 std::unordered_map<std::string, std::unique_ptr<Mix_Chunk, SDL_Deleter>>
     Store::sounds;
+std::unordered_map<std::string, unsigned int> Store::soundInds;
 std::unordered_map<std::string, std::unique_ptr<Mix_Music, SDL_Deleter>>
     Store::musics;
 
@@ -131,24 +134,31 @@ AnimationDefinition& Store::createAnimationDefinition(const std::string& name,
 }
 void Store::createSound(const std::string& name, const std::string& path) {
   if (Window::getGlobalWindow().soundForcedDisabled) {
-    std::cout << "[SDL2Wrapper] WARNING sound load skipped due to force sound disabled "
+    std::cout << "[SDL2Wrapper] WARNING sound load skipped due to force sound "
+                 "disabled "
                  "exists: '" +
                      name + "'"
               << std::endl;
     return;
   }
 
-  if (sounds.find(name) == sounds.end()) {
-    sounds[name] = std::unique_ptr<Mix_Chunk, SDL_Deleter>(
-        Mix_LoadWAV(path.c_str()), SDL_Deleter());
-    if (!sounds[name]) {
-      throw std::string("[SDL2Wrapper] ERROR Failed to load sound '" + path +
-                        "': reason= " + std::string(Mix_GetError()));
+  for (unsigned int i = 0; i < Store::numSoundChunks; i++) {
+    const std::string innerSoundName = name + "_" + std::to_string(i);
+    if (sounds.find(innerSoundName) == sounds.end()) {
+      sounds[innerSoundName] = std::unique_ptr<Mix_Chunk, SDL_Deleter>(
+          Mix_LoadWAV(path.c_str()), SDL_Deleter());
+      if (!sounds[innerSoundName]) {
+        throw std::string("[SDL2Wrapper] ERROR Failed to load sound '" + path +
+                          "': reason= " + std::string(Mix_GetError()));
+      }
+    } else {
+      std::cout << "[SDL2Wrapper] WARNING Sound with name '" << name
+                << "' already exists. chunkName='" << innerSoundName << "'"
+                << std::endl;
     }
-  } else {
-    std::cout << "[SDL2Wrapper] WARNING Sound with name '" << name
-              << "' already exists. '" << name << "'" << std::endl;
   }
+
+  soundInds[name] = 0;
 }
 void Store::createMusic(const std::string& name, const std::string& path) {
   if (Window::getGlobalWindow().soundForcedDisabled) {
@@ -234,6 +244,11 @@ Sprite& Store::getSprite(const std::string& name) {
   }
 }
 
+bool Store::spriteExists(const std::string& name) {
+  auto pair = sprites.find(name);
+  return pair != sprites.end();
+}
+
 AnimationDefinition& Store::getAnimationDefinition(const std::string& name) {
   auto pair = anims.find(name);
   if (pair != anims.end()) {
@@ -260,9 +275,19 @@ Store::getFont(const std::string& name, const int sz, const bool isOutline) {
 }
 
 Mix_Chunk* Store::getSound(const std::string& name) {
-  auto pair = sounds.find(name);
-  if (pair != sounds.end()) {
-    return pair->second.get();
+  auto indPair = soundInds.find(name);
+  if (indPair != soundInds.end()) {
+    const std::string chunkName = name + "_" + std::to_string(indPair->second);
+    auto pair = sounds.find(chunkName);
+    if (pair != sounds.end()) {
+      soundInds[name] = (indPair->second + 1) % Store::numSoundChunks;
+      return pair->second.get();
+    } else {
+      throwError(std::string(
+          "[SDL2Wrapper] ERROR Cannot get Sound '" + name +
+          "' because chunk has not been loaded. ChunkName=" + chunkName));
+      throw std::runtime_error("fail");
+    }
   } else {
     throwError(std::string("[SDL2Wrapper] ERROR Cannot get Sound '" + name +
                            "' because it has not been loaded."));

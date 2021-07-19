@@ -222,41 +222,6 @@ Support Robot: Idle, Cast: Channel, Cast: Invoke, Item, Damaged, Stunned, Defeat
 Transport Robot: Idle, Attack: Ranged, Item, Damaged, Stunned, Defeated
 
 1-Offs
-*Fade to black*
-*Ring* *Ring* *Ring*
-*Fade in just Ada's sprite*
-*Ada pulls her phone out*
-Ada: This is Ada.
-???: Have you arrived yet?
-Ada: I am just outside.
-*Ada looks up and to the right*
-*Fade in the rest of the screen and float camera up and right*
-Ada: The Regem Ludos arcade.  It looks like quite a large building.
-*Move camera back to Ada*
-???: Yes! The very place I asked you to to come! You'll find that it is even larger than it appears.
-Ada: Is that so?
-Ada: How long is this going to take?  I have better things to do than trying to find you in there.
-Voice on Phone: Don't worry.  It's not as daunting as it seems, especially for one as clever as you.
-Ada: ...
-Voice on Phone: Also, you brought your... friend with you, right?
-*Pan camera to Conscience who is just a bit to the south.*
-Ada: Of course.  She is always with me.
-*Pan back to Ada*
-Voice on Phone: Good!  Very good!
-Voice on Phone: I'm on the SECOND floor.  Meet me up here.
-Voice on Phone: Like I said before, I have a special surprise for you.
-Voice on Phone: Quite special indeed.
-Voice on Phone: Hehehe.
-*Beep*
-Ada: *sigh*
-Ada: Why am I even here?
-*Conscience walks back to Ada*
-Conscience: Was that Carl-Arnold?  He seems fairly excited for this.
-Ada: That makes one of us.  Honestly, I have half a mind to turn around and leave.
-Conscience: Aw C'mon.  We walked all the way over here.  We might as well go and see what he wants.
-Conscience: At the very least, it's an arcade!  There's got to be something in there that was worth the trip.
-Ada: Fine.  Let us get this over with.
-* They go inside. *
 
 Boy: This ice cream cup says it contains no artificial growth hormones.
 Girl: That's good to know!
@@ -273,11 +238,62 @@ Girl: Thats impressive!
 
 Boy on phone: Could you hang on a second?  There's some kids playing basketball outside my front door.  I'm gonna go dunk on them brb.
 
-Boy: I do landscape work.  You know lawn stuff, mowing, leaf blowing.
-Girl: Sounds tough.
-Boy: Yeah it can be sometimes.
-Boy: But if I'm ever annoyed I just get my work buddies to stand outside the window of a house with our leaf blowers at max.
-Boy: Our record is an hour before somebody came and tried to kick us out.
+Boy: I do landscape work.  You know lawn stuff, mowing, gardening, shoveling.
+Girl: Mmm, that sounds kinda tough.  People can be so finicky about their lawns.
+Boy: Yeah it can be like that sometimes.
+Boy: But if I'm ever annoyed by a homeowner I just get me and my work buddies to stand right outside the window of their house.
+Boy: Then we turn all our leaf blowers at max and just stand there until they come outside.
+Boy: Our record is just over an hour.
+Boy: This guy had his office set up right next to the window, thought we were actually working during that hour.
+Boy: Hehehe.
+
+Boy: Hey...
+Gwenneth Stephanie: ...
+Boy: So... nice day, huh?
+Gwenneth Stephanie: ...
+Gwenneth Stephanie: That's it?
+Gwenneth Stephanie: That's your opening?
+Boy: Well yeah.  I'm not really sure what to say to you.
+Gwenneth Stephanie: Well, that was CERTAINLY the wrong thing to say.
+Boy: Geez.  No need to be so harsh.  I'm trying my best.
+Gwenneth Stephanie: Well try harder.  Don't you even know who I am?
+Boy: Umm.. No?  That's why I don't know what to say to you...?
+Gwenneth Stephanie: I am Gwenneth Stephanie!
+Boy: ...who?
+Gwenneth Stephanie: *tsk* Popular singer.
+Gwenneth Stephanie: Teen popstar extraordinaire!
+Gwenneth Stephanie: Girl voted (by landslide I might add) most-likely-to-have-best-eye-shadow.
+Boy: Oh yeah.  Maybe I have heard of you.
+Boy: You have a pretty nice voice, I guess.
+Gwenneth Stephanie: Thank you.
+Gwenneth Stephanie: NEXT!
+
+Boy: Before we start, there's something you should know about me.
+Girl: Oh?  What?
+Boy: I have this serious problem where I just can't stand sitting down.
+
+Boy: I got put on a leave of absence from football after my third concussion.
+Girl: That's awful!
+Boy: Yeah.  The doctor said she was surprised I am so lucid.
+Boy: Apparently there has been so much damage to my brain that at any second I could turn crazy.
+Boy: But that's not gonna happen. Hahaha.
+Girl: Oh
+Boy: BAH@@@
+Girl: !!
+Boy: Just kidding!  But seriously, those concussions though.  Not good.
+
+Boy: Are you alright?  You kinda seem like you're having trouble looking at me.
+Girl: Umm... Well... Normally I wear glasses.
+Girl: But I don't have them on now because... because...
+Girl: I kinda look like a dork with them on!
+Boy: But you can't see though?
+Boy: Wouldn't it be better to have them on just for that?
+Girl: You think so?
+Girl: Okay, I guess...
+... puts them on
+Girl: Um... here they are.
+Boy: Oh damn, yeah you do look like a total dork.
+Boy: Why don't you go ahead and take those bad boys off for now.
 
 BATTLE
 
