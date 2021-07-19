@@ -201,7 +201,7 @@ Rho: "..."
 Rho: "Hey! Excuse me. Do you know what this place is?"
 Ada: "I am not too sure.  I have been here for a while now, wandering in circles. Not much seems to exist save for this floor."
 Rho: "That's a little disconcerting.  How are we suppose to leave?"
-Ada: "I do no believe anyone is leaving anytime soon.  You should probably find somehwere comfortable to persist."
+Ada: "I do no believe anyone is leaving anytime soon.  You should probably find somewhere comfortable to persist."
 Rho: "Ugh..." 
 +endConversation();
 
