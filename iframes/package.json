@@ -3,11 +3,24 @@
   "version": "1.0",
   "license": "MIT",
   "scripts": {
-    "build": "node ../scripts/build-iframes.js tic-tac-toe president golems invaderz elasticity vortex && yarn build:lib",
-    "build:js": "node ../scripts/build-iframes.js tic-tac-toe president golems && yarn build:lib",
+    "build": "node ../scripts/build-iframes.js $(yarn -s list:js) $(yarn -s list:cpp) && yarn build:lib",
+    "build:dev": "node ../scripts/build-iframes.js dev $(yarn -s list:js) $(yarn -s list:cpp) && yarn build:lib",
+    "build:js": "node ../scripts/build-iframes.js $(yarn -s list:js) && yarn build:lib",
+    "list:js": "echo $(cat package.json | jq -r '.jsIframes | .[]')",
+    "list:cpp": "echo $(cat package.json | jq -r '.cppIframes | .[]')",
     "clean": "rm -rf dist",
     "build:lib": "cp -t dist lib.js lib.css"
   },
+  "cppIframes": [
+    "invaderz",
+    "elasticity",
+    "vortex"
+  ],
+  "jsIframes": [
+    "tic-tac-toe",
+    "president",
+    "golems"
+  ],
   "dependencies": {},
   "devDependencies": {
     "eslint": "^7.21.0",

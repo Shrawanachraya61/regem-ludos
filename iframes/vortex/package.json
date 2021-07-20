@@ -5,7 +5,9 @@
   "scripts": {
     "start": "(node debug.script.js && cd .. && http-server -p 9029 -o /vortex/dist/?tap=true)",
     "build": "yarn clean && (cd src && make js) && yarn mv",
+    "build:dev": "yarn build && yarn mv:dev",
     "mv": "mkdir -p dist && cp -t dist/ public/*",
+    "mv:dev": "node debug.script.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {}

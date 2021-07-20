@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
 
     bool firstRender = true;
 
+    notifyGameReady();
     window.startRenderLoop([&]() {
       if (intro.isPlayingIntro) {
         intro.render(window);
@@ -145,7 +146,7 @@ int main(int argc, char* argv[]) {
         if (firstRender) {
           // game.startNewGame();
           // game.setState(GAME_STATE_GAME);
-          notifyGameReady();
+
           game.setState(GAME_STATE_MENU);
           firstRender = false;
         }

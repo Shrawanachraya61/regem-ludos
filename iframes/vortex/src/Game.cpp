@@ -26,6 +26,12 @@ const int GameOptions::height = 512;
 
 GameOptions::GameOptions() {}
 
+void spawnPowerups(Game& game) {}
+
+void spawnAlienShips(Game& game) {}
+
+void spawnEnemies(Game& game) {}
+
 Game::Game(SDL2Wrapper::Window& windowA)
     : shouldExit(false),
       shouldClearTimers(false),
@@ -172,6 +178,7 @@ void Game::startNewGame() {
   window.playSound("start_game");
   initWorld();
   setState(GAME_STATE_READY_TO_START);
+  notifyGameStarted();
 }
 
 void Game::initWorld() {
@@ -265,12 +272,6 @@ void Game::addWorldSpawnTimers() {
       33000,
       45000,
   };
-  // const std::vector<unsigned int> powerupIntervals = {
-  //     1,
-  //     1000,
-  //     3,
-  //     4,
-  // };
   const unsigned int numPowerups = std::min(
       static_cast<unsigned int>(powerupIntervals.size() - 1), 3 + wave / 4);
   for (unsigned int i = 0; i < numPowerups; i++) {
@@ -281,7 +282,6 @@ void Game::addWorldSpawnTimers() {
         double x = GameOptions::width / 2 + r * cos(degreesToRadians(angle));
         double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
         Powerup::spawnPowerup(*this, Powerup::getRandomPowerupType(), x, y);
-        // Powerup::spawnPowerup(*this, POWERUP_TYPE_STAR, x, y);
       }
     });
   }
@@ -884,13 +884,6 @@ bool Game::loop() {
 
   if (shouldPlayHiscoreSound) {
     shouldPlayHiscoreSound = false;
-    // window.playSound("hiscore");
-    // #ifdef __EMSCRIPTEN__
-    //     const std::string script = std::string("window.notifyHighScore(\"" +
-    //                                            std::to_string(score) +
-    //                                            "\")");
-    //     emscripten_run_script(script.c_str());
-    // #endif
   }
 
   bool ret = gameLoop();

@@ -209,3 +209,15 @@ Rho: "Ugh..."
 step,this
 @this
 +lookAtCharacter('Rho','Ada')
+
+#test2-vortex-machine
+step-first,this
+action,test2-vortex-machine-action
+@this
++setCharacterText('Press X to play Vortex.');
+@test2-vortex-machine-action
++setFacing(Ada, leftup);
++fadeOut(100);
++runArcadeCabinetGame(VORTEX);
++fadeIn(50);
++setAtMarker(Ada, MarkerVortexMachine);

@@ -13,27 +13,22 @@ EMSCRIPTEN_KEEPALIVE
 void enableSound() {
   SDL2Wrapper::Window::soundEnabled = true;
   int volumePct = SDL2Wrapper::Window::soundPercent;
-  if (Mix_PlayingMusic()) {
-    Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
-  }
+  Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
   Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Enable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
 void disableSound() {
   SDL2Wrapper::Window::soundEnabled = false;
-  if (Mix_PlayingMusic()) {
-    Mix_VolumeMusic(0);
-  }
+
+  Mix_VolumeMusic(0);
   Mix_Volume(-1, 0);
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Disable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
 void setVolume(int volumePct) {
   SDL2Wrapper::Window::soundPercent = volumePct;
-  if (Mix_PlayingMusic()) {
-    Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
-  }
+  Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
   Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
       << "Set volume:" << volumePct << "%" << std::endl;
@@ -202,7 +197,7 @@ const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
 void Window::disableSound() { Window::soundEnabled = false; }
 void Window::enableSound() { Window::soundEnabled = true; }
 void Window::playSound(const std::string& name) {
-  if (soundForcedDisabled) {
+  if (soundForcedDisabled || !soundEnabled) {
     return;
   }
 
@@ -235,10 +230,6 @@ void Window::playMusic(const std::string& name) {
   Mix_PlayMusic(music, -1);
 }
 void Window::stopMusic() {
-  if (!Window::soundEnabled) {
-    return;
-  }
-
   if (Mix_PlayingMusic()) {
     Mix_HaltMusic();
   }

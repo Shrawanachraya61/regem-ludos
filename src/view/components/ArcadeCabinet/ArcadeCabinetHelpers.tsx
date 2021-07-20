@@ -22,6 +22,7 @@ export enum ArcadeGamePath {
   TIC_TAC_TOE = 'iframes/tic-tac-toe/tic-tac-toe.html',
   INVADERZ = 'iframes/invaderz/Invaderz.html',
   ELASTICITY = 'iframes/elasticity/elasticity.html',
+  VORTEX = 'iframes/vortex/index.html',
 }
 
 export interface IArcadeGameMeta {

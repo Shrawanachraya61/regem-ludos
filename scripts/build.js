@@ -82,10 +82,12 @@ const build = async () => {
   );
   await execAsync('uglifycss --output dist/styles.css styles.css');
   console.log('minify html...');
-  fs.writeFileSync(
-    '.build/index.html',
-    // htmlFile
-    minifyHtml(htmlFile, {
+  const htmlMin = minifyHtml(
+    htmlFile.replace(
+      'window.DEVELOPMENT = true;',
+      'window.DEVELOPMENT = false;'
+    ),
+    {
       removeAttributeQuotes: true,
       // collapseWhitespace: true,
       html5: true,
@@ -96,7 +98,12 @@ const build = async () => {
       removeTagWhitespace: true,
       removeComments: true,
       useShortDoctype: true,
-    })
+    }
+  );
+  fs.writeFileSync(
+    '.build/index.html',
+    // htmlFile
+    htmlMin
   );
   await execAsync(
     `cp .build/index.html dist && cp .build/main.js dist && cp -r .build/res dist`

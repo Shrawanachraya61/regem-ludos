@@ -24,6 +24,7 @@ export const colors = {
   BLUE: '#31A2F2',
   DARKBLUE: '#243F72',
   YELLOW: '#F4B41B',
+  DARKYELLOW: '#A05B53',
 };
 
 export const MEDIA_QUERY_PHONE_WIDTH = '@media (max-width: 850px)';

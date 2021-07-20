@@ -1,5 +1,7 @@
 const { exec } = require('child_process');
 
+// use `node build-iframes.js ?dev <iframe1> <iframe2> ... <iframeN>'
+
 const execAsync = async command => {
   return new Promise(resolve => {
     console.log(command);
@@ -18,12 +20,17 @@ const execAsync = async command => {
 };
 
 async function main() {
-  const folderNames = process.argv.slice(2);
+  const isDev = process.argv[2] === 'dev';
+  const folderNames = isDev ? process.argv.slice(3) : process.argv.slice(2);
   if (folderNames.length) {
     for (let i = 0; i < folderNames.length; i++) {
       const folderName = folderNames[i];
       console.log('[BUILD IFRAME]', folderName, '------');
-      await execAsync(`yarn --cwd ${__dirname}/../iframes/${folderName} build`);
+      await execAsync(
+        `yarn --cwd ${__dirname}/../iframes/${folderName} build${
+          isDev ? ':dev' : ''
+        }`
+      );
       const dest = `${__dirname}/../iframes/dist/${folderName}/`;
       await execAsync(`mkdir -p ${dest}`);
       await execAsync(

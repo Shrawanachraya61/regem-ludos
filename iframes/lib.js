@@ -221,6 +221,7 @@ function LIB() {
 var Lib = (window.Lib = new LIB());
 
 var Module = {
+  arguments: ['--nointro'],
   jsLoaded: function () {
     Module.preRun[0]();
   },

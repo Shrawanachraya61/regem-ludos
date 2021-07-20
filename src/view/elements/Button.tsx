@@ -26,7 +26,7 @@ const ButtonTypeToColor = {
   [ButtonType.SECONDARY]: { top: colors.GREEN, bottom: colors.DARKGREEN },
   [ButtonType.ENEMY]: { top: colors.RED, bottom: colors.DARKRED },
   [ButtonType.CANCEL]: { top: colors.RED, bottom: colors.DARKRED },
-  [ButtonType.TOKEN]: { top: colors.ORANGE, bottom: colors.YELLOW },
+  [ButtonType.TOKEN]: { top: colors.ORANGE, bottom: colors.DARKYELLOW },
 };
 
 const pulse = keyframes({

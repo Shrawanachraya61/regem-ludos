@@ -49,7 +49,19 @@ const IframeShim = (props: IIframeShimProps) => {
       width={props.width}
       height={props.height}
     >
-      {props.loading ? <div id="iframe-loading">Loading</div> : null}
+      {props.loading ? (
+        <div
+          id="iframe-loading"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          Loading...
+          <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
+        </div>
+      ) : null}
       <iframe
         id={props.id}
         ref={props.ref}

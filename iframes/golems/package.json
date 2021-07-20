@@ -5,8 +5,9 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server -o dist/index.html -p 8764",
-    "build:prod": "rm -rf *.map main.js && yarn encode-map && tsc --sourceMap false && node scripts/build src",
     "build": "yarn && rm -rf *.map main.js && tsc --sourceMap false && node scripts/build src",
+    "build:dev": "yarn build:dist",
+    "build:dist": "rm -rf *.map main.js && yarn encode-map && tsc --sourceMap false && node scripts/build src",
     "watch": "tsc && concurrently -n 1,2 \"http-server -o index.html -p 8764 \" \"tsc --watch\"",
     "encode-map": "node scripts/encode-map.js"
   },

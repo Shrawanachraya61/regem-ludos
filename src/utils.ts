@@ -413,3 +413,7 @@ export const msToTimeLabel = (duration: number) => {
 
   return portions.join(' ');
 };
+
+export const isDevelopmentMode = () => {
+  return (window as any).DEVELOPMENT;
+};
