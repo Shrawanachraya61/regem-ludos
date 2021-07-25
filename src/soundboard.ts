@@ -1,8 +1,9 @@
 import { loadRes } from 'controller/res-loader';
-import { playSoundName, sounds } from 'model/sound';
+import { playSoundName, sounds, loadSoundSpritesheet } from 'model/sound';
 
 export const main = async (): Promise<void> => {
   console.log('load res');
+  await loadSoundSpritesheet('foley/foley.mp3');
   await loadRes();
 
   const s = Object.keys(sounds)

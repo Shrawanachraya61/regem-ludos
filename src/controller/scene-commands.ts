@@ -12,6 +12,7 @@ import {
   showModal,
   showSave,
   showLevelUp,
+  startConversationActors,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -32,6 +33,7 @@ import {
   characterStartAi,
   characterGetPosBottom,
   characterEquipItem,
+  Character,
 } from 'model/character';
 import {
   getAllTagMarkers,
@@ -169,7 +171,8 @@ export const playDialogue = (
   setCutsceneText(
     text,
     speaker,
-    actorNameLower !== 'narrator' ? nameLabel : ''
+    actorNameLower !== 'narrator' ? nameLabel : '',
+    actorName
   );
 
   return waitMS(150, () => {
@@ -479,6 +482,10 @@ const waitForUserInputDialog = (cb?: () => void) => {
   scene.isWaitingForInput = true;
 
   const keyHandler = (ev: KeyboardEvent) => {
+    if (scene.inputDisabled) {
+      return;
+    }
+
     switch (ev.key) {
       case 'Return':
       case 'Enter':
@@ -2120,8 +2127,8 @@ export const floor1TutToggleColorDoors = (
 
 const commands = {
   playDialogue,
-  setConversation2,
   setConversation,
+  setConversation2,
   setConversationWithoutBars,
   endConversation,
   setConversationSpeaker,

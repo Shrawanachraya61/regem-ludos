@@ -290,15 +290,18 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
                     ch={ch}
                     usePortrait={false}
                     style={{
-                      filter: isValid ? 'unset' : 'blur(1px) brightness(0.5)',
+                      filter: isValid
+                        ? 'unset'
+                        : 'blur(1px) brightness(0.25) sepia(75%) invert(25%)',
                     }}
                   />
                   {!isValid ? (
                     <div
                       style={{
                         position: 'absolute',
-                        background:
-                          'linear-gradient(90deg, rgba(169,59,59,1) 0%, rgba(169,59,59,0) 100%)',
+                        // filter: 'sepia(75%) invert(25%) brightness(0.5)',
+                        // background:
+                        //   'linear-gradient(90deg, rgba(169,59,59,1) 0%, rgba(169,59,59,0) 100%)',
                         width: '100%',
                         borderRadius: '8px',
                         display: 'flex',

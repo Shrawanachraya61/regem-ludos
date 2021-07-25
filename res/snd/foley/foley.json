@@ -1,0 +1,333 @@
+{
+  "resources": [
+    "foley.mp3"
+  ],
+  "spritemap": {
+    "silence": {
+      "start": 0,
+      "end": 2,
+      "loop": true
+    },
+    "aggro_alert": {
+      "start": 3,
+      "end": 3.7314285714285713,
+      "loop": false
+    },
+    "arcade_game_ready": {
+      "start": 5,
+      "end": 5.789478458049887,
+      "loop": false
+    },
+    "arcade_game_triggered": {
+      "start": 7,
+      "end": 9.063673469387755,
+      "loop": false
+    },
+    "bass_kicks2": {
+      "start": 11,
+      "end": 12.776326530612245,
+      "loop": false
+    },
+    "battle_armor_broken3": {
+      "start": 14,
+      "end": 14.620204081632654,
+      "loop": false
+    },
+    "battle_armor_hit3": {
+      "start": 16,
+      "end": 16.360204081632652,
+      "loop": false
+    },
+    "battle_arrow_hit": {
+      "start": 18,
+      "end": 18.17310657596372,
+      "loop": false
+    },
+    "battle_cast": {
+      "start": 20,
+      "end": 20.930204081632652,
+      "loop": false
+    },
+    "battle_fire_explosion1_1": {
+      "start": 22,
+      "end": 23.166167800453515,
+      "loop": false
+    },
+    "battle_interrupt_channel": {
+      "start": 25,
+      "end": 25.240204081632655,
+      "loop": false
+    },
+    "battle_ready2": {
+      "start": 27,
+      "end": 27.390204081632653,
+      "loop": false
+    },
+    "battle_staggered1_2": {
+      "start": 29,
+      "end": 29.766984126984127,
+      "loop": false
+    },
+    "battle_swing1": {
+      "start": 31,
+      "end": 31.271473922902494,
+      "loop": false
+    },
+    "battle_swing2": {
+      "start": 33,
+      "end": 33.21795918367347,
+      "loop": false
+    },
+    "battle_swing3": {
+      "start": 35,
+      "end": 35.45764172335601,
+      "loop": false
+    },
+    "battle_swing4": {
+      "start": 37,
+      "end": 37.43768707482993,
+      "loop": false
+    },
+    "blip": {
+      "start": 39,
+      "end": 39.05020408163265,
+      "loop": false
+    },
+    "change_room": {
+      "start": 41,
+      "end": 41.723174603174606,
+      "loop": false
+    },
+    "dead3": {
+      "start": 43,
+      "end": 43.83877551020408,
+      "loop": false
+    },
+    "despawn": {
+      "start": 45,
+      "end": 45.910272108843536,
+      "loop": false
+    },
+    "despawn_tut_wall": {
+      "start": 47,
+      "end": 47.660204081632656,
+      "loop": false
+    },
+    "dialog_select": {
+      "start": 49,
+      "end": 49.39693877551021,
+      "loop": false
+    },
+    "dialog_woosh": {
+      "start": 51,
+      "end": 51.23625850340136,
+      "loop": false
+    },
+    "eject_tokens": {
+      "start": 53,
+      "end": 54.01997732426304,
+      "loop": false
+    },
+    "encounter": {
+      "start": 56,
+      "end": 58.091473922902495,
+      "loop": false
+    },
+    "evasion3": {
+      "start": 60,
+      "end": 60.99265306122449,
+      "loop": false
+    },
+    "exp_gain2": {
+      "start": 62,
+      "end": 63.671836734693876,
+      "loop": false
+    },
+    "fanfare": {
+      "start": 65,
+      "end": 68.60489795918367,
+      "loop": false
+    },
+    "gain_token": {
+      "start": 70,
+      "end": 70.36934240362812,
+      "loop": false
+    },
+    "get_item2": {
+      "start": 72,
+      "end": 72.78367346938775,
+      "loop": false
+    },
+    "insert_token": {
+      "start": 74,
+      "end": 74.83056689342403,
+      "loop": false
+    },
+    "jump2": {
+      "start": 76,
+      "end": 76.24532879818594,
+      "loop": false
+    },
+    "jump_cutscene": {
+      "start": 78,
+      "end": 78.18020408163265,
+      "loop": false
+    },
+    "level_up": {
+      "start": 80,
+      "end": 80.53020408163265,
+      "loop": false
+    },
+    "menu_cancel": {
+      "start": 82,
+      "end": 82.20485260770975,
+      "loop": false
+    },
+    "menu_choice_close": {
+      "start": 84,
+      "end": 84.33104308390023,
+      "loop": false
+    },
+    "menu_choice_open2": {
+      "start": 86,
+      "end": 86.32380952380953,
+      "loop": false
+    },
+    "menu_move2": {
+      "start": 88,
+      "end": 88.10020408163265,
+      "loop": false
+    },
+    "menu_select2": {
+      "start": 90,
+      "end": 90.36390022675737,
+      "loop": false
+    },
+    "menu_sparkle2": {
+      "start": 92,
+      "end": 94.52365079365079,
+      "loop": false
+    },
+    "phone_beep": {
+      "start": 96,
+      "end": 96.53539682539683,
+      "loop": false
+    },
+    "phone_beep_off": {
+      "start": 98,
+      "end": 98.53537414965986,
+      "loop": false
+    },
+    "phone_ring": {
+      "start": 100,
+      "end": 102.31353741496599,
+      "loop": false
+    },
+    "pop": {
+      "start": 104,
+      "end": 104.03020408163265,
+      "loop": false
+    },
+    "rez": {
+      "start": 106,
+      "end": 108.14204081632653,
+      "loop": false
+    },
+    "robot_channel_start": {
+      "start": 110,
+      "end": 111.08020408163266,
+      "loop": false
+    },
+    "robot_charge_up": {
+      "start": 113,
+      "end": 113.81680272108844,
+      "loop": false
+    },
+    "robot_staggered3": {
+      "start": 115,
+      "end": 115.7034693877551,
+      "loop": false
+    },
+    "robot_staggered_damaged2": {
+      "start": 117,
+      "end": 117.32036281179138,
+      "loop": false
+    },
+    "shoot_arrow": {
+      "start": 119,
+      "end": 119.16761904761904,
+      "loop": false
+    },
+    "skye_kick_vending_machine": {
+      "start": 121,
+      "end": 121.26727891156463,
+      "loop": false
+    },
+    "spawn_enemy": {
+      "start": 123,
+      "end": 123.60124716553288,
+      "loop": false
+    },
+    "terminal_cancel": {
+      "start": 125,
+      "end": 125.14190476190477,
+      "loop": false
+    },
+    "use_item": {
+      "start": 127,
+      "end": 127.29020408163265,
+      "loop": false
+    },
+    "vr_portal_activate": {
+      "start": 129,
+      "end": 129.47020408163266,
+      "loop": false
+    },
+    "vr_portal_beep": {
+      "start": 131,
+      "end": 131.23020408163265,
+      "loop": false
+    },
+    "vr_portal_buzz": {
+      "start": 133,
+      "end": 133.6943537414966,
+      "loop": false
+    },
+    "vr_portal_deactivate": {
+      "start": 135,
+      "end": 135.47020408163266,
+      "loop": false
+    },
+    "vr_portal_focus": {
+      "start": 137,
+      "end": 137.69020408163266,
+      "loop": false
+    },
+    "vr_portal_landed": {
+      "start": 139,
+      "end": 139.45020408163265,
+      "loop": false
+    },
+    "vr_portal_start": {
+      "start": 141,
+      "end": 141.95020408163265,
+      "loop": false
+    },
+    "vr_portal_zoom": {
+      "start": 143,
+      "end": 146.60020408163265,
+      "loop": false
+    },
+    "woosh": {
+      "start": 148,
+      "end": 148.4171201814059,
+      "loop": false
+    },
+    "woosh_reverse": {
+      "start": 150,
+      "end": 150.35156462585033,
+      "loop": false
+    }
+  },
+  "autoplay": "silence"
+}

@@ -2,6 +2,7 @@
 import { h } from 'preact';
 import { colors, style, keyframes, IntrinsicProps } from 'view/style';
 import CursorIcon from 'view/icons/Cursor';
+import { useState } from 'preact/hooks';
 
 export enum ButtonType {
   NEUTRAL,
@@ -18,6 +19,8 @@ interface IButtonProps {
   active?: boolean;
   selected?: boolean;
   disabled?: boolean;
+  delayClick?: boolean;
+  keyboardShortcut?: (key: string) => boolean;
 }
 
 const ButtonTypeToColor = {
@@ -69,7 +72,7 @@ const Cursor = (): h.JSX.Element => {
   );
 };
 
-const Button = style(
+const ButtonStyled = style(
   'div',
   (props: IButtonProps = { type: ButtonType.NEUTRAL }) => ({
     fontSize: '16px',
@@ -128,7 +131,8 @@ export const ButtonContentWithIcon = style('div', () => {
   };
 });
 
-export default (props: IButtonProps & IntrinsicProps) => {
+const Button = (props: IButtonProps & IntrinsicProps) => {
+  const [forceActive, setForceActive] = useState(false);
   return (
     <div
       style={{
@@ -137,7 +141,27 @@ export default (props: IButtonProps & IntrinsicProps) => {
       }}
     >
       {props.showCursor ? <Cursor /> : null}
-      <Button {...props} />
+      <ButtonStyled
+        {...props}
+        active={forceActive || props.active}
+        onClick={ev => {
+          if (props?.onClick) {
+            if (props?.delayClick) {
+              setForceActive(true);
+              setTimeout(() => {
+                setForceActive(false);
+                if (props?.onClick) {
+                  props.onClick(ev);
+                }
+              }, 100);
+            } else {
+              props.onClick(ev);
+            }
+          }
+        }}
+      />
     </div>
   );
 };
+
+export default Button;

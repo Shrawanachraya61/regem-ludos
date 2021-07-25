@@ -18,7 +18,13 @@ class AssetLoader {
       if (isNaN(volumeModifier)) {
         volumeModifier = 1;
       }
-      return loadSound(soundName, soundUrl, SoundType.NORMAL, volumeModifier);
+      return loadSound(
+        soundName,
+        soundUrl,
+        SoundType.NORMAL,
+        volumeModifier,
+        true
+      );
     };
 
     const _Music = async function (line: any) {
@@ -164,12 +170,12 @@ export const loadRes = async (loadingTick?: () => void) => {
   if (shouldUseZip()) {
     const zips = await Promise.all([
       fetchZipArchive('res/images.zip'),
-      fetchZipArchive('res/snd/foley/foley.zip'),
+      // fetchZipArchive('res/snd/foley/foley.zip'),
     ]);
     const imagesArchive = zips[0];
     await processZipImagesArchiveJSZip(imagesArchive);
-    const soundsArchive = zips[1];
-    await processZipSoundArchiveJSZip(soundsArchive);
+    // const soundsArchive = zips[1];
+    // await processZipSoundArchiveJSZip(soundsArchive);
   }
 
   const loader = new AssetLoader();

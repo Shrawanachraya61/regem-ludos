@@ -305,7 +305,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
         <PercentBarWrapper short={true} borderColor={colors.DARKBLUE}>
           <ProgressBar
             pct={characterGetExperiencePct(ch)}
-            backgroundColor={colors.DARKBLUE}
+            backgroundColor={colors.BROWN}
             color={colors.YELLOW}
             height={6}
             label={``}

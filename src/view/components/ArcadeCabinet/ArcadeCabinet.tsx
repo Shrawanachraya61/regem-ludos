@@ -1,5 +1,5 @@
 /* @jsx h */
-import { h, Fragment, JSX } from 'preact';
+import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { colors, style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 import {
@@ -14,13 +14,19 @@ import {
   beginCurrentArcadeGame,
 } from 'controller/arcade-iframe-actions';
 
-import Button, { ButtonType } from 'view/elements/Button';
+import Button, {
+  ButtonType,
+  ButtonContentWithIcon,
+} from 'view/elements/Button';
 import IframeShim from 'view/elements/IframeShim';
-import Arrow from 'view/icons/Arrow';
-import Help from 'view/icons/Help';
 import { hideArcadeGame } from 'controller/ui-actions';
-import { getCurrentPlayer } from 'model/generics';
-import { getUiInterface, uiInterface } from 'view/ui';
+import {
+  getArcadeGameVolume,
+  getCurrentPlayer,
+  isArcadeGameMuted,
+  setArcadeGameMuted,
+} from 'model/generics';
+import { getUiInterface } from 'view/ui';
 import { playerModifyTokens } from 'model/player';
 import { playSoundName } from 'model/sound';
 import {
@@ -32,6 +38,14 @@ import { unpause } from 'controller/loop';
 import { useKeyboardEventListener } from 'view/hooks';
 import { isCancelKey, isConfirmKey } from 'controller/events';
 import { isDevelopmentMode } from 'utils';
+import {
+  getCurrentSettings,
+  saveSettingsToLS,
+} from 'controller/save-management';
+import Speaker from 'view/icons/Speaker';
+import SpeakerOff from 'view/icons/SpeakerOff';
+import Expand from 'view/icons/Expand';
+import Contract from 'view/icons/Contract';
 
 import './GameTicTacToe';
 import './GamePresident';
@@ -327,7 +341,7 @@ const InsertTokens = (props: { meta: IArcadeGameMeta; expanded: boolean }) => {
         </CabinetHeaderTicketsTokensItem>
         <CabinetHeaderTicketsTokensItem>
           <Button
-          active={isButtonActive && cursorPos === 1}
+            active={isButtonActive && cursorPos === 1}
             disabled={tokensInserted === 0}
             type={ButtonType.CANCEL}
             showCursor={cursorPos === 1}
@@ -346,13 +360,12 @@ const InsertTokens = (props: { meta: IArcadeGameMeta; expanded: boolean }) => {
 
 const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const [expanded, setExpanded] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(isArcadeGameMuted());
+  const [volume, setVolume] = useState(getArcadeGameVolume());
   const [helpDialogOpen, setHelpDialogOpen] = useState(false);
-  const [tokensInserted, setTokensInserted] = useState(0);
+  const [tokensInserted] = useState(0);
   const meta: IArcadeGameMeta =
     ArcadeGamePathMeta[props.game] ?? ArcadeGamePathMeta.default;
-  const tokens = getCurrentPlayer().tokens;
-  const tickets = getCurrentPlayer().tickets;
   const tokensRequired = meta.tokensRequired;
   const isGameRunning = getUiInterface().appState.arcadeGame.isGameRunning;
   const isGameReady = getUiInterface().appState.arcadeGame.isGameReady;
@@ -402,7 +415,17 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 }
               }}
             >
-              {expanded ? 'Contract' : 'Expand'}
+              {expanded ? (
+                <ButtonContentWithIcon>
+                  <Contract color={colors.WHITE} />
+                  Contract
+                </ButtonContentWithIcon>
+              ) : (
+                <ButtonContentWithIcon>
+                  <Expand color={colors.WHITE} />
+                  Expand
+                </ButtonContentWithIcon>
+              )}
             </Button>
             <Button
               type={ButtonType.PRIMARY}
@@ -417,9 +440,23 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 } else {
                   unmuteAudio();
                 }
+
+                // saves the arcade game mute/volume
+                setArcadeGameMuted(nextMuted);
+                saveSettingsToLS(getCurrentSettings());
               }}
             >
-              {muted ? 'Unmute' : 'Mute'}
+              {muted ? (
+                <ButtonContentWithIcon>
+                  <SpeakerOff color={colors.WHITE} />
+                  Unmute
+                </ButtonContentWithIcon>
+              ) : (
+                <ButtonContentWithIcon>
+                  <Speaker color={colors.WHITE} />
+                  Mute
+                </ButtonContentWithIcon>
+              )}
             </Button>
           </CabinetHeaderButtonsContainer>
         </CabinetHeaderContainer>
@@ -443,7 +480,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             src={
               (isDevelopmentMode()
                 ? transformIframeUrlForDevelopment(props.game)
-                : props.game) + '?cabinet=true&mute=true'
+                : props.game) + `?cabinet=true&mute=${muted}`
             }
             width={expanded ? '100%' : 512 + 'px'}
             height={expanded ? '100%' : 512 + 'px'}

@@ -146,8 +146,20 @@ export const setVolume = (type: SoundType, volumeDecimal: number) => {
   }
 };
 export const getVolume = (type: SoundType) => {
-  return volumeLevels[type];
+  return volumeLevels[type] ?? 1;
 };
+
+let arcadeGameVolume = 100;
+export const setArcadeGameVolume = (pct: number) => {
+  arcadeGameVolume = pct > 100 ? 100 : pct < 0 ? 0 : pct;
+};
+export const getArcadeGameVolume = () => arcadeGameVolume;
+
+let arcadeGameMuted = false;
+export const setArcadeGameMuted = (v: boolean) => {
+  arcadeGameMuted = v;
+};
+export const isArcadeGameMuted = () => arcadeGameMuted;
 
 let cameraDrawOffset: Point = [0, 0];
 export const getCameraDrawOffset = () => cameraDrawOffset;
@@ -191,18 +203,23 @@ export const enablePauseRendering = () => (pauseRendering = true);
 export const disablePauseRendering = () => (pauseRendering = false);
 export const isPauseRenderingEnabled = () => pauseRendering;
 
-export let useZip = true;
+let useZip = true;
 export const shouldUseZip = () => useZip;
 export const setUseZip = (v: boolean) => (useZip = v);
 
-export let timeLoaded = +new Date();
+let timeLoaded = +new Date();
 export const getTimeLoaded = () => timeLoaded;
 export const setTimeLoaded = (s: number) => {
   timeLoaded = s;
 };
 
-export let durationPlayed = 0;
+let durationPlayed = 0;
 export const getDurationPlayed = () => durationPlayed;
 export const setDurationPlayed = (s: number) => {
   durationPlayed = s;
 };
+
+let showOnScreenControls = true;
+export const shouldShowOnScreenControls = () => showOnScreenControls;
+export const setShowOnScreenControls = (v: boolean) =>
+  (showOnScreenControls = v);

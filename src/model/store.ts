@@ -1,5 +1,6 @@
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { BattleCharacter } from './battle-character';
+import { Character } from './character';
 
 export enum AppSection {
   BattleUI = 'battleMenu',
@@ -26,10 +27,12 @@ export enum CutsceneSpeaker {
 }
 
 export interface ICutsceneAppState {
+  id: string;
   text: string;
   showBars: boolean;
   speaker: CutsceneSpeaker;
   speakerName: string;
+  actorName: string;
   visible: boolean;
   portraitLeft: string;
   portraitLeftEmotion: string;
@@ -41,6 +44,8 @@ export interface ICutsceneAppState {
   portraitRight2Emotion: string;
   portraitCenter: string;
   portraitCenterEmotion: string;
+  actors: Character[];
+  portraitActors: Character[];
 }
 
 export interface IArcadeCabinetState {
@@ -130,10 +135,12 @@ export const AppStateInitial: AppState = {
     prevCharacterText: '',
   },
   cutscene: {
+    id: '',
     showBars: true,
     text: '',
     speaker: CutsceneSpeaker.None,
     speakerName: '',
+    actorName: '',
     visible: true,
     portraitLeft: '',
     portraitLeftEmotion: '',
@@ -145,6 +152,8 @@ export const AppStateInitial: AppState = {
     portraitRight2Emotion: '',
     portraitCenter: '',
     portraitCenterEmotion: '',
+    actors: [],
+    portraitActors: [],
   },
   battle: {
     characterIndexSelected: 0,

@@ -34,7 +34,7 @@ __TRIGGERNAME \= (^#(.)+$)
 __SCENENAME \= (^(\s)*@(.)+$)
 __INLINE \= (^(\s)*\+(.)+$)
 __DIALOG \= ((^(\s)*[\w \w]*:)|(^(\s)+(\w)+:))
-__TRIGGERTYPE \= (^(\s)*(action|step|item),)
+__TRIGGERTYPE \= (^(\s)*(action|step|item|step-first),)
 
 ################################################################
 ## Styles
@@ -135,8 +135,8 @@ contexts [] {
 
 main : context {
    : pattern {
-      regex          \= (@this)
-      styles []       = .control;
+      regex          \= (^(\s)*@this)
+      styles []       = .scene;
    }
 
    : pattern {
@@ -177,11 +177,11 @@ main : context {
       : inline_push {
          regex          \= (')
          styles []       = .punctuation;
-         default_style   = .text
          : pop {
             regex       \= (')
             styles []    = .punctuation;
          }
+         : include "in_dialog" ;
       }
       : inline_push {
          regex          \= (\()
@@ -229,11 +229,12 @@ main : context {
    : inline_push {
       regex          \= (\")
       styles []       = .punctuation;
-      default_style   = .text
+      // default_style   = .text
       : pop {
          regex       \= (\")
          styles []    = .punctuation;
       }
+      : include "in_dialog" ;
    }
    
    : include "multi_line_comment" ;
@@ -293,6 +294,17 @@ trigger : context {
    : pattern {
       regex \= (.*$)
       styles [] = .dialog;
+   }
+}
+
+in_dialog : context {
+   : pattern {
+      regex \= (<.+?>)
+      styles [] = .parameter;
+   }
+   : pattern {
+      regex \= (.)
+      styles [] = .text;
    }
 }
 

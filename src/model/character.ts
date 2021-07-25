@@ -47,6 +47,7 @@ import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
 import { Item, get as getItem, ItemType, WeaponType } from 'db/items';
+import { getSprite } from './sprite';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -908,6 +909,15 @@ export const characterGetExperiencePct = (ch: Character) => {
 //   characterGetLevel(23)
 // );
 
+export const characterGetPortraitSpriteName = (ch: Character): string => {
+  const spriteName = ch.spriteBase + '_portrait';
+  console.log('GET PORT SPRITE', spriteName);
+  if (!hasAnimation(spriteName)) {
+    return '';
+  }
+  return spriteName;
+};
+
 export const characterUpdate = (ch: Character): void => {
   const room = getCurrentRoom();
   const frameMult = getFrameMultiplier();
@@ -1078,7 +1088,7 @@ export const characterUpdate = (ch: Character): void => {
                   tileToWorldCoords(tileBelow.x, tileBelow.y)
                 );
                 // this is an extremely odd fix that I'm not sure why it works, but it looks
-                // like characters rounding a diagonal wall at the top side sometimes
+                // like characters on paths rounding a diagonal wall at the top side sometimes
                 // cut the corner and get stuck in the wall (each dir).  This code bumps them
                 // up to the top of the diagonal which fixes their path.  TODO here
                 // is to move them smoothly up there instead of bumping them
@@ -1125,10 +1135,10 @@ export const characterUpdate = (ch: Character): void => {
   ch.vx = 0;
   ch.vy = 0;
 
-  const leader = getCurrentPlayer().leader;
-  if (ch !== leader && characterCollidesWithOther(ch, leader)) {
-    console.log('collides with leader');
-  }
+  // const leader = getCurrentPlayer().leader;
+  // if (ch !== leader && characterCollidesWithOther(ch, leader)) {
+  //   console.log('collides with leader');
+  // }
 };
 
 const isWallOrProp = (tile: Tile | null) => {

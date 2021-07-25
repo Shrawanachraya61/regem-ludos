@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":432,
-                 "y":108
+                 "x":96,
+                 "y":192
                 }, 
                 {
                  "gid":200,
@@ -323,7 +323,7 @@
  "nextobjectid":66,
  "orientation":"isometric",
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.0",
  "tileheight":16,
  "tilesets":[
         {
@@ -397,6 +397,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":32
 }

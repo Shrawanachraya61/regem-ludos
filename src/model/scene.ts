@@ -22,6 +22,7 @@ export interface Scene {
   isWaitingForInput: boolean;
   isWaitingForTime: boolean;
   isWaitingForAnimation: boolean;
+  inputDisabled: boolean; // used only for dialog input
   waitTimeoutId: number;
 }
 
@@ -41,6 +42,7 @@ export const sceneCreate = (): Scene => {
     isWaitingForInput: false,
     isWaitingForTime: false,
     isWaitingForAnimation: false,
+    inputDisabled: false,
     waitTimeoutId: -1,
   };
   Object.assign(scene.commands, getSceneCommands(scene));

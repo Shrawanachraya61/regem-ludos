@@ -88,7 +88,7 @@ const SaveInfoArea = style('div', {
   boxSizing: 'border-box',
 });
 const CurrencyInfoArea = style('div', {
-  background: colors.BLACK,
+  background: colors.DARKRED,
   border: `1px solid ${colors.WHITE}`,
   margin: '-2px 2px',
   padding: '8px',
@@ -120,11 +120,17 @@ enum MenuCommandItem {
 const MenuSection = () => {
   const [selectedSection, setSelectedSection] = useState(MenuCommandItem.ITEMS);
   const [outerMenuActive, setOuterMenuActive] = useState(true);
+  const [closeButtonActive, setCloseButtonActive] = useState(false);
 
   const handleCloseClick = () => {
-    const onClose = getUiInterface().appState.menu.onClose;
-    playSoundName('menu_choice_close');
-    onClose();
+    console.trace('close click');
+    setCloseButtonActive(true);
+    setTimeout(() => {
+      setCloseButtonActive(false);
+      const onClose = getUiInterface().appState.menu.onClose;
+      playSoundName('menu_choice_close');
+      onClose();
+    }, 100);
   };
 
   const handleMenuCommandItemClick = (section: MenuCommandItem) => {
@@ -252,8 +258,8 @@ const MenuSection = () => {
           >
             <MenuLoad
               onClose={() => {
-                // playSoundName('menu_choice_close');
-                handleCloseClick();
+                playSoundName('menu_choice_close');
+                setOuterMenuActive(true);
               }}
             />
           </MenuBox>
@@ -289,6 +295,7 @@ const MenuSection = () => {
             width="60%"
             open={true}
             isInactive={true}
+            backgroundColor={'#302C2E'}
             items={party.map(ch => {
               return {
                 label: (
@@ -299,7 +306,9 @@ const MenuSection = () => {
                         usePortrait={true}
                         style={{
                           filter:
-                            ch.hp <= 0 ? 'sepia(1) brightness(0.5)' : 'unset',
+                            ch.hp <= 0
+                              ? 'sepia(75%) invert(25%) brightness(0.5)'
+                              : 'unset',
                         }}
                       />
                     ) : null}
@@ -422,7 +431,11 @@ const MenuSection = () => {
               hideCloseBox={true}
             />
             <ConfirmButtonArea>
-              <Button type={ButtonType.PRIMARY} onClick={handleCloseClick}>
+              <Button
+                type={ButtonType.PRIMARY}
+                onClick={handleCloseClick}
+                active={closeButtonActive}
+              >
                 Close {getCancelKeyLabel()}
               </Button>
             </ConfirmButtonArea>

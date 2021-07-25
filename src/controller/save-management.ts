@@ -1,10 +1,14 @@
 import {
+  getArcadeGameVolume,
   getCurrentOverworld,
   getCurrentPlayer,
   getCurrentScene,
   getDurationPlayed,
   getTimeLoaded,
   getVolume,
+  isArcadeGameMuted,
+  setArcadeGameMuted,
+  setArcadeGameVolume,
   setDurationPlayed,
   setTimeLoaded,
   setVolume,
@@ -33,7 +37,9 @@ interface ISaveSettings {
   volumeLevels: {
     [SoundType.NORMAL]: number;
     [SoundType.MUSIC]: number;
+    arcadeGame: number;
   };
+  arcadeGameMuted: boolean;
 }
 
 export interface ISave {
@@ -59,6 +65,14 @@ export interface ISave {
     party: number[];
     battlePositions: number[];
     partyStorage: ICharacterSave[];
+  };
+  highScores: {
+    ticTacToe: number;
+    invaderz: number;
+    elasticity: number;
+    vortex: number;
+    golems: number;
+    president: number;
   };
 }
 
@@ -91,7 +105,9 @@ export const getCurrentSettings = (): ISaveSettings => {
     volumeLevels: {
       [SoundType.NORMAL]: getVolume(SoundType.NORMAL),
       [SoundType.MUSIC]: getVolume(SoundType.MUSIC),
+      arcadeGame: getArcadeGameVolume(),
     },
+    arcadeGameMuted: isArcadeGameMuted(),
   };
   return settings;
 };
@@ -99,6 +115,8 @@ export const getCurrentSettings = (): ISaveSettings => {
 export const setCurrentSettings = (settings: ISaveSettings) => {
   setVolume(SoundType.NORMAL, settings.volumeLevels[SoundType.NORMAL]);
   setVolume(SoundType.MUSIC, settings.volumeLevels[SoundType.MUSIC]);
+  setArcadeGameVolume(settings.volumeLevels.arcadeGame);
+  setArcadeGameMuted(settings.arcadeGameMuted);
 };
 
 const getLSKey = (type: LocalStorageKeyType, optional?: string) => {
@@ -134,7 +152,9 @@ export const loadSettingsFromLS = (): ISaveSettings => {
       volumeLevels: {
         [SoundType.NORMAL]: settingsJson?.volumeLevels?.[SoundType.NORMAL] ?? 1,
         [SoundType.MUSIC]: settingsJson?.volumeLevels?.[SoundType.MUSIC] ?? 1,
+        arcadeGame: settingsJson?.volumeLevels?.arcadeGame ?? 100,
       },
+      arcadeGameMuted: settingsJson?.arcadeGameMuted ?? false,
     };
     return settings;
   } catch (e) {
@@ -179,6 +199,14 @@ export const loadSaveListFromLS = (): ISave[] => {
             party: save.player.party ?? [],
             battlePositions: save.player.battlePositions ?? [],
             partyStorage: save.player.partyStorage ?? [],
+          },
+          highScores: {
+            ticTacToe: save?.highScores?.ticTacToe ?? 0,
+            invaderz: save?.highScores?.invaderz ?? 0,
+            elasticity: save?.highScores?.elasticity ?? 0,
+            vortex: save?.highScores?.vortex ?? 0,
+            golems: save?.highScores?.golems ?? 0,
+            president: save?.highScores?.president ?? 0,
           },
         };
       }
@@ -238,6 +266,14 @@ export const createSave = (params: {
       battlePositions: player.battlePositions.map(ch =>
         player.partyStorage.indexOf(ch as Character)
       ),
+    },
+    highScores: {
+      ticTacToe: 0,
+      invaderz: 0,
+      elasticity: 0,
+      vortex: 0,
+      golems: 0,
+      president: 0,
     },
   };
 

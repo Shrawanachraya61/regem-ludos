@@ -11,6 +11,8 @@ import {
   getTriggersVisible,
   hideMarkers,
   hideTriggers,
+  setShowOnScreenControls,
+  shouldShowOnScreenControls,
   showMarkers,
   showTriggers,
 } from 'model/generics';
@@ -23,7 +25,7 @@ import {
   getPauseKeyLabel,
   pushEmptyKeyHandler,
 } from 'controller/events';
-import { getUiInterface } from 'view/ui';
+import { getUiInterface, uiInterface } from 'view/ui';
 import { playSound } from 'controller/scene-commands';
 import { playSoundName } from 'model/sound';
 import GearIcon from 'view/icons/Gear';
@@ -31,7 +33,8 @@ import MenuIcon from 'view/icons/Menu';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
-  top: '0px',
+  top: '4px',
+  left: '4px',
   width: '100%',
   display: 'flex',
   pointerEvents: 'none',
@@ -46,6 +49,7 @@ export enum TopBarButtons {
   DEBUG = 'debug',
   MENU = 'menu',
   BATTLE_MENU = 'battle-menu',
+  ON_SCREEN_CONTROLS = 'on-screen-controls',
 }
 
 interface ITopBarProps {
@@ -85,6 +89,17 @@ const TopBar = (props: ITopBarProps) => {
       showTriggers();
       showMarkers();
     }
+  };
+
+  const handleToggleOnScreenControls = (ev: Event) => {
+    ev.stopPropagation();
+    playSoundName('menu_select');
+    if (shouldShowOnScreenControls()) {
+      setShowOnScreenControls(false);
+    } else {
+      setShowOnScreenControls(true);
+    }
+    uiInterface?.render();
   };
 
   return (
@@ -133,6 +148,15 @@ const TopBar = (props: ITopBarProps) => {
             onClick={handleToggleDebug}
           >
             Toggle Debug (d)
+          </Button>
+        ) : null}
+        {props.buttons.includes(TopBarButtons.ON_SCREEN_CONTROLS) ? (
+          <Button
+            style={{ pointerEvents: 'all' }}
+            type={ButtonType.SECONDARY}
+            onClick={handleToggleOnScreenControls}
+          >
+            Toggle Controls
           </Button>
         ) : null}
       </TopBarWrapper>

@@ -113,7 +113,9 @@ export const getConfirmKeyLabel = () => '(X)';
 export const isCancelKey = (key: string) => {
   return ['Escape', 'z', 'Z', 'KeyZ'].includes(key);
 };
+export const getConfirmKey = () => 'KeyX';
 export const getCancelKeyLabel = () => '(Z)';
+export const getCancelKey = () => 'KeyZ';
 export const isAuxKey = (key: string) => {
   return ['c', 'C', 'KeyC'].includes(key);
 };

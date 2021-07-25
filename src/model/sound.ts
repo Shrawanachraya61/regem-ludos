@@ -1,8 +1,23 @@
-import { getZipAudioData } from 'controller/res-loader';
-import { normalize, normalizeClamp, timeoutPromise } from 'utils';
-import { getNow, getSoundEnabled, getVolume, shouldUseZip } from './generics';
+import { normalizeClamp, timeoutPromise } from 'utils';
+import { getNow, getSoundEnabled, getVolume } from './generics';
 
 const SOUND_PATH_PREFIX = 'res/snd';
+
+interface ISoundSpritesheetMetadata {
+  resources: string[];
+  spritemap: {
+    [key: string]: ISoundSprite;
+  };
+}
+interface ISoundSprite {
+  start: number;
+  end: number;
+  loop: boolean;
+}
+let spritesheetMetadata: ISoundSpritesheetMetadata = {
+  resources: [],
+  spritemap: {},
+};
 
 export const sounds: Record<
   string,
@@ -14,16 +29,17 @@ const activeSounds: ISound[] = [];
 export enum SoundType {
   NORMAL = 'normal',
   MUSIC = 'music',
+  SPRITESHEET = 'spritesheet',
 }
 
 interface ISoundLoaded {
-  sound: HTMLAudioElement;
-  nodes: Node[];
-  audio: Node;
-  nodeI: number;
+  nodes: HTMLAudioElement[];
+  currentNodeIndex: number;
   soundDuration: number;
   soundType: SoundType;
   volumeModifier: number;
+  useSpritesheet: boolean;
+  sprite?: ISoundSprite;
 }
 
 interface ISound extends ISoundLoaded {
@@ -32,50 +48,142 @@ interface ISound extends ISoundLoaded {
   lastStartTimestamp: number;
 }
 
+const soundSprites: Record<string, ISoundSprite> = {};
+const getSoundSprite = (id: string) => {
+  return soundSprites[id] ?? null;
+};
+const setSoundSprite = (audio: HTMLAudioElement, sprite: ISoundSprite) => {
+  soundSprites[audio.id] = sprite;
+};
+const addSpritesheetUpdateListener = (audio: HTMLAudioElement) => {
+  audio.addEventListener(
+    'timeupdate',
+    function () {
+      const sound: HTMLAudioElement = this;
+      const sprite = getSoundSprite(sound.id);
+      if (sprite) {
+        if (
+          sound.currentTime > sprite.end ||
+          sound.currentTime < sprite.start
+        ) {
+          sound.pause();
+        }
+      }
+    }.bind(audio)
+  );
+};
+
+export const loadSoundSpritesheet = async (url: string) => {
+  const metaUrl = SOUND_PATH_PREFIX + '/' + url.slice(0, -4) + '.json';
+  spritesheetMetadata = await fetch(metaUrl)
+    .then(res => res.json())
+    .catch(e => {
+      console.error('Failed to load json metadata for sound spritesheet', e);
+    });
+
+  const blob = await fetch(SOUND_PATH_PREFIX + '/' + url).then(res =>
+    res.blob()
+  );
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  const dataUrl: string = await new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject('failed to read blob: ' + url);
+    }, 10000);
+    reader.addEventListener('loadend', () => {
+      const result = reader?.result;
+      if (result) {
+        clearTimeout(timeoutId);
+        resolve(result.toString());
+      }
+    });
+  });
+  const audio = new Audio(dataUrl);
+  audio.autoplay = false;
+  audio.id = 'audio1';
+  addSpritesheetUpdateListener(audio);
+  const loadedSound = addSoundToLoadedSounds(
+    audio,
+    SoundType.SPRITESHEET,
+    'spritesheet',
+    1.0
+  );
+
+  for (let i = 0; i < 4; i++) {
+    const audio = new Audio(dataUrl);
+    audio.autoplay = false;
+    audio.id = 'audio' + (i + 2);
+    addSpritesheetUpdateListener(audio);
+    loadedSound.nodes.push(audio);
+  }
+
+  // await loadSound('spritesheet', url, SoundType.SPRITESHEET, 1.0);
+};
+
+export const getSoundSpriteMetadata = (url: string) => {
+  const nameFromUrl = url.slice(url.lastIndexOf('/') + 1, -4);
+  const meta = spritesheetMetadata.spritemap[nameFromUrl];
+  if (!meta) {
+    throw new Error(
+      `No spritesheet meta exists for url='${url}' nameFromUrl='${nameFromUrl}'`
+    );
+  }
+  return meta;
+};
+
+const addSoundToLoadedSounds = (
+  sound: HTMLAudioElement,
+  type: SoundType,
+  name: string,
+  volumeModifier: number
+) => {
+  sound.oncanplay = null;
+  sound.currentTime = 99999999999;
+  const soundDuration = sound.currentTime;
+  sound.currentTime = 0;
+  sound.onended = function () {
+    sound.pause();
+    sound.currentTime = 0;
+  };
+  sounds[name] = {
+    nodes: [sound],
+    currentNodeIndex: 0,
+    soundDuration,
+    soundType: type,
+    volumeModifier,
+    useSpritesheet: false,
+  };
+  if (type === SoundType.MUSIC) {
+    console.log('Adding music track', name, getSound(name));
+    musicSoundObjects[name] = getSound(name) as ISound;
+  }
+  return sounds[name];
+};
+
 export const loadSound = async (
   name: string,
   url: string,
   type: SoundType,
-  volumeModifier: number
+  volumeModifier: number,
+  useSpritesheet?: boolean
 ) => {
-  const addSound = (sound: HTMLAudioElement) => {
-    sound.oncanplay = null;
-    sound.currentTime = 99999999999;
-    const soundDuration = sound.currentTime;
-    sound.currentTime = 0;
-    sound.onended = function () {
-      sound.pause();
-      sound.currentTime = 0;
-    };
-    sounds[name] = {
-      sound,
-      audio: sound,
-      nodes: [sound],
-      nodeI: 0,
-      soundDuration,
-      soundType: type,
-      volumeModifier,
-    };
-    // console.log('sound loaded', name, url);
-    if (type === SoundType.MUSIC) {
-      console.log('Adding music track', name, getSound(name));
-      musicSoundObjects[name] = getSound(name) as ISound;
-    } else {
-      sounds[name].nodes.push(
-        sound.cloneNode()
-        // sound.cloneNode(),
-        // sound.cloneNode()
-      );
-    }
-  };
-
-  if (shouldUseZip() && url.includes('foley')) {
-    const soundPath = url.slice(6);
-    const sound = getZipAudioData(soundPath);
-    if (sound) {
-      addSound(sound);
-    } else {
-      console.error('failed to load sound from zip:', url, soundPath);
+  if (useSpritesheet) {
+    try {
+      const spritesheetSound = getSound('spritesheet');
+      const meta = getSoundSpriteMetadata(url);
+      if (spritesheetSound) {
+        sounds[name] = {
+          nodes: spritesheetSound.nodes,
+          currentNodeIndex: 0,
+          soundDuration: meta.end - meta.start,
+          soundType: SoundType.NORMAL,
+          volumeModifier,
+          useSpritesheet: true,
+          sprite: meta,
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load spritesheet sound', e);
     }
   } else {
     url = `${SOUND_PATH_PREFIX}/${url}`;
@@ -83,7 +191,7 @@ export const loadSound = async (
       const sound = new Audio(url);
       sound.autoplay = false;
       const onLoad = () => {
-        addSound(sound);
+        addSoundToLoadedSounds(sound, type, name, volumeModifier);
         clearTimeout(timeoutId);
         resolve(sound);
       };
@@ -91,7 +199,7 @@ export const loadSound = async (
       const timeoutId = setTimeout(() => {
         console.error('Sound load timed out:', name, url);
         onLoad();
-      }, 3000);
+      }, 5000);
 
       sound.addEventListener('error', (e: Event) => {
         console.error('sound error', e);
@@ -112,19 +220,13 @@ export const loadSound = async (
 export const getSound = (soundName: string): ISound | null => {
   const soundObj = sounds[soundName];
   if (soundObj) {
-    const audio = soundObj.nodes[soundObj.nodeI];
-    soundObj.nodeI = (soundObj.nodeI + 1) % soundObj.nodes.length;
     const s: ISound = {
       duration: 0,
       ...soundObj,
       //soundDuration merged in from soundObj
-      // audio: soundObj.audio.cloneNode(true),
-      audio,
       soundName,
       lastStartTimestamp: getNow(),
     };
-    soundObj.sound.currentTime = 0;
-
     return s;
   } else {
     console.error('Could not find sound with name: ', soundName);
@@ -137,17 +239,36 @@ export const playSound = (soundObj: ISound, volume?: number) => {
     return;
   }
   volume = volume ?? getVolume(soundObj.soundType);
-  const { sound } = soundObj;
-  // activeSounds.push(soundObj);
-  sound.volume = volume * soundObj.volumeModifier;
-  sound.play();
-  // sound.onended = () => {
-  //   const ind = activeSounds.indexOf(soundObj);
-  //   if (ind > -1) {
-  //     activeSounds.splice(ind, 1);
-  //   }
-  // };
-  soundObj.lastStartTimestamp = getNow();
+
+  if (soundObj.useSpritesheet && soundObj.sprite) {
+    const spritesheetSound = sounds.spritesheet;
+    if (spritesheetSound) {
+      const sprite = soundObj.sprite;
+      const sound: any =
+        spritesheetSound.nodes[spritesheetSound.currentNodeIndex]; //spritesheetSound.sound;
+      console.log(
+        'play sound from node',
+        spritesheetSound.currentNodeIndex,
+        sound.id,
+        'len=' + spritesheetSound.nodes.length,
+        'next=' +
+          ((spritesheetSound.currentNodeIndex + 1) %
+            spritesheetSound.nodes.length)
+      );
+      sound.volume = (volume || 1) * soundObj.volumeModifier;
+      sound.currentTime = sprite.start;
+      setSoundSprite(sound, sprite);
+      sound.play();
+      soundObj.lastStartTimestamp = getNow();
+      spritesheetSound.currentNodeIndex =
+        (spritesheetSound.currentNodeIndex + 1) % spritesheetSound.nodes.length;
+    }
+  } else {
+    const sound = soundObj.nodes[0];
+    sound.volume = (volume || 1) * soundObj.volumeModifier;
+    sound.play();
+    soundObj.lastStartTimestamp = getNow();
+  }
 };
 
 export const playMusic = async (
@@ -160,12 +281,13 @@ export const playMusic = async (
     console.error('playMusic: Could not find music with name:', musicName);
     return;
   }
-  music.sound.loop = loop;
-  if (!music.sound.paused) {
+  const sound = music.nodes[0];
+  sound.loop = loop;
+  if (!sound.paused) {
     console.log('playMusic: Music is already playing:', musicName);
     return;
   }
-  music.sound.currentTime = 0;
+  sound.currentTime = 0;
 
   playSound(music);
   fadeMs = fadeMs ?? 0;
@@ -173,10 +295,10 @@ export const playMusic = async (
     const fadeStep = 13; //60 fades per second?
     for (let i = 0; i < fadeMs; i += fadeStep) {
       const maxVolume = getVolume(SoundType.MUSIC);
-      music.sound.volume = normalizeClamp(i, 0, fadeMs, 0, maxVolume);
+      sound.volume = normalizeClamp(i, 0, fadeMs, 0, maxVolume);
       await timeoutPromise(fadeStep);
     }
-    music.sound.volume = getVolume(SoundType.MUSIC);
+    sound.volume = getVolume(SoundType.MUSIC);
   }
 };
 
@@ -186,20 +308,20 @@ export const stopMusic = async (musicName: string, fadeMs?: number) => {
     console.error('stopMusic: Could not find music with name:', musicName);
     return;
   }
-  if (!music.sound.paused) {
+  const sound = music.nodes[0];
+  if (!sound.paused) {
     fadeMs = fadeMs ?? 0;
     if (fadeMs > 0) {
       const fadeStep = 13; //60 fades per second?
       for (let i = 0; i < fadeMs; i += fadeStep) {
         const maxVolume = getVolume(SoundType.MUSIC);
-        music.sound.volume =
-          maxVolume - normalizeClamp(i, 0, fadeMs, 0, maxVolume);
+        sound.volume = maxVolume - normalizeClamp(i, 0, fadeMs, 0, maxVolume);
         await timeoutPromise(fadeStep);
       }
-      music.sound.pause();
-      music.sound.volume = getVolume(SoundType.MUSIC);
+      sound.pause();
+      sound.volume = getVolume(SoundType.MUSIC);
     } else {
-      music.sound.pause();
+      sound.pause();
     }
   } else {
     console.log('stopMusic: Music is not playing:', musicName);
@@ -209,7 +331,8 @@ export const stopMusic = async (musicName: string, fadeMs?: number) => {
 export const stopCurrentMusic = async (fadeMs?: number) => {
   for (const i in musicSoundObjects) {
     const soundObject = musicSoundObjects[i];
-    if (!soundObject.sound.paused) {
+    const sound = soundObject.nodes[0];
+    if (!sound.paused) {
       stopMusic(i, fadeMs);
     }
   }
@@ -224,20 +347,22 @@ export const playSoundName = (soundName: string, volume?: number) => {
 };
 
 export const stopSound = (soundObj: ISound) => {
-  const { sound } = soundObj;
+  const sound = soundObj.nodes[soundObj.currentNodeIndex];
   sound.pause();
   sound.currentTime = 0;
 };
 
 export const setVolumeForActiveSounds = (n: number) => {
-  activeSounds.forEach(soundObj => {
-    soundObj.sound.volume = n;
+  activeSounds.forEach(soundObject => {
+    const sound = soundObject.nodes[soundObject.currentNodeIndex];
+    sound.volume = n;
   });
 };
 
 export const setVolumeForMusic = (n: number) => {
   for (const i in musicSoundObjects) {
     const soundObject = musicSoundObjects[i];
-    soundObject.sound.volume = n;
+    const sound = soundObject.nodes[soundObject.currentNodeIndex];
+    sound.volume = n;
   }
 };

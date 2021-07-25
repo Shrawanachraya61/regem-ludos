@@ -48,7 +48,7 @@ import {
 import { awaitAllRoomProps, loadDynamicPropsTileset } from 'model/room';
 import { showModal } from 'controller/ui-actions';
 import { ModalSection } from 'model/store';
-import { playMusic } from 'model/sound';
+import { playMusic, loadSoundSpritesheet } from 'model/sound';
 import { get as getItem } from 'db/items';
 import { colors } from 'view/style';
 
@@ -92,6 +92,7 @@ export const main = async (): Promise<void> => {
   mountUi();
 
   console.log('load rpgscript');
+  console.time('rpgscript');
   initScene();
   const scene = getCurrentScene();
   await Promise.all([
@@ -105,14 +106,22 @@ export const main = async (): Promise<void> => {
     loadRPGScript('intro', scene),
   ]);
 
+  console.timeEnd('rpgscript');
   loadingTick();
 
   console.log('load res');
+
+  console.time('sound-spritesheet');
+  await loadSoundSpritesheet('foley/foley.mp3');
+  console.timeEnd('sound-spritesheet');
+  console.time('res');
   await loadRes(loadingTick);
   // Need this loaded to load rooms, some props need height info to load properly
   await loadDynamicPropsTileset();
+  console.timeEnd('res');
 
   console.log('init db');
+  console.time('db');
   await initDb();
 
   loadingTick();
@@ -122,6 +131,7 @@ export const main = async (): Promise<void> => {
 
   console.log('load tiles');
   await loadTiles();
+  console.timeEnd('db');
 
   loadingTick();
 

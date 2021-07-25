@@ -1,5 +1,6 @@
 /* @jsx h */
 import { h, Ref } from 'preact';
+import { useState } from 'preact/hooks';
 import { style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 
 interface IIframeShimProps {
@@ -42,6 +43,8 @@ const IframeBorder = style(
 );
 
 const IframeShim = (props: IIframeShimProps) => {
+  // prevents iframe from reloading while you're looking at it
+  const [memoizedSrc] = useState(props.src);
   return (
     <IframeBorder
       expanded={props.expanded}
@@ -58,14 +61,14 @@ const IframeShim = (props: IIframeShimProps) => {
             alignItems: 'center',
           }}
         >
-          Loading...
+          Loading game...
           <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
         </div>
       ) : null}
       <iframe
         id={props.id}
         ref={props.ref}
-        src={props.src}
+        src={memoizedSrc}
         style={{
           border: '0px',
           width: props.width,

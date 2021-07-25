@@ -28,9 +28,9 @@
       <array> 
         <dict>
           <key>match</key>
-          <string>(@this)</string>
+          <string>(^(\s)*@this(.*))</string>
           <key>name</key>
-          <string>keyword.operator.assignment.rpgscript</string>
+          <string>constant.rpgscript</string>
         </dict>
         <dict>
           <key>match</key>
@@ -52,7 +52,7 @@
         </dict>
         <dict>
           <key>begin</key>
-          <string>(^(\s)*(action|step|item),)</string>
+          <string>(^(\s)*(action|step|item|step-first),)</string>
           <key>beginCaptures</key>
           <dict>
             <key>1</key>
@@ -177,8 +177,13 @@
               <string>punctuation.terminator.statement.rpgscript</string>
             </dict>
           </dict>
-          <key>contentName</key>
-          <string>string.rpgscript</string>
+          <key>patterns</key>
+          <array> 
+            <dict>
+              <key>include</key>
+              <string>#main__8</string>
+            </dict>
+           </array>
           <key>end</key>
           <string>(\&quot;)</string>
           <key>endCaptures</key>
@@ -229,8 +234,13 @@
               <string>punctuation.terminator.statement.rpgscript</string>
             </dict>
           </dict>
-          <key>contentName</key>
-          <string>string.rpgscript</string>
+          <key>patterns</key>
+          <array> 
+            <dict>
+              <key>include</key>
+              <string>#in_parens__1</string>
+            </dict>
+           </array>
           <key>end</key>
           <string>(&apos;)</string>
           <key>endCaptures</key>
@@ -260,6 +270,28 @@
     <dict>
       <key>patterns</key>
       <array> 
+        <dict>
+          <key>include</key>
+          <string>#in_quotes</string>
+        </dict>
+       </array>
+    </dict>
+    <key>in_quotes</key>
+    <dict>
+      <key>patterns</key>
+      <array> 
+        <dict>
+          <key>match</key>
+          <string>(&lt;.+?&gt;)</string>
+          <key>name</key>
+          <string>variable.parameter.rpgscript</string>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>(.)</string>
+          <key>name</key>
+          <string>string.rpgscript</string>
+        </dict>
        </array>
     </dict>
     <key>logic</key>
@@ -387,8 +419,13 @@
               <string>punctuation.terminator.statement.rpgscript</string>
             </dict>
           </dict>
-          <key>contentName</key>
-          <string>string.rpgscript</string>
+          <key>patterns</key>
+          <array> 
+            <dict>
+              <key>include</key>
+              <string>#main__3</string>
+            </dict>
+           </array>
           <key>end</key>
           <string>(&apos;)</string>
           <key>endCaptures</key>
@@ -493,6 +530,10 @@
     <dict>
       <key>patterns</key>
       <array> 
+        <dict>
+          <key>include</key>
+          <string>#in_quotes</string>
+        </dict>
        </array>
     </dict>
     <key>main__4</key>
@@ -545,6 +586,10 @@
     <dict>
       <key>patterns</key>
       <array> 
+        <dict>
+          <key>include</key>
+          <string>#in_quotes</string>
+        </dict>
        </array>
     </dict>
     <key>multi_line_comment</key>

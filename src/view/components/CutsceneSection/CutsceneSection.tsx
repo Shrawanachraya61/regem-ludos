@@ -4,13 +4,15 @@ import { colors, keyframes, style } from 'view/style';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import AnimDiv from 'view/elements/StaticAnimDiv';
 import { getUiInterface } from 'view/ui';
-import { AppSection, CutsceneSpeaker } from 'model/store';
+import { AppSection, CutsceneSpeaker, ICutsceneAppState } from 'model/store';
 import { getDrawScale } from 'model/canvas';
 import { getCurrentKeyHandler, isAuxKey, isCancelKey } from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
 import TopBar, { TopBarButtons } from '../TopBar';
 import { showSection, showSettings } from 'controller/ui-actions';
 import { useKeyboardEventListener } from 'view/hooks';
+import { getCurrentRoom, getCurrentScene } from 'model/generics';
+import CharacterFollower from 'view/elements/CharacterFollower';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -260,16 +262,294 @@ const TalkIconContainer = style('div', (props: { flipped: boolean }) => {
   return {
     position: 'absolute',
     animation: `${talkIconBounce} 750ms linear infinite`,
-    bottom: 'calc(50% - 12px)',
-    right: props.flipped ? 'unset' : '-42px',
-    left: props.flipped ? '-42px' : 'unset',
-    width: '24px',
+    bottom: 'calc(50% - 22px)',
+    right: props.flipped ? 'unset' : '-61px',
+    left: props.flipped ? '-61px' : 'unset',
+    width: '39px',
   };
 });
 
+interface IPhrase {
+  innerHTML: string;
+  delay: number;
+  color: string;
+  italic: boolean;
+  shake: boolean;
+  animation: string;
+  scale: number;
+  commands: IPhraseCommand[];
+}
+interface IPhraseCommand {
+  name: string;
+  arg: string;
+}
+
+enum PhraseCommandName {
+  DELAY = 'delay',
+  COLOR = 'color',
+  SHAKE = 'shake',
+  SCALE = 'scale',
+  CASCADE = 'cascade',
+  ITALIC = 'italic',
+  CASCADE_LETTERS = 'cascade-letters',
+}
+
+const defaultPhrase = (text: string): IPhrase => {
+  return {
+    innerHTML: text,
+    delay: 0,
+    color: '',
+    scale: 1.0,
+    italic: false,
+    shake: false,
+    animation: '',
+    commands: [],
+  };
+};
+
+const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
+  text: string
+): IPhrase[] => {
+  let commands = text.match(/<.+?>/g);
+  if (!commands) {
+    commands = ['<cascade=20>'];
+    text = '<cascade=20>' + text;
+    // return [defaultPhrase(text)];
+  }
+
+  const phrases: IPhrase[] = [];
+  let lastCommands: IPhraseCommand[] = [];
+  for (let i = 0; i < commands.length; i++) {
+    const ind = text.indexOf(commands[i]);
+    const subText = text.slice(0, ind);
+    const commandText = commands[i].slice(1, -1);
+    const phrase = defaultPhrase(subText);
+    phrase.commands = lastCommands;
+    lastCommands = commandText.split(' ').map(cmd => {
+      return {
+        name: (cmd.split('=')[0] ?? '').toLowerCase(),
+        arg: cmd.split('=')[1] ?? '',
+      };
+    });
+    text = text.slice(ind + commands[i].length);
+    // accounts for case where a command is in the beginning
+    if (!subText) {
+      continue;
+    }
+    phrases.push(phrase);
+  }
+  const phrase = defaultPhrase(text);
+  phrase.commands = lastCommands;
+  phrases.push(phrase);
+
+  console.log('phrases before cascade', [...phrases]);
+
+  let delayAgg = 0;
+  for (let i = 0; i < phrases.length; i++) {
+    const phrase = phrases[i];
+    phrase.commands.forEach(command => {
+      switch (command.name) {
+        case PhraseCommandName.DELAY: {
+          delayAgg += parseInt(command.arg) || 0;
+          break;
+        }
+        case PhraseCommandName.COLOR: {
+          phrase.color = colors[command.arg] || '';
+          break;
+        }
+        case PhraseCommandName.SHAKE: {
+          phrase.shake = true;
+          break;
+        }
+        case PhraseCommandName.SCALE: {
+          phrase.scale = parseFloat(command.arg) || 1;
+          break;
+        }
+        case PhraseCommandName.ITALIC: {
+          phrase.italic = true;
+          break;
+        }
+      }
+    });
+    phrase.delay = delayAgg;
+    phrase.commands.forEach(command => {
+      switch (command.name) {
+        case PhraseCommandName.CASCADE: {
+          const delayInc = parseInt(command.arg) || 50;
+          const words = phrase.innerHTML.split(/\s+/);
+          const newPhrases: IPhrase[] = [];
+          for (let j = 0; j < words.length; j++) {
+            const word = words[j] || ' ';
+            const newPhrase: IPhrase = {
+              ...phrase,
+              delay: phrase.delay + j * delayInc,
+              innerHTML: word + (j < words.length - 1 ? ' ' : ''),
+            };
+            newPhrases.push(newPhrase);
+          }
+          phrases.splice(i, 1, ...newPhrases);
+          delayAgg += words.length * delayInc;
+          i += newPhrases.length - 1;
+          break;
+        }
+        case PhraseCommandName.CASCADE_LETTERS: {
+          const delayInc = parseInt(command.arg) || 50;
+          const words = phrase.innerHTML.split('');
+          const newPhrases: IPhrase[] = [];
+          for (let j = 0; j < words.length; j++) {
+            const word = words[j] || '&nbsp';
+            const newPhrase: IPhrase = {
+              ...phrase,
+              delay: phrase.delay + j * delayInc,
+              innerHTML: word === ' ' ? '&nbsp' : word,
+            };
+            newPhrases.push(newPhrase);
+          }
+          phrases.splice(i, 1, ...newPhrases);
+          delayAgg += words.length * delayInc;
+          i += newPhrases.length - 1;
+          break;
+        }
+      }
+    });
+  }
+
+  console.log('PHRASES', phrases);
+
+  return phrases;
+});
+
+let lastRenderedCutsceneId = '';
+
+const renderTextboxHtml = async (
+  textBox: HTMLElement,
+  cutscene: ICutsceneAppState
+) => {
+  textBox.innerHTML = '';
+  const talkIcon = document.getElementById('talk-icon');
+  if (talkIcon) {
+    talkIcon.style.display = 'none';
+  }
+  getCurrentScene().inputDisabled = true;
+  const promises: Promise<void>[] = [];
+
+  const setTimeoutPromise = (cb: () => void, ms: number) => {
+    let timeoutId = -1;
+    const promise = new Promise<void>(resolve => {
+      timeoutId = setTimeout(() => {
+        cb();
+        resolve();
+      }, ms) as any;
+    }).catch(() => {
+      clearTimeout(timeoutId);
+    });
+    promises.push(promise);
+    return promise;
+  };
+
+  const getColorStyle = (phrase: IPhrase) => {
+    return `color: ${phrase.color || colors.WHITE};`;
+  };
+
+  const getItalicStyle = (phrase: IPhrase) => {
+    return phrase.italic ? 'font-style: italic;' : '';
+  };
+
+  const getShakeStyle = (phrase: IPhrase) => {
+    return `animation: ${
+      phrase.shake ? 'shake 0.5s infinite' : 'unset'
+    }; display: ${phrase.shake ? 'inline-block' : 'inline'};`;
+  };
+
+  const getTransformStyle = (phrase: IPhrase) => {
+    // cant just transform text because it doesn't move the text around it (overlaps)
+    // return `transform: ${phrase.scale ? `scale(${phrase.scale});` : 'unset'}`;
+    return `font-size: ${
+      phrase.scale ? Math.floor(24 * phrase.scale) + 'px' : 'inherit'
+    };`;
+  };
+
+  const renderSpan = (phrase: IPhrase) => {
+    let html = `<span style="line-height:40px; vertical-align:middle; ${getColorStyle(
+      phrase
+    )}${getShakeStyle(phrase)}${getItalicStyle(phrase)}">${
+      phrase.innerHTML
+    }</span>`;
+    if (phrase.scale !== 1.0) {
+      html = `<span style="display: inline-block;${getTransformStyle(
+        phrase
+      )}">${html}</span>`;
+    }
+    return html;
+  };
+
+  const preSizeTextbox = async () => {
+    let resultInnerHTML = '';
+    phrases.forEach(phrase => {
+      resultInnerHTML += renderSpan(phrase);
+    });
+    textBox.style.transition = '';
+    textBox.style.opacity = '0';
+    textBox.style.height = 'unset';
+    textBox.innerHTML = resultInnerHTML;
+    // HACK: hope that the textbox updates its render in 100ms, otherwise you're SOL
+    await setTimeoutPromise(() => {}, 250);
+    const boundingRect = textBox.getBoundingClientRect();
+    // textBox.style.height = '0px';
+    // textBox.style.transition = 'opacity 0.15s linear, height 0.15s linear';
+    textBox.style.height = Math.max(40, boundingRect.height) + 'px';
+    textBox.innerHTML = '';
+  };
+
+  const phrases = parseDialogTextToPhrases(cutscene.text);
+
+  if (cutscene.id === lastRenderedCutsceneId) {
+    const phrases = parseDialogTextToPhrases(cutscene.text);
+
+    let innerHTML = '';
+    phrases.forEach(phrase => {
+      innerHTML += renderSpan(phrase);
+    });
+    textBox.innerHTML = innerHTML;
+  } else {
+    await preSizeTextbox();
+    textBox.style.transition = '';
+    textBox.style.opacity = '0';
+    // textBox.innerHTML = isNoneSpeaker ? '' : cutscene.text;
+    const phrases = parseDialogTextToPhrases(cutscene.text);
+
+    let innerHTML = '';
+    phrases.forEach(phrase => {
+      if (phrase.delay) {
+        setTimeoutPromise(() => {
+          innerHTML += renderSpan(phrase);
+          textBox.innerHTML = innerHTML;
+        }, phrase.delay);
+      } else {
+        innerHTML += renderSpan(phrase);
+      }
+    });
+    textBox.innerHTML = innerHTML;
+    lastRenderedCutsceneId = cutscene.id;
+    setTimeoutPromise(() => {
+      textBox.style.transition = 'opacity 0.15s linear, height 0.15s linear';
+      textBox.style.opacity = '1';
+    }, 25);
+  }
+
+  await Promise.all(promises);
+  // const talkIcon = document.getElementById('talk-icon');
+  if (talkIcon) {
+    await setTimeoutPromise(() => {}, 150);
+    talkIcon.style.display = 'block';
+  }
+  getCurrentScene().inputDisabled = false;
+};
+
 const CutsceneSection = () => {
   const [barsVisible, setBarsVisible] = useState(false);
-  const textBoxRef = useRef<null | HTMLSpanElement>(null);
+  const textBoxRef = useRef<null | HTMLDivElement>(null);
+  const cutscene = getUiInterface().appState.cutscene;
 
   // This hook executes on first render.  If a cutscene is not currently being rendered,
   // then this will pull the cutscene bars towards the center of the screen.
@@ -284,14 +564,7 @@ const CutsceneSection = () => {
   useEffect(() => {
     const textBox = textBoxRef?.current;
     if (textBox) {
-      textBox.style.transition = '';
-      textBox.style.opacity = '0';
-      // textBox.innerHTML = isNoneSpeaker ? '' : cutscene.text;
-      textBox.innerHTML = cutscene.text;
-      setTimeout(() => {
-        textBox.style.transition = 'opacity 0.15s linear';
-        textBox.style.opacity = '1';
-      }, 25);
+      renderTextboxHtml(textBox, cutscene);
     }
   });
 
@@ -305,8 +578,6 @@ const CutsceneSection = () => {
       });
     }
   });
-
-  const cutscene = getUiInterface().appState.cutscene;
 
   let textBoxAlign: TextBoxAlign = 'center';
   if ([CutsceneSpeaker.Left].includes(cutscene.speaker)) {
@@ -335,6 +606,8 @@ const CutsceneSection = () => {
       } as any);
     }
   };
+
+  const actors = getCurrentRoom()?.characters ?? [];
 
   return (
     <Root
@@ -436,7 +709,8 @@ const CutsceneSection = () => {
           align={textBoxAlign}
           isNarration={!cutscene.speakerName && !isNoneSpeaker}
         >
-          <span
+          <div
+            id="cutscene-textbox-content"
             style={{
               opacity: '0',
               transition: 'unset',
@@ -446,14 +720,47 @@ const CutsceneSection = () => {
             {/* Is it stupid that this must be commented out for the text to fade properly? */}
             {/* Yes, Other Ben, yes it is. */}
             {/* {cutscene.text} */}
-          </span>
+          </div>
           <TalkIconContainer
+            id="talk-icon"
+            style="display: none"
             flipped={cutscene.speaker === CutsceneSpeaker.Right}
           >
             <TalkIcon color={colors.WHITE} />
           </TalkIconContainer>
         </TextBox>
       </TextBoxWrapper>
+      {actors.map(ch => {
+        return (
+          <CharacterFollower
+            ch={ch}
+            renderKey={'cutscene-follower-' + ch.name}
+            key={'cutscene-follower-' + ch.name}
+          >
+            {ch.name === cutscene.actorName ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  top: '-32px',
+                }}
+              >
+                <div
+                  style={{
+                    width: '32px',
+                    background:
+                      'radial-gradient(circle, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 75%)',
+                    animation: `${talkIconBounce} 750ms linear infinite`,
+                  }}
+                >
+                  <TalkIcon color={colors.WHITE} />
+                </div>
+              </div>
+            ) : null}
+          </CharacterFollower>
+        );
+      })}
     </Root>
   );
 };

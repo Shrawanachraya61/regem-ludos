@@ -337,13 +337,8 @@ export const drawCharacter = (
     }
 
     // DEBUG Collision Circles
-    const [x, y, chR] = characterGetCollisionCircle(ch);
-    // const [x2, y2] = characterGetPos(other);
-    // const chR2 = Math.min(
-    //   other.collisionSize[0] / 2,
-    //   other.collisionSize[1] / 2
-    // );
-    drawPolygon(circleToPolygonPx(x, y, chR), 'black', 1, getCtx('outer'));
+    // const [x, y, chR] = characterGetCollisionCircle(ch);
+    // drawPolygon(circleToPolygonPx(x, y, chR), 'black', 1, getCtx('outer'));
 
     // DEBUG Draw circles where the game thinks the ch is
     // HACK this math is so convoluted, but whatever it somehow works for 32px sprites

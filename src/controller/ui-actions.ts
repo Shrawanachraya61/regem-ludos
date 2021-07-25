@@ -21,9 +21,8 @@ import { overworldShow } from 'model/overworld';
 import { playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
-import { Character } from 'model/character';
+import { Character, characterGetPortraitSpriteName } from 'model/character';
 import { pause, unpause } from './loop';
-import { Battle } from 'model/battle';
 
 export interface ReducerAction<T> {
   action: string;
@@ -40,13 +39,23 @@ const resolvers: { [key: string]: MutationFunction } = {
   hideSections: (newState: AppState) => {
     newState.sections = [];
   },
-  showSection: (newState: AppState, payload: AppSection) => {
-    if (!newState.sections.includes(payload)) {
-      newState.sections.push(payload);
+  showSection: (
+    newState: AppState,
+    payload: { section: AppSection; hideSections?: AppSection[] }
+  ) => {
+    if (!newState.sections.includes(payload.section)) {
+      newState.sections.push(payload.section);
     }
+
+    const sectionsToHide = payload.hideSections ?? [];
+    newState.sections = newState.sections.filter(section => {
+      return !sectionsToHide.includes(section);
+    });
   },
-  hideSection: (newState: AppState, payload: AppSection) => {
-    const sections = newState.sections.filter(section => section !== payload);
+  hideSection: (newState: AppState, payload: { section: AppSection }) => {
+    const sections = newState.sections.filter(
+      section => section !== payload.section
+    );
     newState.sections = sections;
   },
   setCutsceneState: (
@@ -121,13 +130,20 @@ export const hideSections = () => {
   });
 };
 
-export const showSection = (section: AppSection, hideRest: boolean) => {
+export const showSection = (
+  section: AppSection,
+  hideRest: boolean,
+  sectionsToHide?: AppSection[]
+) => {
   if (hideRest) {
     hideSections();
   }
   getUiInterface().dispatch({
     action: 'showSection',
-    payload: section,
+    payload: {
+      section,
+      sectionsToHide,
+    },
   });
 };
 
@@ -138,13 +154,13 @@ export const showSections = (sections: AppSection[], hideRest: boolean) => {
   sections.forEach(section => {
     getUiInterface().dispatch({
       action: 'showSection',
-      payload: section,
+      payload: { section },
     });
   });
 };
 
 export const hideSection = (section: AppSection) => {
-  const payload = section;
+  const payload = { section };
   getUiInterface().dispatch({
     action: 'hideSection',
     payload,
@@ -167,6 +183,8 @@ export const hideConversation = () => {
       portraitRightEmotion: '',
       portraitRight2Emotion: '',
       portraitCenterEmotion: '',
+      actors: [],
+      portraitActors: [],
     } as Partial<ICutsceneAppState>,
   });
 };
@@ -181,8 +199,7 @@ export const showConversation = () => {
 };
 
 export const startConversation = (portrait: string, showBars: boolean) => {
-  hideSection(AppSection.Debug);
-  showSection(AppSection.Cutscene, false);
+  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -199,6 +216,8 @@ export const startConversation = (portrait: string, showBars: boolean) => {
       portraitCenterEmotion: '',
       speaker: CutsceneSpeaker.None,
       visible: true,
+      actors: [],
+      portraitActors: [],
     } as Partial<ICutsceneAppState>,
   });
 };
@@ -207,8 +226,7 @@ export const startConversation2 = (
   portraitLeft: string,
   portraitRight: string
 ) => {
-  hideSection(AppSection.Debug);
-  showSection(AppSection.Cutscene, false);
+  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -226,6 +244,47 @@ export const startConversation2 = (
       speaker: CutsceneSpeaker.None,
       speakerName: '',
       visible: true,
+      actors: [],
+      portraitActors: [],
+    } as Partial<ICutsceneAppState>,
+  });
+};
+
+// start a conversation where all actors without portraits have a character follower component on them
+export const startConversationActors = (
+  actors: Character[],
+  showBars: boolean
+) => {
+  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
+
+  const actorsWithPortraits = actors.filter(
+    ch => !!characterGetPortraitSpriteName(ch)
+  );
+  const actorsWithoutPortraits = actors.filter(
+    ch => !characterGetPortraitSpriteName(ch)
+  );
+
+  console.log('set actors', actorsWithPortraits, actorsWithoutPortraits);
+
+  getUiInterface().dispatch({
+    action: 'setCutsceneState',
+    payload: {
+      showBars,
+      portraitCenter: 'ada', // not sure why this is necessary to get it to animate correctly
+      portraitLeft: '',
+      portraitRight: '',
+      portraitLeft2: '',
+      portraitRight2: '',
+      portraitLeftEmotion: '',
+      portraitLeft2Emotion: '',
+      portraitRightEmotion: '',
+      portraitRight2Emotion: '',
+      portraitCenterEmotion: '',
+      speaker: CutsceneSpeaker.None,
+      actorName: '',
+      visible: true,
+      actors: actorsWithoutPortraits,
+      portraitActors: actorsWithPortraits,
     } as Partial<ICutsceneAppState>,
   });
 };
@@ -233,16 +292,25 @@ export const startConversation2 = (
 export const setCutsceneText = (
   text: string,
   speaker?: CutsceneSpeaker,
+  actorNameLabel?: string,
   actorName?: string
 ) => {
+  if (text) {
+    const elem = document.getElementById('cutscene-textbox-content');
+    if (elem) {
+      elem.innerHTML = '';
+    }
+  }
   const payload = {
     text,
     visible: true,
     speakerName: '',
+    id: String(+new Date()),
   } as Partial<ICutsceneAppState>;
   if (speaker) {
     payload.speaker = speaker;
-    payload.speakerName = actorName;
+    payload.actorName = actorName ?? '';
+    payload.speakerName = actorNameLabel;
   }
   getUiInterface().dispatch({
     action: 'setCutsceneState',

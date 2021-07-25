@@ -5,6 +5,7 @@ import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
+import { useState } from 'preact/hooks';
 
 const MenuWrapper = style('div', (props: { dark?: boolean }) => {
   return {
@@ -71,14 +72,19 @@ interface IMenuProps {
   children?: any;
 }
 const MenuBox = (props: IMenuProps) => {
+  const [closeButtonActive, setCloseButtonActive] = useState(false);
   useInputEventStack(ev => {
     if (
       isCancelKey(ev.key) &&
       !props.hideClose &&
       !props.disableKeyboardShortcut
     ) {
-      playSoundName('menu_choice_close');
-      props.onClose();
+      setCloseButtonActive(true);
+      setTimeout(() => {
+        playSoundName('menu_choice_close');
+        setCloseButtonActive(false);
+        props.onClose();
+      }, 100);
     }
   }, []);
 
@@ -97,6 +103,7 @@ const MenuBox = (props: IMenuProps) => {
               style={{
                 marginRight: '1rem',
               }}
+              active={closeButtonActive}
               onClick={() => {
                 playSoundName('menu_select');
                 props.onClose();

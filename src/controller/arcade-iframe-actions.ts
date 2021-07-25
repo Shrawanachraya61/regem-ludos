@@ -27,33 +27,41 @@ enum ArcadeIframeResponseMessage {
 const arcadeIframeId = 'arcade-iframe';
 const origin = window.location.origin;
 
-window.addEventListener('message', async event => {
+const parseJsonWithTryCatch = (data: string) => {
   try {
-    const data = JSON.parse(event.data);
-
-    if (data.action === ArcadeIframeResponseMessage.GAME_READY) {
-      console.log('game ready');
-      setArcadeGameReady(true);
-    } else if (data.action === ArcadeIframeResponseMessage.GAME_STARTED) {
-      setArcadeGameRunning(true);
-      console.log('game started');
-    } else if (data.action === ArcadeIframeResponseMessage.GAME_CONCLUDED) {
-      console.log('game concluded', data.payload);
-      window.focus();
-      const path = getUiInterface().appState.arcadeGame.path;
-      if (path) {
-        const meta = getArcadeGamePathMeta(path);
-        if (meta?.onGameCompleted) {
-          await meta?.onGameCompleted(data.payload);
-        }
-      }
-      setArcadeGameRunning(false);
-    } else if (data.action === ArcadeIframeResponseMessage.GAME_CANCELLED) {
-      console.log('game cancelled');
-      setArcadeGameRunning(false);
-    }
+    return JSON.parse(data);
   } catch (e) {
-    console.warn('Error on postMessage handler', e, event.data);
+    return null;
+  }
+};
+
+window.addEventListener('message', async event => {
+  const data = parseJsonWithTryCatch(event.data);
+
+  if (!data) {
+    return;
+  }
+
+  if (data.action === ArcadeIframeResponseMessage.GAME_READY) {
+    console.log('game ready');
+    setArcadeGameReady(true);
+  } else if (data.action === ArcadeIframeResponseMessage.GAME_STARTED) {
+    setArcadeGameRunning(true);
+    console.log('game started');
+  } else if (data.action === ArcadeIframeResponseMessage.GAME_CONCLUDED) {
+    console.log('game concluded', data.payload);
+    window.focus();
+    const path = getUiInterface().appState.arcadeGame.path;
+    if (path) {
+      const meta = getArcadeGamePathMeta(path);
+      if (meta?.onGameCompleted) {
+        await meta?.onGameCompleted(data.payload);
+      }
+    }
+    setArcadeGameRunning(false);
+  } else if (data.action === ArcadeIframeResponseMessage.GAME_CANCELLED) {
+    console.log('game cancelled');
+    setArcadeGameRunning(false);
   }
 });
 

@@ -9,6 +9,7 @@ import {
 
 import { init as initParty } from './party';
 import { init as initTutorial } from './tutorial-roamers';
+import { init as initTest } from './test';
 
 const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {
@@ -33,6 +34,8 @@ export const getIfExists = (key: string): CharacterTemplate | null => {
 
 export const init = () => {
   Object.assign(exp, initParty());
+  Object.assign(exp, initTest());
+  Object.assign(exp, initTutorial());
 
   exp.Roger = {
     name: 'Roger',
@@ -96,8 +99,6 @@ export const init = () => {
     animationState: AnimationState.IDLE,
     speed: 1,
   };
-
-  Object.assign(exp, initTutorial());
 
   for (const i in exp) {
     if (exp[i].name === '') {

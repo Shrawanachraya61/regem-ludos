@@ -9,12 +9,20 @@ import {
   getTriggersVisible,
   hideMarkers,
   hideTriggers,
+  setKeyDown,
+  setKeyUp,
+  shouldShowOnScreenControls,
   showMarkers,
   showTriggers,
 } from 'model/generics';
 import { showSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
-import { pushEmptyKeyHandler } from 'controller/events';
+import {
+  getConfirmKey,
+  getCancelKey,
+  getCurrentKeyHandler,
+  pushEmptyKeyHandler,
+} from 'controller/events';
 import CharacterFollower from 'view/elements/CharacterFollower';
 import { getUiInterface } from 'view/ui';
 import TopBar, { TopBarButtons } from './TopBar';
@@ -46,12 +54,101 @@ const CharacterText = style('div', (props: { visible: boolean }) => {
   };
 });
 
+const ActionButtonsArea = style('div', () => {
+  return {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    right: '0px',
+    bottom: '0px',
+    margin: '4px',
+    pointerEvents: 'all',
+  };
+});
+
+const ActionButton = style(
+  'div',
+  (props: { margin: string; rotated?: boolean }) => {
+    return {
+      userSelect: 'none',
+      color: colors.WHITE,
+      background: 'rgba(0, 0, 0, 0.5)',
+      fontSize: '24px',
+      borderRadius: '100px',
+      padding: '24px',
+      border: '2px solid rgba(0, 0, 0, 0.25)',
+      margin: `0px ${props.margin}`,
+      cursor: 'pointer',
+      transform: props.rotated ? 'rotate(-45deg)' : 'unset',
+      '&:hover': {
+        filter: 'brightness(120%)',
+        background: 'rgba(0, 0, 0, 0.7)',
+      },
+      '&:active': {
+        filter: 'brightness(80%)',
+        background: 'rgba(0, 0, 0, 0.35)',
+      },
+    };
+  }
+);
+
+const DirectionButtonsArea = style('div', () => {
+  return {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    left: '24px',
+    bottom: '24px',
+    margin: '4px',
+    pointerEvents: 'all',
+    transform: 'rotate(45deg)',
+    width: '166px',
+  };
+});
+
+export const buttonHandlers = (cb: (ev: Event, isDown: boolean) => void) => {
+  return {
+    onMouseDown: (ev: Event) => {
+      cb(ev, true);
+    },
+    onMouseUp: (ev: Event) => {
+      cb(ev, false);
+    },
+    onTouchStart: (ev: Event) => {
+      cb(ev, true);
+    },
+    onTouchEnd: (ev: Event) => {
+      cb(ev, false);
+    },
+  };
+};
+
 const OverworldSection = () => {
   const overworldState = getUiInterface()?.appState.overworld;
 
   if (!overworldState) {
     return <div></div>;
   }
+
+  const createControlButtonClickHandler = (key: string) => (
+    ev: Event,
+    isDown: boolean
+  ) => {
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    if (isDown) {
+      setKeyDown(key);
+    } else {
+      setKeyUp(key);
+    }
+    const handler = getCurrentKeyHandler();
+    if (handler) {
+      handler({ key } as any);
+    }
+  };
 
   return (
     <>
@@ -61,6 +158,7 @@ const OverworldSection = () => {
             TopBarButtons.MENU,
             TopBarButtons.SETTINGS,
             TopBarButtons.DEBUG,
+            TopBarButtons.ON_SCREEN_CONTROLS,
           ]}
           onMenuClick={() => {
             pause();
@@ -81,6 +179,58 @@ const OverworldSection = () => {
           {overworldState.characterText || overworldState.prevCharacterText}
         </CharacterText>
       </TopBarWrapper>
+      {shouldShowOnScreenControls() ? (
+        <>
+          <ActionButtonsArea>
+            <ActionButton
+              margin="4px"
+              {...buttonHandlers(
+                createControlButtonClickHandler(getCancelKey())
+              )}
+            >
+              Menu
+            </ActionButton>
+            <ActionButton
+              margin="4px"
+              {...buttonHandlers(
+                createControlButtonClickHandler(getConfirmKey())
+              )}
+            >
+              Action
+            </ActionButton>
+          </ActionButtonsArea>
+          <DirectionButtonsArea>
+            <ActionButton
+              margin="1px"
+              rotated
+              {...buttonHandlers(createControlButtonClickHandler('ArrowUp'))}
+            >
+              Up
+            </ActionButton>
+            <ActionButton
+              margin="1px"
+              rotated
+              {...buttonHandlers(createControlButtonClickHandler('ArrowRight'))}
+            >
+              Rt
+            </ActionButton>
+            <ActionButton
+              margin="1px"
+              rotated
+              {...buttonHandlers(createControlButtonClickHandler('ArrowLeft'))}
+            >
+              Lf
+            </ActionButton>
+            <ActionButton
+              margin="1px"
+              rotated
+              {...buttonHandlers(createControlButtonClickHandler('ArrowDown'))}
+            >
+              Dn
+            </ActionButton>
+          </DirectionButtonsArea>
+        </>
+      ) : null}
     </>
   );
 };

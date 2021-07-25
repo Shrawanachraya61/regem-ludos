@@ -160,6 +160,8 @@ const Info = style('div', () => {
     background: colors.BLACK,
     fontFamily: 'courier',
     padding: '8px',
+    width: '100%',
+    boxSizing: 'border-box',
   };
 });
 
