@@ -58,15 +58,22 @@ canvas {
 }
 @media (min-aspect-ratio: 9/11) {
   .board {
-    margin-bottom: 82px;
+    margin: unset;
+    /* margin-bottom: 82px; */
+    /* margin-top: 40px; */
+    /* position: relative; */
+    /* top: 40px; */
+    height: calc(100% - 82px - 40px);
     border: unset;
     display: flex;
+    /* flex-shrink: unset; */
+    /* flex-grow: unset; */
   }
+  
   canvas {
     box-sizing: border-box;
     width: auto;
-    height: 100%;
-    border: 1px solid white;
+    height: calc(100% - 154px);
   }
 }
 .top-bar-controls {
@@ -102,6 +109,7 @@ canvas {
   text-align: center;
   font-family: monospace;
   user-select: none;
+  -webkit-user-select: none; /* Safari */
 }
 @media only screen and (max-width: 512px) {
   .on-screen-controls {
@@ -123,4 +131,5 @@ canvas {
   cursor: default;
   font-size: 32px;
   user-select: none;
+  -webkit-user-select: none; /* Safari */
 }
