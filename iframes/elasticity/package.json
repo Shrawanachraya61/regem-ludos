@@ -4,8 +4,9 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && (cd src && make js) && yarn mv",
-    "build:dev": "yarn build",
+    "build:dev": "yarn build && yarn mv:dev",
     "mv": "mkdir -p dist && cp -t dist/ public/* -v",
+    "mv:dev": "node debug.script.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {}

@@ -8,7 +8,7 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
     : Actor(gameA, "invisible"),
       particleType(particleTypeA),
       text(""),
-      timer(addFuncTimer(ms, [&]() { remove(); })) {
+      timer(addFuncTimer(ms, [=]() { remove(); })) {
   anims["explosion"] = SDL2Wrapper::Animation();
   game.window.setAnimationFromDefinition("explosion", anims["explosion"]);
 

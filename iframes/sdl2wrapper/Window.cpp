@@ -141,7 +141,7 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
     throw new std::runtime_error("");
   }
   if (!soundForcedDisabled) {
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 2048) < 0) {
       Logger(ERROR) << "SDL_mixer could not initialize! "
                     << std::string(Mix_GetError()) << std::endl;
       soundForcedDisabled = true;

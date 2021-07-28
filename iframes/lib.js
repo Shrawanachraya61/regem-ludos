@@ -103,6 +103,7 @@ function LIB() {
   };
 
   this.notifyGameReady = function () {
+    console.log('notify game ready');
     this.notifyParentFrame('GAME_READY', {});
   };
 

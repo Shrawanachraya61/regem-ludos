@@ -15,7 +15,7 @@ else
 endif
 
 .PHONY: $(EXE)
-$(EXE): dist $(SRC) sdl2wrapper
+$(EXE): $(SRC) sdl2wrapper
 	g++ $(FLAGS) $(SRC) $(SDL2_WRAPPER_SRC) -o $(EXE) $(LIBS)
 
 .cpp.o:

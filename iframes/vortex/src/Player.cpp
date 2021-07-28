@@ -216,13 +216,13 @@ void Player::handleCollision(const Powerup& powerup) {
     break;
   }
   case POWERUP_TYPE_CANDY: {
-    int v = rand() % 3;
+    int v = rand() % 4;
     if (v == 0 || useBigGun || useFastGun) {
       Particle::spawnTextParticle(game, x, y, "Full Shields", 2000);
       shield.empty();
     } else if (v == 1) {
       enablePowerup(PLAYER_POWERUP_FAST_GUN);
-      game.addFuncTimer(8000, [&]() {
+      game.addFuncTimer(25000, [=]() {
         disablePowerup(PLAYER_POWERUP_FAST_GUN);
         if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
           game.window.playSound("powerup_gone");
@@ -231,7 +231,7 @@ void Player::handleCollision(const Powerup& powerup) {
       Particle::spawnTextParticle(game, x, y, "Machine Gun!", 2000);
     } else if (v == 2) {
       enablePowerup(PLAYER_POWERUP_BIG_GUN);
-      game.addFuncTimer(8000, [&]() {
+      game.addFuncTimer(25000, [=]() {
         disablePowerup(PLAYER_POWERUP_BIG_GUN);
         if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
           game.window.playSound("powerup_gone");
@@ -240,7 +240,7 @@ void Player::handleCollision(const Powerup& powerup) {
       Particle::spawnTextParticle(game, x, y, "Big Gun!", 2000);
     } else if (v == 3) {
       enablePowerup(PLAYER_POWERUP_PIERCE_GUN);
-      game.addFuncTimer(8000, [&]() {
+      game.addFuncTimer(25000, [=]() {
         disablePowerup(PLAYER_POWERUP_PIERCE_GUN);
         if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
           game.window.playSound("powerup_gone");

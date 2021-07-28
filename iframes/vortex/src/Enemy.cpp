@@ -85,8 +85,6 @@ void Enemy::handleCollision(const Projectile& projectile) {
         vy += projectile.vy * 0.1;
       }
     } else {
-
-      std::cout << "Player killed enemy ship" << std::endl;
       Particle::spawnParticle(game, x, y, PARTICLE_TYPE_EXPLOSION, 1000);
       remove();
       game.window.playSound("asteroid_explosion");

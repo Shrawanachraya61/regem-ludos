@@ -52,7 +52,8 @@ Game::Game(SDL2Wrapper::Window& windowA)
       isVictory(false),
       window(windowA),
       retryIndex(1),
-      numRetries(0) {
+      numRetries(0),
+      startingGame(false) {
   SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
   window.setCurrentFont("default", 18);
 
@@ -451,8 +452,10 @@ void Game::handleKeyRetry(const std::string& key) {
     } else {
       score = scoreLevelStart;
       window.playSound("level_complete");
+      startingGame = true;
       addFuncTimer(1500, [&]() {
         numRetries++;
+        startingGame = false;
         shouldDrawRetry = false;
         initWorld();
         particles.push_back(std::make_unique<Particle>(*this, "fade_in", 1000));
@@ -797,7 +800,7 @@ void Game::drawRetry() {
   window.drawTextCentered("Yes.",
                           GameOptions::width - GameOptions::width / 3,
                           GameOptions::height - GameOptions::height / 3,
-                          window.makeColor(255, 255, 255));
+                          startingGame ? window.makeColor(255, 0, 0) : window.makeColor(255, 255, 255));
 
   if (retryIndex == 0) {
     window.drawSprite("mana_0",

@@ -123,7 +123,5 @@ void Animation::update() {
 AnimationDefinition::AnimationDefinition(const std::string& nameA,
                                          const bool loopA)
     : Animation(nameA, loopA) {}
-AnimationDefinition::~AnimationDefinition() {
-  std::cout << "DESTRUCT ANIM DEF: " << name << std::endl;
-}
+AnimationDefinition::~AnimationDefinition() {}
 } // namespace SDL2Wrapper

@@ -73,6 +73,7 @@ public:
   bool isVictory;
   int retryIndex;
   int numRetries;
+  bool startingGame;
 
   Game(SDL2Wrapper::Window& windowA);
   ~Game();

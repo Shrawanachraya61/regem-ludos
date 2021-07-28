@@ -57,7 +57,7 @@ public:
 #endif
         introBgTimer(SDL2Wrapper::BoolTimer(window, 900, isBgMoving)),
         introFadeTimer(SDL2Wrapper::BoolTimer(window, 900, isFading)),
-        introFgTimer(SDL2Wrapper::FuncTimer(window, 1200, [&]() {
+        introFgTimer(SDL2Wrapper::FuncTimer(window, 1200, [=]() {
           isFgShowing = true;
           introFadeTimer.restart();
         })) {
@@ -137,7 +137,6 @@ int main(int argc, char* argv[]) {
 
     bool firstRender = true;
 
-    notifyGameReady();
     window.startRenderLoop([&]() {
       if (intro.isPlayingIntro) {
         intro.render(window);
@@ -147,6 +146,7 @@ int main(int argc, char* argv[]) {
           // game.startNewGame();
           // game.setState(GAME_STATE_GAME);
 
+          notifyGameReady();
           game.setState(GAME_STATE_MENU);
           firstRender = false;
         }

@@ -109,7 +109,7 @@ void Game::setState(GameState stateA) {
     isTransitioning = true;
     bonus = bonusAfterWaveCompleted;
 
-    addFuncTimer(1000, [&]() {
+    addFuncTimer(1000, [=]() {
       if (diamonds > 0) {
         window.playSound("score_add");
         bonus += 2500 * diamonds;
@@ -117,7 +117,7 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(1000 + 750, [&]() {
+    addFuncTimer(1000 + 750, [=]() {
       if (stars > 0) {
         window.playSound("score_add");
         bonus *= (stars + 1);
@@ -125,7 +125,7 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(1000 + 750 * 2, [&]() {
+    addFuncTimer(1000 + 750 * 2, [=]() {
       if (bonus > 0) {
         window.playSound("score_add");
         modifyScore(bonus);
@@ -136,7 +136,7 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(1000 + 750 * 3, [&]() { isTransitioning = false; });
+    addFuncTimer(1000 + 750 * 3, [=]() { isTransitioning = false; });
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyWaveCompleted, this, std::placeholders::_1));
@@ -159,7 +159,7 @@ void Game::setState(GameState stateA) {
       shouldPlayHiscoreSound = true;
     }
     isTransitioning = true;
-    addFuncTimer(1000, [&]() { isTransitioning = false; });
+    addFuncTimer(1000, [=]() { isTransitioning = false; });
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyGameOver, this, std::placeholders::_1));
@@ -186,7 +186,6 @@ void Game::startNewGame() {
 }
 
 void Game::initWorld() {
-  std::cout << "CLEAR WORLD" << std::endl;
   projectiles.clear();
   particles.clear();
   asteroids.erase(asteroids.begin(), asteroids.end());
@@ -194,7 +193,6 @@ void Game::initWorld() {
   enemies.clear();
   timers.clear();
 
-  std::cout << "UPDATE PLAYER" << std::endl;
   player->set(GameOptions::width / 2, GameOptions::height / 2);
   player->setV(0, 0);
   player->setA(0, 0);
@@ -250,7 +248,7 @@ void Game::initWorld() {
 void Game::addWorldSpawnTimers() {
   if (wave >= 4 && wave % 2 == 0) {
     for (unsigned int i = 0; i < std::max(1u, wave / 4); i++) {
-      addFuncTimer(1000 + rand() % 10000, [&]() {
+      addFuncTimer(1000 + rand() % 10000, [=]() {
         if (!isTransitioning && state == GAME_STATE_GAME) {
           const int y = 36 + rand() % int(ceil(GameOptions::width * 0.8));
           const int x = rand() % 2 * GameOptions::width;
@@ -262,7 +260,7 @@ void Game::addWorldSpawnTimers() {
 
   if (wave >= 5 && (wave == 5 || wave % 3 == 0)) {
     for (unsigned int i = 0; i < wave / 3; i++) {
-      addFuncTimer(5000 + rand() % 10000, [&]() {
+      addFuncTimer(5000 + rand() % 10000, [=]() {
         if (!isTransitioning && state == GAME_STATE_GAME) {
           const int y = 36 + rand() % int(ceil(GameOptions::width * 0.8));
           const int x = rand() % 2 * GameOptions::width;
@@ -284,7 +282,7 @@ void Game::addWorldSpawnTimers() {
   const unsigned int numPowerups = std::min(
       static_cast<unsigned int>(powerupIntervals.size() - 1), 3 + wave / 4);
   for (unsigned int i = 0; i < numPowerups; i++) {
-    addFuncTimer(powerupIntervals[i] * (i + 1), [&]() {
+    addFuncTimer(powerupIntervals[i] * (i + 1), [=]() {
       if (!isTransitioning && state == GAME_STATE_GAME) {
         const int r = GameOptions::width / 2;
         const int angle = rand() % 360;
@@ -377,7 +375,7 @@ void Game::handleKeyGameOver(const std::string& key) {
 
 void Game::handleKeyReadyToStart(const std::string& key) {
   isTransitioning = true;
-  addFuncTimer(100, [&] {
+  addFuncTimer(100, [=] {
     isTransitioning = false;
     setState(GAME_STATE_GAME);
   });
@@ -537,22 +535,22 @@ void Game::checkCollisions() {
 void Game::checkGameOver() {
   if (player->isDead && !isTransitioning) {
     isTransitioning = true;
-    addFuncTimer(500, [&]() { window.playSound("level_lose"); });
-    addFuncTimer(1500, [&]() {
+    addFuncTimer(500, [=]() { window.playSound("level_lose"); });
+    addFuncTimer(1500, [=]() {
       Particle::spawnParticle(*this, 0, 0, PARTICLE_TYPE_FADE_OUT, 750);
       updateEntities = false;
-      addFuncTimer(750, [&]() {
-        isTransitioning = false;
-        player->lives--;
-        if (player->lives < 0) {
-          setState(GAME_STATE_GAME_OVER);
-        } else {
-          setState(GAME_STATE_READY_TO_START);
-          player->isDead = false;
-          player->shield.empty();
-          initWorld();
-        }
-      });
+    });
+    addFuncTimer(1500 + 750, [=]() {
+      isTransitioning = false;
+      player->lives--;
+      if (player->lives < 0) {
+        setState(GAME_STATE_GAME_OVER);
+      } else {
+        setState(GAME_STATE_READY_TO_START);
+        player->isDead = false;
+        player->shield.empty();
+        initWorld();
+      }
     });
   }
 }
@@ -573,13 +571,13 @@ void Game::checkWaveCompleted() {
   if (isWaveCompleted && !isTransitioning) {
     bonusAfterWaveCompleted =
         int(double(bonus) * (1.0 - bonusGauge.getPctFull()));
-    addFuncTimer(500, [&]() { window.playSound("wave_completed"); });
+    addFuncTimer(500, [=]() { window.playSound("wave_completed"); });
     powerups.clear();
     isTransitioning = true;
-    addFuncTimer(1500, [&]() {
+    addFuncTimer(1500, [=]() {
       Particle::spawnParticle(*this, 0, 0, PARTICLE_TYPE_FADE_OUT, 750);
       updateEntities = false;
-      addFuncTimer(750, [&]() {
+      addFuncTimer(750, [=]() {
         isTransitioning = false;
         setState(GAME_STATE_WAVE_COMPLETED);
       });
@@ -907,9 +905,9 @@ bool Game::loop() {
     }
   }
 
-  if (shouldPlayHiscoreSound) {
-    shouldPlayHiscoreSound = false;
-  }
+  // if (shouldPlayHiscoreSound) {
+  //   shouldPlayHiscoreSound = false;
+  // }
 
   bool ret = gameLoop();
   switch (state) {

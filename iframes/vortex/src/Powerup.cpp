@@ -43,7 +43,7 @@ Powerup::Powerup(Game& gameA,
   }
   }
 
-  addFuncTimer(10000, [&]() {
+  addFuncTimer(10000, [=]() {
     remove();
     game.window.playSound("item_despawn");
   });
