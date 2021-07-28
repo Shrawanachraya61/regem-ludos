@@ -3,7 +3,7 @@ CODE=Vortex.cpp Physics.cpp Actor.cpp Player.cpp Powerup.cpp Particle.cpp Projec
 SDL2_WRAPPER_CODE=$(SDL2_WRAPPER_DIR)/Animation.cpp $(SDL2_WRAPPER_DIR)/AssetLoader.cpp $(SDL2_WRAPPER_DIR)/Events.cpp $(SDL2_WRAPPER_DIR)/SDL2Includes.cpp $(SDL2_WRAPPER_DIR)/Sprite.cpp $(SDL2_WRAPPER_DIR)/Store.cpp $(SDL2_WRAPPER_DIR)/Timer.cpp $(SDL2_WRAPPER_DIR)/Gauge.cpp $(SDL2_WRAPPER_DIR)/Sound.cpp $(SDL2_WRAPPER_DIR)/Window.cpp
 SRC=$(CODE:.cpp=.o)
 SDL2_WRAPPER_SRC=$(SDL2_WRAPPER_CODE:.cpp=.o)
-FLAGS=-g -Wall -std=c++17
+FLAGS=-g -O0 -Wall -std=c++17
 EMCC_LIBS=-g -O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -s SAFE_HEAP=1
 EMCC_EXPORTED=-s EXPORTED_FUNCTIONS='["_main", "_enableSound", "_disableSound", "_setVolume", "_setKeyDown", "_setKeyUp", "_setKeyStatus"]' -s EXPORTED_RUNTIME_METHODS=['ccall']
 

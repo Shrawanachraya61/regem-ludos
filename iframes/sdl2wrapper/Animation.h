@@ -10,6 +10,7 @@ namespace SDL2Wrapper {
 class AnimationDefinition;
 
 class Animation {
+public:
   std::string name;
   unsigned int totalDuration;
   Uint64 timestampStart;
@@ -17,10 +18,10 @@ class Animation {
   bool loop;
   std::vector<std::pair<std::string, int>> sprites;
 
-public:
   Animation();
   Animation(const std::string& nameA, const bool loopA);
   Animation(const Animation& a);
+  ~Animation();
 
   Animation& operator=(const Animation& a);
 
@@ -37,5 +38,6 @@ public:
 class AnimationDefinition : public Animation {
 public:
   AnimationDefinition(const std::string& nameA, const bool loopA);
+  ~AnimationDefinition();
 };
 } // namespace SDL2Wrapper

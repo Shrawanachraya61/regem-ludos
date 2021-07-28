@@ -3,6 +3,7 @@ Sound,explosion,assets/vortex_explosion_player.wav
 Sound,lazer,assets/vortex_lazer.wav
 Sound,oh_yeah,assets/vortex_oh_yeah.wav
 Sound,yes,assets/vortex_yes.wav
+Sound,no,assets/vortex_no.wav
 Sound,engine,assets/vortex_engine.wav
 Sound,start_game,assets/vortex_new_game.wav
 Sound,level_lose,assets/vortex_level_lose.wav
@@ -19,4 +20,5 @@ Sound,wave_completed,assets/vortex_wave_completed.wav
 Sound,no_bonus,assets/vortex_no_bonus.wav
 Sound,powerup_gone,assets/vortex_powerup_gone.wav
 Sound,lazer_big,assets/vortex_lazer_big.wav
+Sound,shield,assets/vortex_shield.wav
 Music,menu,assets/vortex.wav

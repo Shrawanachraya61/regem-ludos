@@ -22,12 +22,18 @@ Actor::Actor(Game& gameA, const std::string& spriteBaseA)
       wrapEnabled(true),
       r(12.0),
       dying(false) {
-  anims["invisible"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition(spriteBaseA, anims["invisible"]);
+
+  createAnimationDefinition("invisible");
   setAnimState("invisible");
 }
 
 Actor::~Actor() { anims.clear(); }
+
+void Actor::createAnimationDefinition(const std::string& def) {
+  SDL2Wrapper::Animation anim;
+  game.window.setAnimationFromDefinition(def, anim);
+  anims[def] = anim;
+}
 
 void Actor::set(const double xA, const double yA) {
   x = xA;

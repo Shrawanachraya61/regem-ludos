@@ -18,17 +18,10 @@ Asteroid::Asteroid(Game& game,
   vx = sin(degreesToRadians(headingDegA)) * speedA;
   vy = -cos(degreesToRadians(headingDegA)) * speedA;
 
-  anims["asteroid1"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("asteroid1", anims["asteroid1"]);
-
-  anims["asteroid2"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("asteroid2", anims["asteroid2"]);
-
-  anims["asteroid3"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("asteroid3", anims["asteroid3"]);
-
-  anims["steel_ball"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("steel_ball", anims["steel_ball"]);
+  createAnimationDefinition("asteroid1");
+  createAnimationDefinition("asteroid2");
+  createAnimationDefinition("asteroid3");
+  createAnimationDefinition("steel_ball");
 
   switch (level) {
   case ASTEROID_LEVEL1: {

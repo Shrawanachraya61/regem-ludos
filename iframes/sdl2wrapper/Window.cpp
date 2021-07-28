@@ -3,6 +3,7 @@
 #include "Store.h"
 #include "Timer.h"
 #include <algorithm>
+#include <sstream>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -102,6 +103,7 @@ Window::Window(const std::string& title, int widthA, int heightA)
   onresize = nullptr;
   soundEnabled = true;
   soundForcedDisabled = false;
+  Logger(INFO) << "SDL2Wrapper Window initialized" << std::endl;
 }
 
 Window::~Window() {
@@ -113,6 +115,7 @@ Window::~Window() {
     TTF_Quit();
     SDL_Quit();
   }
+    Logger(INFO) << "SDL2Wrapper Window removed" << std::endl;
 }
 
 Window& Window::getGlobalWindow() { return *Window::globalWindow; }
@@ -137,10 +140,12 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
                      std::string(SDL_GetError()));
     throw new std::runtime_error("");
   }
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 2048) < 0) {
-    Logger(ERROR) << "SDL_mixer could not initialize! "
-                  << std::string(Mix_GetError()) << std::endl;
-    soundForcedDisabled = true;
+  if (!soundForcedDisabled) {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+      Logger(ERROR) << "SDL_mixer could not initialize! "
+                    << std::string(Mix_GetError()) << std::endl;
+      soundForcedDisabled = true;
+    }
   }
 
 #ifdef __EMSCRIPTEN__
@@ -186,7 +191,16 @@ const double Window::getFrameRatio() const {
 }
 void Window::setAnimationFromDefinition(const std::string& name,
                                         Animation& anim) const {
-  anim = Animation(Store::getAnimationDefinition(name));
+  auto& a = Store::getAnimationDefinition(name);
+  anim.sprites.clear();
+  for (auto& pair : a.sprites) {
+    anim.addSprite(pair.first, pair.second);
+  }
+  anim.name = a.name;
+  anim.totalDuration = a.totalDuration;
+  anim.loop = a.loop;
+
+  // anim = Animation(Store::getAnimationDefinition(name));
 }
 
 const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
@@ -245,8 +259,9 @@ SDL_Texture* Window::getTextTexture(const std::string& text,
     throw new std::runtime_error("");
   }
 
-  const std::string key = text + std::to_string(sz) + std::to_string(color.r) +
-                          std::to_string(color.g) + std::to_string(color.b);
+  std::stringstream keyStream;
+  keyStream << text << sz << color.r << color.g << color.b;
+  std::string key = keyStream.str();
   SDL_Texture* tex = Store::getTextTexture(key);
   if (tex) {
     return tex;

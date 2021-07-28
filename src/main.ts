@@ -51,6 +51,7 @@ import { ModalSection } from 'model/store';
 import { playMusic, loadSoundSpritesheet } from 'model/sound';
 import { get as getItem } from 'db/items';
 import { colors } from 'view/style';
+import { useEffect } from 'preact/hooks';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};

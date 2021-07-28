@@ -19,17 +19,10 @@ Powerup::Powerup(Game& gameA,
   vx = sin(degreesToRadians(headingDegA)) * speedA;
   vy = -cos(degreesToRadians(headingDegA)) * speedA;
 
-  anims["heart"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("heart", anims["heart"]);
-
-  anims["candy"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("candy", anims["candy"]);
-
-  anims["star"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("star", anims["star"]);
-
-  anims["diamond"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("diamond", anims["diamond"]);
+  createAnimationDefinition("heart");
+  createAnimationDefinition("candy");
+  createAnimationDefinition("star");
+  createAnimationDefinition("diamond");
 
   switch (powerupType) {
   case POWERUP_TYPE_HEART: {
@@ -101,6 +94,8 @@ void Powerup::handleCollision(const Player& player) {
 
 void Powerup::handleCollision(const Projectile& projectile) {
   if (projectile.firedByPlayer) {
+    game.window.playSound("no");
+    Particle::spawnParticle(game, x, y, PARTICLE_TYPE_EXPLOSION2, 1000);
     remove();
   }
 }

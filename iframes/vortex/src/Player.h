@@ -9,6 +9,12 @@ class Enemy;
 
 enum Direction { LEFT, RIGHT };
 
+enum PlayerPowerupType {
+  PLAYER_POWERUP_FAST_GUN,
+  PLAYER_POWERUP_BIG_GUN,
+  PLAYER_POWERUP_PIERCE_GUN,
+};
+
 class Player : public Actor {
 
 public:
@@ -20,6 +26,7 @@ public:
   double rotateRate;
   bool useBigGun;
   bool useFastGun;
+  bool usePierceGun;
   SDL2Wrapper::Gauge shield;
   SDL2Wrapper::ContinuousSound engineSound;
   SDL2Wrapper::ContinuousSound shieldSound;
@@ -36,10 +43,10 @@ public:
   void stopAccelerating();
   void enableShields();
   void disableShields();
-  void enableFastGun();
-  void disableFastGun();
-  void enableBigGun();
-  void disableBigGun();
+
+  void enablePowerup(PlayerPowerupType type);
+  void disablePowerup(PlayerPowerupType type);
+
   const std::string getSpriteFromHeadingDeg(const double headingDeg);
   void setAnimState(const std::string& state) override;
   void update() override;

@@ -12,6 +12,8 @@ protected:
   Game& game;
   bool removeFlag;
   std::vector<std::unique_ptr<SDL2Wrapper::Timer>> timers;
+  std::unordered_map<std::string, SDL2Wrapper::Animation> anims =
+      std::unordered_map<std::string, SDL2Wrapper::Animation>();
 
 public:
   std::string animState;
@@ -30,9 +32,10 @@ public:
   bool wrapEnabled;
   float r;
   bool dying;
-  std::unordered_map<std::string, SDL2Wrapper::Animation> anims;
+
   Actor(Game& gameA, const std::string& spriteBaseA);
   virtual ~Actor();
+  void createAnimationDefinition(const std::string& def);
   void set(const double xA, const double yA);
   void setV(const double vxA, const double vyA);
   void setA(const double axA, const double vyA);

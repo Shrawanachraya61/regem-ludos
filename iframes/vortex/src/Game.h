@@ -53,6 +53,7 @@ public:
   int diamonds;
   int scoreLevelStart;
   int lastScore;
+  int bonusAfterWaveCompleted;
   bool updateEntities;
   SDL2Wrapper::Gauge bonusGauge;
 

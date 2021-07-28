@@ -43,6 +43,7 @@ Game::Game(SDL2Wrapper::Window& windowA)
       stars(0),
       diamonds(0),
       lastScore(0),
+      bonusAfterWaveCompleted(0),
       updateEntities(true),
       bonusGauge(SDL2Wrapper::Gauge(windowA, 60000)),
       wave(2) {
@@ -106,7 +107,7 @@ void Game::setState(GameState stateA) {
     powerups.clear();
     enemies.clear();
     isTransitioning = true;
-    bonus = (1.0 - bonusGauge.getPctFull()) * double(bonus);
+    bonus = bonusAfterWaveCompleted;
 
     addFuncTimer(1000, [&]() {
       if (diamonds > 0) {
@@ -116,7 +117,7 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(2000, [&]() {
+    addFuncTimer(1000 + 750, [&]() {
       if (stars > 0) {
         window.playSound("score_add");
         bonus *= (stars + 1);
@@ -124,17 +125,18 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(3000, [&]() {
+    addFuncTimer(1000 + 750 * 2, [&]() {
       if (bonus > 0) {
         window.playSound("score_add");
         modifyScore(bonus);
         bonus = 0;
+        bonusAfterWaveCompleted = 0;
       } else {
         window.playSound("no_bonus");
       }
     });
 
-    addFuncTimer(4000, [&]() { isTransitioning = false; });
+    addFuncTimer(1000 + 750 * 3, [&]() { isTransitioning = false; });
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyWaveCompleted, this, std::placeholders::_1));
@@ -156,6 +158,8 @@ void Game::setState(GameState stateA) {
     if (score > lastScore) {
       shouldPlayHiscoreSound = true;
     }
+    isTransitioning = true;
+    addFuncTimer(1000, [&]() { isTransitioning = false; });
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyGameOver, this, std::placeholders::_1));
@@ -182,6 +186,7 @@ void Game::startNewGame() {
 }
 
 void Game::initWorld() {
+  std::cout << "CLEAR WORLD" << std::endl;
   projectiles.clear();
   particles.clear();
   asteroids.erase(asteroids.begin(), asteroids.end());
@@ -189,25 +194,29 @@ void Game::initWorld() {
   enemies.clear();
   timers.clear();
 
+  std::cout << "UPDATE PLAYER" << std::endl;
   player->set(GameOptions::width / 2, GameOptions::height / 2);
   player->setV(0, 0);
   player->setA(0, 0);
   player->headingDeg = 0;
   player->stopAccelerating();
-  player->disableBigGun();
-  player->disableFastGun();
+  player->disablePowerup(PLAYER_POWERUP_BIG_GUN);
+  player->disablePowerup(PLAYER_POWERUP_FAST_GUN);
+  player->disablePowerup(PLAYER_POWERUP_PIERCE_GUN);
   player->disableShields();
   player->update();
 
   stars = 0;
   diamonds = 0;
-  bonus = 1000 + wave * 250;
+  bonus = 1000 + (wave - 2) * 500;
   bonusGauge.empty();
+  bonusGauge.setMs(60000 + 1500 * (wave - 2));
 
   // randomly put asteroids in a donut around the player.
   // spawn the same number of asteroids as the wave number.
   // increase their max speeds every 4 rounds.
-  const std::vector<double> asteroidMaxSpeeds = {2.5, 3, 3.5, 4, 4.5, 5};
+  const std::vector<double> asteroidMaxSpeeds = {
+      1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5};
   for (unsigned int i = 0; i < wave; i++) {
     const int asteroidMinRange = 150;
     const int r = asteroidMinRange +
@@ -240,7 +249,7 @@ void Game::initWorld() {
 // screen for any amount of time.
 void Game::addWorldSpawnTimers() {
   if (wave >= 4 && wave % 2 == 0) {
-    for (unsigned int i = 0; i < wave / 4; i++) {
+    for (unsigned int i = 0; i < std::max(1u, wave / 4); i++) {
       addFuncTimer(1000 + rand() % 10000, [&]() {
         if (!isTransitioning && state == GAME_STATE_GAME) {
           const int y = 36 + rand() % int(ceil(GameOptions::width * 0.8));
@@ -367,7 +376,11 @@ void Game::handleKeyGameOver(const std::string& key) {
 }
 
 void Game::handleKeyReadyToStart(const std::string& key) {
-  setState(GAME_STATE_GAME);
+  isTransitioning = true;
+  addFuncTimer(100, [&] {
+    isTransitioning = false;
+    setState(GAME_STATE_GAME);
+  });
 }
 
 struct CollisionAsteroidPlayer {
@@ -419,7 +432,7 @@ void Game::checkCollisions() {
     }
 
     for (auto& projectile : projectiles) {
-      if (projectile->shouldRemove()) {
+      if (projectile->shouldRemove() || !projectile->collisionEnabled) {
         continue;
       }
 
@@ -434,7 +447,7 @@ void Game::checkCollisions() {
 
   for (auto& projectile : projectiles) {
     const Circle projectileCircle = projectile->getCollisionCircle();
-    if (projectile->shouldRemove()) {
+    if (projectile->shouldRemove() || !projectile->collisionEnabled) {
       continue;
     }
     if (!projectile->firedByPlayer &&
@@ -558,6 +571,8 @@ void Game::checkWaveCompleted() {
   }
 
   if (isWaveCompleted && !isTransitioning) {
+    bonusAfterWaveCompleted =
+        int(double(bonus) * (1.0 - bonusGauge.getPctFull()));
     addFuncTimer(500, [&]() { window.playSound("wave_completed"); });
     powerups.clear();
     isTransitioning = true;
@@ -826,13 +841,11 @@ bool Game::otherLoop() {
       int startTextX = GameOptions::width / 2 - 96;
       int startTextY = GameOptions::height / 2 + 64;
       window.setCurrentFont("default", 16);
-      window.drawText(
-          "Bonus: " + std::to_string(
-                          int(double(bonus) * (1.0 - bonusGauge.getPctFull()))),
-          startTextX,
-          startTextY,
-          bonus > 0 ? window.makeColor(255, 0, 0)
-                    : window.makeColor(255, 255, 255));
+      window.drawText("Bonus: " + std::to_string(bonusAfterWaveCompleted),
+                      startTextX,
+                      startTextY,
+                      bonus > 0 ? window.makeColor(255, 0, 0)
+                                : window.makeColor(255, 255, 255));
     }
     if (!isTransitioning) {
       {
@@ -854,13 +867,25 @@ bool Game::otherLoop() {
     window.drawTextCentered(
         "Game over.", titleX, titleY, window.makeColor(255, 255, 255));
 
-    int startTextX = GameOptions::width / 2;
-    int startTextY = titleY + 64;
-    window.setCurrentFont("default", 16);
-    window.drawTextCentered("Score: " + std::to_string(score),
-                            startTextX,
-                            startTextY,
-                            window.makeColor(255, 255, 0));
+    {
+      int startTextX = GameOptions::width / 2;
+      int startTextY = titleY + 64;
+      window.setCurrentFont("default", 16);
+      window.drawTextCentered("Score: " + std::to_string(score),
+                              startTextX,
+                              startTextY,
+                              window.makeColor(255, 255, 0));
+    }
+
+    {
+      int startTextX = GameOptions::width / 2;
+      int startTextY = titleY + 128;
+      window.setCurrentFont("default", 16);
+      window.drawTextCentered("Press button to continue.",
+                              startTextX,
+                              startTextY,
+                              window.makeColor(255, 255, 250));
+    }
   }
 
   return !shouldExit;

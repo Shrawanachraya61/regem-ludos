@@ -13,6 +13,9 @@ double Gauge::getPctFull() const {
   }
 }
 bool Gauge::isFull() const { return getPctFull() >= 1.0; }
+void Gauge::setMs(int ms) {
+  maxTime = ms;
+}
 void Gauge::fill() {
   aggTime += window.getDeltaTime();
   if (aggTime > maxTime) {

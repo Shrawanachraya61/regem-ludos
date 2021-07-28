@@ -46,6 +46,8 @@ function LIB() {
     config.shouldShowControls = !config.shouldShowControls;
   };
   this.hideLoading = function () {
+    console.trace('hide loading');
+
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'none';
     const game = document.getElementById('game');
@@ -227,12 +229,12 @@ var Module = {
   },
   preRun: [
     function () {
-      Lib.hideLoading();
       clearTimeout(window.loadTimeout);
     },
   ],
   postRun: [
     function () {
+      Lib.hideLoading();
       var shouldMute = params.get('mute');
       if (shouldMute === 'true') {
         Lib.getConfig().soundEnabled = true;
@@ -331,7 +333,7 @@ async function localInit() {
   window.loadTimeout = setTimeout(function () {
     console.error('[IFRAME] Content took too long to load.');
     Lib.showError();
-  }, 30000);
+  }, 60000);
   await window.init();
 }
 

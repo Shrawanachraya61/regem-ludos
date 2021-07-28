@@ -21,11 +21,8 @@ Enemy::Enemy(Game& gameA,
   vx = sin(degreesToRadians(headingDegA)) * speedA;
   vy = -cos(degreesToRadians(headingDegA)) * speedA;
 
-  anims["enemy_ship"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("enemy_ship", anims["enemy_ship"]);
-
-  anims["mine"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("mine", anims["mine"]);
+  createAnimationDefinition("enemy_ship");
+  createAnimationDefinition("mine");
 
   switch (enemyType) {
   case ENEMY_TYPE_SHIP: {
@@ -52,13 +49,15 @@ void Enemy::spawnEnemy(Game& game,
   auto& p = game.enemies.back();
   p->set(x, y);
   if (type == ENEMY_TYPE_MINE) {
-    p->accelerationRate = .3;
+    p->accelerationRate = .15;
     game.window.playSound("alien_ship");
-    p->maxSpeed = 4;
+    p->maxSpeed = 3.5;
     if (p->headingDeg == 270) {
-      p->vx = -3;
+      p->vy = 1;
+      p->vx = -1.5;
     } else {
-      p->vx = 3;
+      p->vy = -1;
+      p->vx = 1.5;
     }
   }
 }
@@ -86,6 +85,8 @@ void Enemy::handleCollision(const Projectile& projectile) {
         vy += projectile.vy * 0.1;
       }
     } else {
+
+      std::cout << "Player killed enemy ship" << std::endl;
       Particle::spawnParticle(game, x, y, PARTICLE_TYPE_EXPLOSION, 1000);
       remove();
       game.window.playSound("asteroid_explosion");
