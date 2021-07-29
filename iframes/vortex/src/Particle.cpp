@@ -13,6 +13,7 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
   createAnimationDefinition("explosion2");
   createAnimationDefinition("yes");
   createAnimationDefinition("no");
+  createAnimationDefinition("capsule_shatter");
 
   switch (particleType) {
   case PARTICLE_TYPE_FADE_IN: {
@@ -42,6 +43,11 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
   case PARTICLE_TYPE_EXPLOSION2: {
     setV(0, 0);
     setAnimState("explosion2");
+    break;
+  }
+  case PARTICLE_TYPE_CAPSULE_SHATTER: {
+    setV(0, 0);
+    setAnimState("capsule_shatter");
     break;
   }
   case PARTICLE_TYPE_YES: {

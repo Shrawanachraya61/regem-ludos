@@ -17,6 +17,10 @@ Player::Player(Game& gameA)
       useBigGun(false),
       useFastGun(false),
       usePierceGun(false),
+      useSpreadGun(false),
+      useBigShield(false),
+      isInvincible(false),
+      armor(1),
       shield(SDL2Wrapper::Gauge(gameA.window, 5000)),
       engineSound(SDL2Wrapper::ContinuousSound(gameA.window, "engine", 100)),
       shieldSound(SDL2Wrapper::ContinuousSound(gameA.window, "shield", 200)) {
@@ -25,6 +29,7 @@ Player::Player(Game& gameA)
   x = 100;
   y = 100;
   r = 16;
+  gravityEnabled = true;
   createAnimationDefinition("player_shield");
 }
 
@@ -65,11 +70,22 @@ void Player::fireProjectiles() {
 
     canFire = false;
     addBoolTimer(fireCooldownMs, canFire);
-    game.projectiles.push_back(
-        std::make_unique<Projectile>(game, x, y, ptype, headingDeg, 8, 700));
-    auto& p = game.projectiles.back();
-    p->vx += vx;
-    p->vy += vy;
+
+    if (useSpreadGun) {
+      for (int i = -5; i <= 5; i += 5) {
+        game.projectiles.push_back(std::make_unique<Projectile>(
+            game, x, y, ptype, headingDeg + i, 8, 700));
+        auto& p = game.projectiles.back();
+        p->vx += vx;
+        p->vy += vy;
+      }
+    } else {
+      game.projectiles.push_back(
+          std::make_unique<Projectile>(game, x, y, ptype, headingDeg, 8, 700));
+      auto& p = game.projectiles.back();
+      p->vx += vx;
+      p->vy += vy;
+    }
   }
 }
 
@@ -127,6 +143,15 @@ void Player::enablePowerup(PlayerPowerupType type) {
     usePierceGun = true;
     break;
   }
+  case PLAYER_POWERUP_SPREAD_GUN: {
+    useSpreadGun = true;
+    break;
+  }
+  case PLAYER_POWERUP_INVINCIBLE: {
+    isInvincible = true;
+    useBigShield = true;
+    break;
+  }
   }
 }
 
@@ -143,6 +168,15 @@ void Player::disablePowerup(PlayerPowerupType type) {
   }
   case PLAYER_POWERUP_PIERCE_GUN: {
     usePierceGun = false;
+    break;
+  }
+  case PLAYER_POWERUP_SPREAD_GUN: {
+    useSpreadGun = false;
+    break;
+  }
+  case PLAYER_POWERUP_INVINCIBLE: {
+    isInvincible = false;
+    useBigShield = false;
     break;
   }
   }
@@ -167,10 +201,17 @@ const std::string Player::getSpriteFromHeadingDeg(const double headingDeg) {
 }
 
 const std::string Player::getAnimationStr() {
-  if (accelerating) {
-    return "player_ship_boost_" + getSpriteFromHeadingDeg(headingDeg);
+  if (armor > 0) {
+    if (accelerating) {
+      return "player_ship_armored_boost_" + getSpriteFromHeadingDeg(headingDeg);
+    }
+    return "player_ship_armored_" + getSpriteFromHeadingDeg(headingDeg);
+  } else {
+    if (accelerating) {
+      return "player_ship_boost_" + getSpriteFromHeadingDeg(headingDeg);
+    }
+    return "player_ship_" + getSpriteFromHeadingDeg(headingDeg);
   }
-  return "player_ship_" + getSpriteFromHeadingDeg(headingDeg);
 }
 
 void Player::setAnimState(const std::string& state) { animState = state; }
@@ -180,8 +221,21 @@ void Player::handleCollision(const Asteroid& asteroid) {
     return;
   }
 
+  if (useBigShield || isInvincible) {
+    game.window.playSound("shield_hit");
+    return;
+  }
+
   if (isShielding) {
     game.window.playSound("shield_hit");
+    return;
+  }
+
+  if (armor > 0 && !isInvincible) {
+    game.window.playSound("armor");
+    isInvincible = true;
+    armor--;
+    game.addBoolTimer(100, isInvincible);
     return;
   }
 
@@ -193,8 +247,21 @@ void Player::handleCollision(const Projectile& projectile) {
     return;
   }
 
+  if (useBigShield || isInvincible) {
+    game.window.playSound("shield_hit");
+    return;
+  }
+
   if (isShielding) {
     game.window.playSound("shield_hit");
+    return;
+  }
+
+  if (armor > 0 && !isInvincible) {
+    game.window.playSound("armor");
+    isInvincible = true;
+    armor--;
+    game.addBoolTimer(100, isInvincible);
     return;
   }
 
@@ -217,14 +284,33 @@ void Player::handleCollision(const Powerup& powerup) {
     break;
   }
   case POWERUP_TYPE_CANDY: {
-    game.window.playSound("item_get");
-    Particle::spawnTextParticle(game, x, y, "Full Shields", 2000);
-    shield.empty();
+    int v = rand() % 3;
+    if (v == 0) {
+      game.window.playSound("invincible");
+      enablePowerup(PLAYER_POWERUP_INVINCIBLE);
+      game.addFuncTimer(8000, [=]() {
+        disablePowerup(PLAYER_POWERUP_INVINCIBLE);
+        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
+          game.window.playSound("invincible_off");
+        }
+      });
+      Particle::spawnTextParticle(game, x, y, "Invincible!", 2000);
+    } else if (v == 1) {
+      game.window.playSound("armor_get");
+      armor++;
+      Particle::spawnTextParticle(game, x, y, "Armor++", 2000);
+
+    } else if (v == 2) {
+      game.window.playSound("full_shield");
+      Particle::spawnTextParticle(game, x, y, "Full Shields", 2000);
+      shield.empty();
+    }
+
     break;
   }
   case POWERUP_TYPE_CAPSULE: {
     game.window.playSound("item_get");
-    int v = rand() % 3;
+    int v = rand() % 4;
     if (v == 0) {
       enablePowerup(PLAYER_POWERUP_PIERCE_GUN);
       game.addFuncTimer(25000, [=]() {
@@ -252,6 +338,15 @@ void Player::handleCollision(const Powerup& powerup) {
         }
       });
       Particle::spawnTextParticle(game, x, y, "Fast Gun!", 2000);
+    } else if (v == 3) {
+      enablePowerup(PLAYER_POWERUP_SPREAD_GUN);
+      game.addFuncTimer(25000, [=]() {
+        disablePowerup(PLAYER_POWERUP_SPREAD_GUN);
+        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
+          game.window.playSound("powerup_gone");
+        }
+      });
+      Particle::spawnTextParticle(game, x, y, "Spread Gun!", 2000);
     }
     break;
   }
@@ -282,8 +377,21 @@ void Player::handleCollision(const Enemy& enemy) {
     return;
   }
 
+  if (useBigShield || isInvincible) {
+    game.window.playSound("shield_hit");
+    return;
+  }
+
   if (isShielding) {
     game.window.playSound("shield_hit");
+    return;
+  }
+
+  if (armor > 0 && !isInvincible) {
+    game.window.playSound("armor");
+    isInvincible = true;
+    armor--;
+    game.addBoolTimer(100, isInvincible);
     return;
   }
 

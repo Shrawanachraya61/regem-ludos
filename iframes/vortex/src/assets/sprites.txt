@@ -80,9 +80,6 @@ SpriteList,explosion,7,64,64
 Picture,explosion2,assets/explosion2.png
 SpriteList,explosion2,7,32,32
 
-Picture,black_hole,assets/black_hole.png
-SpritList,black_hole,20,48,48
-
 Picture,red,assets/red.png
 Picture,blue,assets/blue.png
 Picture,black,assets/black.png
@@ -95,3 +92,6 @@ Picture,black_hole_left_up,assets/black_hole_left_up.png
 Picture,black_hole_right_up,assets/black_hole_right_up.png
 Picture,black_hole_left_down,assets/black_hole_left_down.png
 Picture,black_hole_right_down,assets/black_hole_left_down.png
+
+Picture,black_hole,assets/black_hole.png
+SpriteList,black_hole,20,48,48

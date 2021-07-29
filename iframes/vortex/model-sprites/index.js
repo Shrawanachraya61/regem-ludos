@@ -158,14 +158,22 @@ class App {
         // root.rotation.set(0, 0, 2.1);
 
         const box = new THREE.Box3().setFromObject(root);
-        const boxSize = (this.boxSize = box
+        let boxSize = (this.boxSize = box
           .getSize(new THREE.Vector3())
           .length());
         const boxCenter = (this.boxCenter = box.getCenter(new THREE.Vector3()));
 
-        console.log('SET CAMERA TO FRAME AREA', boxSize, boxCenter);
+        // boxSize = this.boxSize = 71.30918594402827;
+        // this.boxCenter.set(0, 0.8777482279544735, 2.5000002179639544);
+
         this.setCameraToFrameArea(
           boxSize * 1.2,
+          boxSize,
+          boxCenter,
+          this.camera
+        );
+        console.log(
+          'SET CAMERA TO FRAME AREA',
           boxSize,
           boxCenter,
           this.camera

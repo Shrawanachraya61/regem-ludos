@@ -12,7 +12,7 @@ Asteroid::Asteroid(Game& game,
                    const double speedA)
     : Actor(game, "invisible"), level(levelA) {
   headingDeg = headingDegA;
-  maxSpeed = speedA;
+  maxSpeed = 1.5;
   frictionEnabled = false;
 
   vx = sin(degreesToRadians(headingDegA)) * speedA;
@@ -22,6 +22,8 @@ Asteroid::Asteroid(Game& game,
   createAnimationDefinition("asteroid2");
   createAnimationDefinition("asteroid3");
   createAnimationDefinition("steel_ball");
+
+  gravityEnabled = true;
 
   switch (level) {
   case ASTEROID_LEVEL1: {
@@ -42,7 +44,7 @@ Asteroid::Asteroid(Game& game,
   case ASTEROID_LEVEL_METAL: {
     r = 17.0;
     setAnimState("steel_ball");
-    maxSpeed = 15;
+    maxSpeed = 2;
     break;
   }
   }

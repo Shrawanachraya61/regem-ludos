@@ -7,6 +7,7 @@
 #include "Player.h"
 
 #include "Asteroid.h"
+#include "BlackHole.h"
 #include "Enemy.h"
 #include "Powerup.h"
 #include "Projectile.h"
@@ -171,6 +172,7 @@ void Game::startNewGame() {
   diamonds = 0;
   player->lives = 3;
   player->isDead = false;
+  player->armor = 0;
   player->shield.empty();
   updateEntities = true;
   shouldPlayHiscoreSound = false;
@@ -178,6 +180,7 @@ void Game::startNewGame() {
   // might be causing a segfault
   // initWorld();
   initWorldNextTick = true;
+  heartSpawns.clear();
   setState(GAME_STATE_READY_TO_START);
   notifyGameStarted();
 }
@@ -185,9 +188,10 @@ void Game::startNewGame() {
 void Game::initWorld() {
   projectiles.clear();
   particles.clear();
-  asteroids.erase(asteroids.begin(), asteroids.end());
+  asteroids.clear();
   powerups.clear();
   enemies.clear();
+  blackHoles.clear();
   timers.clear();
 
   player->set(GameOptions::width / 2, GameOptions::height / 2);
@@ -263,7 +267,7 @@ void Game::addWorldSpawnTimers() {
   // on and after wave 5 spawn an additional mine every 3 waves
   if (wave >= 5 && (wave == 5 || wave % 3 == 0)) {
     int lastMsValue = 0;
-    for (unsigned int i = 0; i < wave / 3; i++) {
+    for (unsigned int i = 0; i < std::max(1u, wave / 5); i++) {
       int ms = lastMsValue + 5000 + rand() % 10000 + 2000 * i;
       lastMsValue = ms;
       addFuncTimer(ms, [=]() {
@@ -283,13 +287,38 @@ void Game::addWorldSpawnTimers() {
   if (wave > heartWaves[heartWaves.size() - 1] ||
       std::find(heartWaves.begin(), heartWaves.end(), wave) !=
           heartWaves.end()) {
-    addFuncTimer(2000 + rand() % 10000, [=]() {
+
+    // only spawn a heart on a wave if you haven't spawned one before.  This
+    // prevents death spamming for hearts on the same wave over and over.
+    if (std::find(heartSpawns.begin(), heartSpawns.end(), wave) ==
+        heartSpawns.end()) {
+      addFuncTimer(2000 + rand() % 10000, [=]() {
+        if (!isTransitioning && state == GAME_STATE_GAME) {
+          heartSpawns.push_back(wave);
+          const int r = GameOptions::width / 2;
+          const int angle = rand() % 360;
+          double x = GameOptions::width / 2 + r * cos(degreesToRadians(angle));
+          double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
+          Powerup::spawnPowerup(*this, POWERUP_TYPE_HEART, x, y);
+        }
+      });
+    }
+  }
+
+  // black hole 33% chance after wave 5
+  if (wave > 5 && rand() % 3 == 0) {
+    addFuncTimer(5000 + rand() % 10000, [=]() {
       if (!isTransitioning && state == GAME_STATE_GAME) {
-        const int r = GameOptions::width / 2;
-        const int angle = rand() % 360;
-        double x = GameOptions::width / 2 + r * cos(degreesToRadians(angle));
-        double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
-        Powerup::spawnPowerup(*this, POWERUP_TYPE_HEART, x, y);
+        int v = rand() % 4;
+        if (v == 0) {
+          BlackHole::spawnBlackHole(*this, 32, 28 + 32);
+        } else if (v == 1) {
+          BlackHole::spawnBlackHole(*this, 512 - 32, 28 + 32);
+        } else if (v == 2) {
+          BlackHole::spawnBlackHole(*this, 32, 512 - 32);
+        } else if (v == 3) {
+          BlackHole::spawnBlackHole(*this, 512 - 32, 512 - 32);
+        }
       }
     });
   }
@@ -299,6 +328,18 @@ void Game::addWorldSpawnTimers() {
     addFuncTimer(5000 + rand() % 10000, [=]() {
       if (!isTransitioning && state == GAME_STATE_GAME) {
         Powerup::spawnPowerup(*this, POWERUP_TYPE_SHOOTING_STAR, 0, 0);
+      }
+    });
+  }
+
+  // spawn a stationary star 33% chance
+  if (rand() % 3 == 0) {
+    addFuncTimer(5000 + rand() % 10000, [=]() {
+      if (!isTransitioning && state == GAME_STATE_GAME) {
+        int sz = (512 - 64);
+        int x = 32 + (rand() % sz);
+        int y = 32 + (rand() % sz);
+        Powerup::spawnPowerup(*this, POWERUP_TYPE_STAR, x, y);
       }
     });
   }
@@ -412,6 +453,22 @@ void Game::handleKeyReadyToStart(const std::string& key) {
     isTransitioning = false;
     setState(GAME_STATE_GAME);
   });
+}
+
+std::pair<double, double> Game::getGravitationalPull(const double x,
+                                                     const double y) {
+
+  double ax = 0;
+  double ay = 0;
+  for (auto& blackHole : blackHoles) {
+    const double str = blackHole->getStrength();
+    const double headingDeg =
+        getAngleDegTowards(std::make_pair(x, y), blackHole->get());
+    double headingRad = degreesToRadians(headingDeg);
+    ax = sin(headingRad) * str * 0.15;
+    ay = -cos(headingRad) * str * 0.15;
+  }
+  return std::make_pair(ax, ay);
 }
 
 struct CollisionAsteroidPlayer {
@@ -583,6 +640,7 @@ void Game::checkGameOver() {
         setState(GAME_STATE_READY_TO_START);
         player->isDead = false;
         player->shield.empty();
+        player->armor = 0;
         initWorld();
       }
     });
@@ -629,7 +687,7 @@ void Game::drawUI() {
 
   window.drawText("Shield: ", 128 + 48, 0, window.makeColor(255, 255, 255));
 
-  double shieldBarWidthPx = 64;
+  double shieldBarWidthPx = 48;
   window.drawSprite("white",
                     128 + 128 - 8,
                     23,
@@ -644,6 +702,13 @@ void Game::drawUI() {
                     std::make_pair((shieldBarWidthPx / 32.0 - 0.1) *
                                        (1.0 - player->shield.getPctFull()),
                                    0.18));
+
+  if (player->armor > 0) {
+    window.drawText("+" + std::to_string(player->armor),
+                    256 + 30,
+                    0,
+                    window.makeColor(255, 255, 0));
+  }
 
   window.drawText("Lives: " + std::to_string(player->lives),
                   256 + 48,
@@ -711,6 +776,22 @@ bool Game::gameLoop() {
       for (int j = 0; j < tileWidth; j++) {
         unsigned int ind = background[i * tileWidth + j];
         window.drawSprite("stars_" + std::to_string(ind), j * 32, i * 32);
+      }
+    }
+  }
+
+  {
+    auto& arr = blackHoles;
+    for (unsigned int i = 0; i < arr.size(); i++) {
+      auto& item = *arr[i];
+      if (updateEntities) {
+        item.update();
+      }
+      item.draw();
+      if (item.shouldRemove()) {
+        item.onRemove();
+        arr.erase(arr.begin() + i);
+        i--;
       }
     }
   }
@@ -943,9 +1024,10 @@ bool Game::loop() {
     clearEntitiesNextTick = false;
     projectiles.clear();
     particles.clear();
-    asteroids.erase(asteroids.begin(), asteroids.end());
+    asteroids.clear();
     powerups.clear();
     enemies.clear();
+    blackHoles.clear();
   }
 
   if (initWorldNextTick) {

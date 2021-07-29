@@ -30,12 +30,14 @@ public:
   bool accelerating;
   bool frictionEnabled;
   bool wrapEnabled;
+  bool gravityEnabled;
   float r;
   bool dying;
 
   Actor(Game& gameA, const std::string& spriteBaseA);
   virtual ~Actor();
   void createAnimationDefinition(const std::string& def);
+  std::pair<double, double> get() const;
   void set(const double xA, const double yA);
   void setV(const double vxA, const double vyA);
   void setA(const double axA, const double vyA);

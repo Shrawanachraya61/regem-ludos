@@ -15,6 +15,7 @@ class Particle;
 class Projectile;
 class Asteroid;
 class Powerup;
+class BlackHole;
 class Enemy;
 class Circle;
 class Rect;
@@ -44,8 +45,10 @@ public:
   std::vector<std::unique_ptr<Asteroid>> asteroids;
   std::vector<std::unique_ptr<Powerup>> powerups;
   std::vector<std::unique_ptr<Enemy>> enemies;
+  std::vector<std::unique_ptr<BlackHole>> blackHoles;
 
   std::vector<unsigned int> background;
+  std::vector<unsigned int> heartSpawns;
 
   int score;
   int bonus;
@@ -84,6 +87,7 @@ public:
   void handleKeyGameOver(const std::string& key);
   void handleKeyReadyToStart(const std::string& key);
   void handleGameOver();
+  std::pair<double,double> getGravitationalPull(const double x, const double y);
   void checkCollisions();
   void checkGameOver();
   void checkWaveCompleted();

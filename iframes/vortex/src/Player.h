@@ -13,6 +13,8 @@ enum PlayerPowerupType {
   PLAYER_POWERUP_FAST_GUN,
   PLAYER_POWERUP_BIG_GUN,
   PLAYER_POWERUP_PIERCE_GUN,
+  PLAYER_POWERUP_SPREAD_GUN,
+  PLAYER_POWERUP_INVINCIBLE
 };
 
 class Player : public Actor {
@@ -27,6 +29,10 @@ public:
   bool useBigGun;
   bool useFastGun;
   bool usePierceGun;
+  bool useSpreadGun;
+  bool useBigShield;
+  bool isInvincible;
+  int armor;
   SDL2Wrapper::Gauge shield;
   SDL2Wrapper::ContinuousSound engineSound;
   SDL2Wrapper::ContinuousSound shieldSound;

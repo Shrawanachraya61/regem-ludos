@@ -21,4 +21,9 @@ Sound,no_bonus,assets/vortex_no_bonus.wav
 Sound,powerup_gone,assets/vortex_powerup_gone.wav
 Sound,lazer_big,assets/vortex_lazer_big.wav
 Sound,shield,assets/vortex_shield.wav
+Sound,full_shield,assets/vortex_full_shield.wav
+Sound,armor,assets/vortex_armor.wav
+Sound,armor_get,assets/vortex_armor_get.wav
+Sound,invincible,assets/vortex_invincible.wav
+Sound,invincible_off,assets/vortex_invincible_off.wav
 Music,menu,assets/vortex.wav

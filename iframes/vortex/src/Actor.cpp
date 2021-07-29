@@ -20,6 +20,7 @@ Actor::Actor(Game& gameA, const std::string& spriteBaseA)
       accelerating(false),
       frictionEnabled(true),
       wrapEnabled(true),
+      gravityEnabled(false),
       r(12.0),
       dying(false) {
 
@@ -33,6 +34,10 @@ void Actor::createAnimationDefinition(const std::string& def) {
   SDL2Wrapper::Animation anim;
   game.window.setAnimationFromDefinition(def, anim);
   anims[def] = anim;
+}
+
+std::pair<double, double> Actor::get() const {
+  return std::make_pair(x, y);
 }
 
 void Actor::set(const double xA, const double yA) {
@@ -124,6 +129,13 @@ SDL2Wrapper::Timer& Actor::addFuncTimer(const int maxTimeMs,
 
 void Actor::update() {
   double frameRatio = game.window.getFrameRatio();
+
+  if (gravityEnabled) {
+    std::pair<double, double> gravity = game.getGravitationalPull(x, y);
+    // std::cout << "GRAVITY " << gravity.first << "," << gravity.second << std::endl;
+    ax += gravity.first;
+    ay += gravity.second;
+  }
 
   if (accelerating) {
     double headingRad = degreesToRadians(headingDeg);

@@ -398,26 +398,26 @@ no_19 50
 #
 black_hole
 loop
-black_hole0 100
-black_hole1 100
-black_hole2 100
-black_hole3 100
-black_hole4 100
-black_hole5 100
-black_hole6 50
-black_hole7 50
-black_hole8 50
-black_hole9 50
-black_hole10 50
-black_hole11 50
-black_hole12 50
-black_hole13 50
-black_hole14 50
-black_hole15 50
-black_hole16 50
-black_hole17 50
-black_hole18 50
-black_hole19 50
+black_hole_0 50
+black_hole_1 50
+black_hole_2 50
+black_hole_3 50
+black_hole_4 50
+black_hole_5 50
+black_hole_6 50
+black_hole_7 50
+black_hole_8 50
+black_hole_9 50
+black_hole_10 50
+black_hole_11 50
+black_hole_12 50
+black_hole_13 50
+black_hole_14 50
+black_hole_15 50
+black_hole_16 50
+black_hole_17 50
+black_hole_18 50
+black_hole_19 50
 
 #
 capsule
