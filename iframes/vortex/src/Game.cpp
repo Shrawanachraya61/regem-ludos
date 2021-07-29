@@ -45,6 +45,8 @@ Game::Game(SDL2Wrapper::Window& windowA)
       lastScore(0),
       bonusAfterWaveCompleted(0),
       updateEntities(true),
+      initWorldNextTick(false),
+      clearEntitiesNextTick(false),
       bonusGauge(SDL2Wrapper::Gauge(windowA, 60000)),
       wave(2) {
   SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
@@ -101,12 +103,7 @@ void Game::setState(GameState stateA) {
     break;
   }
   case GAME_STATE_WAVE_COMPLETED: {
-    projectiles.clear();
-    particles.clear();
-    asteroids.erase(asteroids.begin(), asteroids.end());
-    powerups.clear();
-    enemies.clear();
-    isTransitioning = true;
+    clearEntitiesNextTick = true;
     bonus = bonusAfterWaveCompleted;
 
     addFuncTimer(1000, [=]() {
@@ -136,7 +133,8 @@ void Game::setState(GameState stateA) {
       }
     });
 
-    addFuncTimer(1000 + 750 * 3, [=]() { isTransitioning = false; });
+    isTransitioning = true;
+    addBoolTimer(1000 + 750 * 3, isTransitioning);
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyWaveCompleted, this, std::placeholders::_1));
@@ -144,22 +142,19 @@ void Game::setState(GameState stateA) {
   }
   case GAME_STATE_READY_TO_START: {
     updateEntities = false;
+    window.playSound("level_ready");
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyReadyToStart, this, std::placeholders::_1));
     break;
   }
   case GAME_STATE_GAME_OVER: {
-    projectiles.clear();
-    particles.clear();
-    asteroids.erase(asteroids.begin(), asteroids.end());
-    powerups.clear();
-    enemies.clear();
+    clearEntitiesNextTick = true;
     if (score > lastScore) {
       shouldPlayHiscoreSound = true;
     }
     isTransitioning = true;
-    addFuncTimer(1000, [=]() { isTransitioning = false; });
+    addBoolTimer(1000, isTransitioning);
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyGameOver, this, std::placeholders::_1));
@@ -180,7 +175,9 @@ void Game::startNewGame() {
   updateEntities = true;
   shouldPlayHiscoreSound = false;
   window.playSound("start_game");
-  initWorld();
+  // might be causing a segfault
+  // initWorld();
+  initWorldNextTick = true;
   setState(GAME_STATE_READY_TO_START);
   notifyGameStarted();
 }
@@ -246,9 +243,14 @@ void Game::initWorld() {
 // needs to be separate from initWorld because the player can wait on the READY
 // screen for any amount of time.
 void Game::addWorldSpawnTimers() {
+
+  // on and after wave 4 spawn an additional alien ship every 2 waves
   if (wave >= 4 && wave % 2 == 0) {
+    int lastMsValue = 0;
     for (unsigned int i = 0; i < std::max(1u, wave / 4); i++) {
-      addFuncTimer(1000 + rand() % 10000, [=]() {
+      int ms = lastMsValue + 2000 + rand() % 10000 + 2000 * i;
+      lastMsValue = ms;
+      addFuncTimer(ms, [=]() {
         if (!isTransitioning && state == GAME_STATE_GAME) {
           const int y = 36 + rand() % int(ceil(GameOptions::width * 0.8));
           const int x = rand() % 2 * GameOptions::width;
@@ -258,9 +260,13 @@ void Game::addWorldSpawnTimers() {
     }
   }
 
+  // on and after wave 5 spawn an additional mine every 3 waves
   if (wave >= 5 && (wave == 5 || wave % 3 == 0)) {
+    int lastMsValue = 0;
     for (unsigned int i = 0; i < wave / 3; i++) {
-      addFuncTimer(5000 + rand() % 10000, [=]() {
+      int ms = lastMsValue + 5000 + rand() % 10000 + 2000 * i;
+      lastMsValue = ms;
+      addFuncTimer(ms, [=]() {
         if (!isTransitioning && state == GAME_STATE_GAME) {
           const int y = 36 + rand() % int(ceil(GameOptions::width * 0.8));
           const int x = rand() % 2 * GameOptions::width;
@@ -268,6 +274,33 @@ void Game::addWorldSpawnTimers() {
         }
       });
     }
+  }
+
+  // on waves 5 + 3 + 2 + 2 + 1 spawn an extra life, then spawn an extra life on
+  // every wave
+  const std::vector<unsigned int> heartWaves = {
+      5, 5 + 3, 5 + 3 + 2, 5 + 3 + 2 + 2, 5 + 3 + 2 + 2 + 1};
+  if (wave > heartWaves[heartWaves.size() - 1] ||
+      std::find(heartWaves.begin(), heartWaves.end(), wave) !=
+          heartWaves.end()) {
+    addFuncTimer(2000 + rand() % 10000, [=]() {
+      if (!isTransitioning && state == GAME_STATE_GAME) {
+        const int r = GameOptions::width / 2;
+        const int angle = rand() % 360;
+        double x = GameOptions::width / 2 + r * cos(degreesToRadians(angle));
+        double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
+        Powerup::spawnPowerup(*this, POWERUP_TYPE_HEART, x, y);
+      }
+    });
+  }
+
+  // spawn a shooting star 33% chance
+  if (rand() % 3 == 0) {
+    addFuncTimer(5000 + rand() % 10000, [=]() {
+      if (!isTransitioning && state == GAME_STATE_GAME) {
+        Powerup::spawnPowerup(*this, POWERUP_TYPE_SHOOTING_STAR, 0, 0);
+      }
+    });
   }
 
   // spawn powerups at specific intervals during the wave
@@ -362,8 +395,8 @@ void Game::handleKeyMenu(const std::string& key) {
 void Game::handleKeyWaveCompleted(const std::string& key) {
   if (!isTransitioning) {
     wave++;
-    initWorld();
-    window.playSound("level_ready");
+    // initWorld();
+    initWorldNextTick = true;
     setState(GAME_STATE_READY_TO_START);
   }
 }
@@ -532,6 +565,7 @@ void Game::checkCollisions() {
     c.enemy.handleCollision(c.projectile);
   }
 }
+
 void Game::checkGameOver() {
   if (player->isDead && !isTransitioning) {
     isTransitioning = true;
@@ -903,6 +937,20 @@ bool Game::loop() {
       timers.erase(timers.begin() + i);
       i--;
     }
+  }
+
+  if (clearEntitiesNextTick) {
+    clearEntitiesNextTick = false;
+    projectiles.clear();
+    particles.clear();
+    asteroids.erase(asteroids.begin(), asteroids.end());
+    powerups.clear();
+    enemies.clear();
+  }
+
+  if (initWorldNextTick) {
+    initWorldNextTick = false;
+    initWorld();
   }
 
   // if (shouldPlayHiscoreSound) {

@@ -211,34 +211,21 @@ void Player::handleCollision(const Powerup& powerup) {
 
   switch (powerup.powerupType) {
   case POWERUP_TYPE_HEART: {
+    game.window.playSound("oh_yeah");
     Particle::spawnTextParticle(game, x, y, "+1 Life!", 2000);
     lives++;
     break;
   }
   case POWERUP_TYPE_CANDY: {
-    int v = rand() % 4;
-    if (v == 0 || useBigGun || useFastGun) {
-      Particle::spawnTextParticle(game, x, y, "Full Shields", 2000);
-      shield.empty();
-    } else if (v == 1) {
-      enablePowerup(PLAYER_POWERUP_FAST_GUN);
-      game.addFuncTimer(25000, [=]() {
-        disablePowerup(PLAYER_POWERUP_FAST_GUN);
-        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
-          game.window.playSound("powerup_gone");
-        }
-      });
-      Particle::spawnTextParticle(game, x, y, "Machine Gun!", 2000);
-    } else if (v == 2) {
-      enablePowerup(PLAYER_POWERUP_BIG_GUN);
-      game.addFuncTimer(25000, [=]() {
-        disablePowerup(PLAYER_POWERUP_BIG_GUN);
-        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
-          game.window.playSound("powerup_gone");
-        }
-      });
-      Particle::spawnTextParticle(game, x, y, "Big Gun!", 2000);
-    } else if (v == 3) {
+    game.window.playSound("item_get");
+    Particle::spawnTextParticle(game, x, y, "Full Shields", 2000);
+    shield.empty();
+    break;
+  }
+  case POWERUP_TYPE_CAPSULE: {
+    game.window.playSound("item_get");
+    int v = rand() % 3;
+    if (v == 0) {
       enablePowerup(PLAYER_POWERUP_PIERCE_GUN);
       game.addFuncTimer(25000, [=]() {
         disablePowerup(PLAYER_POWERUP_PIERCE_GUN);
@@ -247,18 +234,45 @@ void Player::handleCollision(const Powerup& powerup) {
         }
       });
       Particle::spawnTextParticle(game, x, y, "Pierce Gun!", 2000);
+    } else if (v == 1) {
+      enablePowerup(PLAYER_POWERUP_BIG_GUN);
+      game.addFuncTimer(25000, [=]() {
+        disablePowerup(PLAYER_POWERUP_BIG_GUN);
+        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
+          game.window.playSound("powerup_gone");
+        }
+      });
+      Particle::spawnTextParticle(game, x, y, "Big Gun!", 2000);
+    } else if (v == 2) {
+      enablePowerup(PLAYER_POWERUP_FAST_GUN);
+      game.addFuncTimer(25000, [=]() {
+        disablePowerup(PLAYER_POWERUP_FAST_GUN);
+        if (game.state == GAME_STATE_GAME && !game.isTransitioning) {
+          game.window.playSound("powerup_gone");
+        }
+      });
+      Particle::spawnTextParticle(game, x, y, "Fast Gun!", 2000);
     }
     break;
   }
   case POWERUP_TYPE_STAR: {
-    Particle::spawnTextParticle(game, x, y, "Bonus Multiplier!", 2000);
+    game.window.playSound("star_get");
     game.stars++;
+    Particle::spawnTextParticle(
+        game, x, y, "Bonus x" + std::to_string(game.stars + 1), 2000);
     game.bonusGauge.empty();
     break;
   }
   case POWERUP_TYPE_DIAMOND: {
+    game.window.playSound("yes");
     Particle::spawnParticle(game, x, y, PARTICLE_TYPE_YES, 1000);
     game.diamonds++;
+    break;
+  }
+  case POWERUP_TYPE_SHOOTING_STAR: {
+    game.window.playSound("star_get");
+    game.score += 5000;
+    Particle::spawnTextParticle(game, x, y, "+5000");
     break;
   }
   }

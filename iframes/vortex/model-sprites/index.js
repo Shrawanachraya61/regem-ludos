@@ -155,6 +155,7 @@ class App {
         this.scene.add(root);
         this.model = root;
         // root.rotation.set(59, 20, 28);
+        // root.rotation.set(0, 0, 2.1);
 
         const box = new THREE.Box3().setFromObject(root);
         const boxSize = (this.boxSize = box

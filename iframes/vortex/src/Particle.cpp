@@ -9,14 +9,10 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
       particleType(particleTypeA),
       text(""),
       timer(addFuncTimer(ms, [=]() { remove(); })) {
-  anims["explosion"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("explosion", anims["explosion"]);
-
-  anims["explosion2"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("explosion2", anims["explosion2"]);
-
-  anims["yes"] = SDL2Wrapper::Animation();
-  game.window.setAnimationFromDefinition("yes", anims["yes"]);
+  createAnimationDefinition("explosion");
+  createAnimationDefinition("explosion2");
+  createAnimationDefinition("yes");
+  createAnimationDefinition("no");
 
   switch (particleType) {
   case PARTICLE_TYPE_FADE_IN: {
@@ -43,7 +39,7 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
     setAnimState("explosion");
     break;
   }
-    case PARTICLE_TYPE_EXPLOSION2: {
+  case PARTICLE_TYPE_EXPLOSION2: {
     setV(0, 0);
     setAnimState("explosion2");
     break;
@@ -51,6 +47,11 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
   case PARTICLE_TYPE_YES: {
     setV(0, 0);
     setAnimState("yes");
+    break;
+  }
+  case PARTICLE_TYPE_NO: {
+    setV(0, 0);
+    setAnimState("no");
     break;
   }
   }

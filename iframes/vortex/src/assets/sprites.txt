@@ -10,6 +10,12 @@ SpriteList,player_ship,20,64,64
 Picture,player_ship_boost,assets/player_ship_boost.png
 SpriteList,player_ship_boost,20,64,64
 
+Picture,player_ship_armored,assets/player_ship_armored.png
+SpriteList,player_ship_armored,20,64,64
+
+Picture,player_ship_armored_boost,assets/player_ship_armored_boost.png
+SpriteList,player_ship_armored_boost,20,64,64
+
 Picture,player_shield,assets/player_shield.png
 SpriteList,player_shield,2,64,64
 
@@ -57,10 +63,25 @@ SpriteList,enemy_ship,20,64,64
 Picture,yes,assets/yes.png
 SpriteList,yes,20,48,48
 
+Picture,no,assets/no.png
+SpriteList,no,20,48,48
+
+Picture,shooting_star,assets/shooting_star.png
+SpriteList,shooting_star,20,64,64
+
+Picture,capsule,assets/capsule.png
+SpriteList,capsule,20,64,64
+
+Picture,capsule_shatter,assets/capsule_shatter.png
+SpriteList,capsule_shatter,14,64,64
+
 Picture,explosion,assets/explosion.png
 SpriteList,explosion,7,64,64
 Picture,explosion2,assets/explosion2.png
 SpriteList,explosion2,7,32,32
+
+Picture,black_hole,assets/black_hole.png
+SpritList,black_hole,20,48,48
 
 Picture,red,assets/red.png
 Picture,blue,assets/blue.png
@@ -69,3 +90,8 @@ Picture,white,assets/white.png
 
 Picture,stars,assets/stars.png
 SpriteList,stars,4,32,32
+
+Picture,black_hole_left_up,assets/black_hole_left_up.png
+Picture,black_hole_right_up,assets/black_hole_right_up.png
+Picture,black_hole_left_down,assets/black_hole_left_down.png
+Picture,black_hole_right_down,assets/black_hole_left_down.png

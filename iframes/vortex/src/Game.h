@@ -55,6 +55,8 @@ public:
   int lastScore;
   int bonusAfterWaveCompleted;
   bool updateEntities;
+  bool initWorldNextTick;
+  bool clearEntitiesNextTick;
   SDL2Wrapper::Gauge bonusGauge;
 
   unsigned int wave;

@@ -306,7 +306,6 @@ Mix_Music* Store::getMusic(const std::string& name) {
 }
 
 void Store::clear() {
-  std::cout << "CLEAR STATIC STORE" << std::endl;
   textures.clear();
   textTextures.clear();
   sprites.clear();

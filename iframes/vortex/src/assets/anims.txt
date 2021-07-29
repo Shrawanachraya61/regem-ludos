@@ -372,6 +372,120 @@ yes_18 50
 yes_19 50
 
 #
+no
+loop
+no_0 100
+no_1 100
+no_2 100
+no_3 100
+no_4 100
+no_5 100
+no_6 50
+no_7 50
+no_8 50
+no_9 50
+no_10 50
+no_11 50
+no_12 50
+no_13 50
+no_14 50
+no_15 50
+no_16 50
+no_17 50
+no_18 50
+no_19 50
+
+#
+black_hole
+loop
+black_hole0 100
+black_hole1 100
+black_hole2 100
+black_hole3 100
+black_hole4 100
+black_hole5 100
+black_hole6 50
+black_hole7 50
+black_hole8 50
+black_hole9 50
+black_hole10 50
+black_hole11 50
+black_hole12 50
+black_hole13 50
+black_hole14 50
+black_hole15 50
+black_hole16 50
+black_hole17 50
+black_hole18 50
+black_hole19 50
+
+#
+capsule
+loop
+capsule_0 100
+capsule_1 100
+capsule_2 100
+capsule_3 100
+capsule_4 100
+capsule_5 100
+capsule_6 100
+capsule_7 100
+capsule_8 100
+capsule_9 100
+capsule_10 100
+capsule_11 100
+capsule_12 100
+capsule_13 100
+capsule_14 100
+capsule_15 100
+capsule_16 100
+capsule_17 100
+capsule_18 100
+capsule_19 100
+
+#
+capsule_shatter
+noloop
+capsule_shatter_0 50
+capsule_shatter_1 50
+capsule_shatter_2 50
+capsule_shatter_3 50
+capsule_shatter_4 50
+capsule_shatter_5 50
+capsule_shatter_6 50
+capsule_shatter_7 50
+capsule_shatter_8 50
+capsule_shatter_9 50
+capsule_shatter_10 50
+capsule_shatter_11 50
+capsule_shatter_12 50
+capsule_shatter_13 50
+
+#
+shooting_star
+loop
+shooting_star_0 100
+shooting_star_1 100
+shooting_star_2 100
+shooting_star_3 100
+shooting_star_4 100
+shooting_star_5 100
+shooting_star_6 100
+shooting_star_7 100
+shooting_star_8 100
+shooting_star_9 100
+shooting_star_10 100
+shooting_star_11 100
+shooting_star_12 100
+shooting_star_13 100
+shooting_star_14 100
+shooting_star_15 100
+shooting_star_16 100
+shooting_star_17 100
+shooting_star_18 100
+shooting_star_19 100
+
+#
 explosion
 noloop
 explosion_0 75

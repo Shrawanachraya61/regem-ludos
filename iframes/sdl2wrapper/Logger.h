@@ -34,10 +34,10 @@ private:
       label = "SDL2Wrapper:DEBUG";
       break;
     case INFO:
-      label = "SDL2Wrapper:INFO ";
+      label = "SDL2Wrapper:INFO";
       break;
     case WARN:
-      label = "SDL2Wrapper:WARN ";
+      label = "SDL2Wrapper:WARN";
       break;
     case ERROR:
       label = "SDL2Wrapper:ERROR";
