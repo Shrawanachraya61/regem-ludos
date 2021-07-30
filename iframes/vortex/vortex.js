@@ -159,361 +159,386 @@ Module.expectedDataFileDownloads++;
   }, {
    "filename": "/assets/sprites.txt",
    "start": 33612,
-   "end": 36150,
+   "end": 36151,
    "audio": 0
   }, {
    "filename": "/assets/vortex_score_add.wav",
-   "start": 36150,
-   "end": 52088,
+   "start": 36151,
+   "end": 52089,
    "audio": 1
   }, {
    "filename": "/assets/vortex_alien_ship.wav",
-   "start": 52088,
-   "end": 95824,
+   "start": 52089,
+   "end": 95825,
    "audio": 1
   }, {
    "filename": "/assets/player_bullet_big.png",
-   "start": 95824,
-   "end": 109616,
+   "start": 95825,
+   "end": 109617,
    "audio": 0
   }, {
    "filename": "/assets/vortex_wave_completed.wav",
-   "start": 109616,
-   "end": 363336,
+   "start": 109617,
+   "end": 363337,
    "audio": 1
   }, {
    "filename": "/assets/explosion.png",
-   "start": 363336,
-   "end": 383073,
+   "start": 363337,
+   "end": 383074,
    "audio": 0
   }, {
    "filename": "/assets/player_ship_armored.png",
-   "start": 383073,
-   "end": 411884,
+   "start": 383074,
+   "end": 410242,
    "audio": 0
   }, {
    "filename": "/assets/shooting_star.png",
-   "start": 411884,
-   "end": 426292,
+   "start": 410242,
+   "end": 424650,
    "audio": 0
   }, {
    "filename": "/assets/vortex_shield_hit.wav",
-   "start": 426292,
-   "end": 447522,
+   "start": 424650,
+   "end": 445880,
    "audio": 1
   }, {
    "filename": "/assets/heart.png",
-   "start": 447522,
-   "end": 465368,
+   "start": 445880,
+   "end": 463726,
    "audio": 0
   }, {
    "filename": "/assets/vortex_asteroid_explosion.wav",
-   "start": 465368,
-   "end": 498064,
+   "start": 463726,
+   "end": 496422,
    "audio": 1
   }, {
    "filename": "/assets/player_ship.png",
-   "start": 498064,
-   "end": 521315,
+   "start": 496422,
+   "end": 519673,
    "audio": 0
   }, {
    "filename": "/assets/yes.png",
-   "start": 521315,
-   "end": 537157,
+   "start": 519673,
+   "end": 535515,
    "audio": 0
   }, {
    "filename": "/assets/anims.txt",
-   "start": 537157,
-   "end": 544096,
+   "start": 535515,
+   "end": 542534,
    "audio": 0
   }, {
    "filename": "/assets/vortex_level_ready.wav",
-   "start": 544096,
-   "end": 794584,
+   "start": 542534,
+   "end": 793022,
+   "audio": 1
+  }, {
+   "filename": "/assets/vortex_armor_get.wav",
+   "start": 793022,
+   "end": 859774,
    "audio": 1
   }, {
    "filename": "/assets/invisible.png",
-   "start": 794584,
-   "end": 794704,
+   "start": 859774,
+   "end": 859894,
    "audio": 0
   }, {
    "filename": "/assets/capsule_shatter.png",
-   "start": 794704,
-   "end": 807105,
+   "start": 859894,
+   "end": 872295,
    "audio": 0
   }, {
+   "filename": "/assets/vortex_invincible.wav",
+   "start": 872295,
+   "end": 1133867,
+   "audio": 1
+  }, {
    "filename": "/assets/vortex_item_despawn.wav",
-   "start": 807105,
-   "end": 838919,
+   "start": 1133867,
+   "end": 1165681,
    "audio": 1
   }, {
    "filename": "/assets/red.png",
-   "start": 838919,
-   "end": 839057,
+   "start": 1165681,
+   "end": 1165819,
    "audio": 0
   }, {
    "filename": "/assets/stars.png",
-   "start": 839057,
-   "end": 839253,
+   "start": 1165819,
+   "end": 1166015,
    "audio": 0
   }, {
+   "filename": "/assets/vortex_armor.wav",
+   "start": 1166015,
+   "end": 1257927,
+   "audio": 1
+  }, {
    "filename": "/assets/asteroid128.png",
-   "start": 839253,
-   "end": 1087249,
+   "start": 1257927,
+   "end": 1505923,
    "audio": 0
   }, {
    "filename": "/assets/no.png",
-   "start": 1087249,
-   "end": 1101782,
+   "start": 1505923,
+   "end": 1520456,
    "audio": 0
   }, {
    "filename": "/assets/vortex_new_game.wav",
-   "start": 1101782,
-   "end": 1332374,
+   "start": 1520456,
+   "end": 1751048,
    "audio": 1
   }, {
    "filename": "/assets/black.png",
-   "start": 1332374,
-   "end": 1332507,
+   "start": 1751048,
+   "end": 1751181,
    "audio": 0
   }, {
    "filename": "/assets/black_hole_left_up.png",
-   "start": 1332507,
-   "end": 1343664,
+   "start": 1751181,
+   "end": 1762338,
    "audio": 0
   }, {
    "filename": "/assets/player_shield.png",
-   "start": 1343664,
-   "end": 1344771,
+   "start": 1762338,
+   "end": 1770591,
    "audio": 0
   }, {
    "filename": "/assets/capsule.png",
-   "start": 1344771,
-   "end": 1373487,
+   "start": 1770591,
+   "end": 1799307,
    "audio": 0
   }, {
    "filename": "/assets/alien_ship.png",
-   "start": 1373487,
-   "end": 1402646,
+   "start": 1799307,
+   "end": 1828466,
    "audio": 0
   }, {
    "filename": "/assets/black_hole_left_down.png",
-   "start": 1402646,
-   "end": 1413063,
+   "start": 1828466,
+   "end": 1838883,
    "audio": 0
   }, {
    "filename": "/assets/sounds.txt",
-   "start": 1413063,
-   "end": 1414110,
+   "start": 1838883,
+   "end": 1840158,
    "audio": 0
   }, {
    "filename": "/assets/vortex_engine.wav",
-   "start": 1414110,
-   "end": 1450644,
+   "start": 1840158,
+   "end": 1876692,
    "audio": 1
   }, {
    "filename": "/assets/vortex_no.wav",
-   "start": 1450644,
-   "end": 1632652,
+   "start": 1876692,
+   "end": 2058700,
+   "audio": 1
+  }, {
+   "filename": "/assets/vortex_full_shield.wav",
+   "start": 2058700,
+   "end": 2699080,
    "audio": 1
   }, {
    "filename": "/assets/diamond.png",
-   "start": 1632652,
-   "end": 1659408,
+   "start": 2699080,
+   "end": 2725836,
    "audio": 0
   }, {
    "filename": "/assets/blue.png",
-   "start": 1659408,
-   "end": 1659546,
+   "start": 2725836,
+   "end": 2725974,
    "audio": 0
   }, {
    "filename": "/assets/asteroid2.png",
-   "start": 1659546,
-   "end": 1680976,
+   "start": 2725974,
+   "end": 2747404,
    "audio": 0
   }, {
    "filename": "/assets/black_hole.png",
-   "start": 1680976,
-   "end": 1755979,
+   "start": 2747404,
+   "end": 2822407,
    "audio": 0
   }, {
    "filename": "/assets/vortex_level_lose.wav",
-   "start": 1755979,
-   "end": 2066399,
+   "start": 2822407,
+   "end": 3132827,
    "audio": 1
   }, {
    "filename": "/assets/player_bullet.png",
-   "start": 2066399,
-   "end": 2067483,
+   "start": 3132827,
+   "end": 3133911,
    "audio": 0
   }, {
    "filename": "/assets/asteroid3.png",
-   "start": 2067483,
-   "end": 2074857,
+   "start": 3133911,
+   "end": 3141285,
    "audio": 0
   }, {
    "filename": "/assets/vortex_shield.wav",
-   "start": 2074857,
-   "end": 2125009,
+   "start": 3141285,
+   "end": 3191437,
    "audio": 1
   }, {
    "filename": "/assets/asteroid1.png",
-   "start": 2125009,
-   "end": 2172528,
+   "start": 3191437,
+   "end": 3238956,
    "audio": 0
   }, {
    "filename": "/assets/star.png",
-   "start": 2172528,
-   "end": 2184003,
+   "start": 3238956,
+   "end": 3250431,
    "audio": 0
   }, {
+   "filename": "/assets/vortex_invincible_off.wav",
+   "start": 3250431,
+   "end": 3514111,
+   "audio": 1
+  }, {
    "filename": "/assets/player_ship_boost.png",
-   "start": 2184003,
-   "end": 2209911,
+   "start": 3514111,
+   "end": 3540019,
    "audio": 0
   }, {
    "filename": "/assets/vortex_lazer_big.wav",
-   "start": 2209911,
-   "end": 2249475,
+   "start": 3540019,
+   "end": 3579583,
    "audio": 1
   }, {
    "filename": "/assets/vortex_powerup_gone.wav",
-   "start": 2249475,
-   "end": 2276879,
+   "start": 3579583,
+   "end": 3606987,
    "audio": 1
   }, {
    "filename": "/assets/vortex_explosion_player.wav",
-   "start": 2276879,
-   "end": 2388955,
+   "start": 3606987,
+   "end": 3719063,
    "audio": 1
   }, {
    "filename": "/assets/white.png",
-   "start": 2388955,
-   "end": 2389093,
+   "start": 3719063,
+   "end": 3719201,
    "audio": 0
   }, {
    "filename": "/assets/vortex_star_get.wav",
-   "start": 2389093,
-   "end": 2419143,
+   "start": 3719201,
+   "end": 3749251,
    "audio": 1
   }, {
    "filename": "/assets/missile1.png",
-   "start": 2419143,
-   "end": 2419598,
+   "start": 3749251,
+   "end": 3749706,
    "audio": 0
   }, {
    "filename": "/assets/vortex_item_get.wav",
-   "start": 2419598,
-   "end": 2435732,
+   "start": 3749706,
+   "end": 3765840,
    "audio": 1
   }, {
    "filename": "/assets/player_ship_armored_boost.png",
-   "start": 2435732,
-   "end": 2468186,
+   "start": 3765840,
+   "end": 3795327,
    "audio": 0
   }, {
    "filename": "/assets/vortex_lazer.wav",
-   "start": 2468186,
-   "end": 2501576,
+   "start": 3795327,
+   "end": 3828717,
    "audio": 1
   }, {
    "filename": "/assets/enemy_bullet.png",
-   "start": 2501576,
-   "end": 2502632,
+   "start": 3828717,
+   "end": 3829773,
    "audio": 0
   }, {
    "filename": "/assets/vortex_metal_hit2.wav",
-   "start": 2502632,
-   "end": 2758476,
+   "start": 3829773,
+   "end": 4085617,
    "audio": 1
   }, {
    "filename": "/assets/steel_ball.png",
-   "start": 2758476,
-   "end": 2792356,
+   "start": 4085617,
+   "end": 4119497,
    "audio": 0
   }, {
    "filename": "/assets/vortex_oh_yeah.wav",
-   "start": 2792356,
-   "end": 2978748,
+   "start": 4119497,
+   "end": 4305889,
    "audio": 1
   }, {
    "filename": "/assets/vortex_yes.wav",
-   "start": 2978748,
-   "end": 3024690,
+   "start": 4305889,
+   "end": 4351831,
    "audio": 1
   }, {
    "filename": "/assets/candy.png",
-   "start": 3024690,
-   "end": 3037209,
+   "start": 4351831,
+   "end": 4364350,
    "audio": 0
   }, {
    "filename": "/assets/mine.png",
-   "start": 3037209,
-   "end": 3058712,
+   "start": 4364350,
+   "end": 4385853,
    "audio": 0
   }, {
    "filename": "/assets/vortex_metal_hit1.wav",
-   "start": 3058712,
-   "end": 3314556,
+   "start": 4385853,
+   "end": 4641697,
    "audio": 1
   }, {
    "filename": "/assets/vortex_no_bonus.wav",
-   "start": 3314556,
-   "end": 3333614,
+   "start": 4641697,
+   "end": 4660755,
    "audio": 1
   }, {
    "filename": "/assets/black_hole_right_up.png",
-   "start": 3333614,
-   "end": 3344102,
+   "start": 4660755,
+   "end": 4671243,
    "audio": 0
   }, {
    "filename": "/assets/vortex.wav",
-   "start": 3344102,
-   "end": 13692934,
+   "start": 4671243,
+   "end": 15020075,
    "audio": 1
   }, {
    "filename": "/assets/black_hole_right_down.png",
-   "start": 13692934,
-   "end": 13704259,
+   "start": 15020075,
+   "end": 15031400,
    "audio": 0
   }, {
    "filename": "/assets/explosion2.png",
-   "start": 13704259,
-   "end": 13711297,
+   "start": 15031400,
+   "end": 15038438,
    "audio": 0
   }, {
    "filename": "/assets/intro/cpp_splash_black.png",
-   "start": 13711297,
-   "end": 13711473,
+   "start": 15038438,
+   "end": 15038614,
    "audio": 0
   }, {
    "filename": "/assets/intro/cpp_intro.wav",
-   "start": 13711473,
-   "end": 14223251,
+   "start": 15038614,
+   "end": 15550392,
    "audio": 1
   }, {
    "filename": "/assets/intro/cpp_splash_bg.png",
-   "start": 14223251,
-   "end": 14230125,
+   "start": 15550392,
+   "end": 15557266,
    "audio": 0
   }, {
    "filename": "/assets/intro/cpp_splash_fg.png",
-   "start": 14230125,
-   "end": 14232541,
+   "start": 15557266,
+   "end": 15559682,
    "audio": 0
   }, {
    "filename": "/assets/intro/intro_sprites.txt",
-   "start": 14232541,
-   "end": 14232706,
+   "start": 15559682,
+   "end": 15559847,
    "audio": 0
   }, {
    "filename": "/assets/intro/intro_sounds.txt",
-   "start": 14232706,
-   "end": 14232748,
+   "start": 15559847,
+   "end": 15559889,
    "audio": 0
   } ],
-  "remote_package_size": 14232748,
-  "package_uuid": "eca42b33-0d44-4e76-99bf-bca41c84bebc"
+  "remote_package_size": 15559889,
+  "package_uuid": "b422be78-7e21-4fd0-bfd5-fa252296796c"
  });
 })();
 
@@ -1901,7 +1926,7 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 94634: function($0) {
+ 96154: function($0) {
   var str = UTF8ToString($0) + "\n\n" + "Abort/Retry/Ignore/AlwaysIgnore? [ariA] :";
   var reply = window.prompt(str, "i");
   if (reply === null) {
@@ -1909,7 +1934,7 @@ var ASM_CONSTS = {
   }
   return allocate(intArrayFromString(reply), "i8", ALLOC_NORMAL);
  },
- 136796: function($0, $1, $2) {
+ 138316: function($0, $1, $2) {
   var w = $0;
   var h = $1;
   var pixels = $2;
@@ -1980,7 +2005,7 @@ var ASM_CONSTS = {
   SDL2.ctx.putImageData(SDL2.image, 0, 0);
   return 0;
  },
- 138275: function($0, $1, $2, $3, $4) {
+ 139795: function($0, $1, $2, $3, $4) {
   var w = $0;
   var h = $1;
   var hot_x = $2;
@@ -2017,36 +2042,36 @@ var ASM_CONSTS = {
   stringToUTF8(url, urlBuf, url.length + 1);
   return urlBuf;
  },
- 139264: function($0) {
+ 140784: function($0) {
   if (Module["canvas"]) {
    Module["canvas"].style["cursor"] = UTF8ToString($0);
   }
   return 0;
  },
- 139357: function() {
+ 140877: function() {
   if (Module["canvas"]) {
    Module["canvas"].style["cursor"] = "none";
   }
  },
- 140582: function() {
+ 142102: function() {
   return screen.width;
  },
- 140609: function() {
+ 142129: function() {
   return screen.height;
  },
- 140637: function() {
+ 142157: function() {
   return window.innerWidth;
  },
- 140669: function() {
+ 142189: function() {
   return window.innerHeight;
  },
- 140747: function($0) {
+ 142267: function($0) {
   if (typeof setWindowTitle !== "undefined") {
    setWindowTitle(UTF8ToString($0));
   }
   return 0;
  },
- 140881: function() {
+ 142401: function() {
   if (typeof AudioContext !== "undefined") {
    return 1;
   } else if (typeof webkitAudioContext !== "undefined") {
@@ -2054,7 +2079,7 @@ var ASM_CONSTS = {
   }
   return 0;
  },
- 141047: function() {
+ 142567: function() {
   if (typeof navigator.mediaDevices !== "undefined" && typeof navigator.mediaDevices.getUserMedia !== "undefined") {
    return 1;
   } else if (typeof navigator.webkitGetUserMedia !== "undefined") {
@@ -2062,7 +2087,7 @@ var ASM_CONSTS = {
   }
   return 0;
  },
- 141273: function($0) {
+ 142793: function($0) {
   if (typeof Module["SDL2"] === "undefined") {
    Module["SDL2"] = {};
   }
@@ -2084,11 +2109,11 @@ var ASM_CONSTS = {
   }
   return SDL2.audioContext === undefined ? -1 : 0;
  },
- 141826: function() {
+ 143346: function() {
   var SDL2 = Module["SDL2"];
   return SDL2.audioContext.sampleRate;
  },
- 141896: function($0, $1, $2, $3) {
+ 143416: function($0, $1, $2, $3) {
   var SDL2 = Module["SDL2"];
   var have_microphone = function(stream) {
    if (SDL2.capture.silenceTimer !== undefined) {
@@ -2129,7 +2154,7 @@ var ASM_CONSTS = {
    }, have_microphone, no_microphone);
   }
  },
- 143548: function($0, $1, $2, $3) {
+ 145068: function($0, $1, $2, $3) {
   var SDL2 = Module["SDL2"];
   SDL2.audio.scriptProcessorNode = SDL2.audioContext["createScriptProcessor"]($1, 0, $0);
   SDL2.audio.scriptProcessorNode["onaudioprocess"] = function(e) {
@@ -2141,7 +2166,7 @@ var ASM_CONSTS = {
   };
   SDL2.audio.scriptProcessorNode["connect"](SDL2.audioContext["destination"]);
  },
- 143958: function($0, $1) {
+ 145478: function($0, $1) {
   var SDL2 = Module["SDL2"];
   var numChannels = SDL2.capture.currentCaptureBuffer.numberOfChannels;
   for (var c = 0; c < numChannels; ++c) {
@@ -2160,7 +2185,7 @@ var ASM_CONSTS = {
    }
   }
  },
- 144563: function($0, $1) {
+ 146083: function($0, $1) {
   var SDL2 = Module["SDL2"];
   var numChannels = SDL2.audio.currentOutputBuffer["numberOfChannels"];
   for (var c = 0; c < numChannels; ++c) {
@@ -2173,7 +2198,7 @@ var ASM_CONSTS = {
    }
   }
  },
- 145043: function($0) {
+ 146563: function($0) {
   var SDL2 = Module["SDL2"];
   if ($0) {
    if (SDL2.capture.silenceTimer !== undefined) {
