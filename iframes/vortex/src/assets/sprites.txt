@@ -17,7 +17,7 @@ Picture,player_ship_armored_boost,assets/player_ship_armored_boost.png
 SpriteList,player_ship_armored_boost,20,64,64
 
 Picture,player_shield,assets/player_shield.png
-SpriteList,player_shield,2,64,64
+SpriteList,player_shield,4,64,64
 
 Picture,player_bullet,assets/player_bullet.png
 SpriteList,player_bullet,7,16,16

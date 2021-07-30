@@ -143,6 +143,7 @@ void Game::setState(GameState stateA) {
   }
   case GAME_STATE_READY_TO_START: {
     updateEntities = false;
+    std::cout << "Play sound level_ready" << std::endl;
     window.playSound("level_ready");
     events.setKeyboardEvent(
         "keydown",
@@ -176,7 +177,7 @@ void Game::startNewGame() {
   player->shield.empty();
   updateEntities = true;
   shouldPlayHiscoreSound = false;
-  window.playSound("start_game");
+  // window.playSound("start_game");
   // might be causing a segfault
   // initWorld();
   initWorldNextTick = true;
@@ -202,6 +203,7 @@ void Game::initWorld() {
   player->disablePowerup(PLAYER_POWERUP_BIG_GUN);
   player->disablePowerup(PLAYER_POWERUP_FAST_GUN);
   player->disablePowerup(PLAYER_POWERUP_PIERCE_GUN);
+  player->disablePowerup(PLAYER_POWERUP_SPREAD_GUN);
   player->disableShields();
   player->update();
 
@@ -225,7 +227,7 @@ void Game::initWorld() {
     const double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
     Asteroid::spawnAsteroid(
         *this,
-        ASTEROID_LEVEL1,
+        i % 4 == 3 ? ASTEROID_LEVEL_METAL : ASTEROID_LEVEL1,
         x,
         y,
         asteroidMaxSpeeds[std::min(
@@ -234,22 +236,25 @@ void Game::initWorld() {
   }
 
   // spawn additional metal ball every 3 waves
-  for (unsigned int i = 0; i < wave / 3; i++) {
-    const int r = GameOptions::width / 2 - 64;
-    const int angle = rand() % 360;
-    const double x = GameOptions::width / 2 + r * cos(degreesToRadians(angle));
-    const double y = GameOptions::height / 2 + r * sin(degreesToRadians(angle));
-    Asteroid::spawnAsteroid(
-        *this, ASTEROID_LEVEL_METAL, x, y, asteroidMaxSpeeds[1]);
-  }
+  // for (unsigned int i = 0; i < wave / 3; i++) {
+  //   const int r = GameOptions::width / 2 - 64;
+  //   const int angle = rand() % 360;
+  //   const double x = GameOptions::width / 2 + r *
+  //   cos(degreesToRadians(angle)); const double y = GameOptions::height / 2 +
+  //   r * sin(degreesToRadians(angle)); Asteroid::spawnAsteroid(
+  //       *this, ASTEROID_LEVEL_METAL, x, y, asteroidMaxSpeeds[1]);
+  // }
 }
 
 // needs to be separate from initWorld because the player can wait on the READY
 // screen for any amount of time.
 void Game::addWorldSpawnTimers() {
 
+  // wave starts at 2;
+  unsigned int level = wave - 1;
+
   // on and after wave 4 spawn an additional alien ship every 2 waves
-  if (wave >= 4 && wave % 2 == 0) {
+  if (level >= 4 && level % 2 == 0) {
     int lastMsValue = 0;
     for (unsigned int i = 0; i < std::max(1u, wave / 4); i++) {
       int ms = lastMsValue + 2000 + rand() % 10000 + 2000 * i;
@@ -265,7 +270,7 @@ void Game::addWorldSpawnTimers() {
   }
 
   // on and after wave 5 spawn an additional mine every 3 waves
-  if (wave >= 5 && (wave == 5 || wave % 3 == 0)) {
+  if (level >= 5 && (level == 5 || level % 3 == 0)) {
     int lastMsValue = 0;
     for (unsigned int i = 0; i < std::max(1u, wave / 5); i++) {
       int ms = lastMsValue + 5000 + rand() % 10000 + 2000 * i;
@@ -283,8 +288,8 @@ void Game::addWorldSpawnTimers() {
   // on waves 5 + 3 + 2 + 2 + 1 spawn an extra life, then spawn an extra life on
   // every wave
   const std::vector<unsigned int> heartWaves = {
-      5, 5 + 3, 5 + 3 + 2, 5 + 3 + 2 + 2, 5 + 3 + 2 + 2 + 1};
-  if (wave > heartWaves[heartWaves.size() - 1] ||
+      3, 5, 5 + 3, 5 + 3 + 2, 5 + 3 + 2 + 2, 5 + 3 + 2 + 2 + 1};
+  if (level > heartWaves[heartWaves.size() - 1] ||
       std::find(heartWaves.begin(), heartWaves.end(), wave) !=
           heartWaves.end()) {
 
@@ -306,7 +311,7 @@ void Game::addWorldSpawnTimers() {
   }
 
   // black hole 33% chance after wave 5
-  if (wave > 5 && rand() % 3 == 0) {
+  if (level > 5 && rand() % 3 == 0) {
     addFuncTimer(5000 + rand() % 10000, [=]() {
       if (!isTransitioning && state == GAME_STATE_GAME) {
         int v = rand() % 4;
@@ -412,7 +417,9 @@ void Game::handleKeyUpdate() {
   }
 
   if (events.isKeyPressed("Up")) {
-    player->accelerate();
+    if (state == GAME_STATE_GAME) {
+      player->accelerate();
+    }
   }
   if (events.isKeyPressed("Space") || events.isKeyPressed("Return")) {
     if (!isTransitioning && state == GAME_STATE_GAME) {
@@ -444,12 +451,16 @@ void Game::handleKeyWaveCompleted(const std::string& key) {
 
 void Game::handleKeyGameOver(const std::string& key) {
   notifyGameCompleted(score);
-  setState(GAME_STATE_MENU);
+  isTransitioning = true;
+  addFuncTimer(200, [=] {
+    isTransitioning = false;
+    setState(GAME_STATE_MENU);
+  });
 }
 
 void Game::handleKeyReadyToStart(const std::string& key) {
   isTransitioning = true;
-  addFuncTimer(100, [=] {
+  addFuncTimer(200, [=] {
     isTransitioning = false;
     setState(GAME_STATE_GAME);
   });
@@ -680,12 +691,12 @@ void Game::checkWaveCompleted() {
 void Game::drawUI() {
   window.drawSprite("red", 0, 0, true, 0, std::make_pair(512.0, 1.2));
   window.setCurrentFont("default", 16);
-  window.drawText("Score: " + std::to_string(score),
+  window.drawText("Score " + std::to_string(score),
                   16,
                   0,
                   window.makeColor(255, 255, 255));
 
-  window.drawText("Shield: ", 128 + 48, 0, window.makeColor(255, 255, 255));
+  window.drawText("Shield ", 128 + 48, 0, window.makeColor(255, 255, 255));
 
   double shieldBarWidthPx = 48;
   window.drawSprite("white",
@@ -710,15 +721,20 @@ void Game::drawUI() {
                     window.makeColor(255, 255, 0));
   }
 
-  window.drawText("Lives: " + std::to_string(player->lives),
+  window.drawText("Lives " + std::to_string(player->lives),
                   256 + 48,
                   0,
                   window.makeColor(255, 255, 255));
 
+  window.drawText("Wv " + std::to_string(wave - 1),
+                  256 + 128 - 32 + 8 + 10,
+                  0,
+                  window.makeColor(255, 255, 255));
+
   window.drawText(
-      "Bonus: " +
+      "Bonus " +
           std::to_string(int(double(bonus) * (1.0 - bonusGauge.getPctFull()))),
-      256 + 128,
+      256 + 128 + 64 - 32 - 8,
       0,
       window.makeColor(255, 255, 255));
 }

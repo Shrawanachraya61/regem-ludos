@@ -31,6 +31,7 @@ Player::Player(Game& gameA)
   r = 16;
   gravityEnabled = true;
   createAnimationDefinition("player_shield");
+  createAnimationDefinition("player_invincible");
 }
 
 Player::~Player() {}
@@ -433,5 +434,9 @@ void Player::draw() {
     } else {
       game.window.drawAnimation(anims["player_shield"], x, y);
     }
+  }
+
+  if (useBigShield) {
+    game.window.drawAnimation(anims["player_invincible"], x, y);
   }
 }

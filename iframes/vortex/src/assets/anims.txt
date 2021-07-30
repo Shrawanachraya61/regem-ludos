@@ -17,6 +17,12 @@ player_shield_0 100
 player_shield_1 100
 
 #
+player_invincible
+loop
+player_shield_2 100
+player_shield_3 100
+
+#
 player_bullet
 loop
 player_bullet_0 75

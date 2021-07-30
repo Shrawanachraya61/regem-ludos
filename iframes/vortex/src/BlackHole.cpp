@@ -48,5 +48,7 @@ void BlackHole::draw() {
   game.window.drawSprite(bgSprite, 0, 0, false);
   game.window.globalAlpha = 255;
 
+  game.window.globalAlpha = 128;
   Actor::draw();
+  game.window.globalAlpha = 255;
 }
