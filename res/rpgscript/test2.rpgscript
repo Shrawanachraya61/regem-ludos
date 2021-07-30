@@ -199,7 +199,8 @@ Rho: "..."
 +setConversationSpeaker(none);
 +waitMS(1000)
 Rho: "Hey! Excuse me. Do you know what this place is?"
-Ada: "I am not too sure.  I have been here for a while now, wandering in circles. Not much seems to exist save for this floor."
+Ada: "I am not too sure."
+Ada: "I have been here for a while now, wandering in circles. Not much seems to exist save for this floor."
 Rho: "That's a little disconcerting.  How are we suppose to leave?"
 Ada: "I do no believe anyone is leaving anytime soon.  You should probably find somewhere comfortable to persist."
 Rho: "Ugh..." 
@@ -209,3 +210,43 @@ Rho: "Ugh..."
 step,this
 @this
 +lookAtCharacter('Rho','Ada')
+
+#test2-vortex-machine
+step-first,this
+action,test2-vortex-machine-action
+@this
++setCharacterText('Press X to play Vortex.');
+@test2-vortex-machine-action
++setFacing(Ada, leftup);
++fadeOut(100);
++runArcadeCabinetGame(VORTEX);
++fadeIn(50);
++setAtMarker(Ada, MarkerVortexMachine);
+
+#test-testDialogA
+action,this
+@this
++lookAtEachOther('Ada', 'TestDialogA');
++setConversation('Ada');
+TestDialogA: "Hello there."
+TestDialogA: "<cascade-letters=50>............."
+TestDialogA: "I will now test the case of delayed dialog."
+TextDialogA: "<cascade=50> This text should cascade at 50 ms intervals."
+TextDialogA: "<cascade=100 color=BLUE> This text should cascade at 100 ms intervals."
+TextDialogA: "<cascade=33 color=PURPLE> This text should cascade at 33 ms intervals.  CAREFUL! It might look like it's zoooooming really really <shake>FAST< >."
+TestDialogA: "This should appear first. <delay=500> Then this. <delay=500> Then this... <delay=1000> Then this after a while."
++endConversation();
+
+#test-testDialogB
+action,this
+@this
++lookAtEachOther('Ada', 'TestDialogB');
++setConversation('Ada');
+TestDialogB: "Hello there."
+TestDialogB: "I will now test the case of colored dialog."
+TestDialogB: "This should be normal. <color=BLUE> This should be blue. <color=RED> This should be red. <color=WHITE> And this last one should <color=YELLOW shake>SHAKE </>."
+TestDialogB: "But what about something more <scale=2.0 color=ORANGE>BIGGER</>.<delay=500> Or perhaps <scale=0.5 color=RED> smaller</>."
+TestDialogB: "And now the big test..."
+TestDialogB: "<cascade=50>Not that the game is stupid or anything, <delay=500 cascade=50> but it's just... <delay=750 scale=1.25 color=LIGHTBLUE cascade-letters=75>SO EASY<delay=500> to beat the AI."
+TestDialogB: "<cascade=50>And this one should go <cascade-letters=100>one letter at a time."
++endConversation();

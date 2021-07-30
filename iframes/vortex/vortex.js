@@ -538,7 +538,7 @@ Module.expectedDataFileDownloads++;
    "audio": 0
   } ],
   "remote_package_size": 15559889,
-  "package_uuid": "b422be78-7e21-4fd0-bfd5-fa252296796c"
+  "package_uuid": "8e0bcf8e-74f0-4225-8f02-f4e70f0725f6"
  });
 })();
 
@@ -1926,7 +1926,7 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 96154: function($0) {
+ 190154: function($0) {
   var str = UTF8ToString($0) + "\n\n" + "Abort/Retry/Ignore/AlwaysIgnore? [ariA] :";
   var reply = window.prompt(str, "i");
   if (reply === null) {
@@ -1934,7 +1934,7 @@ var ASM_CONSTS = {
   }
   return allocate(intArrayFromString(reply), "i8", ALLOC_NORMAL);
  },
- 138316: function($0, $1, $2) {
+ 232316: function($0, $1, $2) {
   var w = $0;
   var h = $1;
   var pixels = $2;
@@ -2005,7 +2005,7 @@ var ASM_CONSTS = {
   SDL2.ctx.putImageData(SDL2.image, 0, 0);
   return 0;
  },
- 139795: function($0, $1, $2, $3, $4) {
+ 233795: function($0, $1, $2, $3, $4) {
   var w = $0;
   var h = $1;
   var hot_x = $2;
@@ -2042,36 +2042,36 @@ var ASM_CONSTS = {
   stringToUTF8(url, urlBuf, url.length + 1);
   return urlBuf;
  },
- 140784: function($0) {
+ 234784: function($0) {
   if (Module["canvas"]) {
    Module["canvas"].style["cursor"] = UTF8ToString($0);
   }
   return 0;
  },
- 140877: function() {
+ 234877: function() {
   if (Module["canvas"]) {
    Module["canvas"].style["cursor"] = "none";
   }
  },
- 142102: function() {
+ 236102: function() {
   return screen.width;
  },
- 142129: function() {
+ 236129: function() {
   return screen.height;
  },
- 142157: function() {
+ 236157: function() {
   return window.innerWidth;
  },
- 142189: function() {
+ 236189: function() {
   return window.innerHeight;
  },
- 142267: function($0) {
+ 236267: function($0) {
   if (typeof setWindowTitle !== "undefined") {
    setWindowTitle(UTF8ToString($0));
   }
   return 0;
  },
- 142401: function() {
+ 236401: function() {
   if (typeof AudioContext !== "undefined") {
    return 1;
   } else if (typeof webkitAudioContext !== "undefined") {
@@ -2079,7 +2079,7 @@ var ASM_CONSTS = {
   }
   return 0;
  },
- 142567: function() {
+ 236567: function() {
   if (typeof navigator.mediaDevices !== "undefined" && typeof navigator.mediaDevices.getUserMedia !== "undefined") {
    return 1;
   } else if (typeof navigator.webkitGetUserMedia !== "undefined") {
@@ -2087,7 +2087,7 @@ var ASM_CONSTS = {
   }
   return 0;
  },
- 142793: function($0) {
+ 236793: function($0) {
   if (typeof Module["SDL2"] === "undefined") {
    Module["SDL2"] = {};
   }
@@ -2109,11 +2109,11 @@ var ASM_CONSTS = {
   }
   return SDL2.audioContext === undefined ? -1 : 0;
  },
- 143346: function() {
+ 237346: function() {
   var SDL2 = Module["SDL2"];
   return SDL2.audioContext.sampleRate;
  },
- 143416: function($0, $1, $2, $3) {
+ 237416: function($0, $1, $2, $3) {
   var SDL2 = Module["SDL2"];
   var have_microphone = function(stream) {
    if (SDL2.capture.silenceTimer !== undefined) {
@@ -2154,7 +2154,7 @@ var ASM_CONSTS = {
    }, have_microphone, no_microphone);
   }
  },
- 145068: function($0, $1, $2, $3) {
+ 239068: function($0, $1, $2, $3) {
   var SDL2 = Module["SDL2"];
   SDL2.audio.scriptProcessorNode = SDL2.audioContext["createScriptProcessor"]($1, 0, $0);
   SDL2.audio.scriptProcessorNode["onaudioprocess"] = function(e) {
@@ -2166,7 +2166,7 @@ var ASM_CONSTS = {
   };
   SDL2.audio.scriptProcessorNode["connect"](SDL2.audioContext["destination"]);
  },
- 145478: function($0, $1) {
+ 239478: function($0, $1) {
   var SDL2 = Module["SDL2"];
   var numChannels = SDL2.capture.currentCaptureBuffer.numberOfChannels;
   for (var c = 0; c < numChannels; ++c) {
@@ -2185,7 +2185,7 @@ var ASM_CONSTS = {
    }
   }
  },
- 146083: function($0, $1) {
+ 240083: function($0, $1) {
   var SDL2 = Module["SDL2"];
   var numChannels = SDL2.audio.currentOutputBuffer["numberOfChannels"];
   for (var c = 0; c < numChannels; ++c) {
@@ -2198,7 +2198,7 @@ var ASM_CONSTS = {
    }
   }
  },
- 146563: function($0) {
+ 240563: function($0) {
   var SDL2 = Module["SDL2"];
   if ($0) {
    if (SDL2.capture.silenceTimer !== undefined) {
@@ -9941,11 +9941,9 @@ var _setKeyUp = Module["_setKeyUp"] = createExportWrapper("setKeyUp");
 
 var _setKeyStatus = Module["_setKeyStatus"] = createExportWrapper("setKeyStatus");
 
-var _free = Module["_free"] = createExportWrapper("free");
-
 var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
-var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
+var _free = Module["_free"] = createExportWrapper("free");
 
 var _realloc = Module["_realloc"] = createExportWrapper("realloc");
 
@@ -9954,6 +9952,8 @@ var _testSetjmp = Module["_testSetjmp"] = createExportWrapper("testSetjmp");
 var _saveSetjmp = Module["_saveSetjmp"] = createExportWrapper("saveSetjmp");
 
 var _strstr = Module["_strstr"] = createExportWrapper("strstr");
+
+var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 var _emscripten_GetProcAddress = Module["_emscripten_GetProcAddress"] = createExportWrapper("emscripten_GetProcAddress");
 
@@ -10001,10 +10001,21 @@ var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = createExportWrapper("dynCall_i
 
 var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = createExportWrapper("dynCall_iiiiiijj");
 
-function invoke_ii(index, a1) {
+function invoke_viiii(index, a1, a2, a3, a4) {
  var sp = stackSave();
  try {
-  return wasmTable.get(index)(a1);
+  wasmTable.get(index)(a1, a2, a3, a4);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_iii(index, a1, a2) {
+ var sp = stackSave();
+ try {
+  return wasmTable.get(index)(a1, a2);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -10045,6 +10056,17 @@ function invoke_vi(index, a1) {
  }
 }
 
+function invoke_ii(index, a1) {
+ var sp = stackSave();
+ try {
+  return wasmTable.get(index)(a1);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
 function invoke_viii(index, a1, a2, a3) {
  var sp = stackSave();
  try {
@@ -10060,17 +10082,6 @@ function invoke_vii(index, a1, a2) {
  var sp = stackSave();
  try {
   wasmTable.get(index)(a1, a2);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_iii(index, a1, a2) {
- var sp = stackSave();
- try {
-  return wasmTable.get(index)(a1, a2);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -10115,17 +10126,6 @@ function invoke_i(index) {
  var sp = stackSave();
  try {
   return wasmTable.get(index)();
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_viiii(index, a1, a2, a3, a4) {
- var sp = stackSave();
- try {
-  wasmTable.get(index)(a1, a2, a3, a4);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
