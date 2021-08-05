@@ -1,0 +1,135 @@
+<html>
+  <header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <!-- <link rel="stylesheet" href="../lib.css" /> -->
+    <title>President</title>
+    <style>
+      body {
+        background: #444;
+        color: #dedede;
+      }
+      .card {
+        box-sizing: border-box;
+        user-select: none;
+        cursor: pointer;
+        width: 64px;
+        height: 96px;
+        border: 1px solid black;
+        background: white;
+        border-radius: 8px;
+        position: absolute;
+        transition: left 0.25s ease-out, top 0.25s ease-out;
+      }
+      .card-number1 {
+        margin: 8px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: black;
+      }
+      .card-number2 {
+        margin: 8px;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        color: black;
+      }
+      .card-suit {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-size: 2rem;
+      }
+      #game {
+        left: 0;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+      }
+      #board {
+        position: relative;
+        width: 512px;
+        height: 512px;
+        border: 2px solid black;
+        background: green;
+      }
+      .button {
+        user-select: none;
+      }
+      .button:hover {
+        filter: brightness(120%);
+      }
+      .button:active {
+        filter: brightness(80%);
+      }
+      #play-card {
+        box-shadow: 0px 0px 14px -1px rgba(0, 0, 0, 0.75);
+        position: absolute;
+        border: 2px solid black;
+        left: 20px;
+        top: 164px;
+      }
+      .play-card {
+        padding: 32px;
+        border-radius: 32px;
+        background: rgb(0, 115, 157);
+        color: white;
+        font-family: monospace;
+        cursor: pointer;
+      }
+      .play-card-disabled {
+        background: gray;
+        pointer-events: none;
+        padding: 32px;
+        border-radius: 32px;
+        color: rgba(255, 255, 255, 0.33);
+        font-family: monospace;
+        cursor: pointer;
+      }
+      #pass {
+        box-shadow: 0px 0px 14px -1px rgba(0, 0, 0, 0.75);
+        border: 2px solid black;
+        position: absolute;
+        left: 20px;
+        bottom: 164px;
+      }
+      .pass {
+        text-align: center;
+        width: 38px;
+        padding: 32px;
+        border-radius: 32px;
+        background: rgb(63, 18, 114);
+        color: white;
+        font-family: monospace;
+        cursor: pointer;
+      }
+    </style>
+  </header>
+  <body>
+    <div id="game" style="display:none">
+      <div id="board">
+        <canvas id="canvas" width="512" height="512"></canvas>
+        <div id="play-card" class="button">Place</div>
+        <div id="pass" class="button pass">Pass</div>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <script src="president.js"></script>
+    <script src="../lib.js"></script>
+  </footer>
+</html>

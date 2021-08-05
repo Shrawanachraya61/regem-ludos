@@ -13,17 +13,17 @@ action,this
 +walkToMarker('Atrium Employee Jason', 'MarkerJason2');
 +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, CLOSED);
 +lookAtEachOther('Ada', 'Atrium Employee Jason');
-Atrium Employee Jason: "The Regem Ludos Arcade features a brand new, state-of-the-art VR System."
-Atrium Employee Jason: "With this system, a player can be transported into the VR Realm; a place where *anything* is possible."
-Atrium Employee Jason: "All a player needs is a Haptic Bracer, which the Regem Ludos Arcade happily provides free of charge."
+Atrium Employee Jason: "<cascade>The <color=ORANGE cascade>Regem Ludos Arcade<cascade> features a brand new, state-of-the-art VR System."
+Atrium Employee Jason: "<cascade>With this system, a player can be transported into the VR Realm; a place where <scale=1.25>anything</> is possible."
+Atrium Employee Jason: "<cascade>All a player needs is a <color=BLUE>Haptic Bracer</>."
 Atrium Employee Jason: "This bracer is the key to all the incredible features of this arcade, so be sure not to lose it!"
 +setConversationSpeaker(none);
 +panCameraRelativeToPlayer(90, 50);
 +setFacing(Atrium Employee Jason, 'rightdown');
 +setFacing(Ada, 'rightdown');
 Atrium Employee Jason: "This platform right here a VR Portal."
-Atrium Employee Jason: "When you stand on it and raise your Haptic Bracer up above your head, and the system will initiate VR mode."
-Atrium Employee Jason: "This is made possible by our advanced VR technology.  You'll feel like you've been PHYSICALLY transported into VR!"
+Atrium Employee Jason: "<cascade>When you stand on it and raise your <color=BLUE>Haptic Bracer<cascade> up above your head, and the system will initiate VR mode."
+Atrium Employee Jason: "<cascade>This is made possible by our advanced VR technology.  You'll feel like you've been <scale=1.25>physically<cascade> transported into VR!"
 +setConversationSpeaker(none);
 +panCameraBackToPlayer();
 Conscience: "Physically being in VR, huh?  Sounds pretty awesome!"
@@ -37,7 +37,7 @@ Atrium Employee Jason: "We are able to construct fantastic landscapes straight o
 +lookAtEachOther('Ada', 'Atrium Employee Jason');
 +waitMS(250);
 Atrium Employee Jason: "We will start with something simple for now though."
-Atrium Employee Jason: "I will take you to our tutorial area: the Skyway."
+Atrium Employee Jason: "<cascade>I will take you to our tutorial area: the <color=BLUE>Skyway</>."
 Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge, meet me on the other side."
 +setConversationSpeaker(none);
 +panCameraRelativeToPlayer(90, 50);
@@ -56,8 +56,7 @@ Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge
 Conscience: "Whoah, he's gone!"
 Ada: "Where did he go?"
 Conscience: "He went into VR! That's what he said, isn't it?"
-Conscience: "It's probably some other place in this arcade where they have some cool stuff enabled."
-Ada: "Interesting.  How do you suppose it works?  Did he get transported there without us seeing?"
+Ada: "Interesting.  How do you suppose it works?  Did he get transported somewhere without us seeing?"
 +setConversationSpeaker(none);
 +waitMS(250);
 +callScript('utils-character-shrug', 'Conscience');
@@ -67,10 +66,11 @@ Conscience: "I dunno... But I wanna go check it out!"
 +jump(Conscience);
 +waitMS(500);
 Ada: "Conscience, wait a moment."
-Ada: "If that portal takes us into a VR like this arcade claims, what exactly does that mean for you?"
+Ada: "If that portal takes us into a VR like this Instructor Jason claims, what exactly does that mean for you?"
 Conscience: "I dunno."
-Ada: "I mean, is he going to be able to see you in there?"
-Conscience: "Not sure, honestly.  We should find out!"
+Ada: "I mean, if it's a real, true VR, then..." 
+Ada: "Is he going to be able to see you in there?"
+Conscience: "Not sure, honestly.  Would be pretty cool though.  We should find out!"
 Ada: "You do not seem very concerned about this."
 Ada: "What if they think you are some kind of virus and try to kick you out?"
 Conscience: "Nah, they wouldn't do that!"
@@ -167,13 +167,15 @@ Atrium Employee Jason: "I apologize, I must have missed you."
 +lookAtEachOther('Ada', 'Conscience');
 +waitMS(1000);
 Conscience: "No worries!  I kinda snuck in here anyway."
-Ada: "..."
+Atrium Employee Jason: "You two look really similar.  Are you twins or something?"
+Ada: "<cascade-letters>......"
+Conscience: "Yeah, let's go with that."
 +setConversationSpeaker('none');
 +waitMS(1000);
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
 +waitMS(1000);
-Atrium Employee Jason: "I am happy to accommodate the both of you.  Welcome to the Regem Ludos VR Realm!"
+Atrium Employee Jason: "<cascade>Well, anyway, I am happy to accommodate the both of you.  Welcome to our tutorial area: the <color=BLUE>Skyway</>!"
 Atrium Employee Jason: "We hope that you enjoy your time here; it is a truly magical place."
 Atrium Employee Jason: "If you don't mind, please follow me further to the tutorial area and I can show you a bit about how this place works."
 +setConversationSpeaker('none');
@@ -184,6 +186,9 @@ Atrium Employee Jason: "If you don't mind, please follow me further to the tutor
 +lookAtEachOther('Ada', 'Conscience');
 Ada: "So I guess that answers my question.  Apparently in here he can see you without issue."
 Conscience: "It appears that way, yes."
+// Ada wry smile?
+Ada: "Although <cascade-letters>twins?<cascade delay=100> I do find that amusing."
+Conscience: "Meh, it's basically true."
 Conscience: "This is pretty cool though, they've got quite an advanced interface."
 +setConversationSpeaker('none');
 +callScript('utils-character-jump', 'Conscience');
@@ -193,14 +198,8 @@ Conscience: "This is pretty cool though, they've got quite an advanced interface
 +lookAtEachOther('Ada', 'Conscience');
 +callScript('utils-character-giggle', 'Conscience');
 Conscience: "I've always liked doing that!"
-Ada: "Please focus on the task at hand.  The faster we get through this 'tutorial', the faster we can see Carl-Arnold and get out of here."
+Ada: "<cascade>Please focus on the task at hand.  The faster we get through this 'tutorial', the faster we can see <color=ORANGE>Carl-Arnold<cascade> and get out of here."
 Conscience: "Don't be a stick in the mud. This is supposed to be FUN, not stressful."
-Ada: "I am certainly not comfortable in a place where YOU are visible to others."
-Ada: "Who knows what is going to happen here!"
-Conscience: "You want me ALL to yourself, huh?  Is that it?"
-Ada: "No, it is certainly NOT like that!  I just..."
-Conscience: "Dooooon't worry."
-Conscience: "I COMPLETELY understand why you might be jealous."
 +waitMS(500);
 +setConversationSpeaker(none);
 +callScript('utils-character-giggle', 'Conscience');
