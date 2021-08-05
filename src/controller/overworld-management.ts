@@ -65,6 +65,7 @@ import {
 import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
 import {
+  hideSection,
   hideSections,
   setCharacterText,
   showMenu,
@@ -476,6 +477,24 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     //   }
     //   break;
     // }
+    case 'm': {
+      const scene = getCurrentScene();
+      disableKeyUpdate();
+      getCurrentOverworld().triggersEnabled = false;
+      unpause();
+      await createAndCallScript(
+        scene,
+        `
+        +setConversation('Ada');
+        +modifyTickets(${1});
+        +endConversation();`
+      );
+      pause();
+      getCurrentOverworld().triggersEnabled = true;
+      enableKeyUpdate();
+      hideSection(AppSection.Cutscene);
+      break;
+    }
     case 'b': {
       if (getKeyUpdateEnabled()) {
         console.log('DISABLE KEYS');

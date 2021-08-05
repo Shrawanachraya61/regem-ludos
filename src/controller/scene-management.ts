@@ -104,7 +104,8 @@ export const updateScene = (scene: Scene): void => {
 export const evalCondition = (
   scene: Scene,
   conditional?: Conditional | boolean,
-  dontTriggerOnce?: boolean
+  dontTriggerOnce?: boolean,
+  triggerType?: TriggerType
 ) => {
   if (conditional === true) {
     return true;
@@ -195,9 +196,17 @@ export const evalCondition = (
       console.error('conditional "as" is not defined for this scene.');
       return false;
     } else if (type === 'once') {
-      const arg =
+      let arg =
         args[0] ??
         (scene.currentScript || scene.currentTrigger)?.name + '-once';
+      if (triggerType) {
+        arg =
+          args[0] ??
+          (scene.currentScript || scene.currentTrigger)?.name +
+            '-' +
+            triggerType +
+            '-once';
+      }
       if (scene.storageOnceKeys[arg]) {
         return false;
       }
@@ -229,7 +238,12 @@ export const invokeTrigger = (
       const scriptCall = trigger.scriptCalls[i];
       if (scriptCall.type === type) {
         scene.currentTrigger = trigger;
-        const c = evalCondition(scene, scriptCall.condition, dontTriggerOnce);
+        const c = evalCondition(
+          scene,
+          scriptCall.condition,
+          dontTriggerOnce,
+          type
+        );
         type !== 'step' &&
           type !== 'step-first' &&
           console.log('CONDITION', scriptCall.condition, scriptCall.type, c);

@@ -36,26 +36,39 @@ export const createPropRenderObject = (
   overrideCorrection?: boolean
 ): RenderObject => {
   if (prop.isDynamic) {
-    const [, , , spriteWidth, spriteHeight] = getSprite(prop.sprite);
+    const sprite = getSprite(prop.sprite);
+    if (!sprite) {
+      console.error(prop);
+      throw new Error(
+        'Cannot create prop render object, no sprite exists:' + prop.sprite
+      );
+    }
+    const [, , , spriteWidth, spriteHeight] = sprite;
     let [px, py] = isoToPixelCoords(prop.x, prop.y);
 
     if (overrideCorrection) {
     } else if (spriteWidth === 32 && spriteHeight === 32) {
-      // EWW, EWW GET IT OFF, WHY ARE THESE SO ARBITRARY?
       // works for 32 x 32
       py = py - spriteHeight + 16 + 4 - 4 + 1 - 1;
       px = px - spriteWidth / 2 + 16 + 4 - 4 + 0;
     } else {
       // works for everything else??
-      py = py - spriteHeight + 16 + 4;
-      px = px - spriteWidth / 2 + 16 + 4;
+      py = py - spriteHeight + 16;
+      px = px - spriteWidth / 2 + 16;
+    }
+
+    let pySortOffset = 0;
+
+    // helps put small sprites on tables
+    if (prop.sprite?.includes('props_small')) {
+      pySortOffset = 16;
     }
 
     return {
       sprite: prop.sprite,
       px,
       py,
-      sortY: prop.isFront ? Infinity : py + spriteHeight,
+      sortY: prop.isFront ? Infinity : py + spriteHeight + pySortOffset,
       visible: true,
     };
   } else {

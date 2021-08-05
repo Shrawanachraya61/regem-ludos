@@ -15,6 +15,8 @@ import {
   characterSetPos,
   characterSetFacing,
   characterGetCollisionCircle,
+  characterSetAnimationState,
+  characterOverrideAnimation,
 } from 'model/character';
 import { Overworld, overworldHide, overworldShow } from 'model/overworld';
 import { Timer } from 'model/utility';
@@ -23,6 +25,7 @@ import commands, {
   fadeIn,
   fadeOut,
   spawnParticleAtCharacter,
+  spawnParticleAtMarker,
 } from 'controller/scene-commands';
 import {
   Point,
@@ -59,6 +62,7 @@ import { EFFECT_TEMPLATE_AGGROED } from 'model/particle';
 import { playSoundName } from 'model/sound';
 import { callScript, createAndCallScript } from 'controller/scene-management';
 import { sceneIsWaiting } from 'model/scene';
+import { createAnimation } from 'model/animation';
 
 const exp = {} as { [key: string]: OverworldAI };
 export const get = (key: string): OverworldAI => {
@@ -401,6 +405,89 @@ export const init = () => {
             });
           });
           characterAddTimer(ch, t);
+        }
+      },
+    };
+  })();
+
+  // overly complex ai for changing animations of ping pong dudes in floor 1
+  exp.PING_PONG = (function () {
+    const pingPongState = {
+      ballWaiting: false,
+      aHitNextTick: false,
+      ballInAirLTR: false,
+      bHitNextTick: false,
+      ballInAirRTL: false,
+      ballWaitingNextTick: true,
+    };
+
+    const setAnimationHitBall = (ch: Character, cb2: any) => {
+      const cb = () => {
+        const anim2 = createAnimation(ch.spriteBase + '_pingpong_idle');
+        characterOverrideAnimation(ch, anim2);
+        cb2();
+      };
+      const anim = createAnimation(ch.spriteBase + '_pingpong_hit');
+      characterOverrideAnimation(ch, anim, cb);
+    };
+
+    return {
+      update: (ch: Character) => {
+        if (ch.aiState.pingpong_interrupted) {
+          return;
+        }
+
+        if (ch.aiState.pingpong_reset) {
+          ch.aiState.pingpong_reset = false;
+          Object.assign(pingPongState, {
+            ballWaiting: false,
+            aHitNextTick: false,
+            ballInAirLTR: false,
+            bHitNextTick: false,
+            ballInAirRTL: false,
+            ballWaitingNextTick: true,
+          });
+        }
+
+        if (pingPongState.ballWaitingNextTick) {
+          pingPongState.ballWaitingNextTick = false;
+          pingPongState.ballWaiting = true;
+          timeoutPromise(2000).then(() => {
+            pingPongState.ballWaiting = false;
+            pingPongState.aHitNextTick = true;
+          });
+        }
+
+        if (pingPongState.aHitNextTick) {
+          if (ch.spriteBase === 'guy3') {
+            pingPongState.aHitNextTick = false;
+            pingPongState.ballInAirLTR = true;
+            spawnParticleAtMarker(
+              'EFFECT_TEMPLATE_PING_PONG_LTR',
+              'MarkerPingPong',
+              'normal'
+            );
+            setAnimationHitBall(ch, () => {
+              pingPongState.ballInAirLTR = false;
+              pingPongState.bHitNextTick = true;
+            });
+          }
+        }
+
+        if (pingPongState.bHitNextTick) {
+          if (ch.spriteBase === 'guy2') {
+            pingPongState.bHitNextTick = false;
+            pingPongState.ballInAirRTL = true;
+            spawnParticleAtMarker(
+              'EFFECT_TEMPLATE_PING_PONG_RTL',
+              'MarkerPingPong',
+              'normal'
+            );
+            setAnimationHitBall(ch, () => {
+              pingPongState.ballInAirRTL = false;
+              pingPongState.ballWaitingNextTick = true;
+            });
+          }
         }
       },
     };

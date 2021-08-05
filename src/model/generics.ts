@@ -78,11 +78,11 @@ export const isKeyDown = (key: string): boolean => {
   return keyState[key] ?? false;
 };
 
-let isPaused = false;
+let isPaused = ((window as any).isPaused = false);
 export const getIsPaused = (): boolean => isPaused;
 export const setIsPaused = (n: boolean): void => {
   // console.trace('set paused', n);
-  isPaused = n;
+  isPaused = (window as any).isPaused = n;
 };
 
 const renderables: Record<

@@ -147,6 +147,14 @@ export const init = () => {
     // offset: [0, -32],
   };
 
+  const EFFECT_TEMPLATE_PING_PONG_LTR: ParticleTemplate = {
+    animName: 'effect_pingpong_ltr',
+  };
+
+  const EFFECT_TEMPLATE_PING_PONG_RTL: ParticleTemplate = {
+    animName: 'effect_pingpong_rtl',
+  };
+
   Object.assign(exp, {
     EFFECT_TEMPLATE_SWORD_LEFT,
     EFFECT_TEMPLATE_PIERCE_LEFT,
@@ -166,5 +174,7 @@ export const init = () => {
     EFFECT_TEMPLATE_VR_PORTAL,
     EFFECT_TEMPLATE_PORTAL_SPAWN,
     EFFECT_TEMPLATE_SPAWN,
+    EFFECT_TEMPLATE_PING_PONG_LTR,
+    EFFECT_TEMPLATE_PING_PONG_RTL,
   });
 };

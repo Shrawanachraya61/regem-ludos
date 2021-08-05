@@ -21,15 +21,15 @@
   Atrium Desk Employee: "I'll need your <scale=1.25 color=BLUE>Full Name</scale>, you know, like how it would appear on a drivers license."
   Ada: "My full name...?"
   Ada: "It is <color=YELLOW cascade=100>Adalais Eldridge</>."
-  Ada: "<cascade=100>However I <scale=1.25 cascade-letters=250>MUCH <cascade-letters=110>prefer <color=YELLOW>Ada</>."
+  Ada: "<cascade=100>However I <scale=1.25 cascade-letters=200>MUCH <cascade-letters=100>prefer <color=YELLOW>Ada</>."
   Atrium Desk Employee: "I'll have to put in the full name for you, honey; compliancy reasons and all that."
   +setConversationSpeaker(none);
-  +waitMS(1000);
+  +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_gesture_rightup);
   +playSound('blip');
   +waitMS(1000);
   Atrium Desk Employee: "Excellent, <delay=500 cascade> I've set up a profile for you."
   Atrium Desk Employee: "Please allow me to give you a rundown of our facility."
-  Ada: "<cascade=75>Actually, I am<cascade=150> only here... <delay=400 cascade-letters=50> to see a <scale=0.75 cascade-letters=50>friend<cascade-letters=50> of mine."
+  Ada: "<cascade=75>Actually, I am only here... to see a <scale=0.75 cascade-letters=50>friend<cascade-letters=50> of mine."
   Atrium Desk Employee: "It'll be quick, I promise!"
   Ada: "<scale=0.75 cascade-letters=150>Fine."
   Atrium Desk Employee: "We have a wide variety of arcade games for you to enjoy.  However in order to play, each of these machines requires some number of <color=BLUE>Regem Ludos Tokens</>."
@@ -61,14 +61,14 @@
   Atrium Desk Employee: "Unfortunately we can't let you do that."
   Atrium Desk Employee: "To get access to the upper floors, you'll need to acquire a <color=BLUE>Haptic Bracer</>.  It's the policy of the Arcade and all that."
   Atrium Desk Employee: "But don't worry, the <color=ORANGE>Regem Ludos Arcade</> provides all newcomers with one upon entry."
-  Atrium Desk Employee: "Go and speak with <color=BLUE>Instructor Jason</> over in the area to the east of this room.  He is standing outside of a VR Practice area."
+  Atrium Desk Employee: "Go and speak with <color=BLUE>Instructor Jason</> over in the area adjacent to this room.  He is standing outside of our VR Practice area."
   Atrium Desk Employee: "He can teach you some helpful tips on how to battle some of the monsters in VR."
-  Ada: "Wait--<cascade=350> What did you say?"
+  Ada: "Wait--<cascade=150> What did you say?"
   +setConversationSpeaker(none);
   +waitMS(500);
   +callScript('utils-character-shake-z', 'Ada');
   +waitMS(500);
-  Ada: "<cascade-letters=150>Battle <cascade-letters=150 scale=1.25 color=RED>MONSTERS</>?"
+  Ada: "<cascade-letters=150>Battle <cascade-letters=100 scale=1.25 color=RED>MONSTERS</>?"
   Ada: "<cascade scale=1.25>I just need to go to the second floor!"
   +setConversationSpeaker(none);
   +waitMS(500);
@@ -91,7 +91,7 @@
   +endConversation(100);
   +setConversation2('Ada', 'Conscience');
   Conscience: "This place is much more fancy than I thought!"
-  Ada: "<cascade=500>Fancy.  Yes.<delay=100 cascade=33>  I suppose that is a good enough word for it."
+  Ada: "<cascade=500>Fancy.  Yes.<cascade=33>  I suppose that is a good enough word for it."
   +setConversationSpeaker(none);
   +waitMS(1000);
   Ada: "<scale=1.25 cascade-letters=250>So.<delay=200 cascade=100> I am simply thinking out <cascade-letters=100>loud..."
@@ -107,13 +107,12 @@
   Conscience: "We are <shake>DEFINITELY</> going to the VR.  I want to see it!"
   Ada: "I did not come here to defeat <color=RED scale=1.25>MONSTERS</>.<delay=750 cascade=33> I just want to find Carl-Arnold and then get out with as little problems as possible."
   Conscience: "C'mon, it totally sounds fun!"
-  Conscience: "<scale=1.25 cascade-letters=50>PLEASE!"
   +setConversationSpeaker(none);
   +waitMS(1000);
-  Conscience: "<scale=2 cascade-letters=75>PLEASE!!!"
+  Conscience: "<scale=2 cascade-letters=75>Please!!"
   +setConversationSpeaker(none);
   +waitMS(1000);
-  Ada: "I--"
+  Ada: "I don't think it's a good idea."
   +callScript('utils-character-shake-z', 'Conscience');
   Conscience: "<scale=2.5 cascade-letters=20 shake>PLEASE!!!!!!"
   +setConversationSpeaker(none);
@@ -285,7 +284,7 @@
 @floor1-atrium-TicTacToeGirl-first
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
-  Tic Tac Toe Girl: "The machines over here aren't very exciting.  You can only play <color=BLUE>Tic-Tac-Toe</> on them."
+  Tic Tac Toe Girl: "<cascade>The machines over here aren't very exciting.  You can only play <color=BLUE>Tic-Tac-Toe</> on them."
   Tic Tac Toe Girl: "<cascade=50>Not that the game is stupid or anything, <delay=500 cascade=50> but it's just... <delay=750 scale=1.25 color=LIGHTBLUE>SO EASY<delay=500 cascade-letters> to beat the AI."
   Tic Tac Toe Girl: "Honestly, I feel kinda bad for it.  I wonder if it feels sad to lose all the time."
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
@@ -299,6 +298,7 @@
   +endConversation();
 // Called from onGameComplete in the TicTacToe Arcade Cabinet Meta
 @floor1-atrium-TicTacToeGirl-complete
+  +changeTileAtMarker(MarkerTTTMachineTile, TIC_TAC_TOE_EXCITED);
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
   Tic Tac Toe Girl: "You actually let it win, huh?  It seems pretty excited about that."
@@ -312,44 +312,117 @@
   Tic Tac Toe Girl: "Well, <delay=750 cascade=50> I'm glad I wasn't the one who lost to it."
   +setStorage(quest_floor1-atrium_tic-tac-toe-complete);
   +resetAi('Tic Tac Toe Girl');
+  +changeTileAtMarker(MarkerTTTMachineTile, TIC_TAC_TOE_NORMAL);
   +endConversation();
 
 #floor1-atrium-TicTacToeMachine
-  action,this
-  @this
+step-first,this
+action,floor1-atrium-TicTacToeMachine-action
+@this
++setCharacterText('Press Action (X) to play Tic-Tac-Toe.');
+@floor1-atrium-TicTacToeMachine-action
++walkToMarker(Ada, MarkerTTTMachine);
++setFacing(Ada, leftup);
+// If Ada hasn't spoken with the girl standing by the machines, force that cutscene
++?isnot(floor1-atrium-TicTacToeGirl):{
+  +setCharacterText('');
+  +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
+  +setConversation('Ada');
+  Tic Tac Toe Girl: "Hey."
+  +lookAtEachOther('Tic Tac Toe Girl', 'Ada');
+  +panCameraToFitCharacters(500, false, Ada, Tic Tac Toe Girl);
+  Tic Tac Toe Girl: "You looking to play that game?"
+  +callScript(floor1-atrium-TicTacToeGirl-first);
+  +panCameraBackToPlayer(500);
+  +setStorage(floor1-atrium-TicTacToeGirl);
+  +waitMS(1000);
   +setFacing(Ada, leftup);
-  // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
-  +?isnot(floor1-atrium-TicTacToeGirl):{
-    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
-    +setConversation('Ada');
-    Tic Tac Toe Girl: "Hey, <delay=750>you looking to play a game?"
-    +callScript(floor1-atrium-TicTacToeGirl-first);
-    +setStorage(floor1-atrium-TicTacToeGirl);
-    +waitMS(1000);
-    +setFacing(Ada, leftup);
-    +waitMS(1000);
-  }
-  +fadeOut(100);
-  +runArcadeCabinetGame(TIC_TAC_TOE);
-  +fadeIn(50);
-  +setAtMarker(Ada, MarkerMachine1);
+}
++fadeOut(100);
++runArcadeCabinetGame(TIC_TAC_TOE);
++fadeIn(50);
++setAtMarker(Ada, MarkerTTTMachine);
 
-#floor1-atrium-TicTacToeMachine2
-  action,this
-  @this
-  +setFacing(Ada, leftup);
-  // If Ada hasn't spoken with the girl standing by the machines, force that cutscene
-  +?isnot(floor1-atrium-TicTacToeGirl):{
-    +lookAtCharacter('Tic Tac Toe Girl', 'Ada');
-    +setConversation('Ada');
-    Tic Tac Toe Girl: "Hey, <delay=750>you looking to play a game?"
-    +callScript(floor1-atrium-TicTacToeGirl-first);
-    +setStorage(floor1-atrium-TicTacToeGirl);
-    +waitMS(1000);
-    +setFacing(Ada, leftup);
-    +waitMS(1000);
-  }
-  +fadeOut(100);
-  +runArcadeCabinetGame(TIC_TAC_TOE);
-  +fadeIn(50);
-  +setAtMarker(Ada, MarkerMachine2);
+#floor1-Floor1PingPongGuyA
+  action,?once():this
+  action,floor1-Floor1PingPongGuyA2
+@this
+  +setAiState(Floor1PingPongGuyA, pingpong_interrupted, true);
+  +setAiState(Floor1PingPongGuyB, pingpong_interrupted, true);
+  +lookAtEachOther(Ada, Floor1PingPongGuyB);
+  +lookAtEachOther(Ada, Floor1PingPongGuyA);
+  +setConversation(Ada);
+  +panCameraToFitCharacters(500, false, Ada, Floor1PingPongGuyA, Floor1PingPongGuyB);
+  Floor1PingPongGuyA: "Hey there!"
+  Floor1PingPongGuyA: "You wanna play some ping pong or something?"
+  +lookAtEachOther(Floor1PingPongGuyB, Floor1PingPongGuyA);
+  Floor1PingPongGuyB: "Dude!  We're in the middle of a set here! You can't just let some girl play."
+  Floor1PingPongGuyA: "Honestly, I might need a break here soon.  This is tiring me out."
+  +jump(Floor1PingPongGuyB);
+  Floor1PingPongGuyB: "<shake>NO BREAKS!"
+  Floor1PingPongGuyB: "<cascade> We <color=BLUE cascade> must <cascade> find out who the better player is!"
+  Floor1PingPongGuyB: "<cascade> You agreed to this <color=BLUE>best of 99<cascade>, and by golly you're gonna finish it!"
+  Floor1PingPongGuyA: "Alright, whatever.  It's your serve."
+  +panCameraBackToPlayer(500);
+  +endConversation();
+  +setAiState(Floor1PingPongGuyA, pingpong_interrupted, false);
+  +setAiState(Floor1PingPongGuyB, pingpong_interrupted, false);
+  +setAiState(Floor1PingPongGuyB, pingpong_reset, true);
+@floor1-Floor1PingPongGuyA2
+  +setConversation(Ada);
+  +lookAtCharacter(Ada, Floor1PingPongGuyA);
+  Ada: "They seem quite enthralled with their ping pong match."
+  +endConversation();
+  +setAiState(Floor1PingPongGuyB, pingpong_reset, true);
+
+#floor1-atrium-greeter-employee
+  step-first,?once():floor1-atrium-greeter-employee-step
+  action,?once():this
+  action,floor1-atrium-greeter-employee2
+@this
+  +lookAtEachOther(Ada, AtriumGreeterEmployee);
+  +setConversation(Ada);
+  AtriumGreeterEmployee: "What can I do for you?"
+  Ada: "I am looking for a <italic>friend</> of mine."
+  Ada: "He told me he is on the second floor."
+  Ada: "Do you know where I need to go to get up there?"
+  AtriumGreeterEmployee: "Please direct all directions-related questions to my cohort at the front desk."
+  AtriumGreeterEmployee: "She will happily assist if you are lost."
+  +endConversation();
+@floor1-atrium-greeter-employee2
++lookAtEachOther(Ada, AtriumGreeterEmployee);
+  +setConversation(Ada);
+  AtriumGreeterEmployee: "On behalf of the arcade staff, we hope you have a wonderful time!"
+  +endConversation();
+@floor1-atrium-greeter-employee-step
+  +setConversation(Ada);
+  AtriumGreeterEmployee: "Hello there!"
+  +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "<cascade>Welcome to the <color=ORANGE>Regem Ludos Arcade</>!"
+  +setConversationSpeaker(none);
+  +walkToMarker(Ada, MarkerFloor1AtriumGreeterEmployeeWalk);
+  +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Oh! <delay=200 cascade>You're from that prep school <color=BLUE>Erran Valley<cascade> a few blocks from here right?"
+  Ada: "Yes, I am.  Why do you ask?"
+  AtriumGreeterEmployee: "It's nothing!  Well, nothing that important."
+  AtriumGreeterEmployee: "It's just that there's a boy from your school that owns the records for pretty much every arcade machine in this facility."
+  AtriumGreeterEmployee: "I believe his name was Carl something-or-another.  Maybe it was <color=ORANGE>Carnold</>?"
+  +setConversation(Conscience);
+  Conscience: "(Carl-Arnold has the record for every arcade machine?  Whoah.)"
+  Ada: "<cascade-letters>......"
+  +setConversation(Ada);
+  AtriumGreeterEmployee: "I gotta tell you though, you kids from that school are a cut above the rest."
+  AtriumGreeterEmployee: "There's obviously a reason why it's the most well-regarded prep school in the state."
+  AtriumGreeterEmployee: "You're all so smart; so clever."
+  AtriumGreeterEmployee: "It's always exciting when one of you walks in here."
+  Ada: "Are there many students from <color=BLUE>Erran Valley</> who come here?"
+  AtriumGreeterEmployee: "From time to time, yeah."
+  AtriumGreeterEmployee: "I saw a few of you come in earlier actually."
+  AtriumGreeterEmployee: "I love that flower in your hair by the way.  It really brings out your eyes."
+  Ada: "<cascade>Um.  <cascade-letters>Thanks."
+  AtriumGreeterEmployee: "Anyway, if you need any assistance, don't hesitate to speak with any of the employees!"
+  AtriumGreeterEmployee: "You can recognize us by our hats and white attire."
+  AtriumGreeterEmployee: "On behalf of the arcade staff, we hope you have a wonderful time!"
+  +setConversationSpeaker(none);
+  +panCameraBackToPlayer(500);
+  +endConversation(500, true);

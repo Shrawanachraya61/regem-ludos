@@ -228,4 +228,19 @@ export const init = () => {
     size: [32, 64],
   };
   replacementTemplates.props_29 = 'HEAL_POOL';
+
+  exp.TIC_TAC_TOE_EXCITED = {
+    baseSprite: 'props_12',
+    animName: 'props-anims-tic-tac-toe-machine-excited',
+    isWall: true,
+    isProp: true,
+    size: [32, 64],
+  };
+  exp.TIC_TAC_TOE_NORMAL = {
+    baseSprite: 'props_12',
+    // animName: 'props-anims-tic-tac-toe-machine-excited',
+    isWall: true,
+    isProp: true,
+    size: [32, 64],
+  };
 };

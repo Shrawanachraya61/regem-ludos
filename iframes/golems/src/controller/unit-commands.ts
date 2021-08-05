@@ -1,17 +1,5 @@
 /*
 global
-G_controller_attackUnit
-G_model_unitSetState
-G_model_unitGetAttackableUnitsFromCurrentPos
-G_model_unitModifyHP
-G_model_unitGetAdjacentUnits
-G_model_unitGetRangeOffsets
-G_model_roomSetPhase
-G_model_roomGetUnitAt
-G_model_createParticle
-G_view_renderUi
-G_view_playSound
-G_utils_waitMs
 UnitState
 RoomPhase
 UnitAllegiance
@@ -22,7 +10,6 @@ interface UnitCommand {
   cnd: (unit: Unit, room: Room) => boolean;
   cb: (unit: Unit, room: Room) => Promise<boolean>;
 }
-
 const G_controller_selectUnit = (room: Room, units: Unit[]): Promise<Unit> => {
   G_model_roomSetPhase(room, RoomPhase.SELECT_ENEMY);
   room.ui.selUnitI = 0;

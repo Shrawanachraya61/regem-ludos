@@ -16,7 +16,7 @@
     "zip": "yarn zip:foley && yarn zip:images",
     "zip:foley": "cd res/snd/foley && rm -f foley.mp3 && audiosprite --silence 2 -e mp3 --output foley *.mp3",
     "zip:images": "(cd res && zip images.zip *.png)",
-    "watch": "yarn zip && tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
+    "watch": "yarn zip && yarn build:rpgscript && tsc && concurrently -n 1,2 \"http-server -o index.html\" \"tsc --watch\"",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {

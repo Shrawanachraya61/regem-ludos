@@ -37,6 +37,7 @@ rules:
   new-cap: 0
   react/jsx-pascal-case: 0
   react/jsx-no-undef: 0
+  no-undef: 0    
   no-unused-vars:
     - 1
     - vars: 'local'

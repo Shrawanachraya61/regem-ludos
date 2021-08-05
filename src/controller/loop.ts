@@ -152,20 +152,6 @@ export const runMainLoop = async (): Promise<void> => {
   //   (window as any).running && setTimeout(() => loop(performance.now()), 100);
   const reLoop = () => (window as any).running && requestAnimationFrame(loop);
 
-  // const bgTransform = new Transform(
-  //   [0, 0, 0],
-  //   [-684, 0, 0],
-  //   30000,
-  //   TransformEase.LINEAR
-  // );
-  // const restartBgTransform = () => {
-  //   bgTransform.timer = new Timer(bgTransform.timer.duration);
-  //   bgTransform.timer.awaits.push(restartBgTransform);
-  //   bgTransform.timer.start();
-  // };
-  // bgTransform.timer.awaits.push(restartBgTransform);
-  // bgTransform.timer.start();
-
   const loop = (now: number) => {
     const dt = now - prevNow;
     const fm = dt / sixtyFpsMs;

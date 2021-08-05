@@ -312,8 +312,15 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     const isWallTileset = sprite.indexOf('wall') > -1;
     const isPropTileset = sprite.indexOf('props') > -1;
     const isFloorTileset = sprite.indexOf('floors') > -1;
-    const isFromTiles2 =
-      secondaryTileLayer && data[i] !== secondaryTileLayer.data[i];
+    let isFromTiles2 = false;
+    if (secondaryTileLayer) {
+      if (
+        secondaryTileLayer.data[i] !== 0 &&
+        data[i] !== secondaryTileLayer.data[i]
+      ) {
+        isFromTiles2 = true;
+      }
+    }
 
     const tile = {
       sprite,
@@ -401,6 +408,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       }
       room.renderObjects.push(ro);
     }
+
     tile.ro = ro;
     const tileTemplate = getReplacementTemplate(tile.sprite);
     if (tileTemplate) {
@@ -455,6 +463,25 @@ export const createRoom = (name: string, tiledJson: any): Room => {
           })
         );
       }
+    } else if (tiledJson.tilesets && gid) {
+      console.log('GET THINGY', tiledProp);
+      const { sprite, tileWidth, tileHeight } = gidToTileSpriteAndSize(
+        tiledJson.tilesets,
+        gid
+      );
+      const prop: Prop = {
+        id: `prop,${x},${y}`,
+        x,
+        y,
+        sprite,
+        isDynamic: true,
+        isFront: tiledProp.type === 'front',
+      };
+      console.log('create prop', prop);
+      const ro = createPropRenderObject(prop);
+      prop.ro = ro;
+      room.props.push(prop);
+      room.renderObjects.push(ro);
     }
   };
 
@@ -843,10 +870,10 @@ export const roomDoCharactersOccupySameTile = (
 
 export const roomGetEmptyAdjacentTile = (room: Room, ch: Character) => {
   const adjacentTiles = [
-    roomGetTileBelow(room, [ch.x + TILE_WIDTH_WORLD, ch.y]),
-    roomGetTileBelow(room, [ch.x, ch.y + TILE_HEIGHT_WORLD]),
     roomGetTileBelow(room, [ch.x - TILE_WIDTH_WORLD, ch.y]),
     roomGetTileBelow(room, [ch.x, ch.y - TILE_HEIGHT_WORLD]),
+    roomGetTileBelow(room, [ch.x + TILE_WIDTH_WORLD, ch.y]),
+    roomGetTileBelow(room, [ch.x, ch.y + TILE_HEIGHT_WORLD]),
   ];
 
   for (let i = 0; i < adjacentTiles.length; i++) {

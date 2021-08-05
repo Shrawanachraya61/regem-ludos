@@ -10,6 +10,7 @@ import {
 import { init as initParty } from './party';
 import { init as initTutorial } from './tutorial-roamers';
 import { init as initTest } from './test';
+import { init as initFloor1 } from './floor1';
 
 const exp = {} as { [key: string]: CharacterTemplate };
 export const get = (key: string): CharacterTemplate => {
@@ -36,6 +37,7 @@ export const init = () => {
   Object.assign(exp, initParty());
   Object.assign(exp, initTest());
   Object.assign(exp, initTutorial());
+  Object.assign(exp, initFloor1());
 
   exp.Roger = {
     name: 'Roger',
@@ -62,42 +64,6 @@ export const init = () => {
     talkTrigger: 'test-sigma',
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
-  };
-
-  // Floor1 ------------------------------------------------------------------------------
-  exp.Floor1AtriumDeskEmployee = {
-    name: 'Atrium Desk Employee',
-    spriteBase: 'employee-girl',
-    talkTrigger: 'floor1-atrium-desk-employee',
-    facing: Facing.RIGHT_UP,
-    animationState: AnimationState.IDLE,
-  };
-
-  exp.Floor1AtriumElevatorEmployee = {
-    name: 'Atrium Elevator Employee',
-    spriteBase: 'employee-guy',
-    talkTrigger: 'floor1-atrium-elevator-employee',
-    facing: Facing.LEFT_DOWN,
-    animationState: AnimationState.IDLE,
-  };
-
-  exp.Floor1AtriumTicTacToeGirl = {
-    name: 'Tic Tac Toe Girl',
-    nameLabel: 'Girl',
-    spriteBase: 'girl',
-    talkTrigger: 'floor1-atrium-TicTacToeGirl',
-    facing: Facing.RIGHT_DOWN,
-    animationState: AnimationState.IDLE,
-  };
-
-  exp.Floor1AtriumEmployeeJason = {
-    name: 'Atrium Employee Jason',
-    nameLabel: 'Employee Jason',
-    spriteBase: 'employee-guy2',
-    talkTrigger: 'floor1-atrium-employee-jason',
-    facing: Facing.LEFT_DOWN,
-    animationState: AnimationState.IDLE,
-    speed: 1,
   };
 
   for (const i in exp) {

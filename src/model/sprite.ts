@@ -242,7 +242,8 @@ export const getSprite = (spriteName: string): Sprite => {
 };
 
 const nonFlippedVariants = [
-  /props/,
+  /props(.*)/,
+  /floors(.*)/,
   /effect_/,
   /control/,
   /walls(.*)/,

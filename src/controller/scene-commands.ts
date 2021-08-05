@@ -62,6 +62,7 @@ import {
   isoToPixelCoords,
   Point,
   Point3d,
+  Rect,
   timeoutPromise,
 } from 'utils';
 import { createAnimation, hasAnimation } from 'model/animation';
@@ -101,6 +102,7 @@ import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
 import { sceneStopWaitingUntil } from 'model/scene';
 import { createTileRenderObject } from 'model/render-object';
 import { pause, unpause } from './loop';
+import { getScreenSize } from 'model/canvas';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -273,6 +275,11 @@ export const setConversation2 = (
 export const setConversation = (actorName: string) => {
   const appState = getUiInterface().appState;
   if (appState.cutscene.visible) {
+    // HACK.  Sometimes setConversation is called multiple times in a row and messes up
+    // the cutscene rendering.  This short circuits that problem
+    if (appState.cutscene.portraitCenter === actorName.toLowerCase()) {
+      return;
+    }
     setCutsceneText('');
     setConversationSpeaker(CutsceneSpeaker.None);
     return waitMS(200, () => {
@@ -296,12 +303,18 @@ export const setConversationWithoutBars = (actorName: string) => {
  * Removes all portraits and cutscene bars from the screen.  Portraits slide downwards,
  * and cutscene bars slide off.  After an optionally specified number of milliseconds,
  * this function resumes executing the script. This number defaults to 0.5 seconds
- * if not provided.
+ * if not provided.  For step triggers, endConversation needs to know if it should
+ * hide the cutscene section, otherwise it will stay on due to the nature of a step
+ * trigger.
  */
-export const endConversation = (ms?: number) => {
+export const endConversation = (ms?: number, hideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
-  return waitMS(ms ?? 500);
+  return waitMS(ms ?? 500, () => {
+    if (hideCutscene) {
+      showSection(AppSection.Debug, true);
+    }
+  });
 };
 
 /**
@@ -361,6 +374,10 @@ export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
   if (uiState.sections.includes(AppSection.Cutscene)) {
     setCutsceneText('', speaker);
   }
+};
+
+export const none = () => {
+  setConversationSpeaker(CutsceneSpeaker.None);
 };
 
 /**
@@ -1651,6 +1668,8 @@ export const jump = (chName: string) => {
     });
   };
 
+  setConversationSpeaker(CutsceneSpeaker.None);
+
   const performJump = async () => {
     await jumpAsync(8);
     await jumpAsync(16);
@@ -1926,6 +1945,75 @@ export const panCameraBackToPlayer = (ms?: number, skipWait?: boolean) => {
   }
 };
 
+export const panCameraToFitCharacters = (
+  ms?: number,
+  skipWait?: boolean,
+  ...characterNames: string[]
+) => {
+  console.log('PAN TO FIT', ms, skipWait, characterNames);
+  const room = getCurrentRoom();
+  const characters: Character[] = characterNames
+    .filter(chName => {
+      const ch = roomGetCharacterByName(room, chName);
+      if (!ch) {
+        console.error(
+          `error in panCameraToFitCharacters, character ${chName} does not exist in current room.`
+        );
+        return false;
+      }
+      return true;
+    })
+    .map(chName => {
+      return roomGetCharacterByName(room, chName) as any;
+    });
+
+  if (!characters.length) {
+    console.error(
+      `error in panCameraToFitCharacters, no characters to pan camera to!`
+    );
+    return;
+  }
+
+  const cameraCenterPositions = characters.map(ch => {
+    const [x, y] = isoToPixelCoords(ch.x, ch.y);
+    const [screenW, screenH] = getScreenSize();
+    // HACK: round x because it's odd, floor Y because it's even.  Might not always be the case
+    const roomXOffset = Math.round(screenW / 2 - x - 16);
+    const roomYOffset = Math.floor(screenH / 2 - y);
+    return [roomXOffset, roomYOffset];
+  });
+
+  const xAvg =
+    cameraCenterPositions.reduce((sum, [x]) => {
+      return sum + x;
+    }, 0) / cameraCenterPositions.length;
+  const yAvg =
+    cameraCenterPositions.reduce((sum, [, y]) => {
+      return sum + y;
+    }, 0) / cameraCenterPositions.length;
+
+  const duration = ms ?? 1000;
+  const player = getCurrentPlayer();
+  const transform = getCameraTransform();
+
+  if (player) {
+    const [oX, oY] = [xAvg, yAvg];
+    const [tX, tY] = transform
+      ? transform.current()
+      : playerGetCameraOffset(player);
+    const t = new Transform(
+      [tX, tY, 0],
+      [oX, oY, 0],
+      duration,
+      TransformEase.EASE_OUT
+    );
+    setCameraTransform(t);
+    if (!skipWait) {
+      return waitMS(duration);
+    }
+  }
+};
+
 export const playSound = (soundName: string) => {
   playSoundName(soundName);
 };
@@ -2093,6 +2181,27 @@ export const setBattlePaused = (isPaused: string) => {
   }
 };
 
+// useful for interrupting custom ai
+export const setAiState = (
+  chName: string,
+  aiStateKey: string,
+  value: string | boolean
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  if (value === 'true' || value === 'false') {
+    value = value === 'true';
+  }
+
+  ch.aiState[aiStateKey] = value;
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -2132,6 +2241,7 @@ const commands = {
   setConversationWithoutBars,
   endConversation,
   setConversationSpeaker,
+  none,
   waitMS,
   waitMSPreemptible,
   waitUntil,
@@ -2181,6 +2291,7 @@ const commands = {
   enterCombat,
   panCameraRelativeToPlayer,
   panCameraBackToPlayer,
+  panCameraToFitCharacters,
   playSound,
   playMusic,
   spawnParticleAtCharacter,
@@ -2191,6 +2302,7 @@ const commands = {
   equipWeaponOrArmor,
   pauseOverworld,
   unpauseOverworld,
+  setAiState,
 
   // custom scripts
   floor1TutToggleColorDoors,

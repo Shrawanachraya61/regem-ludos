@@ -20,6 +20,7 @@ import {
 import { modifyTickets } from 'controller/scene-commands';
 import { hideArcadeGame, hideSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
+import { pause, unpause } from 'controller/loop';
 
 registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
   title: 'Tic Tac Toe',
@@ -62,6 +63,7 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
   onGameCompleted: async (result: any) => {
     const score: number = result;
     const scene = getCurrentScene();
+    console.log('GAME HAS BEEN COMPLETED', result);
     if (
       score === -1 &&
       !scene.storage['quest_floor1-atrium_tic-tac-toe-complete']
@@ -78,6 +80,7 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
       // player won
       disableKeyUpdate();
       getCurrentOverworld().triggersEnabled = false;
+      unpause();
       await createAndCallScript(
         scene,
         `
@@ -85,6 +88,7 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
         +modifyTickets(${score});
         +endConversation();`
       );
+      pause();
       getCurrentOverworld().triggersEnabled = true;
       enableKeyUpdate();
       hideSection(AppSection.Cutscene);

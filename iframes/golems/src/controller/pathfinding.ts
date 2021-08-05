@@ -1,8 +1,6 @@
 /*
 globals
 TILE_SIZE
-G_model_roomGetUnitAt
-G_model_roomGetTileAt
 */
 
 type Point = [number, number];

@@ -31,7 +31,7 @@ async function main() {
           isDev ? ':dev' : ''
         }`
       );
-      const dest = `${__dirname}/../iframes/dist/${folderName}/`;
+      const dest = `${__dirname}/../iframes/dist/${folderName}/dist`;
       await execAsync(`mkdir -p ${dest}`);
       await execAsync(
         `cp -v ${__dirname}/../iframes/${folderName}/dist/* ${dest}`

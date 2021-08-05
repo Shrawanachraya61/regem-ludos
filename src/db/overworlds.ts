@@ -8,6 +8,7 @@ import * as battleTut1 from 'map/battle-tut1.json';
 
 import * as testJson from 'map/test.json';
 import * as test2Json from 'map/test2.json';
+import * as test3 from 'map/test3.json';
 import * as floor1Outside from 'map/floor1-outside.json';
 import * as floor1Atrium from 'map/floor1-atrium.json';
 import * as floor1Bowling from 'map/floor1-bowlingalley.json';
@@ -18,6 +19,7 @@ import * as floor1TutVR3 from 'map/floor1-tut-vr3.json';
 import * as floor1TutVR3West from 'map/floor1-tut-vr3-west.json';
 import * as floor1TutVR3West2 from 'map/floor1-tut-vr3-west2.json';
 import * as floor2South from 'map/floor2-south.json';
+import * as floor2GuestroomHallway from 'map/floor2-guestroom-hallway.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
 import * as floor2North from 'map/floor2-north.json';
 import * as floor2PrepRoom from 'map/floor2-preproom.json';
@@ -36,9 +38,12 @@ const overworldToRoom = {
   floor1TutVR3West,
   floor1TutVR3West2,
   floor2South,
+  floor2GuestroomHallway,
   floor2Cafeteria,
   floor2North,
   floor2PrepRoom,
+
+  test3,
 
   battle1: battle1Json,
   battleTut1,
@@ -50,9 +55,6 @@ const loadRoom = async (roomName: string, json: any) => {
 
 export const loadRooms = async (): Promise<void> => {
   console.log('loading rooms');
-
-  // await loadRoom('battle1', battle1Json);
-  // await loadRoom('battleTut1', battleTut1);
 
   await loadRoom('test', testJson);
   await loadRoom('test2', test2Json);
@@ -133,32 +135,37 @@ export const init = async () => {
 
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
 
-  Object.assign(exp.floor1Atrium, {
+  Object.assign(exp.floor1Atrium ?? {}, {
     backgroundColor: colors.BLACK,
     music: 'music_atrium',
   });
 
-  Object.assign(exp.floor1TutVR1, {
+  Object.assign(exp.floor2GuestroomHallway ?? {}, {
+    backgroundColor: colors.BLACK,
+    // music: 'music_atrium',
+  });
+
+  Object.assign(exp.floor1TutVR1 ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
   });
-  Object.assign(exp.floor1TutVR2, {
+  Object.assign(exp.floor1TutVR2 ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
   });
-  Object.assign(exp.floor1TutVR3, {
+  Object.assign(exp.floor1TutVR3 ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
   });
-  Object.assign(exp.floor1TutVR3West, {
+  Object.assign(exp.floor1TutVR3West ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
   });
-  Object.assign(exp.floor1TutVR3West2, {
+  Object.assign(exp.floor1TutVR3West2 ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,

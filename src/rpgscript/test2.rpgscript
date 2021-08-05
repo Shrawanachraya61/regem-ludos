@@ -215,7 +215,7 @@ step,this
 step-first,this
 action,test2-vortex-machine-action
 @this
-+setCharacterText('Press X to play Vortex.');
++setCharacterText('Press Action (X) to play Vortex.');
 @test2-vortex-machine-action
 +setFacing(Ada, leftup);
 +fadeOut(100);

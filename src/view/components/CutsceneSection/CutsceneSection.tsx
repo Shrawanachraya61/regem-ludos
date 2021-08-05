@@ -9,7 +9,7 @@ import { getDrawScale } from 'model/canvas';
 import { getCurrentKeyHandler, isAuxKey, isCancelKey } from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
 import TopBar, { TopBarButtons } from '../TopBar';
-import { showSection, showSettings } from 'controller/ui-actions';
+import { hideSection, showSection, showSettings } from 'controller/ui-actions';
 import { useKeyboardEventListener } from 'view/hooks';
 import { getCurrentRoom, getCurrentScene } from 'model/generics';
 import CharacterFollower from 'view/elements/CharacterFollower';
@@ -426,6 +426,11 @@ const renderTextboxHtml = async (
   cutscene: ICutsceneAppState
 ) => {
   textBox.innerHTML = '';
+
+  if (cutscene.text === '') {
+    return;
+  }
+
   const talkIcon = document.getElementById('talk-icon');
   if (talkIcon) {
     talkIcon.style.display = 'none';
@@ -504,7 +509,7 @@ const renderTextboxHtml = async (
   const phrases = parseDialogTextToPhrases(cutscene.text);
 
   if (cutscene.id === lastRenderedCutsceneId) {
-    const phrases = parseDialogTextToPhrases(cutscene.text);
+    // const phrases = parseDialogTextToPhrases(cutscene.text);
 
     let innerHTML = '';
     phrases.forEach(phrase => {
@@ -516,7 +521,7 @@ const renderTextboxHtml = async (
     textBox.style.transition = '';
     textBox.style.opacity = '0';
     // textBox.innerHTML = isNoneSpeaker ? '' : cutscene.text;
-    const phrases = parseDialogTextToPhrases(cutscene.text);
+    // const phrases = parseDialogTextToPhrases(cutscene.text);
 
     let innerHTML = '';
     phrases.forEach(phrase => {
@@ -562,6 +567,7 @@ const CutsceneSection = () => {
   // The desired effect is that the text fades out, then in when the dialog box
   // changes text.
   useEffect(() => {
+    console.log('CUTSCENE USE EFFECT');
     const textBox = textBoxRef?.current;
     if (textBox) {
       renderTextboxHtml(textBox, cutscene);
@@ -608,6 +614,7 @@ const CutsceneSection = () => {
   };
 
   const actors = getCurrentRoom()?.characters ?? [];
+  console.log('RENDER CUTSCENE!');
 
   return (
     <Root
@@ -634,7 +641,8 @@ const CutsceneSection = () => {
           buttons={[TopBarButtons.SETTINGS]}
           onSettingsClick={() => {}}
           onSettingsClose={() => {
-            showSection(AppSection.Cutscene, true);
+            hideSection(AppSection.Settings);
+            // showSection(AppSection.Cutscene, false);
           }}
         />
       </div>
@@ -750,7 +758,7 @@ const CutsceneSection = () => {
                   style={{
                     width: '32px',
                     background:
-                      'radial-gradient(circle, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 75%)',
+                      'radial-gradient(circle, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 85%)',
                     animation: `${talkIconBounce} 750ms linear infinite`,
                   }}
                 >

@@ -1,13 +1,5 @@
 /*
 global
-G_model_createUnit
-G_model_roomGetUnitAt
-G_model_getCurrentPlayer
-G_model_roomGetUnitsOfAllegiance
-G_view_renderUi
-G_view_playSound
-G_controller_getLvlUpObj
-G_controller_assignLvlUpObj
 RoomPhase
 UnitAllegiance
 */

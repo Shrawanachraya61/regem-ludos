@@ -195,6 +195,7 @@ export interface CharacterTemplate {
   stats?: BattleStats;
   facing?: Facing;
   animationState?: AnimationState;
+  overrideAnimationName?: string;
   skills?: BattleAction[];
   tags?: string[];
   overworldAi?: string;
@@ -341,6 +342,19 @@ export const characterCreateFromTemplate = (
   }
   if (template.collisionOffset !== undefined) {
     ch.collisionOffset = template.collisionOffset.slice() as Point;
+  }
+  if (template.overrideAnimationName) {
+    const animName = template.overrideAnimationName;
+    if (!hasAnimation(animName)) {
+      console.error(
+        'loading ch template',
+        template.name,
+        'Could not find override animation with name: ' + animName
+      );
+    } else {
+      const anim = createAnimation(animName);
+      characterOverrideAnimation(ch, anim);
+    }
   }
   ch.template = template;
   return ch;
