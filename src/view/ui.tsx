@@ -1,5 +1,5 @@
 /* @jsx h */
-import { h, render } from 'preact';
+import { h, render, Fragment } from 'preact';
 import { useEffect, useState, useReducer } from 'preact/hooks';
 import { colors, style } from 'view/style';
 
@@ -147,6 +147,14 @@ const App = () => {
           </PausedOverlay>
         ) : null}
         {appState.sections.map(renderSection)}
+        {appState.room.particles.map((p, i) => {
+          const UiComponent: any = p.uiComponent;
+          if (UiComponent) {
+            return <UiComponent key={'particle-' + i} particle={p} />;
+          } else {
+            return <></>;
+          }
+        })}
       </Root>
     </div>
   );

@@ -25,6 +25,7 @@ import {
   TILE_HEIGHT,
   roomGetTileAt,
   roomGetTileBelow,
+  roomRemoveParticle,
 } from 'model/room';
 import { pixelToIsoCoords, isoToPixelCoords } from 'utils';
 import {
@@ -259,7 +260,8 @@ export const runMainLoop = async (): Promise<void> => {
       for (let i = 0; i < room.particles.length; i++) {
         particleUpdate(room.particles[i]);
         if (room.particles[i].shouldRemove) {
-          room.particles.splice(i, 1);
+          roomRemoveParticle(room, room.particles[i]);
+          // room.particles.splice(i, 1);
           i--;
         }
       }

@@ -14,6 +14,7 @@ import {
   ISaveState,
   IMenuState,
   ILevelUpState,
+  IRoomState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
@@ -23,6 +24,7 @@ import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
 import { Character, characterGetPortraitSpriteName } from 'model/character';
 import { pause, unpause } from './loop';
+import { Particle } from 'model/particle';
 
 export interface ReducerAction<T> {
   action: string;
@@ -104,6 +106,15 @@ const resolvers: { [key: string]: MutationFunction } = {
   setLevelUpState: (newState: AppState, payload: Partial<ILevelUpState>) => {
     Object.assign(newState.levelUp, payload);
   },
+  addRoomUiParticle: (newState: AppState, payload: Particle) => {
+    newState.room.particles = [...newState.room.particles, payload];
+  },
+  removeRoomUiParticle: (newState: AppState, payload: Particle) => {
+    const ind = newState.room.particles.indexOf(payload);
+    if (ind > -1) {
+      newState.room.particles.splice(ind, 1);
+    }
+  },
 };
 
 export const appReducer = function <T>(
@@ -183,6 +194,7 @@ export const hideConversation = () => {
       portraitRightEmotion: '',
       portraitRight2Emotion: '',
       portraitCenterEmotion: '',
+      actorName: '',
       actors: [],
       portraitActors: [],
     } as Partial<ICutsceneAppState>,
@@ -545,4 +557,24 @@ export const hideBattleEffect = () => {
     action: 'setBattleState',
     payload,
   });
+};
+
+export const addRoomUiParticle = (particle: Particle) => {
+  getUiInterface().dispatch({
+    action: 'addRoomUiParticle',
+    payload: particle,
+  });
+};
+
+export const removeRoomUiParticle = (particle: Particle) => {
+  const inter = getUiInterface();
+  const state = inter.appState;
+  const ind = state.room.particles.indexOf(particle);
+  // prevents whole ui renders when non-ui particles are removed.
+  if (ind > -1) {
+    inter.dispatch({
+      action: 'removeRoomUiParticle',
+      payload: particle,
+    });
+  }
 };

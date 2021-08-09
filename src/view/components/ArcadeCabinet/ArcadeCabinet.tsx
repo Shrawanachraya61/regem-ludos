@@ -1,6 +1,6 @@
 /* @jsx h */
 import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { colors, style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
 import {
   hideControls,
@@ -370,6 +370,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const isGameRunning = getUiInterface().appState.arcadeGame.isGameRunning;
   const isGameReady = getUiInterface().appState.arcadeGame.isGameReady;
   const isGameReadyToPlay = tokensInserted === tokensRequired;
+  const iframeRef: any = useRef();
 
   useEffect(() => {
     if (!isGameRunning) {
@@ -477,6 +478,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
         {props.game ? (
           <IframeShim
             id="arcade-iframe"
+            ref={iframeRef}
             src={
               (isDevelopmentMode()
                 ? transformIframeUrlForDevelopment(props.game)

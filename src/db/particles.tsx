@@ -1,5 +1,27 @@
-import { ParticleTemplate } from 'model/particle';
-import { colors } from 'view/style';
+/* @jsx h */
+import { Particle, ParticleTemplate } from 'model/particle';
+import { colors, keyframes, style } from 'view/style';
+import { h } from 'preact';
+import CharacterFollower from 'view/elements/CharacterFollower';
+import { Character } from 'model/character';
+import StaticAnimDiv from 'view/elements/StaticAnimDiv';
+import { useEffect, useRef } from 'preact/hooks';
+import { timeoutPromise } from 'utils';
+
+export enum EmotionBubble {
+  EXCLAMATION = 'exclaim',
+  QUESTION = 'question',
+  RAINDROP = 'teardrop',
+  LIGHTBULB = 'lightbulb',
+  HEART = 'heart',
+  HAPPY = 'happy',
+  SMIRK = 'smirk',
+  BORED = 'bored',
+  SURPRISED = 'surprised',
+  SAD = 'sad',
+  GRUMPY = 'grumpy',
+  BLUSH = 'blush',
+}
 
 const exp = {} as { [key: string]: ParticleTemplate };
 export const get = (key: string) => {
@@ -19,6 +41,29 @@ export const getIfExists = (key: string): ParticleTemplate | null => {
     ...result,
   };
 };
+
+const dialogBubbleOpen = keyframes({
+  '0%': {
+    transform: 'scale(0)',
+  },
+  '50%': {
+    transform: 'scale(1.75)',
+  },
+  '100%': {
+    transform: 'scale(1)',
+  },
+});
+const dialogBubbleClose = keyframes({
+  '0%': {
+    transform: 'scale(1)',
+  },
+  '100%': {
+    transform: 'scale(0)',
+  },
+});
+// const dialogBubble = () => {
+
+// }
 
 export const init = () => {
   const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
@@ -155,6 +200,40 @@ export const init = () => {
     animName: 'effect_pingpong_rtl',
   };
 
+  const EFFECT_TEMPLATE_EMOTION_BUBBLE: ParticleTemplate = {
+    duration: 750,
+    uiComponent: (props: { particle: Particle }) => {
+      const ch: Character = props.particle.meta.ch;
+      const emotion: EmotionBubble = props.particle.meta.emotion;
+      const ref: any = useRef();
+      const transitionDuration = 100;
+      useEffect(() => {
+        timeoutPromise(750 - transitionDuration).then(() => {
+          ref.current.style.animation = `${dialogBubbleClose} ${transitionDuration}ms linear`;
+        });
+      }, []);
+      return (
+        <CharacterFollower ch={ch} renderKey={`particle-${ch.name}-${emotion}`}>
+          <div
+            ref={ref}
+            style={{
+              position: 'absolute',
+              top: '-32px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              animation: `${dialogBubbleOpen} ${transitionDuration}ms linear`,
+              // height: '100%',
+            }}
+          >
+            <StaticAnimDiv scale={3} animName={'effect_emotions_' + emotion} />
+          </div>
+        </CharacterFollower>
+      );
+    },
+  };
+
   Object.assign(exp, {
     EFFECT_TEMPLATE_SWORD_LEFT,
     EFFECT_TEMPLATE_PIERCE_LEFT,
@@ -176,5 +255,6 @@ export const init = () => {
     EFFECT_TEMPLATE_SPAWN,
     EFFECT_TEMPLATE_PING_PONG_LTR,
     EFFECT_TEMPLATE_PING_PONG_RTL,
+    EFFECT_TEMPLATE_EMOTION_BUBBLE,
   });
 };

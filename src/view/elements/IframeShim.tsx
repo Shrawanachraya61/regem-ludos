@@ -1,7 +1,7 @@
 /* @jsx h */
-import { h, Ref } from 'preact';
-import { useState } from 'preact/hooks';
-import { style, MEDIA_QUERY_PHONE_WIDTH } from 'view/style';
+import { h } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
+import { style, MEDIA_QUERY_PHONE_WIDTH, colors } from 'view/style';
 
 interface IIframeShimProps {
   id?: string;
@@ -11,7 +11,7 @@ interface IIframeShimProps {
   expanded: boolean;
   loading: boolean;
   style?: Record<string, string>;
-  ref?: Ref<any>;
+  ref: any;
 }
 
 const IframeBorder = style(
@@ -33,6 +33,7 @@ const IframeBorder = style(
       justifyContent: 'center',
       alignItems: 'center',
       pointerEvents: 'all',
+      background: colors.BLACK,
       [MEDIA_QUERY_PHONE_WIDTH]: {
         width: props.expanded ? 'calc(100% - 40px)' : props.width,
         height: props.expanded ? 'calc(100% - 40px - 7.75rem)' : props.height,
@@ -44,7 +45,19 @@ const IframeBorder = style(
 
 const IframeShim = (props: IIframeShimProps) => {
   // prevents iframe from reloading while you're looking at it
-  const [memoizedSrc] = useState(props.src);
+  // some games block main thread while loading (wasm stuff), which can cause
+  // the audio sprite callback to not run until the game is loaded.  This means
+  // that the audio file just keeps playing consecutive sprites until the game finally loads.
+  const ref = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    const memoizedSrc = props.src;
+    setTimeout(() => {
+      if (ref.current) {
+        ref.current.src = memoizedSrc;
+      }
+    }, 500);
+  }, []);
+
   return (
     <IframeBorder
       expanded={props.expanded}
@@ -67,8 +80,8 @@ const IframeShim = (props: IIframeShimProps) => {
       ) : null}
       <iframe
         id={props.id}
-        ref={props.ref}
-        src={memoizedSrc}
+        ref={ref}
+        // src={memoizedSrc}
         style={{
           border: '0px',
           width: props.width,

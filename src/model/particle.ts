@@ -10,6 +10,8 @@ import { SpriteModification } from './sprite';
 import { DrawTextParams, DEFAULT_TEXT_PARAMS, measureText } from 'view/draw';
 import { TILE_HEIGHT, TILE_WIDTH } from './room';
 import { getFrameMultiplier } from './generics';
+import { EmotionBubble, get as getParticle } from 'db/particles';
+import { Character } from './character';
 
 export interface Particle {
   anim?: Animation;
@@ -27,6 +29,7 @@ export interface Particle {
   w: number;
   h: number;
   useOuterCanvas: boolean;
+  uiComponent?: any;
   color?: string;
   shape?: 'rect' | 'circle';
   meta: Record<string, any>;
@@ -43,6 +46,8 @@ export interface ParticleTemplate {
   text?: string;
   textParams?: DrawTextParams;
   useOuterCanvas?: boolean;
+  uiComponent?: any;
+  meta?: Record<string, any>;
 }
 
 export const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
@@ -196,6 +201,17 @@ export const createStatusParticle = (
   return particle;
 };
 
+export const createEmotionBubbleParticle = (
+  ch: Character,
+  emotion: EmotionBubble
+) => {
+  const template = getParticle('EFFECT_TEMPLATE_EMOTION_BUBBLE');
+  const particle = particleCreateFromTemplate([0, 0], template);
+  particle.meta.ch = ch;
+  particle.meta.emotion = emotion;
+  return particle;
+};
+
 export const particleCreate = (): Particle => {
   const particle: Particle = {
     timer: new Timer(1000),
@@ -243,6 +259,7 @@ export const particleCreateFromTemplate = (
   particle.text = template.text ?? '';
   particle.useOuterCanvas = template.useOuterCanvas ?? false;
   particle.textParams = template.textParams ?? DEFAULT_TEXT_PARAMS;
+  particle.uiComponent = template.uiComponent;
 
   anim?.start();
   particle.timer.start();

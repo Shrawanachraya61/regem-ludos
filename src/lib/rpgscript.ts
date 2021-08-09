@@ -87,6 +87,7 @@ export function formatArgs(args: string[]) {
 export enum TriggerType {
   STEP = 'step',
   STEP_FIRST = 'step-first',
+  STEP_OFF = 'step-off',
   ACTION = 'action',
 }
 
@@ -180,7 +181,7 @@ export class Script {
 
       for (let j = 0; j < block.commands.length; j++) {
         const command = block.commands[j];
-        if (!sceneHasCommand(scene, command.type)) {
+        if (command.type[0] !== ':' && !sceneHasCommand(scene, command.type)) {
           return (
             `Error in script "${this.name}"\n\n` +
             `No command exists with name "${command.type}" ` +
@@ -258,6 +259,31 @@ export class ScriptParser {
 
   parseCommand(commandSrc: string, lineNum: number, script?: Script) {
     commandSrc = commandSrc.trim();
+
+    // shorthand for callScript(scriptName, ...args)
+    if (commandSrc[0] === ':') {
+      const src = commandSrc.slice();
+      const indFirstOpen = src.indexOf('(');
+      const indLastClose = src.lastIndexOf(')');
+      if (indFirstOpen === -1) {
+        this.throwParsingError(
+          `Invalid callScript shorthand, no open paren.'`,
+          lineNum,
+          commandSrc
+        );
+      }
+      if (indLastClose === -1) {
+        this.throwParsingError(
+          `Invalid callScript shorthand, no close paren.'`,
+          lineNum,
+          commandSrc
+        );
+      }
+      const scriptName = src.slice(1, indFirstOpen);
+      const scriptArgs = src.slice(indFirstOpen + 1, indLastClose).split(',');
+      commandSrc = `callScript(${scriptName},${scriptArgs.join(',')});`;
+    }
+
     const firstParenIndex = commandSrc.indexOf('(');
     const lastParenIndex = commandSrc.lastIndexOf(')');
 
@@ -409,6 +435,7 @@ export class ScriptParser {
   }
 
   parse(src: string, scene: Scene) {
+    console.log('PARSE SCRIPT', this.name);
     const triggers = {};
     const scripts = {};
 
@@ -521,6 +548,34 @@ export class ScriptParser {
 
           if (commandSrc[0] === '+') {
             commandSrc = commandSrc.slice(1);
+            // console.log('cmd src', commandSrc);
+            // if (commandSrc[0] === ':') {
+            //   let src = commandSrc;
+            //   const indFirstOpen = src.indexOf('(');
+            //   const indLastClose = src.lastIndexOf(')');
+            //   if (indFirstOpen === -1) {
+            //     this.throwParsingError(
+            //       `Invalid callScript shorthand, no open paren.'`,
+            //       lineNum,
+            //       line
+            //     );
+            //   }
+            //   if (indLastClose === -1) {
+            //     this.throwParsingError(
+            //       `Invalid callScript shorthand, no close paren.'`,
+            //       lineNum,
+            //       line
+            //     );
+            //   }
+            //   // :jump(ada, bob);
+            //   let scriptName = src.slice(1, indFirstOpen);
+            //   let scriptArgs = src
+            //     .slice(indFirstOpen + 1, indLastClose)
+            //     .split(',');
+            //   const args = src.split(',').slice(1);
+            //   commandSrc = `callScript(${scriptName},${scriptArgs.join(',')})`;
+            //   console.log('created a shorthand callScript', commandSrc);
+            // }
           } else if (isDialog) {
             const command = this.createDialogCommand(commandSrc, currentScript);
             block.commands.push(command);

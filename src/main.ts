@@ -104,6 +104,7 @@ export const main = async (): Promise<void> => {
     loadRPGScript('utils', scene),
     loadRPGScript('floor1-atrium', scene),
     loadRPGScript('floor1-tut', scene),
+    loadRPGScript('floor2-throne-room', scene),
     loadRPGScript('intro', scene),
   ]);
 

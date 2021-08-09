@@ -93,6 +93,8 @@ import {
 } from 'model/scene';
 import { RenderObject } from 'model/render-object';
 import { Timer } from 'model/utility';
+import { createEmotionBubbleParticle } from 'model/particle';
+import { EmotionBubble } from 'db/particles';
 
 export const initiateOverworld = (
   player: Player,
@@ -354,7 +356,7 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
   for (let i = 0; i < room.characters.length; i++) {
     const ch = room.characters[i];
     const [chX, chY] = characterGetPosBottom(ch);
-    if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 25])) {
+    if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 16])) {
       const scriptCaller = invokeTrigger(
         getCurrentScene(),
         ch.talkTrigger,
@@ -367,7 +369,7 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
           roomDoCharactersOccupySameTile(room, ch, leader) ||
           characterCollidesWithOther(ch, leader)
         ) {
-          const tile = roomGetEmptyAdjacentTile(room, ch);
+          const tile = roomGetEmptyAdjacentTile(room, ch, leader);
           if (tile) {
             await characterSetWalkTargetAsync(
               leader,
@@ -443,9 +445,6 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       if (await checkAndCallTriggerOfType(TriggerType.ACTION)) {
         showSection(AppSection.Debug, true);
         return;
-      } else if (await checkAndCallTriggerOfType(TriggerType.ACTION)) {
-        showSection(AppSection.Debug, true);
-        return;
       } else if (await checkAndCallTreasure()) {
         showSection(AppSection.Debug, true);
         return;
@@ -478,21 +477,13 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     //   break;
     // }
     case 'm': {
-      const scene = getCurrentScene();
-      disableKeyUpdate();
-      getCurrentOverworld().triggersEnabled = false;
-      unpause();
-      await createAndCallScript(
-        scene,
-        `
-        +setConversation('Ada');
-        +modifyTickets(${1});
-        +endConversation();`
+      const room = getCurrentRoom();
+      const player = getCurrentPlayer();
+      const particle = createEmotionBubbleParticle(
+        player.leader,
+        EmotionBubble.BLUSH
       );
-      pause();
-      getCurrentOverworld().triggersEnabled = true;
-      enableKeyUpdate();
-      hideSection(AppSection.Cutscene);
+      roomAddParticle(room, particle);
       break;
     }
     case 'b': {
@@ -603,6 +594,7 @@ export const callStepTriggers = async (overworld: Overworld) => {
   ) {
     if (!isStandingOnActiveStepTrigger) {
       setCharacterText('');
+      await checkAndCallTriggerOfType(TriggerType.STEP_OFF);
     }
   }
   overworld.playerIsCollidingWithInteractable =

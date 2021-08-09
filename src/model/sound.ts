@@ -338,13 +338,16 @@ export const stopCurrentMusic = async (fadeMs?: number) => {
   }
 };
 
-export const playSoundName = (soundName: string, volume?: number) => {
+export const playSoundName = ((window as any).playSoundName = (
+  soundName: string,
+  volume?: number
+) => {
   const soundObj = getSound(soundName);
   if (soundObj) {
     // console.trace('sound:' + soundName);
     playSound(soundObj, volume);
   }
-};
+});
 
 export const stopSound = (soundObj: ISound) => {
   const sound = soundObj.nodes[soundObj.currentNodeIndex];

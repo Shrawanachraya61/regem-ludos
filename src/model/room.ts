@@ -34,6 +34,7 @@ import { sceneIsEncounterDefeated } from './scene';
 import { getCurrentOverworld, getCurrentScene } from './generics';
 import { getIfExists as getItem, Item } from 'db/items';
 import { Transform, TransformEase } from './utility';
+import { addRoomUiParticle, removeRoomUiParticle } from 'controller/ui-actions';
 
 export const TILE_WIDTH = 32;
 export const TILE_HEIGHT = 32;
@@ -720,6 +721,9 @@ export const roomGetTileAt = (
 
 export const roomAddParticle = (room: Room, particle: Particle): void => {
   room.particles.push(particle);
+  if (particle.uiComponent) {
+    addRoomUiParticle(particle);
+  }
 };
 
 export const roomGetTileBelow = (room: Room, position: Point): Tile | null => {
@@ -735,7 +739,7 @@ export const roomGetCharacterByName = (
 ): Character | null => {
   for (let i = 0; i < room.characters.length; i++) {
     const ch = room.characters[i];
-    if (ch.name === chName) {
+    if (ch.name.toLowerCase() === chName.toLowerCase()) {
       return ch;
     }
   }
@@ -767,6 +771,7 @@ export const roomRemoveParticle = (room: Room, p: Particle) => {
   if (pInd > -1) {
     room.particles.splice(pInd, 1);
   }
+  removeRoomUiParticle(p);
 };
 
 export const roomRemoveProp = (room: Room, prop: Prop) => {
@@ -868,13 +873,36 @@ export const roomDoCharactersOccupySameTile = (
   return false;
 };
 
-export const roomGetEmptyAdjacentTile = (room: Room, ch: Character) => {
-  const adjacentTiles = [
-    roomGetTileBelow(room, [ch.x - TILE_WIDTH_WORLD, ch.y]),
-    roomGetTileBelow(room, [ch.x, ch.y - TILE_HEIGHT_WORLD]),
-    roomGetTileBelow(room, [ch.x + TILE_WIDTH_WORLD, ch.y]),
-    roomGetTileBelow(room, [ch.x, ch.y + TILE_HEIGHT_WORLD]),
-  ];
+export const roomGetEmptyAdjacentTile = (
+  room: Room,
+  ch: Character,
+  biasCh?: Character
+) => {
+  const left = roomGetTileBelow(room, [ch.x - TILE_WIDTH_WORLD, ch.y]);
+  const up = roomGetTileBelow(room, [ch.x, ch.y - TILE_HEIGHT_WORLD]);
+  const right = roomGetTileBelow(room, [ch.x + TILE_WIDTH_WORLD, ch.y]);
+  const down = roomGetTileBelow(room, [ch.x, ch.y + TILE_HEIGHT_WORLD]);
+
+  let adjacentTiles = [left, up, right, down];
+
+  if (biasCh) {
+    const { x, y } = biasCh;
+    const { x: x2, y: y2 } = ch;
+    const dx = x2 - x;
+    const dy = y2 - y;
+    console.log('BIAS', dx, dy);
+    if (dx < 0) {
+      if (dy < 0) {
+        adjacentTiles = [right, down, left, up];
+      } else {
+        adjacentTiles = [right, up, left, down];
+      }
+    } else {
+      if (dy < 0) {
+        adjacentTiles = [left, down, right, up];
+      }
+    }
+  }
 
   for (let i = 0; i < adjacentTiles.length; i++) {
     const tile = adjacentTiles[i];

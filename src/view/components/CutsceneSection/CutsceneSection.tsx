@@ -375,7 +375,7 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
     phrase.commands.forEach(command => {
       switch (command.name) {
         case PhraseCommandName.CASCADE: {
-          const delayInc = parseInt(command.arg) || 50;
+          const delayInc = parseInt(command.arg) || 20;
           const words = phrase.innerHTML.split(/\s+/);
           const newPhrases: IPhrase[] = [];
           for (let j = 0; j < words.length; j++) {

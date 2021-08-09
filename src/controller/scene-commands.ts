@@ -71,7 +71,7 @@ import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
 import { getIfExists as getOverworld } from 'db/overworlds';
 import { getIfExists as getEncounter } from 'db/encounters';
-import { getIfExists as getParticle } from 'db/particles';
+import { EmotionBubble, getIfExists as getParticle } from 'db/particles';
 import { getIfExists as getItem } from 'db/items';
 import {
   playerAddItem,
@@ -93,6 +93,7 @@ import {
   transitionToBattle,
 } from './battle-management';
 import {
+  createEmotionBubbleParticle,
   createRiseParticle,
   createWeightedParticle,
   particleCreateFromTemplate,
@@ -2070,6 +2071,29 @@ export const spawnParticleAtCharacter = (
   spawnParticleAtTarget(template, target, particleMethod);
 };
 
+export const spawnEmotionParticleAtCharacter = (
+  chName: string,
+  emotion: EmotionBubble
+) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  // if (!EmotionBubble[emotion]) {
+  //   console.error(
+  //     'Cannot spawn emotion bubble with emotion that does not exist: ' + emotion
+  //   );
+  //   return;
+  // }
+
+  const particle = createEmotionBubbleParticle(ch, emotion);
+  roomAddParticle(room, particle);
+};
+
 export const spawnParticleAtMarker = (
   particleName: string,
   markerName: string,
@@ -2295,6 +2319,7 @@ const commands = {
   playSound,
   playMusic,
   spawnParticleAtCharacter,
+  spawnEmotionParticleAtCharacter,
   spawnParticleAtMarker,
   setCharacterText,
   showUISection,

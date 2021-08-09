@@ -1,6 +1,7 @@
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { BattleCharacter } from './battle-character';
 import { Character } from './character';
+import { Particle } from './particle';
 
 export enum AppSection {
   BattleUI = 'battleMenu',
@@ -114,8 +115,13 @@ export interface ILevelUpState {
   onClose: () => void;
 }
 
+export interface IRoomState {
+  particles: Particle[],
+}
+
 export interface AppState {
   sections: AppSection[];
+  room: IRoomState;
   overworld: IOverworldAppState;
   cutscene: ICutsceneAppState;
   battle: IBattleUiState;
@@ -130,6 +136,9 @@ export interface AppState {
 
 export const AppStateInitial: AppState = {
   sections: [AppSection.Debug] as AppSection[],
+  room: {
+    particles: [],
+  },
   overworld: {
     characterText: '',
     prevCharacterText: '',
