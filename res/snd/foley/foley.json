@@ -20,112 +20,117 @@
     },
     "arcade_game_triggered": {
       "start": 7,
-      "end": 9.063673469387755,
+      "end": 7.440476190476191,
       "loop": false
     },
     "bass_kicks2": {
-      "start": 11,
-      "end": 12.776326530612245,
+      "start": 9,
+      "end": 10.776326530612245,
       "loop": false
     },
     "battle_armor_broken3": {
-      "start": 14,
-      "end": 14.620204081632654,
+      "start": 12,
+      "end": 12.620204081632654,
       "loop": false
     },
     "battle_armor_hit3": {
-      "start": 16,
-      "end": 16.360204081632652,
+      "start": 14,
+      "end": 14.360204081632652,
       "loop": false
     },
     "battle_arrow_hit": {
-      "start": 18,
-      "end": 18.17310657596372,
+      "start": 16,
+      "end": 16.17310657596372,
       "loop": false
     },
     "battle_cast": {
-      "start": 20,
-      "end": 20.930204081632652,
+      "start": 18,
+      "end": 18.930204081632652,
       "loop": false
     },
     "battle_fire_explosion1_1": {
-      "start": 22,
-      "end": 23.166167800453515,
+      "start": 20,
+      "end": 21.166167800453515,
       "loop": false
     },
     "battle_interrupt_channel": {
-      "start": 25,
-      "end": 25.240204081632655,
+      "start": 23,
+      "end": 23.240204081632655,
       "loop": false
     },
     "battle_ready2": {
-      "start": 27,
-      "end": 27.390204081632653,
+      "start": 25,
+      "end": 25.390204081632653,
       "loop": false
     },
     "battle_staggered1_2": {
-      "start": 29,
-      "end": 29.766984126984127,
+      "start": 27,
+      "end": 27.766984126984127,
       "loop": false
     },
     "battle_swing1": {
-      "start": 31,
-      "end": 31.271473922902494,
+      "start": 29,
+      "end": 29.271473922902494,
       "loop": false
     },
     "battle_swing2": {
-      "start": 33,
-      "end": 33.21795918367347,
+      "start": 31,
+      "end": 31.217959183673468,
       "loop": false
     },
     "battle_swing3": {
-      "start": 35,
-      "end": 35.45764172335601,
+      "start": 33,
+      "end": 33.45764172335601,
       "loop": false
     },
     "battle_swing4": {
-      "start": 37,
-      "end": 37.43768707482993,
+      "start": 35,
+      "end": 35.43768707482993,
       "loop": false
     },
     "blip": {
-      "start": 39,
-      "end": 39.05020408163265,
+      "start": 37,
+      "end": 37.05020408163265,
       "loop": false
     },
     "change_room": {
-      "start": 41,
-      "end": 41.723174603174606,
+      "start": 39,
+      "end": 39.723174603174606,
       "loop": false
     },
     "dead3": {
-      "start": 43,
-      "end": 43.83877551020408,
+      "start": 41,
+      "end": 41.83877551020408,
       "loop": false
     },
     "despawn": {
-      "start": 45,
-      "end": 45.910272108843536,
+      "start": 43,
+      "end": 43.910272108843536,
       "loop": false
     },
     "despawn_tut_wall": {
-      "start": 47,
-      "end": 47.660204081632656,
+      "start": 45,
+      "end": 45.660204081632656,
       "loop": false
     },
     "dialog_select": {
-      "start": 49,
-      "end": 49.39693877551021,
+      "start": 47,
+      "end": 47.39693877551021,
       "loop": false
     },
     "dialog_woosh": {
-      "start": 51,
-      "end": 51.23625850340136,
+      "start": 49,
+      "end": 49.23625850340136,
       "loop": false
     },
     "eject_tokens": {
-      "start": 53,
-      "end": 54.01997732426304,
+      "start": 51,
+      "end": 52.01997732426304,
+      "loop": false
+    },
+    "emotion": {
+      "start": 54,
+      "end": 54.23786848072562,
       "loop": false
     },
     "encounter": {

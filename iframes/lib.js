@@ -104,6 +104,11 @@ function LIB() {
 
   this.notifyGameReady = function () {
     console.log('notify game ready');
+    // wait just a bit to show the game so the audio doesn't glitch out (like it does for some reason for wasm stuff that has debug on)
+    setTimeout(() => {
+      this.handleButtonDown(this.BUTTON_ENTER);
+      this.handleButtonUp(this.BUTTON_ENTER);
+    }, 500);
     this.notifyParentFrame('GAME_READY', {});
   };
 
@@ -224,7 +229,7 @@ function LIB() {
 var Lib = (window.Lib = new LIB());
 
 var Module = {
-  arguments: ['--nointro'],
+  arguments: ['--wait', '--nointro'],
   jsLoaded: function () {
     Module.preRun[0]();
   },
