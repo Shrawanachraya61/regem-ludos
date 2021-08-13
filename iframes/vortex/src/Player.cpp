@@ -1,10 +1,12 @@
 #include "Player.h"
 #include "Game.h"
 #include "GameOptions.h"
-#include "Particle.h"
 #include "Physics.h"
-#include "Powerup.h"
 #include "Projectile.h"
+
+#include "Particle.h"
+#include "Powerup.h"
+#include "Enemy.h"
 
 Player::Player(Game& gameA)
     : Actor(gameA, "invisible"),

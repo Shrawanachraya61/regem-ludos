@@ -9,6 +9,7 @@
 
 #include "Game.h"
 #include "GameOptions.h"
+#include "LibHTML.h"
 #include "SDL2Wrapper.h"
 #include <ctime>
 #include <functional>
@@ -112,23 +113,27 @@ int main(int argc, char* argv[]) {
       window.playSound("cpp_intro");
     }
 
-    // SDL2Wrapper::Store::logFonts();
+    SDL2Wrapper::Store::logFonts();
     // SDL2Wrapper::Store::logSprites();
     // SDL2Wrapper::Store::logAnimationDefinitions();
 
     bool firstRender = true;
 
     window.startRenderLoop([&]() {
-      if (intro.isPlayingIntro) {
-        intro.render(window);
-        return true;
-      } else {
-        if (firstRender) {
-          game.enableMenu();
-          firstRender = false;
-        }
-        return game.loop();
-      }
+      window.setCurrentFont("default", 72);
+      window.drawTextCentered(
+          "Invaderz Test!", 256, 256, window.makeColor(255, 255, 255));
+      return true;
+      // if (intro.isPlayingIntro) {
+      //   intro.render(window);
+      //   return true;
+      // } else {
+      //   if (firstRender) {
+      //     game.enableMenu();
+      //     firstRender = false;
+      //   }
+      //   return game.loop();
+      // }
     });
 
     SDL2Wrapper::Logger(PROGRAM_NAME) << "Program End." << std::endl;

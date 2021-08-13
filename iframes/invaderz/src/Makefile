@@ -1,5 +1,5 @@
 SDL2_WRAPPER_DIR=../../sdl2wrapper
-CODE=Invaderz.cpp Ship.cpp Projectile.cpp Actor.cpp Game.cpp
+CODE=Invaderz.cpp Ship.cpp Projectile.cpp Actor.cpp LibHTML.cpp Game.cpp
 SDL2_WRAPPER_CODE=$(SDL2_WRAPPER_DIR)/Animation.cpp $(SDL2_WRAPPER_DIR)/AssetLoader.cpp $(SDL2_WRAPPER_DIR)/Events.cpp $(SDL2_WRAPPER_DIR)/SDL2Includes.cpp $(SDL2_WRAPPER_DIR)/Sprite.cpp $(SDL2_WRAPPER_DIR)/Store.cpp $(SDL2_WRAPPER_DIR)/Timer.cpp $(SDL2_WRAPPER_DIR)/Gauge.cpp $(SDL2_WRAPPER_DIR)/Window.cpp
 SRC=$(CODE:.cpp=.o)
 SDL2_WRAPPER_SRC=$(SDL2_WRAPPER_CODE:.cpp=.o)
