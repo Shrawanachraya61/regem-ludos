@@ -3,6 +3,7 @@
 #include "GameOptions.h"
 #include "Projectile.h"
 #include "Ship.h"
+#include "LibHTML.h"
 
 #include <algorithm>
 #include <cctype>
@@ -394,9 +395,7 @@ bool Game::loop() {
     shouldPlayHiscoreSound = false;
     window.playSound("hiscore");
 #ifdef __EMSCRIPTEN__
-    const std::string script = std::string("window.notifyHighScore(\"" +
-                                           std::to_string(score) + "\")");
-    emscripten_run_script(script.c_str());
+    notifyGameCompleted(score);
 #endif
   }
 

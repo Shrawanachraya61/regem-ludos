@@ -1,8 +1,12 @@
 #include "Projectile.h"
-#include "Asteroid.h"
 #include "Game.h"
 #include "GameOptions.h"
 #include "Physics.h"
+
+#include "Asteroid.h"
+#include "Player.h"
+#include "Powerup.h"
+#include "Enemy.h"
 
 Projectile::Projectile(Game& game,
                        double xA,

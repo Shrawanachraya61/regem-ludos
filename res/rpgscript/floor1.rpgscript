@@ -1,8 +1,42 @@
 #floor1Atrium
 @this
 
-#floor2South
+#floor1-transitionToAtriumFromBowling
+step-first,this
 @this
++:utils-change-room(floor1Atrium, MarkerFromBowling);
+// #floor1-closeBowlingDoor
+// step,this
+// @this
+// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
+// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
+// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
+// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
+// #floor1-openBowlingDoor
+// step,this
+// @this
+// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN2);
+// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN1, 16, 0);
+// #floor1-openDoorB
+// step,this
+// @this
+// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
+// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);
+
+#floor1-transitionToBowlingFromAtrium
+step,this
+@this
++:utils-change-room(floor1Bowling, MarkerFromAtrium);
+
+#floor1-atriumOpenBowlingDoor
+step-first,this
+step-off,floor1-atriumOpenBowlingDoorClose
+@this
++:openDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
++:openDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
+@floor1-atriumOpenBowlingDoorClose
++:closeDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
++:closeDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
 
 #floor1-atrium-desk-employee
   action,?once():this
@@ -174,10 +208,12 @@
   Atrium Elevator Employee: "Here to ride the elevator?  Can you show me your <color=BLUE>Haptic Bracer</>?"
   +?is('floor1-atrium-desk-employee'):{
     Ada: "I have not acquired a <color=BLUE>Haptic Bracer</> yet."
+    +:teardrop(Atrium Elevator Employee);
     Atrium Elevator Employee: "I'm afraid you'll have to get one of those before I can let you use the elevator."
-    Atrium Elevator Employee: "Go talk to <color=BLUE>Instructor Jason</> by the VR Practice room, he'll be able to get you one."
+    Atrium Elevator Employee: "<cascade>Go talk to <color=BLUE cascade>Instructor Jason<cascade> by the VR Practice room, he'll be able to get you one."
   }
   +?isnot('floor1-atrium-desk-employee'):{
+    +:question(Ada);
     Ada: "Haptic Bracer?  What is that?"
     Atrium Elevator Employee: "Ah, you're new here huh?"
     Atrium Elevator Employee: "Go speak to whoever is running the reception desk, they can get you oriented."
@@ -469,32 +505,45 @@ action,floor1-atrium-TicTacToeMachine-action
   +panCameraBackToPlayer(500);
   +endConversation(500, true);
 
+#floor1-AtriumPingPongSearcher
+action,this
+@this
++lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
++setConversation(Ada);
+Floor1AtriumPingPongSearcher: "<cascade>I <cascade italic>really<cascade> wanted to play ping pong, but I can't find any spare balls and paddles."
++lookAtCharacter(Floor1AtriumPingPongSearcher, Floor1PingPongGuyA);
++:sad(Floor1AtriumPingPongSearcher);
++panCameraToFitCharacters(500, true, Ada, Floor1PingPongGuyA);
+Floor1AtriumPingPongSearcher: "And those two guys over there have been playing for a long time."
++panCameraBackToPlayer();
++:teardrop(Floor1AtriumPingPongSearcher);
+Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
++endConversation();
+
+
 #floor1-bowling-girl
 action,this
 @this
-+setConversation(Ada);
 +lookAtEachOther(Ada, Floor1BowlingGirl);
++setConversation(Ada);
 Floor1BowlingGirl: "I just realized that bowling is kinda like golf."
-Floor1BowlingGirl: "Not like physically or anything, but like, in the game sense."
+Floor1BowlingGirl: "<cascade>Not like physically or anything -- I meen sheesh, those bowling balls are super heavy -- but like, in the <italic>game sense."
 Floor1BowlingGirl: "In both games you gotta pick an aiming direction, power, and technique."
 Floor1BowlingGirl: "Everything's got a connection, ain't that true."
 +endConversation();
 
-
 #floor1-bowling-employee
 action,this
-step-first,floor1-bowling-employee-no-shoes
 @this
 +setConversation(Ada);
 +lookAtEachOther(Ada, Floor1BowlingEmployee);
-+:happy(Floor1BolwingEmployee);
-Floor1BowlingEmployee: "Here to play some bowling?  It's 5 tokens to play."
+Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?  It's <color=BLUE cascade>5 tokens<cascade> to play."
 +awaitChoice('Yes, I would like to go bowling.', 'No, thank you.');
 +?eq(lastChoiceIndex, 0):{
   +modifyTokens(-5);
   Floor1BowlingEmployee: "Let me grab you a pair of shoes.  What's your size?"
   +fadeOut(1000);
-  +fadeInt(1000);
+  +fadeIn(1000);
 }
 +?eq(lastChoiceIndex, 1):{
   +none()
@@ -503,10 +552,18 @@ Floor1BowlingEmployee: "Here to play some bowling?  It's 5 tokens to play."
   Floor1BowlingEmployee: "Okay, come back if you change your mind.  We're always open!"
 }
 +endConversation();
-@floor1-bowling-employee-no-shoes
+#floor1-bowling-prevent-bowling
+step-first,this
+@this
+// ai needs to be reset cuz this isn't invoked by a talk trigger
++stopAi(Floor1BowlingEmployee);
++lookAtCharacter(Floor1BowlingEmployee, Ada);
 +:exclaim(Floor1BowlingEmployee);
-+panCameraToFitCharacters(Ada, Floor1BowlingEmployee);
++panCameraToFitCharacters(500, true, Floor1BowlingEmployee);
++lookAtCharacter(Ada, Floor1BowlingEmployee);
 +setConversation(Ada);
 Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without getting a pair of shoes from here first!"
-+setFacing(Ada, rightdown);
++walkToMarker(Ada, MarkerPreventBowling);
++panCameraBackToPlayer();
 +endConversation();
++startAi(Floor1BowlingEmployee);

@@ -8,9 +8,6 @@
 
 class Actor;
 class Player;
-class Ball;
-class Brick;
-class Powerup;
 class Particle;
 class Projectile;
 class Asteroid;
