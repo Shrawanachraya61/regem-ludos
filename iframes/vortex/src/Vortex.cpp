@@ -9,7 +9,7 @@
 
 #include "LibHTML.h"
 
-const std::string GameOptions::programName = "Vortex2";
+const std::string GameOptions::programName = "Vortex";
 const int GameOptions::width = 512;
 const int GameOptions::height = 512;
 
@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
     bool isWaitingToStart = includes("wait", args) ? true : false;
 
     // SDL2Wrapper::Store::logFonts();
-    // // SDL2Wrapper::Store::logSprites();
-    // // SDL2Wrapper::Store::logAnimationDefinitions();
+    // SDL2Wrapper::Store::logSprites();
+    // SDL2Wrapper::Store::logAnimationDefinitions();
 
     bool firstRender = true;
 
@@ -66,17 +66,6 @@ int main(int argc, char* argv[]) {
     notifyGameReady();
 
     window.startRenderLoop([&]() {
-      // window.setCurrentFont("default", 16);
-      // window.drawSprite("cpp_splash_bg", 0, 0, false);
-      // window.drawTextCentered(
-      //     "Press button.", 256, 256, window.makeColor(255, 255, 255));
-      // return true;
-
-      // window.setCurrentFont("default", 72);
-      // window.drawTextCentered(
-      //     "Vortex2 Test!", 256, 256, window.makeColor(255, 255, 255));
-      // return true;
-
       if (isWaitingToStart) {
         window.setCurrentFont("default", 20);
         window.drawSprite("cpp_splash_bg", 0, 0, false);
