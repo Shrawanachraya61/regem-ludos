@@ -35,6 +35,8 @@ import sceneCommands, { setStorage } from './scene-commands';
 import { playerHasItem } from 'model/player';
 import { getIfExists as getCharacterTemplate } from 'db/characters';
 
+// if you increase this, you have to change the arg matcher to check for the length
+// of the integer string (number of decimal places) rather than just assuming it's 1
 const MAX_ARGS = 10;
 
 export const updateScene = (scene: Scene): void => {
@@ -51,13 +53,16 @@ export const updateScene = (scene: Scene): void => {
           );
         }
         const commandArgs: any[] = cmd?.args.map(arg => {
-          if (
-            typeof arg === 'string' &&
-            arg[0] === '[' &&
-            arg[arg.length - 1] === ']'
-          ) {
-            const argKey = arg.slice(1, -1);
-            return scene.storage[argKey];
+          if (typeof arg === 'string') {
+            let match: any;
+            while ((match = arg.match(/\[ARG\d\]/))) {
+              const argKey = arg.slice(match.index + 1, match.index + 5);
+              arg =
+                arg.slice(0, match.index) +
+                scene.storage[argKey] +
+                arg.slice(match.index + 6);
+            }
+            return arg;
           } else {
             return arg;
           }

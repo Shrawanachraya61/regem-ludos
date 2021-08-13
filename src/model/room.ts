@@ -109,6 +109,7 @@ export interface Prop {
   isFront: boolean;
   isItem?: boolean;
   itemName?: string;
+  sortOffset?: number;
   ro?: RenderObject;
 }
 
@@ -465,20 +466,22 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         );
       }
     } else if (tiledJson.tilesets && gid) {
-      console.log('GET THINGY', tiledProp);
       const { sprite, tileWidth, tileHeight } = gidToTileSpriteAndSize(
         tiledJson.tilesets,
         gid
       );
+      const sortOffset = isNaN(parseFloat(tiledProp.type))
+        ? undefined
+        : parseFloat(tiledProp.type);
       const prop: Prop = {
         id: `prop,${x},${y}`,
         x,
         y,
         sprite,
         isDynamic: true,
+        sortOffset,
         isFront: tiledProp.type === 'front',
       };
-      console.log('create prop', prop);
       const ro = createPropRenderObject(prop);
       prop.ro = ro;
       room.props.push(prop);

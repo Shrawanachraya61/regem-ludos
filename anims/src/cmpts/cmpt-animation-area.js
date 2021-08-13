@@ -92,15 +92,17 @@ const AnimationPreview = ({ anim, appInterface }) => {
   const canvasHeight = 256;
   React.useEffect(() => {
     display.setLoop(() => {
-      display.setCanvas(ref.current);
-      display.clearScreen();
-      if (window.appInterface.animation) {
-        display.drawAnimation(anim, canvasWidth / 2, canvasHeight / 2, {
-          centered: true,
-          scale,
-        });
+      if (ref.current) {
+        display.setCanvas(ref.current);
+        display.clearScreen();
+        if (window.appInterface.animation) {
+          display.drawAnimation(anim, canvasWidth / 2, canvasHeight / 2, {
+            centered: true,
+            scale,
+          });
+        }
+        display.restoreCanvas();
       }
-      display.restoreCanvas();
     });
 
     window.removeEventListener('keydown', previousKeydownListener);

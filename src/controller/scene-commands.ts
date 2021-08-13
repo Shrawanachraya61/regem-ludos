@@ -34,6 +34,7 @@ import {
   characterGetPosBottom,
   characterEquipItem,
   Character,
+  characterStopAi,
 } from 'model/character';
 import {
   getAllTagMarkers,
@@ -1811,6 +1812,19 @@ export const resetAi = (chName: string) => {
   characterStartAi(ch);
 };
 
+export const startAi = resetAi;
+export const stopAi = (chName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  characterStopAi(ch);
+};
+
 /**
  * Open/Close a set of doors at the marker.  The marker must be placed on the door above
  * the other door (pixel above, not iso above.)
@@ -1924,6 +1938,7 @@ export const panCameraRelativeToPlayer = (
 };
 
 export const panCameraBackToPlayer = (ms?: number, skipWait?: boolean) => {
+  none();
   const duration = ms ?? 1000;
   const player = getCurrentPlayer();
   const transform = getCameraTransform();
@@ -1952,6 +1967,7 @@ export const panCameraToFitCharacters = (
   ...characterNames: string[]
 ) => {
   console.log('PAN TO FIT', ms, skipWait, characterNames);
+  none();
   const room = getCurrentRoom();
   const characters: Character[] = characterNames
     .filter(chName => {
@@ -2310,6 +2326,8 @@ const commands = {
   setAnimation,
   setAnimationState,
   resetAi,
+  stopAi,
+  startAi,
   setDoorStateAtMarker,
   awaitChoice,
   enterCombat,

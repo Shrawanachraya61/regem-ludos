@@ -83,7 +83,7 @@ export const playerGetCameraOffset = (player: Player): Point => {
   const [screenW, screenH] = getScreenSize();
   // HACK: round x because it's odd, floor Y because it's even.  Might not always be the case
   const roomXOffset = Math.round(screenW / 2 - x - 16);
-  const roomYOffset = Math.floor(screenH / 2 - y);
+  const roomYOffset = Math.floor(screenH / 2 - y - 16);
   return [roomXOffset, roomYOffset];
 };
 

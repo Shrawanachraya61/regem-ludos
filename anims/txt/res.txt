@@ -1463,7 +1463,7 @@ Animation,jesse_portrait,false
 
 Picture,port_johnathan,port_johnathan.png,512,512
 Animation,johnathan_portrait,true
-
+AnimSprite,port_johnathan_0,100
 Picture,port_lotte512,port_lotte512.png,512,545
 Animation,lotte_portrait,true
 AnimSprite,port_lotte512_0,100
@@ -2190,5 +2190,14 @@ AnimSprite,walls-anims_0,100
 AnimSprite,walls-anims_6,100
 AnimSprite,walls-anims_8,100
 Picture,walls,walls.png,32,64
+Picture,walls128-anims,walls128-anims.png,32,128
+Animation,walls128-anims_tall_red_door_bck_open,false
+AnimSprite,walls128-anims_0,100
+AnimSprite,walls128-anims_1,100
+AnimSprite,walls128-anims_2,100
+Animation,walls128-anims_tall_red_door_bck_closed,false
+AnimSprite,walls128-anims_2,100
+AnimSprite,walls128-anims_1,100
+AnimSprite,walls128-anims_0,100
 Picture,walls128,walls128.png,32,128
 Picture,walls256,walls256.png,32,256

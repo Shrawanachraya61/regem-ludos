@@ -266,6 +266,22 @@ step,this
 +acquireItem([ARG0]);
 +endConversation();
 
+// ARG0 = marker where the top side door is
+// ARG1 = door sprite, eg RED_DOOR_BCK
+@openDoubleDoors
++changeTileAtMarker([ARG0], [ARG1]_OPEN2);
++changeTileAtMarker([ARG0], [ARG1]_OPEN1, 16, 0);
+@closeDoubleDoors
++changeTileAtMarker([ARG0], [ARG1]_CLOSED2);
++changeTileAtMarker([ARG0], [ARG1]_CLOSED1, 16, 0);
+
+// ARG0 = marker where the door is
+// ARG1 = door sprite, eg TALL_RED_DOOR_BCK
+@openDoor
++changeTileAtMarker([ARG0], [ARG1]_OPEN);
+@closeDoor
++changeTileAtMarker([ARG0], [ARG1]_CLOSED);
+
 @exclaim
 +none()
 +playSound(emotion);

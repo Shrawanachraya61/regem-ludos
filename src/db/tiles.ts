@@ -131,6 +131,17 @@ export const init = () => {
     animName: 'walls-anims_elevator_fwd_open2',
     isWall: false,
   };
+  exp.TALL_RED_DOOR_BCK_OPEN = {
+    baseSprite: 'walls128_2',
+    animName: 'walls128-anims_tall_red_door_bck_open',
+    isWall: false,
+  };
+  exp.TALL_RED_DOOR_BCK_CLOSED = {
+    baseSprite: 'walls128_2',
+    animName: 'walls128-anims_tall_red_door_bck_closed',
+    isWall: true,
+  };
+
   exp.KIOSK_STATS_ACTIVE = {
     baseSprite: 'props_26',
     animName: 'tile_vr_portal_active',
@@ -228,6 +239,17 @@ export const init = () => {
     size: [32, 64],
   };
   replacementTemplates.props_29 = 'HEAL_POOL';
+
+  exp.PROPS_BOWLING_DISPENSER = {
+    baseSprite: 'props_32',
+    // animName: 'tile_heal_pool_anim',
+    isWall: true,
+    isProp: true,
+    // floorTile: 'TUT_GATE_FLOOR',
+    // hasFloorTile: true,
+    // size: [32, 64],
+  };
+  replacementTemplates.props_32 = 'PROPS_BOWLING_DISPENSER';
 
   exp.TIC_TAC_TOE_EXCITED = {
     baseSprite: 'props_12',

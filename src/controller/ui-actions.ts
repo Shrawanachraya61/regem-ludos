@@ -395,12 +395,8 @@ export const showChoices = (choices: string[]) => {
 };
 
 export const hideChoices = () => {
-  const payload = AppSection.Choices;
   popKeyHandler(getUiInterface().appState.choices.keyHandlerInternal);
-  getUiInterface().dispatch({
-    action: 'hideSection',
-    payload,
-  });
+  hideSection(AppSection.Choices);
 };
 
 export const setBattleCharacterIndexSelected = (ind: number) => {

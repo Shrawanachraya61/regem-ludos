@@ -60,7 +60,9 @@ export const createPropRenderObject = (
     let pySortOffset = 0;
 
     // helps put small sprites on tables
-    if (prop.sprite?.includes('props_small')) {
+    if (prop.sortOffset !== undefined) {
+      pySortOffset = prop.sortOffset;
+    } else if (prop.sprite?.includes('props_small')) {
       pySortOffset = 16;
     }
 

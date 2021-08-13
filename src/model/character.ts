@@ -198,7 +198,7 @@ export interface CharacterTemplate {
   overrideAnimationName?: string;
   skills?: BattleAction[];
   tags?: string[];
-  overworldAi?: string;
+  overworldAi?: string | OverworldAI;
   armor?: number;
   weaponEquipState?: WeaponEquipState;
   spriteSize?: Point;
@@ -293,8 +293,10 @@ export const characterCreateFromTemplate = (
   ch.skills = template.skills || ch.skills;
   ch.talkTrigger = template.talkTrigger ?? '';
   ch.tags = template.tags || ([] as string[]);
-  if (template.overworldAi) {
+  if (template.overworldAi && typeof template.overworldAi === 'string') {
     ch.overworldAi = getOverworldAi(template.overworldAi);
+  } else if (template.overworldAi) {
+    ch.overworldAi = template.overworldAi as OverworldAI;
   }
   if (ch.overworldAi.onCreate) {
     ch.overworldAi.onCreate(ch);
@@ -1144,7 +1146,7 @@ export const characterUpdate = (ch: Character): void => {
   const [x, y] = characterGetPos(ch);
   const [, py] = isoToPixelCoords(x, y, 0);
   if (ch.ro) {
-    ch.ro.sortY = py + 32;
+    ch.ro.sortY = py + 35;
   }
   ch.vx = 0;
   ch.vy = 0;

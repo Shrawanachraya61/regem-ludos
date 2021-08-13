@@ -1,10 +1,12 @@
 import { BattleActions } from 'controller/battle-actions';
+import { createWalkerAI } from 'db/overworld-ai';
 import { battleStatsCreate } from 'model/battle';
 import {
   AnimationState,
   Facing,
   CharacterTemplate,
   WeaponEquipState,
+  characterSetFacing,
 } from 'model/character';
 
 export const init = () => {
@@ -67,6 +69,15 @@ export const init = () => {
     overworldAi: 'PING_PONG',
   };
 
+  exp.Floor1AtriumPingPongSearcher = {
+    name: 'Floor1AtriumPingPongSearcher',
+    nameLabel: 'Distressed Girl',
+    spriteBase: 'girl2',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+    talkTrigger: 'floor1-AtriumPingPongSearcher',
+  };
+
   exp.Floor1AtriumGreeterEmployee = {
     name: 'AtriumGreeterEmployee',
     nameLabel: 'Employee Greeter',
@@ -76,5 +87,28 @@ export const init = () => {
     animationState: AnimationState.IDLE,
   };
 
+  exp.Floor1BowlingGirl = {
+    name: 'Floor1BowlingGirl',
+    nameLabel: 'Girl',
+    spriteBase: 'girl3',
+    talkTrigger: 'floor1-bowling-girl',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    overworldAi: createWalkerAI(['MarkerWalkA', 'MarkerWalkB'], {
+      pauseDurationMs: 1000,
+      onReachDestination: ch => {
+        characterSetFacing(ch, Facing.LEFT_UP);
+      },
+    }),
+  };
+
+  exp.Floor1BowlingEmployee = {
+    name: 'Floor1BowlingEmployee',
+    nameLabel: 'Bowling Employee',
+    spriteBase: 'employee-girl',
+    talkTrigger: 'floor1-bowling-employee',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
   return exp;
 };

@@ -328,12 +328,24 @@ const AnimationItem = ({
     if (spriteName) {
       display.setCanvas(ref.current);
       display.clearScreen();
-      display.drawSprite(spriteName, 32, 32, {
-        centered: true,
-        width: 64,
-        height: 64,
-      });
-      display.restoreCanvas();
+      const sprite = display.getSprite(spriteName);
+      if (sprite) {
+        let scale = 1;
+        let w = sprite.clip_w;
+        let h = sprite.clip_h;
+        if (w < 48 && h < 48) {
+          scale = 2;
+        } else if (w > 96 && h > 96) {
+          scale = 1 / (Math.max(w, h) / 64);
+        }
+        display.drawSprite(spriteName, 32, 32, {
+          centered: true,
+          scale,
+          // width: 64,
+          // height: 64,
+        });
+        display.restoreCanvas();
+      }
     }
   }, [spriteName]);
   return (

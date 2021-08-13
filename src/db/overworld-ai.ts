@@ -91,6 +91,65 @@ export interface OverworldAI {
   update: (ch: Character) => void;
 }
 
+export const createWalkerAI = (
+  markers: string[],
+  params?: {
+    pauseDurationMs?: number;
+    onReachDestination?: (ch: Character, markerName: string) => void;
+  }
+): OverworldAI => {
+  let nextMarker = 0;
+  let markerName = '';
+  const chWalkToNextMarker = (ch: Character, cb: any) => {
+    const room = getCurrentRoom();
+    nextMarker = ch.aiState.nextMarker as number;
+    markerName = markers[nextMarker];
+    ch.aiState.nextMarker = (nextMarker + 1) % markers.length;
+    const marker = room.markers[markerName];
+    if (!marker) {
+      console.error(
+        'OAI: Could not find target marker with name: ' + markerName
+      );
+      return;
+    }
+    const target = [marker.x, marker.y] as Point;
+    characterSetWalkTarget(ch, target, cb);
+  };
+  const ai: OverworldAI = {
+    onCreate: (ch: Character) => {
+      ch.aiState.isWaiting = true;
+      ch.aiState.nextMarker = 0;
+      const t = new Timer(500);
+      t.awaits.push(() => {
+        chWalkToNextMarker(ch, () => {
+          if (params?.onReachDestination) {
+            params.onReachDestination(ch, markerName);
+          }
+          ch.aiState.isWaiting = false;
+        });
+      });
+      characterAddTimer(ch, t);
+    },
+    update: (ch: Character) => {
+      if (!ch.aiState.isWaiting) {
+        ch.aiState.isWaiting = true;
+        const t = new Timer(params?.pauseDurationMs ?? 600);
+        t.awaits.push(() => {
+          chWalkToNextMarker(ch, () => {
+            ch.aiState.isWaiting = false;
+            if (params?.onReachDestination) {
+              params.onReachDestination(ch, markerName);
+            }
+          });
+        });
+        characterAddTimer(ch, t);
+      }
+    },
+  };
+
+  return ai;
+};
+
 // from some position, seek in the provided direction for a wall and return the position
 // that is just before hitting the wall, when seeking down or right, skip at the tile one
 // before the wall (cuz my rendering system kinda sucks)
@@ -363,52 +422,11 @@ export const init = () => {
     Facing.LEFT_UP,
   ]);
 
-  exp.WALK_BETWEEN_MARKERS_ABC = (function () {
-    const markers = ['MarkerWalkA', 'MarkerWalkB', 'MarkerWalkC'];
-
-    const chWalkToNextMarker = (ch: Character, cb: any) => {
-      const room = getCurrentRoom();
-      const nextMarker = ch.aiState.nextMarker as number;
-      const markerName = markers[nextMarker];
-      ch.aiState.nextMarker = (nextMarker + 1) % markers.length;
-      const marker = room.markers[markerName];
-
-      if (!marker) {
-        console.error(
-          'OAI: Could not find target marker with name: ' + markerName
-        );
-        return;
-      }
-      const target = [marker.x, marker.y] as Point;
-      characterSetWalkTarget(ch, target, cb);
-    };
-
-    return {
-      onCreate: (ch: Character) => {
-        ch.aiState.isWaiting = true;
-        ch.aiState.nextMarker = 0;
-        const t = new Timer(500);
-        t.awaits.push(() => {
-          chWalkToNextMarker(ch, () => {
-            ch.aiState.isWaiting = false;
-          });
-        });
-        characterAddTimer(ch, t);
-      },
-      update: (ch: Character) => {
-        if (!ch.aiState.isWaiting) {
-          ch.aiState.isWaiting = true;
-          const t = new Timer(600);
-          t.awaits.push(() => {
-            chWalkToNextMarker(ch, () => {
-              ch.aiState.isWaiting = false;
-            });
-          });
-          characterAddTimer(ch, t);
-        }
-      },
-    };
-  })();
+  exp.WALK_BETWEEN_MARKERS_ABC = createWalkerAI([
+    'MarkerWalkA',
+    'MarkerWalkB',
+    'MarkerWalkC',
+  ]);
 
   // overly complex ai for changing animations of ping pong dudes in floor 1
   exp.PING_PONG = (function () {

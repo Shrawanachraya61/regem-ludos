@@ -34,7 +34,7 @@ __TRIGGERNAME \= (^#(.)+$)
 __SCENENAME \= (^(\s)*@(.)+$)
 __INLINE \= (^(\s)*\+(.)+$)
 __DIALOG \= ((^(\s)*[\w \w]*:)|(^(\s)+(\w)+:))
-__TRIGGERTYPE \= (^(\s)*(action|step|item|step-first),)
+__TRIGGERTYPE \= (^(\s)*(action|step|item|step-first|step-off),)
 
 ################################################################
 ## Styles

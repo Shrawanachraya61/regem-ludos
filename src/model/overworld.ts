@@ -1,4 +1,4 @@
-import { Room, roomShow, roomHide } from 'model/room';
+import { Room, roomShow, roomHide, TriggerActivator } from 'model/room';
 import {
   AnimationState,
   Character,
@@ -19,6 +19,8 @@ export interface Overworld {
   triggersEnabled: boolean;
   characterCollisionEnabled: boolean;
   playerIsCollidingWithInteractable: boolean;
+  collidingTriggerActivators: TriggerActivator[];
+  previouslyCollidingTriggerActivators: TriggerActivator[];
   loadTriggerName?: string;
   timers: Timer[];
   stepTimer: Timer;
@@ -63,6 +65,8 @@ export const createOverworldFromTemplate = (
     triggersEnabled: true,
     characterCollisionEnabled: true,
     playerIsCollidingWithInteractable: false,
+    collidingTriggerActivators: [],
+    previouslyCollidingTriggerActivators: [],
     loadTriggerName: template.loadTriggerName,
     timers: [] as Timer[],
     stepTimer: new Timer(50),

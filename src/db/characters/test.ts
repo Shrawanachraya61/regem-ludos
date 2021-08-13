@@ -34,5 +34,13 @@ export const init = () => {
     talkTrigger: 'test-testDialogC',
   };
 
+  exp.TestDialogD = {
+    name: 'TestDialogD',
+    spriteBase: 'girl',
+    facing: Facing.DOWN,
+    animationState: AnimationState.IDLE,
+    talkTrigger: 'test-testDialogD',
+  };
+
   return exp;
 };

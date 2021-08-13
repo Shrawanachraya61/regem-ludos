@@ -52,7 +52,7 @@
         </dict>
         <dict>
           <key>begin</key>
-          <string>(^(\s)*(action|step|item|step-first),)</string>
+          <string>(^(\s)*(action|step|item|step-first|step-off),)</string>
           <key>beginCaptures</key>
           <dict>
             <key>1</key>

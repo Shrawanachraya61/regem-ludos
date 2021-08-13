@@ -301,7 +301,8 @@ const getCurrentlyCollidedTriggerActivators = (): TriggerActivator[] => {
 };
 
 const isCollidingWithTriggersOfType = (types: TriggerType[]) => {
-  const activators = getCurrentlyCollidedTriggerActivators();
+  const overworld = getCurrentOverworld();
+  const activators = overworld.collidingTriggerActivators; //getCurrentlyCollidedTriggerActivators();
   for (let i = 0; i < activators.length; i++) {
     const ta = activators[i];
     for (let j = 0; j < types.length; j++) {
@@ -322,7 +323,9 @@ const checkAndCallTriggerOfType = async (
   const leader = player.leader;
 
   const types = Array.isArray(typeOrTypes) ? typeOrTypes : [typeOrTypes];
-  const activators = getCurrentlyCollidedTriggerActivators();
+
+  const overworld = getCurrentOverworld();
+  const activators = overworld.collidingTriggerActivators; //getCurrentlyCollidedTriggerActivators();
   for (let i = 0; i < activators.length; i++) {
     const ta = activators[i];
     for (let j = 0; j < types.length; j++) {
@@ -594,11 +597,38 @@ export const callStepTriggers = async (overworld: Overworld) => {
   ) {
     if (!isStandingOnActiveStepTrigger) {
       setCharacterText('');
-      await checkAndCallTriggerOfType(TriggerType.STEP_OFF);
     }
   }
   overworld.playerIsCollidingWithInteractable =
     !!getCurrentScene().currentScript || isStandingOnActiveStepTrigger;
+};
+
+export const callStepOffTriggers = async (overworld: Overworld) => {
+  for (
+    let i = 0;
+    i < overworld.previouslyCollidingTriggerActivators.length;
+    i++
+  ) {
+    const prevTa = overworld.previouslyCollidingTriggerActivators[i];
+    if (!overworld.collidingTriggerActivators.includes(prevTa)) {
+      const scriptCaller = getScriptCallerForTrigger(
+        prevTa.name,
+        TriggerType.STEP_OFF
+      );
+      if (scriptCaller !== null) {
+        await callTriggerScriptCaller(scriptCaller, {
+          hideUi: false,
+          disableKeys: true,
+          setPlayerIdle: false,
+        });
+        // if (type === TriggerType.ACTION) {
+        //   showSection(AppSection.Debug, false);
+        // }
+        // return ta.name;
+      }
+      // await checkAndCallTriggerOfType(TriggerType.STEP_OFF);
+    }
+  }
 };
 
 export const updateOverworld = (overworld: Overworld): void => {
@@ -606,8 +636,13 @@ export const updateOverworld = (overworld: Overworld): void => {
   const leader = player.leader;
 
   if (!overworld.visible) {
+    overworld.previouslyCollidingTriggerActivators = [];
+    overworld.collidingTriggerActivators = [];
     return;
   }
+  overworld.previouslyCollidingTriggerActivators =
+    overworld.collidingTriggerActivators;
+  overworld.collidingTriggerActivators = getCurrentlyCollidedTriggerActivators();
 
   const { 'x-dir': xDir, 'y-dir': yDir } = HudGamepad.GamePad.observe();
 
@@ -646,6 +681,10 @@ export const updateOverworld = (overworld: Overworld): void => {
   if (overworld.triggersEnabled && overworld.stepTimer.isComplete()) {
     callStepTriggers(overworld);
     overworld.stepTimer.start();
+  }
+  // cant use step timer for this cuz the colliding triggers updates every frame.
+  if (overworld.triggersEnabled) {
+    callStepOffTriggers(overworld);
   }
 
   overworld.room.characters.forEach(ch => {
