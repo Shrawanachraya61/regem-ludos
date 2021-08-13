@@ -289,6 +289,14 @@ Ada: "<cascade-letters>......"
 Ada: "I am going to leave now."
 +endConversation();
 
+#test-testDialogD
+action,this
+@this
++lookAtEachOther(Ada, TestDialogD);
++setConversation(Ada);
+testDialogD: "This is a test."
++endConversation();
+
 #test-callScriptIntegration
 action,this
 @this
