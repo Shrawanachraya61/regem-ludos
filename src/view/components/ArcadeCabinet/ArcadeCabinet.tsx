@@ -245,7 +245,7 @@ const CabinetControlButton = style(
 
 const transformIframeUrlForDevelopment = (url: string) => {
   const ind = url.lastIndexOf('/');
-  return `${url.slice(0, ind) + '/dist' + url.slice(ind)}`;
+  return `${url.slice(0, ind) + url.slice(ind)}`;
 };
 
 const InsertTokens = (props: { meta: IArcadeGameMeta; expanded: boolean }) => {

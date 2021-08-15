@@ -123,6 +123,7 @@ Window& Window::getGlobalWindow() { return *Window::globalWindow; }
 void Window::createWindow(const std::string& title, const int w, const int h) {
   SDL_Init(SDL_INIT_EVERYTHING);
   SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+  TTF_Init();
   colorkey = 0x00FFFFFF;
   width = w;
   height = h;

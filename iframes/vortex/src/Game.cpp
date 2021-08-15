@@ -4,11 +4,11 @@
 #include "LibHTML.h"
 
 #include "Asteroid.h"
+#include "BlackHole.h"
+#include "Enemy.h"
 #include "Particle.h"
 #include "Physics.h"
 #include "Player.h"
-#include "BlackHole.h"
-#include "Enemy.h"
 #include "Powerup.h"
 #include "Projectile.h"
 
@@ -420,37 +420,47 @@ void Game::handleKeyUpdate() {
 }
 
 void Game::handleKeyMenu(const std::string& key) {
-  if (key == "Escape") {
-    shouldExit = true;
-  } else {
-    window.stopMusic();
-    startNewGame();
+  if (!isTransitioning) {
+    if (key == "Escape") {
+      shouldExit = true;
+    } else {
+      window.stopMusic();
+      startNewGame();
+    }
   }
 }
 
 void Game::handleKeyWaveCompleted(const std::string& key) {
   if (!isTransitioning) {
-    wave++;
-    initWorldNextTick = true;
-    setState(GAME_STATE_READY_TO_START);
+    isTransitioning = true;
+    addFuncTimer(200, [=] {
+      wave++;
+      isTransitioning = false;
+      initWorldNextTick = true;
+      setState(GAME_STATE_READY_TO_START);
+    });
   }
 }
 
 void Game::handleKeyGameOver(const std::string& key) {
-  notifyGameCompleted(score);
-  isTransitioning = true;
-  addFuncTimer(200, [=] {
-    isTransitioning = false;
-    setState(GAME_STATE_MENU);
-  });
+  if (!isTransitioning) {
+    notifyGameCompleted(score);
+    isTransitioning = true;
+    addFuncTimer(200, [=] {
+      isTransitioning = false;
+      setState(GAME_STATE_MENU);
+    });
+  }
 }
 
 void Game::handleKeyReadyToStart(const std::string& key) {
-  isTransitioning = true;
-  addFuncTimer(200, [=] {
-    isTransitioning = false;
-    setState(GAME_STATE_GAME);
-  });
+  if (!isTransitioning) {
+    isTransitioning = true;
+    addFuncTimer(200, [=] {
+      isTransitioning = false;
+      setState(GAME_STATE_GAME);
+    });
+  }
 }
 
 std::pair<double, double> Game::getGravitationalPull(const double x,
@@ -989,7 +999,7 @@ bool Game::otherLoop() {
                               window.makeColor(255, 255, 0));
     }
 
-    {
+    if (!isTransitioning) {
       int startTextX = GameOptions::width / 2;
       int startTextY = titleY + 128;
       window.setCurrentFont("default", 16);
@@ -999,7 +1009,6 @@ bool Game::otherLoop() {
                               window.makeColor(255, 255, 250));
     }
   }
-
   return !shouldExit;
 }
 
