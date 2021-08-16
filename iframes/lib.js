@@ -46,8 +46,6 @@ function LIB() {
     config.shouldShowControls = !config.shouldShowControls;
   };
   this.hideLoading = function () {
-    console.trace('hide loading');
-
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'none';
     const game = document.getElementById('game');
@@ -105,6 +103,7 @@ function LIB() {
   this.notifyGameReady = function () {
     console.log('notify game ready');
     // wait just a bit to show the game so the audio doesn't glitch out (like it does for some reason for wasm stuff that has debug on)
+    this.setWASMVolume(33);
     setTimeout(() => {
       this.handleButtonDown(this.BUTTON_ENTER);
       this.handleButtonUp(this.BUTTON_ENTER);
@@ -219,6 +218,12 @@ function LIB() {
       const { audio } = sounds[i];
       audio.volume = v;
     }
+  };
+
+  // number between 0 and 100
+  this.setWASMVolume = function (pct) {
+    console.log('[IFRAME] Set WASM volume pct', pct);
+    Module.ccall('setVolume', 'void', ['number'], [pct]);
   };
 
   this.getConfig = function () {
