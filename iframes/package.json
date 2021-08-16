@@ -1,6 +1,6 @@
 {
   "name": "arcade_iframes",
-  "version": "1.0",
+  "version": "1.1",
   "license": "MIT",
   "scripts": {
     "build": "node ../scripts/build-iframes.js $(yarn -s list:js) $(yarn -s list:cpp) && yarn build:lib",

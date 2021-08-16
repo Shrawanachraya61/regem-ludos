@@ -5,3 +5,4 @@
 70906
 108387, died on wave 9
 152598
+153429, died on wave 12
