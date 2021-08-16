@@ -5,7 +5,7 @@ Sound,oh_yeah,assets/vortex_oh_yeah.wav
 Sound,yes,assets/vortex_yes.wav
 Sound,no,assets/vortex_no.wav
 Sound,engine,assets/vortex_engine.wav
-Sound,start_game,assets/vortex_new_game.wav
+Sound,end_game,assets/vortex_new_game.wav
 Sound,level_lose,assets/vortex_level_lose.wav
 Sound,level_ready,assets/vortex_level_ready.wav
 Sound,metal_hit_0,assets/vortex_metal_hit1.wav

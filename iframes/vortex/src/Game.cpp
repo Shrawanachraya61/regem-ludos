@@ -108,6 +108,7 @@ void Game::setState(GameState stateA) {
       if (diamonds > 0) {
         window.playSound("score_add");
         bonus += 2500 * diamonds;
+        bonusAfterWaveCompleted = bonus;
         diamonds = 0;
       }
     });
@@ -116,6 +117,7 @@ void Game::setState(GameState stateA) {
       if (stars > 0) {
         window.playSound("score_add");
         bonus *= (stars + 1);
+        bonusAfterWaveCompleted = bonus;
         stars = 0;
       }
     });
@@ -140,8 +142,6 @@ void Game::setState(GameState stateA) {
   }
   case GAME_STATE_READY_TO_START: {
     updateEntities = false;
-    std::cout << "Play sound level_ready" << std::endl;
-    window.playSound("level_ready");
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyReadyToStart, this, std::placeholders::_1));
@@ -174,11 +174,11 @@ void Game::startNewGame() {
   player->shield.empty();
   updateEntities = true;
   shouldPlayHiscoreSound = false;
-  // window.playSound("start_game");
   // might be causing a segfault
   // initWorld();
   initWorldNextTick = true;
   heartSpawns.clear();
+  window.playSound("level_ready");
   setState(GAME_STATE_READY_TO_START);
   notifyGameStarted();
 }
@@ -433,7 +433,8 @@ void Game::handleKeyMenu(const std::string& key) {
 void Game::handleKeyWaveCompleted(const std::string& key) {
   if (!isTransitioning) {
     isTransitioning = true;
-    addFuncTimer(200, [=] {
+    window.playSound("level_ready");
+    addFuncTimer(500, [=] {
       wave++;
       isTransitioning = false;
       initWorldNextTick = true;
@@ -642,6 +643,7 @@ void Game::checkGameOver() {
       isTransitioning = false;
       player->lives--;
       if (player->lives < 0) {
+        window.playSound("end_game");
         setState(GAME_STATE_GAME_OVER);
       } else {
         setState(GAME_STATE_READY_TO_START);
@@ -910,7 +912,7 @@ bool Game::otherLoop() {
                             titleX,
                             titleY,
                             window.makeColor(255, 255, 255));
-    {
+    if (!isTransitioning) {
       int startTextX = GameOptions::width / 2;
       int startTextY = titleY + 64 + 64;
       window.setCurrentFont("default", 16);

@@ -27,20 +27,14 @@ Animation::Animation(const Animation& a)
       totalDuration(0),
       timestampStart(a.timestampStart),
       spriteIndex(a.spriteIndex),
-      loop(a.loop) {
-  for (auto& pair : a.sprites) {
-    addSprite(pair.first, pair.second);
-  }
-}
+      loop(a.loop),
+      sprites(a.sprites) {}
 
 Animation::~Animation() {}
 
 Animation& Animation::operator=(const Animation& a) {
   if (this != &a) {
-    sprites.clear();
-    for (auto& pair : a.sprites) {
-      addSprite(pair.first, pair.second);
-    }
+    sprites = a.sprites;
     name = a.name;
     totalDuration = a.totalDuration;
     loop = a.loop;
@@ -81,8 +75,14 @@ std::string Animation::toString() const {
 
 void Animation::addSprite(const std::string& spriteName,
                           const unsigned int ms) {
+  if (!Store::spriteExists(spriteName)) {
+    Logger(WARN) << "Cannot add sprite to anim.  Invalid spriteName="
+                 << spriteName << " in anim=" << name << std::endl;
+    return;
+  }
   totalDuration += ms;
-  sprites.push_back(std::make_pair(spriteName, ms));
+  std::pair<std::string, int> pair = std::make_pair(spriteName, ms);
+  sprites.push_back(pair);
 }
 
 unsigned int Animation::getAnimIndex() const {
