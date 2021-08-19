@@ -54,12 +54,21 @@ const renderLobby = (lobby: LobbyState) => {
   const startGameButton: any = getLobbyStartButton();
   startGameButton.disabled = !isPlayerMe(lobby.players[0]);
   startGameButton.onclick = () => {
-    // startLobby
+    startLobby();
   };
   const leaveGameButton = getLobbyLeaveButton();
   leaveGameButton.onclick = () => {
     leaveLobby();
   };
+};
+
+const renderGameUi = () => {
+  const gameData = getGameData();
+  if (!gameData) {
+    return;
+  }
+
+  console.log('RENDER GAME UI', gameData);
 };
 
 const renderUi = () => {
@@ -82,6 +91,10 @@ const renderUi = () => {
         renderLobby(lobby);
       }
       break;
+    }
+    case 'game': {
+      showGame();
+      renderGameUi();
     }
   }
 };

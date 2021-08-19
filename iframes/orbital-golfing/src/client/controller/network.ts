@@ -7,6 +7,10 @@ interface LobbiesUpdatedResponse {
   lobbies: LobbyState[];
 }
 
+interface GameStartedResponse {
+  game: GameData;
+}
+
 const registerSocketListener = function <T>(
   event: string,
   cb: (payload: T) => void
@@ -30,9 +34,6 @@ const connectSocket = () => {
   });
   setSocket(socket);
 
-  // socket.on('connect', () => {
-  //   console.log('connected');
-  // });
   socket.on('disconnect', () => {
     console.error('disconnected');
     showErrorMessage('Disconnected!');
@@ -48,10 +49,13 @@ const connectSocket = () => {
       console.log('connected', payload);
       setSocketId(payload.socketId);
       setPlayerId(payload.id);
-      setUiState({
-        activePane: 'menu',
-      });
-      renderUi();
+
+      await createLobby("Player's Game", 'Player');
+
+      // setUiState({
+      //   activePane: 'menu',
+      // });
+      // renderUi();
     }
   );
 
@@ -60,6 +64,26 @@ const connectSocket = () => {
     (payload: LobbiesUpdatedResponse) => {
       console.log('lobbies updated', payload);
       setLobbyListState(payload.lobbies);
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_STARTED,
+    (payload: GameStartedResponse) => {
+      console.log('game started', payload);
+      const gameData = payload.game;
+      setGameData(gameData);
+      setUiState({
+        lobbyId: '',
+      });
+      const canvas: any = getCanvas();
+      canvas.width = gameData.width * getShared().G_SCALE * 2;
+      canvas.height = gameData.height * getShared().G_SCALE * 2;
+      console.log('set canvas size', canvas.width, canvas.height);
+      setUiState({
+        activePane: 'game',
+      });
+      renderUi();
     }
   );
 };

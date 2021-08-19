@@ -1,6 +1,6 @@
-function init() {
+const init = async () => {
     connectSocket();
-}
+};
 window.addEventListener('load', init, false);
 const getElement = (id) => {
     return document.getElementById(id);
@@ -33,6 +33,10 @@ const createLobby = async (lobbyName, playerName) => {
         });
     }
     renderUi();
+};
+const startLobby = async () => {
+    showLoading();
+    await sendRestRequest(getShared().G_R_LOBBY_START);
 };
 const joinLobby = async (lobbyId, playerName) => {
     showLoading();
@@ -97,14 +101,27 @@ const connectSocket = () => {
         console.log('connected', payload);
         setSocketId(payload.socketId);
         setPlayerId(payload.id);
-        setUiState({
-            activePane: 'menu',
-        });
-        renderUi();
+        await createLobby("Player's Game", 'Player');
     });
     registerSocketListener(shared.G_S_LOBBIES_UPDATED, (payload) => {
         console.log('lobbies updated', payload);
         setLobbyListState(payload.lobbies);
+    });
+    registerSocketListener(shared.G_S_GAME_STARTED, (payload) => {
+        console.log('game started', payload);
+        const gameData = payload.game;
+        setGameData(gameData);
+        setUiState({
+            lobbyId: '',
+        });
+        const canvas = getCanvas();
+        canvas.width = gameData.width * getShared().G_SCALE * 2;
+        canvas.height = gameData.height * getShared().G_SCALE * 2;
+        console.log('set canvas size', canvas.width, canvas.height);
+        setUiState({
+            activePane: 'game',
+        });
+        renderUi();
     });
 };
 const sendRestRequest = async function (url, params) {
@@ -145,6 +162,8 @@ const hideEverything = () => {
     hideElement(getErrorPane());
     hideElement(getMenuPane());
     hideElement(getLobbyPane());
+    hideElement(getGameUiPane());
+    hideElement(getGame());
 };
 const showLoading = () => {
     hideEverything();
@@ -162,6 +181,14 @@ const showError = () => {
     hideEverything();
     showElement(getErrorPane());
 };
+const showGame = () => {
+    hideEverything();
+    showElement(getGameUiPane());
+    showElement(getGame());
+};
+let currentGameData = null;
+const getGameData = () => currentGameData;
+const setGameData = (data) => (currentGameData = data);
 const getShared = () => console.shared;
 let genericSocket = null;
 const getSocket = () => genericSocket;
@@ -227,6 +254,15 @@ const getLobbyPlayerListPane = () => {
 const getLobbyName = () => {
     return getElement('lobby-name');
 };
+const getGameUiPane = () => {
+    return getElement('game-ui');
+};
+const getGame = () => {
+    return getElement('game');
+};
+const getCanvas = () => {
+    return getElement('canv');
+};
 const LobbyListItem = (lobby) => {
     const div = document.createElement('div');
     div.className = 'pane flex-hz pane-secondary';
@@ -276,11 +312,19 @@ const renderLobby = (lobby) => {
     const startGameButton = getLobbyStartButton();
     startGameButton.disabled = !isPlayerMe(lobby.players[0]);
     startGameButton.onclick = () => {
+        startLobby();
     };
     const leaveGameButton = getLobbyLeaveButton();
     leaveGameButton.onclick = () => {
         leaveLobby();
     };
+};
+const renderGameUi = () => {
+    const gameData = getGameData();
+    if (!gameData) {
+        return;
+    }
+    console.log('RENDER GAME UI', gameData);
 };
 const renderUi = () => {
     const uiState = getUiState();
@@ -302,6 +346,10 @@ const renderUi = () => {
                 renderLobby(lobby);
             }
             break;
+        }
+        case 'game': {
+            showGame();
+            renderGameUi();
         }
     }
 };

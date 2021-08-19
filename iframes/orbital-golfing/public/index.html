@@ -38,15 +38,16 @@
             </div>
             <div class="pane" id="lobby-players"></div>
             <div class="pane flex-hz">
-              <button class="cancel" id="lobby-leave">
-                Leave Game
-              </button>
-              <button class="primary" id="lobby-start">
-                Start Game
-              </button>
+              <button class="cancel" id="lobby-leave">Leave Game</button>
+              <button class="primary" id="lobby-start">Start Game</button>
             </div>
           </div>
-          <div class="pane hidden pane-primary" id="game"></div>
+          <div class="pane hidden pane-primary" id="game-ui"></div>
+        </div>
+      </div>
+      <div class="root-game">
+        <div class="hidden" id="game">
+          <canvas id="canv"></canvas>
         </div>
       </div>
     </div>

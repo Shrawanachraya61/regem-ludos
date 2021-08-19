@@ -36,3 +36,14 @@ const getLobbyPlayerListPane = () => {
 const getLobbyName = () => {
   return getElement('lobby-name');
 };
+const getGameUiPane = () => {
+  return getElement('game-ui');
+};
+
+//game
+const getGame = () => {
+  return getElement('game');
+};
+const getCanvas = () => {
+  return getElement('canv');
+};

@@ -1,4 +1,3 @@
-var globalShared = (console as any).shared;
 const ioRoutes: Record<string, any> = {};
 
 const registerIoRequest = (
@@ -25,13 +24,19 @@ registerIoRequest('disconnect', meta => {
   const player = meta.player;
   if (player) {
     console.debug('Disconnected: ' + playerToString(player));
+    playerDestroy(player);
     if (player.lobbyId) {
       const lobby = lobbyGetById(player.lobbyId);
       if (lobby) {
         lobbyLeave(lobby, player);
       }
     }
-    playerDestroy(player);
+    if (player.gameId) {
+      const game = gameGetById(player.gameId);
+      if (game && !gameHasActivePlayers(game)) {
+        gameDestroy(game);
+      }
+    }
   }
 });
 
@@ -41,7 +46,7 @@ Object.assign(module.exports, {
       socket.on(i, ev => ioRoutes[i](socket, ev));
     }
     const player = playerCreate(socket, randomId());
-    sendIoMessage(socket, globalShared.G_S_CONNECTED, {
+    sendIoMessage(socket, getShared().G_S_CONNECTED, {
       id: player.id,
       socketId: socket.id,
     });

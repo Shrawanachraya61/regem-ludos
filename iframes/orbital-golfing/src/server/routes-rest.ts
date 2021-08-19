@@ -1,5 +1,3 @@
-// The lengths I go to make typescript work in this bizarre env
-var globalShared = (console as any).shared;
 const restRoutes: Record<string, any> = {};
 
 function registerRestRequest<T = Record<string, string>>(
@@ -31,7 +29,7 @@ function registerRestRequest<T = Record<string, string>>(
 }
 
 registerRestRequest<{ lobbyName: string; playerName: string }>(
-  globalShared.G_R_LOBBY_CREATE,
+  getShared().G_R_LOBBY_CREATE,
   (meta, searchParams) => {
     const player = assertPlayer(meta);
     playerSetName(player, searchParams.playerName);
@@ -40,8 +38,30 @@ registerRestRequest<{ lobbyName: string; playerName: string }>(
   }
 );
 
+registerRestRequest<{ lobbyName: string; playerName: string }>(
+  getShared().G_R_LOBBY_START,
+  meta => {
+    const player = assertPlayer(meta);
+    let lobby: any = null;
+    if (player.lobbyId) {
+      lobby = lobbyGetById(player.lobbyId);
+    }
+    if (!lobby) {
+      throw new Error(
+        'Cannot start lobby.  No lobby exists for player: ' +
+          playerToString(player)
+      );
+    }
+    const game = gameCreate(lobby.id, lobby.playerIds);
+    lobbyDestroy(lobby);
+    return {
+      game,
+    };
+  }
+);
+
 registerRestRequest<{ lobbyId: string; playerName: string }>(
-  globalShared.G_R_LOBBY_JOIN,
+  getShared().G_R_LOBBY_JOIN,
   (meta, searchParams) => {
     const player = assertPlayer(meta);
     const lobby = lobbyGetById(searchParams.lobbyId);
@@ -56,7 +76,7 @@ registerRestRequest<{ lobbyId: string; playerName: string }>(
   }
 );
 
-registerRestRequest(globalShared.G_R_LOBBY_LEAVE, meta => {
+registerRestRequest(getShared().G_R_LOBBY_LEAVE, meta => {
   const player = assertPlayer(meta);
   if (player.lobbyId) {
     const lobby = lobbyGetById(player.lobbyId);

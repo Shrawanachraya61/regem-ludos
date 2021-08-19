@@ -28,7 +28,7 @@ const sendIoMessage = function <T>(socket: Socket, ev: string, payload: T) {
 };
 
 const sendIoMessageAll = function <T>(ev: string, payload: T) {
-  players.forEach(player => {
+  playerStorage.forEach(player => {
     if (player.socket) {
       sendIoMessage(player.socket, ev, payload);
     }
@@ -41,3 +41,8 @@ const assertPlayer = (meta: SocketMeta | RestMeta) => {
   }
   return meta.player;
 };
+
+//@ts-ignore
+function getShared() {
+  return (console as any).shared;
+}

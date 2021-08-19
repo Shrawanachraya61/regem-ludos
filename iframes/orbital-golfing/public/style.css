@@ -10,6 +10,7 @@ body {
 }
 button {
   padding: 8px 32px;
+  margin: 0px 8px;
   border-radius: 4px;
   background: unset;
   border: 1px solid #dedede;
@@ -47,6 +48,9 @@ h2 {
   }
 }
 .root {
+  position: fixed;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
 }
@@ -96,4 +100,12 @@ h2 {
 }
 .cancel {
   background: darkred;
+}
+#game {
+  background: #333;
+  width: 4000px;
+  height: 4000px;
+}
+#canv {
+  border: 1px solid white;
 }

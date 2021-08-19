@@ -4,11 +4,11 @@ interface Lobby {
   playerIds: string[];
 }
 
-const lobbies: Lobby[] = [];
+const lobbyStorage: Lobby[] = [];
 
 const broadcastLobbies = () => {
-  sendIoMessageAll(globalShared.G_S_LOBBIES_UPDATED, {
-    lobbies: lobbies.map(lobby => {
+  sendIoMessageAll(getShared().G_S_LOBBIES_UPDATED, {
+    lobbies: lobbyStorage.map(lobby => {
       return {
         ...lobby,
         playerIds: undefined,
@@ -36,15 +36,15 @@ const lobbyCreate = (name: string, creator: Player): Lobby => {
     name,
   };
   console.debug(`Lobby created '${lobbyToString(lobby)}'`);
-  lobbies.push(lobby);
+  lobbyStorage.push(lobby);
   lobbyJoin(lobby, creator);
   return lobby;
 };
 
 const lobbyDestroy = (lobby: Lobby) => {
-  const ind = lobbies.indexOf(lobby);
+  const ind = lobbyStorage.indexOf(lobby);
   if (ind > -1) {
-    lobbies.splice(ind, 1);
+    lobbyStorage.splice(ind, 1);
     lobby.playerIds.forEach(playerId => {
       const player = playerGetById(playerId);
       if (player) {
@@ -84,11 +84,6 @@ const lobbyJoin = (lobby: Lobby, player: Player) => {
 };
 
 const lobbyLeave = (lobby: Lobby, player: Player) => {
-  console.debug(
-    `Lobby, looking to leave '${lobbyToString(lobby)}', ${playerToString(
-      player
-    )}`
-  );
   const ind = lobby.playerIds.indexOf(player.id);
   if (ind > -1) {
     lobby.playerIds.splice(ind, 1);
@@ -107,7 +102,7 @@ const lobbyLeave = (lobby: Lobby, player: Player) => {
 };
 
 const lobbyGetById = (id: string) => {
-  return lobbies.find(lobby => lobby.id === id);
+  return lobbyStorage.find(lobby => lobby.id === id);
 };
 
 const lobbyToString = (lobby: Lobby) => {

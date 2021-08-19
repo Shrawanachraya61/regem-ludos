@@ -3,7 +3,8 @@ const hideEverything = () => {
   hideElement(getErrorPane());
   hideElement(getMenuPane());
   hideElement(getLobbyPane());
-  // hideElement(getGamePane());
+  hideElement(getGameUiPane());
+  hideElement(getGame());
 };
 
 const showLoading = () => {
@@ -24,4 +25,10 @@ const showLobby = (lobby: LobbyState) => {
 const showError = () => {
   hideEverything();
   showElement(getErrorPane());
+};
+
+const showGame = () => {
+  hideEverything();
+  showElement(getGameUiPane());
+  showElement(getGame());
 };

@@ -1,8 +1,124 @@
+const gameStorage = [];
+const broadcastGameStatus = (game, started) => {
+    game.players.map(playerGetById).forEach(player => {
+        if (player?.socket) {
+            sendIoMessage(player.socket, started ? getShared().G_S_GAME_STARTED : getShared().G_S_GAME_COMPLETE, { game });
+        }
+    });
+};
+const broadcastGameData = (game) => {
+    game.players.map(playerGetById).forEach(player => {
+        if (player?.socket) {
+            sendIoMessage(player.socket, getShared().G_S_GAME_DATA, { game });
+        }
+    });
+};
+const gameCreate = (lobbyId, playerIds) => {
+    const game = {
+        id: randomId(),
+        lobbyId,
+        width: 2019600000000,
+        height: 2019600000000,
+        entityMap: {},
+        scorecard: playerIds.reduce((obj, id) => {
+            obj[id] = [];
+            return obj;
+        }, {}),
+        timeCreated: +new Date(),
+        timeStarted: +new Date(),
+        players: [],
+        planets: [],
+        powerups: [],
+        flags: [],
+        round: 0,
+    };
+    console.debug(`Game created ${gameToString(game)}`);
+    gameStorage.push(game);
+    gameCreatePlanet(game, 1077120000000, 1432170666667, 1e32, 'red');
+    playerIds.forEach(id => {
+        const player = playerGetById(id);
+        if (player) {
+            gameCreatePlayer(game, id, game.width / 2, game.height / 2, 'blue');
+            player.gameId = game.id;
+        }
+    });
+    broadcastGameStatus(game, true);
+    return game;
+};
+const gameDestroy = (game) => {
+    const ind = gameStorage.indexOf(game);
+    if (ind) {
+        gameStorage.splice(ind, 1);
+        const players = game.players.map(playerGetById);
+        players.forEach(player => {
+            if (player?.gameId) {
+                player.gameId = '';
+            }
+        });
+        console.debug(`Game destroyed ${gameToString(game)}`);
+    }
+};
+const gameCreateEntity = (game, id) => {
+    const entity = {
+        id,
+        x: 0,
+        y: 0,
+        r: getShared().fromPx(25),
+        vx: 0,
+        vy: 0,
+        ax: 0,
+        ay: 0,
+        t: 0,
+        mass: 1,
+    };
+    game.entityMap[entity.id] = entity;
+    return entity;
+};
+const gameCreatePlanet = (game, x, y, mass, color) => {
+    const planet = gameCreateEntity(game, 'planet_' + randomId());
+    planet.mass = mass;
+    planet.x = x;
+    planet.y = y;
+    planet.mass = mass;
+    planet.color = color;
+    console.debug('- PlanetEntity created: ' + JSON.stringify(planet, null, 2));
+    game.planets.push(planet.id);
+};
+const gameCreatePlayer = (game, id, x, y, color) => {
+    const player = gameCreateEntity(game, id);
+    player.angle = 0;
+    player.interval = 5000;
+    player.power = 1;
+    player.coins = 0;
+    player.color = color;
+    player.finished = false;
+    player.active = false;
+    player.x = x;
+    player.y = y;
+    console.debug('- PlayerEntity created: ' + JSON.stringify(player, null, 2));
+    game.players.push(id);
+};
+const gameHasActivePlayers = (game) => {
+    const players = game.players.map(playerGetById);
+    for (let i = 0; i < players.length; i++) {
+        const player = players[i];
+        if (player?.connected) {
+            return true;
+        }
+    }
+    return false;
+};
+const gameGetById = (id) => {
+    return gameStorage.find(game => game.id === id);
+};
+const gameToString = (game) => {
+    return `Game: id=${game.id}`;
+};
 const sendIoMessage = function (socket, ev, payload) {
     socket.emit(ev, JSON.stringify(payload));
 };
 const sendIoMessageAll = function (ev, payload) {
-    players.forEach(player => {
+    playerStorage.forEach(player => {
         if (player.socket) {
             sendIoMessage(player.socket, ev, payload);
         }
@@ -14,10 +130,13 @@ const assertPlayer = (meta) => {
     }
     return meta.player;
 };
-const lobbies = [];
+function getShared() {
+    return console.shared;
+}
+const lobbyStorage = [];
 const broadcastLobbies = () => {
-    sendIoMessageAll(globalShared.G_S_LOBBIES_UPDATED, {
-        lobbies: lobbies.map(lobby => {
+    sendIoMessageAll(getShared().G_S_LOBBIES_UPDATED, {
+        lobbies: lobbyStorage.map(lobby => {
             return {
                 ...lobby,
                 playerIds: undefined,
@@ -44,14 +163,14 @@ const lobbyCreate = (name, creator) => {
         name,
     };
     console.debug(`Lobby created '${lobbyToString(lobby)}'`);
-    lobbies.push(lobby);
+    lobbyStorage.push(lobby);
     lobbyJoin(lobby, creator);
     return lobby;
 };
 const lobbyDestroy = (lobby) => {
-    const ind = lobbies.indexOf(lobby);
+    const ind = lobbyStorage.indexOf(lobby);
     if (ind > -1) {
-        lobbies.splice(ind, 1);
+        lobbyStorage.splice(ind, 1);
         lobby.playerIds.forEach(playerId => {
             const player = playerGetById(playerId);
             if (player) {
@@ -79,7 +198,6 @@ const lobbyJoin = (lobby, player) => {
     broadcastLobbies();
 };
 const lobbyLeave = (lobby, player) => {
-    console.debug(`Lobby, looking to leave '${lobbyToString(lobby)}', ${playerToString(player)}`);
     const ind = lobby.playerIds.indexOf(player.id);
     if (ind > -1) {
         lobby.playerIds.splice(ind, 1);
@@ -95,12 +213,12 @@ const lobbyLeave = (lobby, player) => {
     broadcastLobbies();
 };
 const lobbyGetById = (id) => {
-    return lobbies.find(lobby => lobby.id === id);
+    return lobbyStorage.find(lobby => lobby.id === id);
 };
 const lobbyToString = (lobby) => {
     return `Lobby: ${lobby.name} (id=${lobby.id}) {playerIds=${lobby.playerIds.join(',')}}`;
 };
-const players = [];
+const playerStorage = [];
 const playerCreate = (socket, name) => {
     const existingPlayer = playerGetBySocketId(socket.id);
     if (existingPlayer) {
@@ -116,32 +234,31 @@ const playerCreate = (socket, name) => {
         lobbyId: '',
         connected: true,
     };
-    players.push(player);
+    playerStorage.push(player);
     console.debug(`Player created ${playerToString(player)}`);
     return player;
 };
 const playerDestroy = (player) => {
-    const ind = players.indexOf(player);
+    const ind = playerStorage.indexOf(player);
     if (ind > -1) {
         console.debug(`Player destroyed ${playerToString(player)}`);
-        players.splice(ind, 1);
+        playerStorage.splice(ind, 1);
     }
     else {
         throw new Error('Cannot destroy Player. No Player exists:' + playerToString(player));
     }
 };
 const playerGetById = (id) => {
-    return players.find(player => player.id === id);
+    return playerStorage.find(player => player.id === id);
 };
 const playerGetBySocketId = (id) => {
-    return players.find(player => player?.socket?.id === id);
+    return playerStorage.find(player => player?.socket?.id === id);
 };
 const playerSetName = (player, name) => {
     if (name.length > 12) {
         throw new Error('Cannot set player name.  Length is greater than 12.');
     }
     player.name = escapeString(name);
-    console.debug(`Player set name ${playerToString(player)}`);
 };
 const playerToString = (player) => {
     return `Player: name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}]`;
@@ -154,7 +271,6 @@ const playerReconnect = (player, socket) => {
     player.connected = true;
     player.socket = socket;
 };
-var globalShared = console.shared;
 const ioRoutes = {};
 const registerIoRequest = (route, cb) => {
     console.debug('register IO route:', route);
@@ -174,13 +290,19 @@ registerIoRequest('disconnect', meta => {
     const player = meta.player;
     if (player) {
         console.debug('Disconnected: ' + playerToString(player));
+        playerDestroy(player);
         if (player.lobbyId) {
             const lobby = lobbyGetById(player.lobbyId);
             if (lobby) {
                 lobbyLeave(lobby, player);
             }
         }
-        playerDestroy(player);
+        if (player.gameId) {
+            const game = gameGetById(player.gameId);
+            if (game && !gameHasActivePlayers(game)) {
+                gameDestroy(game);
+            }
+        }
     }
 });
 Object.assign(module.exports, {
@@ -189,7 +311,7 @@ Object.assign(module.exports, {
             socket.on(i, ev => ioRoutes[i](socket, ev));
         }
         const player = playerCreate(socket, randomId());
-        sendIoMessage(socket, globalShared.G_S_CONNECTED, {
+        sendIoMessage(socket, getShared().G_S_CONNECTED, {
             id: player.id,
             socketId: socket.id,
         });
@@ -197,7 +319,6 @@ Object.assign(module.exports, {
         console.debug('Connected: ' + playerToString(player));
     },
 });
-var globalShared = console.shared;
 const restRoutes = {};
 function registerRestRequest(route, cb) {
     console.debug('register REST route:', route);
@@ -221,13 +342,29 @@ function registerRestRequest(route, cb) {
         }
     };
 }
-registerRestRequest(globalShared.G_R_LOBBY_CREATE, (meta, searchParams) => {
+registerRestRequest(getShared().G_R_LOBBY_CREATE, (meta, searchParams) => {
     const player = assertPlayer(meta);
     playerSetName(player, searchParams.playerName);
     const lobby = lobbyCreate(searchParams.lobbyName, player);
     return { lobby };
 });
-registerRestRequest(globalShared.G_R_LOBBY_JOIN, (meta, searchParams) => {
+registerRestRequest(getShared().G_R_LOBBY_START, meta => {
+    const player = assertPlayer(meta);
+    let lobby = null;
+    if (player.lobbyId) {
+        lobby = lobbyGetById(player.lobbyId);
+    }
+    if (!lobby) {
+        throw new Error('Cannot start lobby.  No lobby exists for player: ' +
+            playerToString(player));
+    }
+    const game = gameCreate(lobby.id, lobby.playerIds);
+    lobbyDestroy(lobby);
+    return {
+        game,
+    };
+});
+registerRestRequest(getShared().G_R_LOBBY_JOIN, (meta, searchParams) => {
     const player = assertPlayer(meta);
     const lobby = lobbyGetById(searchParams.lobbyId);
     if (!lobby) {
@@ -237,7 +374,7 @@ registerRestRequest(globalShared.G_R_LOBBY_JOIN, (meta, searchParams) => {
     lobbyJoin(lobby, player);
     return { lobby };
 });
-registerRestRequest(globalShared.G_R_LOBBY_LEAVE, meta => {
+registerRestRequest(getShared().G_R_LOBBY_LEAVE, meta => {
     const player = assertPlayer(meta);
     if (player.lobbyId) {
         const lobby = lobbyGetById(player.lobbyId);

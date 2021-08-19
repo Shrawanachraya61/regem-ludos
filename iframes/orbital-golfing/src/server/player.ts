@@ -7,7 +7,7 @@ interface Player {
   connected: boolean;
 }
 
-const players: Player[] = [];
+const playerStorage: Player[] = [];
 
 const playerCreate = (socket: Socket, name?: string): Player => {
   const existingPlayer = playerGetBySocketId(socket.id);
@@ -26,16 +26,16 @@ const playerCreate = (socket: Socket, name?: string): Player => {
     lobbyId: '',
     connected: true,
   };
-  players.push(player);
+  playerStorage.push(player);
   console.debug(`Player created ${playerToString(player)}`);
   return player;
 };
 
 const playerDestroy = (player: Player) => {
-  const ind = players.indexOf(player);
+  const ind = playerStorage.indexOf(player);
   if (ind > -1) {
     console.debug(`Player destroyed ${playerToString(player)}`);
-    players.splice(ind, 1);
+    playerStorage.splice(ind, 1);
   } else {
     throw new Error(
       'Cannot destroy Player. No Player exists:' + playerToString(player)
@@ -44,10 +44,10 @@ const playerDestroy = (player: Player) => {
 };
 
 const playerGetById = (id: string) => {
-  return players.find(player => player.id === id);
+  return playerStorage.find(player => player.id === id);
 };
 const playerGetBySocketId = (id: string) => {
-  return players.find(player => player?.socket?.id === id);
+  return playerStorage.find(player => player?.socket?.id === id);
 };
 
 const playerSetName = (player: Player, name: string) => {
@@ -55,7 +55,7 @@ const playerSetName = (player: Player, name: string) => {
     throw new Error('Cannot set player name.  Length is greater than 12.');
   }
   player.name = escapeString(name);
-  console.debug(`Player set name ${playerToString(player)}`);
+  // console.debug(`Player set name ${playerToString(player)}`);
 };
 
 const playerToString = (player: Player) => {

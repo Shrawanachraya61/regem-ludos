@@ -1,4 +1,4 @@
-function init() {
+const init = async () => {
   connectSocket();
 }
 
