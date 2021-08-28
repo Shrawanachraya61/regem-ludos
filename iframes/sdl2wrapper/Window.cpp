@@ -14,8 +14,8 @@ EMSCRIPTEN_KEEPALIVE
 void enableSound() {
   SDL2Wrapper::Window::soundEnabled = true;
   int volumePct = SDL2Wrapper::Window::soundPercent;
-  Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
-  Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
+  Mix_VolumeMusic((double(volumePct) / 100.0) * double(MIX_MAX_VOLUME));
+  Mix_Volume(-1, (double(volumePct) / 100.0) * double(MIX_MAX_VOLUME));
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG) << "Enable sound" << std::endl;
 }
 EMSCRIPTEN_KEEPALIVE
@@ -29,8 +29,8 @@ void disableSound() {
 EMSCRIPTEN_KEEPALIVE
 void setVolume(int volumePct) {
   SDL2Wrapper::Window::soundPercent = volumePct;
-  Mix_VolumeMusic(double(volumePct / 100) * double(MIX_MAX_VOLUME));
-  Mix_Volume(-1, double(volumePct / 100) * double(MIX_MAX_VOLUME));
+  Mix_VolumeMusic((double(volumePct) / 100.0) * double(MIX_MAX_VOLUME));
+  Mix_Volume(-1, (double(volumePct) / 100.0) * double(MIX_MAX_VOLUME));
   SDL2Wrapper::Logger(SDL2Wrapper::DEBUG)
       << "Set volume:" << volumePct << "%" << std::endl;
 }
@@ -123,6 +123,7 @@ Window& Window::getGlobalWindow() { return *Window::globalWindow; }
 void Window::createWindow(const std::string& title, const int w, const int h) {
   SDL_Init(SDL_INIT_EVERYTHING);
   SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+  TTF_Init();
   colorkey = 0x00FFFFFF;
   width = w;
   height = h;

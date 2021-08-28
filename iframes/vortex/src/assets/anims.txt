@@ -56,17 +56,6 @@ player_bullet_big_16 100
 player_bullet_big_17 100
 player_bullet_big_18 100
 player_bullet_big_19 100
-player_bullet_big_20 100
-player_bullet_big_21 100
-player_bullet_big_22 100
-player_bullet_big_23 100
-player_bullet_big_24 100
-player_bullet_big_25 100
-player_bullet_big_26 100
-player_bullet_big_27 100
-player_bullet_big_28 100
-player_bullet_big_29 100
-
 #
 enemy_bullet
 loop

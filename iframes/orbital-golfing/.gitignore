@@ -1,0 +1,5 @@
+.build/
+dist/
+*.zip
+public/*.map
+node_modules

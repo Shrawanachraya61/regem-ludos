@@ -63,9 +63,10 @@ canvas {
     /* margin-top: 40px; */
     /* position: relative; */
     /* top: 40px; */
-    height: calc(100% - 82px - 40px);
+    /* height: calc(100% - 82px - 40px); */
     border: unset;
     display: flex;
+    transform: translateY(-30px);
     /* flex-shrink: unset; */
     /* flex-grow: unset; */
   }
@@ -73,7 +74,7 @@ canvas {
   canvas {
     box-sizing: border-box;
     width: auto;
-    height: calc(100% - 154px);
+    height: calc(100% - 130px);
   }
 }
 .top-bar-controls {
@@ -96,7 +97,7 @@ canvas {
 }
 .on-screen-control-button {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  padding: 16px;
+  padding: 24px;
   font-size: 16px;
   min-width: 48px;
   margin: 16px 4px;
@@ -111,7 +112,13 @@ canvas {
   user-select: none;
   -webkit-user-select: none; /* Safari */
 }
-@media only screen and (max-width: 512px) {
+@media only screen and (max-width: 580px) {
+  .on-screen-controls {
+    transform: scale(0.85);
+    width: unset;
+  }
+}
+@media only screen and (max-width: 460px) {
   .on-screen-controls {
     transform: scale(0.75);
     width: unset;

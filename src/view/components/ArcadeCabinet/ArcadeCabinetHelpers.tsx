@@ -18,11 +18,11 @@ export interface IHelpProps {
 }
 
 export enum ArcadeGamePath {
-  PRESIDENT = 'iframes/president/president.html',
-  TIC_TAC_TOE = 'iframes/tic-tac-toe/tic-tac-toe.html',
-  INVADERZ = 'iframes/invaderz/Invaderz.html',
-  ELASTICITY = 'iframes/elasticity/elasticity.html',
-  VORTEX = 'iframes/vortex/index.html',
+  PRESIDENT = 'iframes/president/dist/president.html',
+  TIC_TAC_TOE = 'iframes/tic-tac-toe/dist/tic-tac-toe.html',
+  INVADERZ = 'iframes/invaderz/dist/index.html',
+  ELASTICITY = 'iframes/elasticity/dist/elasticity.html',
+  VORTEX = 'iframes/vortex/dist/index.html',
 }
 
 export interface IArcadeGameMeta {

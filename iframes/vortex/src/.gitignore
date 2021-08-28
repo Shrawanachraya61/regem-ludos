@@ -1,3 +1,4 @@
-.build
 *.o
-*.exe
+Vortex
+Vortex.exe
+dist

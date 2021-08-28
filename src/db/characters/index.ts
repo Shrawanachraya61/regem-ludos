@@ -62,7 +62,7 @@ export const init = () => {
     name: 'Sigma',
     spriteBase: 'sigma',
     talkTrigger: 'test-sigma',
-    facing: Facing.LEFT,
+    facing: Facing.RIGHT_DOWN,
     animationState: AnimationState.IDLE,
   };
 

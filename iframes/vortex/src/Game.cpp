@@ -2,13 +2,13 @@
 #include "Actor.h"
 #include "GameOptions.h"
 #include "LibHTML.h"
-#include "Particle.h"
-#include "Physics.h"
-#include "Player.h"
 
 #include "Asteroid.h"
 #include "BlackHole.h"
 #include "Enemy.h"
+#include "Particle.h"
+#include "Physics.h"
+#include "Player.h"
 #include "Powerup.h"
 #include "Projectile.h"
 
@@ -21,9 +21,6 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #endif
-
-const int GameOptions::width = 512;
-const int GameOptions::height = 512;
 
 GameOptions::GameOptions() {}
 
@@ -111,6 +108,7 @@ void Game::setState(GameState stateA) {
       if (diamonds > 0) {
         window.playSound("score_add");
         bonus += 2500 * diamonds;
+        bonusAfterWaveCompleted = bonus;
         diamonds = 0;
       }
     });
@@ -119,6 +117,7 @@ void Game::setState(GameState stateA) {
       if (stars > 0) {
         window.playSound("score_add");
         bonus *= (stars + 1);
+        bonusAfterWaveCompleted = bonus;
         stars = 0;
       }
     });
@@ -143,8 +142,6 @@ void Game::setState(GameState stateA) {
   }
   case GAME_STATE_READY_TO_START: {
     updateEntities = false;
-    std::cout << "Play sound level_ready" << std::endl;
-    window.playSound("level_ready");
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyReadyToStart, this, std::placeholders::_1));
@@ -177,11 +174,11 @@ void Game::startNewGame() {
   player->shield.empty();
   updateEntities = true;
   shouldPlayHiscoreSound = false;
-  // window.playSound("start_game");
   // might be causing a segfault
   // initWorld();
   initWorldNextTick = true;
   heartSpawns.clear();
+  window.playSound("level_ready");
   setState(GAME_STATE_READY_TO_START);
   notifyGameStarted();
 }
@@ -234,16 +231,6 @@ void Game::initWorld() {
             static_cast<unsigned int>(asteroidMaxSpeeds.size() - 1),
             wave / 4)]);
   }
-
-  // spawn additional metal ball every 3 waves
-  // for (unsigned int i = 0; i < wave / 3; i++) {
-  //   const int r = GameOptions::width / 2 - 64;
-  //   const int angle = rand() % 360;
-  //   const double x = GameOptions::width / 2 + r *
-  //   cos(degreesToRadians(angle)); const double y = GameOptions::height / 2 +
-  //   r * sin(degreesToRadians(angle)); Asteroid::spawnAsteroid(
-  //       *this, ASTEROID_LEVEL_METAL, x, y, asteroidMaxSpeeds[1]);
-  // }
 }
 
 // needs to be separate from initWorld because the player can wait on the READY
@@ -285,7 +272,8 @@ void Game::addWorldSpawnTimers() {
     }
   }
 
-  // on waves 5 + 3 + 2 + 2 + 1 spawn an extra life, then spawn an extra life on
+  // on waves 5 + 3 + 2 + 2 + 1 spawn an extra life, then spawn an extra
+  // life on
   // every wave
   const std::vector<unsigned int> heartWaves = {
       3, 5, 5 + 3, 5 + 3 + 2, 5 + 3 + 2 + 2, 5 + 3 + 2 + 2 + 1};
@@ -293,7 +281,7 @@ void Game::addWorldSpawnTimers() {
       std::find(heartWaves.begin(), heartWaves.end(), wave) !=
           heartWaves.end()) {
 
-    // only spawn a heart on a wave if you haven't spawned one before.  This
+    // only spawn a heart on a wave if you haven't spawned one before. This
     // prevents death spamming for hearts on the same wave over and over.
     if (std::find(heartSpawns.begin(), heartSpawns.end(), wave) ==
         heartSpawns.end()) {
@@ -432,43 +420,52 @@ void Game::handleKeyUpdate() {
 }
 
 void Game::handleKeyMenu(const std::string& key) {
-  if (key == "Escape") {
-    shouldExit = true;
-  } else {
-    window.stopMusic();
-    startNewGame();
+  if (!isTransitioning) {
+    if (key == "Escape") {
+      shouldExit = true;
+    } else {
+      window.stopMusic();
+      startNewGame();
+    }
   }
 }
 
 void Game::handleKeyWaveCompleted(const std::string& key) {
   if (!isTransitioning) {
-    wave++;
-    // initWorld();
-    initWorldNextTick = true;
-    setState(GAME_STATE_READY_TO_START);
+    isTransitioning = true;
+    window.playSound("level_ready");
+    addFuncTimer(500, [=] {
+      wave++;
+      isTransitioning = false;
+      initWorldNextTick = true;
+      setState(GAME_STATE_READY_TO_START);
+    });
   }
 }
 
 void Game::handleKeyGameOver(const std::string& key) {
-  notifyGameCompleted(score);
-  isTransitioning = true;
-  addFuncTimer(200, [=] {
-    isTransitioning = false;
-    setState(GAME_STATE_MENU);
-  });
+  if (!isTransitioning) {
+    notifyGameCompleted(score);
+    isTransitioning = true;
+    addFuncTimer(200, [=] {
+      isTransitioning = false;
+      setState(GAME_STATE_MENU);
+    });
+  }
 }
 
 void Game::handleKeyReadyToStart(const std::string& key) {
-  isTransitioning = true;
-  addFuncTimer(200, [=] {
-    isTransitioning = false;
-    setState(GAME_STATE_GAME);
-  });
+  if (!isTransitioning) {
+    isTransitioning = true;
+    addFuncTimer(200, [=] {
+      isTransitioning = false;
+      setState(GAME_STATE_GAME);
+    });
+  }
 }
 
 std::pair<double, double> Game::getGravitationalPull(const double x,
                                                      const double y) {
-
   double ax = 0;
   double ay = 0;
   for (auto& blackHole : blackHoles) {
@@ -646,6 +643,7 @@ void Game::checkGameOver() {
       isTransitioning = false;
       player->lives--;
       if (player->lives < 0) {
+        window.playSound("end_game");
         setState(GAME_STATE_GAME_OVER);
       } else {
         setState(GAME_STATE_READY_TO_START);
@@ -691,10 +689,8 @@ void Game::checkWaveCompleted() {
 void Game::drawUI() {
   window.drawSprite("red", 0, 0, true, 0, std::make_pair(512.0, 1.2));
   window.setCurrentFont("default", 16);
-  window.drawText("Score " + std::to_string(score),
-                  16,
-                  0,
-                  window.makeColor(255, 255, 255));
+  window.drawText(
+      "Score " + std::to_string(score), 16, 0, window.makeColor(255, 255, 255));
 
   window.drawText("Shield ", 128 + 48, 0, window.makeColor(255, 255, 255));
 
@@ -753,10 +749,8 @@ bool Game::menuLoop() {
   int titleX = GameOptions::width / 2;
   int titleY = GameOptions::height / 2 - 128;
   window.setCurrentFont("default", 72);
-  window.drawTextCentered(GameOptions::programName,
-                          titleX,
-                          titleY,
-                          window.makeColor(255, 255, 255));
+  window.drawTextCentered(
+      "Vortex", titleX, titleY, window.makeColor(255, 255, 255));
 
   int startTextX = GameOptions::width / 2;
   int startTextY = GameOptions::height - GameOptions::height / 4;
@@ -791,7 +785,8 @@ bool Game::gameLoop() {
     for (int i = 0; i < tileHeight; i++) {
       for (int j = 0; j < tileWidth; j++) {
         unsigned int ind = background[i * tileWidth + j];
-        window.drawSprite("stars_" + std::to_string(ind), j * 32, i * 32);
+        window.drawSprite(
+            "stars_" + std::to_string(ind), j * 32, i * 32, false);
       }
     }
   }
@@ -917,7 +912,7 @@ bool Game::otherLoop() {
                             titleX,
                             titleY,
                             window.makeColor(255, 255, 255));
-    {
+    if (!isTransitioning) {
       int startTextX = GameOptions::width / 2;
       int startTextY = titleY + 64 + 64;
       window.setCurrentFont("default", 16);
@@ -1006,7 +1001,7 @@ bool Game::otherLoop() {
                               window.makeColor(255, 255, 0));
     }
 
-    {
+    if (!isTransitioning) {
       int startTextX = GameOptions::width / 2;
       int startTextY = titleY + 128;
       window.setCurrentFont("default", 16);
@@ -1016,7 +1011,6 @@ bool Game::otherLoop() {
                               window.makeColor(255, 255, 250));
     }
   }
-
   return !shouldExit;
 }
 
@@ -1051,10 +1045,6 @@ bool Game::loop() {
     initWorld();
   }
 
-  // if (shouldPlayHiscoreSound) {
-  //   shouldPlayHiscoreSound = false;
-  // }
-
   bool ret = gameLoop();
   switch (state) {
   case GAME_STATE_GAME: {
@@ -1076,6 +1066,5 @@ bool Game::loop() {
     break;
   }
   }
-  // return gameLoop();
   return ret;
 }

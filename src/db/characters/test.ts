@@ -42,5 +42,13 @@ export const init = () => {
     talkTrigger: 'test-testDialogD',
   };
 
+  exp.Shopkeep = {
+    name: 'Shopkeep',
+    spriteBase: 'employee-guy',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    talkTrigger: 'test-ada-sigma-shopkeep',
+  };
+
   return exp;
 };

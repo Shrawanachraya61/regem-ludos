@@ -313,3 +313,43 @@ Ada: "The test is now concluded."
 +endConversation();
 
 // This is me adding stuff ahahaha
+#test-ada-sigma-shopkeep
+action,this
+@this
++walkToMarker(ada,MarkerAdaShopkeep);
++setConversation(ada);
++lookAtEachOther(ada,shopkeep);
+Shopkeep: "Welcome to the <color=ORANGE scale=1.33>Regem Ludos </> prize counter!"
+Shopkeep: "We have the largest prize pool of any arcade in the region!"
+Shopkeep: "Perhaps a pretty girl such as yourself would like one of our charm braclets!"
+Shopkeep: "Or maybe you're a little rough around the edges and would enjoy a sharp, utility knife."
+Shopkeep: "If you've got a bit of as sweet tooth, why not try our famous <delay=750 cascade-letters=50 color=BLUE>cream pops</>!"
+Ada: "<cascade-letters>......"
+
+Sigma: "Moo?"
++lookAtCharacter(ada,sigma);
++lookAtCharacter(shopkeep,sigma)
++lookAtCharacter(ada,sigma);
++waitMS(500);
++:question(shopkeep);
++:question(ada);
++panCameraToFitCharacters(500,false,ada,sigma,shopkeep);
+Shopkeep: "Excuse me young miss?"
++none()
++waitMS(500)
++:jump(sigma)
++setConversation(sigma);
+Sigma: "Moo!"
+// Shopkeep looks back at the wall and then back at Sigma
++setFacing(shopkeep,rightup); 
++waitMS(750)
++:teardrop(shopkeep);
++lookAtCharacter(shopkeep,sigma);
+Shopkeep: "I am sorry, but I don't understand."
++:happy(sigma);
+Sigma: "Moo. <scale=1.33> MOOoo!"
+Shopkeep: "<cascade-letters>......"
++lookAtEachOther(shopkeep,ada);
++panCameraBackToPlayer(500,false)
+Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
+Shopkeep: "I have <shake>no idea</> what she wants!</>"

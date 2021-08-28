@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src/client",
+    "target": "ES2020",
+    "outFile": "./public/client.js",
+    "allowJs": true,
+    "lib": [
+      "dom",
+      "ES2020"
+    ],
+    "removeComments": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "jsx": "react",
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "./src/client/**/*"
+  ]
+}

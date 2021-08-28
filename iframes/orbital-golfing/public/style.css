@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  background: black;
+  color: #dedede;
+  font-family: monospace;
+  font-size: 16px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  touch-action: manipulation;
+}
+button {
+  padding: 8px 32px;
+  margin: 0px 8px;
+  border-radius: 4px;
+  background: unset;
+  border: 1px solid #dedede;
+  color: #dedede;
+  cursor: pointer;
+}
+button:hover {
+  filter: brightness(120%);
+}
+button:active {
+  filter: brightness(80%);
+  transform: translateY(1px);
+}
+button:disabled {
+  cursor: default;
+  color: #888;
+  filter: brightness(80%);
+  border-color: #aaa;
+}
+input[type='text'] {
+  padding: 7px 8px;
+  width: 120px;
+}
+h4 {
+  text-align: center;
+  margin: 0;
+}
+h2 {
+  text-align: center;
+  margin: 0;
+}
+@media only screen and (max-width: 500px) {
+  .center {
+    width: 100% !important;
+  }
+}
+.root {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.root-ui {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.center {
+  width: 500px;
+}
+.pane {
+  border: 1px solid #dedede;
+  background: #333;
+  margin: 8px 2px;
+  padding: 1rem;
+}
+.pane-primary {
+  border-color: green;
+}
+.pane-secondary {
+  border-color: #888;
+}
+.flex-hz {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hidden {
+  display: none;
+}
+.underlined {
+  text-decoration: underline;
+}
+.label {
+  margin-right: 8px;
+  color: cyan;
+}
+.primary {
+  background: darkgreen;
+}
+.secondary {
+  background: darkblue;
+}
+.cancel {
+  background: darkred;
+}
+#game {
+  background: #333;
+  width: 4000px;
+  height: 4000px;
+}
+#canv {
+  border: 1px solid white;
+}

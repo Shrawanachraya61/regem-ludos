@@ -10,6 +10,8 @@
 #include "LibHTML.h"
 
 const std::string GameOptions::programName = "Vortex";
+const int GameOptions::width = 512;
+const int GameOptions::height = 512;
 
 void parseArgs(int argc, char* argv[], std::vector<std::string>& args) {
   for (int i = 0; i < argc; i++) {
@@ -39,10 +41,14 @@ int main(int argc, char* argv[]) {
   try {
     SDL2Wrapper::Window window(
         GameOptions::programName, GameOptions::width, GameOptions::height);
+    SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
+    window.setCurrentFont("default", 18);
     Game game(window);
 
-    SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro/intro_sprites.txt");
-    SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro/intro_sounds.txt");
+    SDL2Wrapper::loadAssetsFromFile("sprite",
+    "assets/intro/intro_sprites.txt");
+    SDL2Wrapper::loadAssetsFromFile("sound",
+    "assets/intro/intro_sounds.txt");
 
     bool isWaitingToStart = includes("wait", args) ? true : false;
 

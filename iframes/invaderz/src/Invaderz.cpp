@@ -9,6 +9,7 @@
 
 #include "Game.h"
 #include "GameOptions.h"
+#include "LibHTML.h"
 #include "SDL2Wrapper.h"
 #include <ctime>
 #include <functional>
