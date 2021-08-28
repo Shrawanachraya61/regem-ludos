@@ -103,14 +103,14 @@
       "end": 41.83877551020408,
       "loop": false
     },
-    "despawn": {
+    "despawn_tut_wall": {
       "start": 43,
-      "end": 43.910272108843536,
+      "end": 43.660204081632656,
       "loop": false
     },
-    "despawn_tut_wall": {
+    "despawn": {
       "start": 45,
-      "end": 45.660204081632656,
+      "end": 45.910272108843536,
       "loop": false
     },
     "dialog_select": {
@@ -168,14 +168,14 @@
       "end": 74.83056689342403,
       "loop": false
     },
-    "jump2": {
+    "jump_cutscene": {
       "start": 76,
-      "end": 76.24532879818594,
+      "end": 76.18020408163265,
       "loop": false
     },
-    "jump_cutscene": {
+    "jump2": {
       "start": 78,
-      "end": 78.18020408163265,
+      "end": 78.24532879818594,
       "loop": false
     },
     "level_up": {
@@ -213,14 +213,14 @@
       "end": 94.52365079365079,
       "loop": false
     },
-    "phone_beep": {
+    "phone_beep_off": {
       "start": 96,
-      "end": 96.53539682539683,
+      "end": 96.53537414965986,
       "loop": false
     },
-    "phone_beep_off": {
+    "phone_beep": {
       "start": 98,
-      "end": 98.53537414965986,
+      "end": 98.53539682539683,
       "loop": false
     },
     "phone_ring": {
@@ -248,14 +248,14 @@
       "end": 113.81680272108844,
       "loop": false
     },
-    "robot_staggered3": {
+    "robot_staggered_damaged2": {
       "start": 115,
-      "end": 115.7034693877551,
+      "end": 115.32036281179138,
       "loop": false
     },
-    "robot_staggered_damaged2": {
+    "robot_staggered3": {
       "start": 117,
-      "end": 117.32036281179138,
+      "end": 117.7034693877551,
       "loop": false
     },
     "shoot_arrow": {
@@ -323,14 +323,14 @@
       "end": 146.60020408163265,
       "loop": false
     },
-    "woosh": {
+    "woosh_reverse": {
       "start": 148,
-      "end": 148.4171201814059,
+      "end": 148.35156462585033,
       "loop": false
     },
-    "woosh_reverse": {
+    "woosh": {
       "start": 150,
-      "end": 150.35156462585033,
+      "end": 150.4171201814059,
       "loop": false
     }
   },
