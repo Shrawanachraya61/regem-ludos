@@ -320,7 +320,7 @@ action,this
 +lookAtEachOther(ada,shopkeep);
 Shopkeep: "Welcome to the <color=ORANGE scale=1.33>Regem Ludos </> prize counter!"
 Shopkeep: "We have the largest prize pool of any arcade in the region!"
-Shopkeep: "Perhaps a pretty girl like you would like one of our charm braclets!"
+Shopkeep: "Perhaps a pretty girl such as yourself would like one of our charm braclets!"
 Shopkeep: "Or maybe you're a little rough around the edges and would enjoy a sharp, utility knife."
 Shopkeep: "If you've got a bit of as sweet tooth, why not try our famous <delay=750 cascade-letters=50 color=BLUE>cream pops</>!"
 Ada: "<cascade-letters>......"
