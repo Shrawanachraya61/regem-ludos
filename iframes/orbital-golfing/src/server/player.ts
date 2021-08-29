@@ -59,7 +59,23 @@ const playerSetName = (player: Player, name: string) => {
 };
 
 const playerToString = (player: Player) => {
-  return `Player: name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}]`;
+  return `Player { name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}]}`;
+};
+
+const playerAssertInLobby = (player: Player) => {
+  const lobby = lobbyGetById(player.lobbyId);
+  if (!lobby) {
+    throw new Error('Player not in active lobby.');
+  }
+  return lobby;
+};
+
+const playerAssertInGame = (player: Player) => {
+  const game = gameGetById(player.gameId);
+  if (!game) {
+    throw new Error('Player not in active game.');
+  }
+  return game;
 };
 
 const playerDisconnect = (player: Player) => {

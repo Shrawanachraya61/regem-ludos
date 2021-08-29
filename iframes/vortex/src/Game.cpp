@@ -650,7 +650,7 @@ void Game::checkGameOver() {
         player->isDead = false;
         player->shield.empty();
         player->armor = 0;
-        initWorld();
+        initWorldNextTick = true;
       }
     });
   }

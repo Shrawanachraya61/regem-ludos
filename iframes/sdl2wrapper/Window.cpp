@@ -67,6 +67,7 @@ int Window::instanceCount = 0;
 Uint64 Window::now = 0;
 bool Window::soundEnabled = true;
 int Window::soundPercent = 100;
+bool Window::soundCanBeLoaded = true;
 const double Window::targetFrameMS = 16.0;
 Window* Window::globalWindow = nullptr;
 
@@ -146,6 +147,7 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
       Logger(ERROR) << "SDL_mixer could not initialize! "
                     << std::string(Mix_GetError()) << std::endl;
       soundForcedDisabled = true;
+      Window::soundCanBeLoaded = false;
     }
   }
 
@@ -179,11 +181,11 @@ void Window::setCurrentFont(const std::string& fontName, const int sz) {
 const std::string& Window::getCurrentFontName() const {
   return currentFontName;
 }
-const int Window::getCurrentFontSize() const { return currentFontSize; }
+int Window::getCurrentFontSize() const { return currentFontSize; }
 Uint64 Window::staticGetNow() { return Window::now; }
-const double Window::getNow() const { return SDL_GetPerformanceCounter(); }
-const double Window::getDeltaTime() const { return deltaTime; }
-const double Window::getFrameRatio() const {
+double Window::getNow() const { return SDL_GetPerformanceCounter(); }
+double Window::getDeltaTime() const { return deltaTime; }
+double Window::getFrameRatio() const {
   double sum = 0;
   for (double r : pastFrameRatios) {
     sum += r;
@@ -205,14 +207,14 @@ void Window::setAnimationFromDefinition(const std::string& name,
 }
 
 const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
-  SDL_Color c = {r, g, b};
+  SDL_Color c = {r, g, b, 255};
   return c;
 }
 
 void Window::disableSound() { Window::soundEnabled = false; }
 void Window::enableSound() { Window::soundEnabled = true; }
 void Window::playSound(const std::string& name) {
-  if (soundForcedDisabled || !soundEnabled) {
+  if (soundForcedDisabled || !soundEnabled || !Window::soundCanBeLoaded) {
     return;
   }
 
@@ -234,7 +236,7 @@ void Window::stopSound(const std::string& name) {
   }
 }
 void Window::playMusic(const std::string& name) {
-  if (soundForcedDisabled) {
+  if (soundForcedDisabled || !Window::soundCanBeLoaded) {
     return;
   }
 

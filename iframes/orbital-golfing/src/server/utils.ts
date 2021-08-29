@@ -11,3 +11,14 @@ const escapeString = (s: string) => {
   };
   return s.replace(/[&"<>]/g, c => lookup[c]);
 };
+
+const shuffle = (arr: any[]) => {
+  const ret: any[] = [];
+  const cp = [...arr];
+  while (cp.length) {
+    const i = Math.floor(Math.random() * cp.length);
+    ret.push(cp[i]);
+    cp.splice(i, 1);
+  }
+  return ret;
+};

@@ -11,6 +11,16 @@ interface GameStartedResponse {
   game: GameData;
 }
 
+interface GameDataUpdatedResponse {
+  game: {
+    id: string;
+    i: number;
+    scorecard: ScorecardData;
+    entityMap: Record<string, EntityData>;
+    round: number;
+  };
+}
+
 const registerSocketListener = function <T>(
   event: string,
   cb: (payload: T) => void
@@ -83,7 +93,30 @@ const connectSocket = () => {
       setUiState({
         activePane: 'game',
       });
+      centerOnPlayer();
       renderUi();
+      startRenderLoop();
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_UPDATED,
+    (payload: GameDataUpdatedResponse) => {
+      console.log('Update game data', payload.game);
+      const gameData = getGameData();
+      if (gameData) {
+        for (const i in payload.game.entityMap) {
+          gameData.entityMap[i] = payload.game.entityMap[i];
+        }
+        const myEntity = getMyPlayerEntity(gameData);
+        if (!myEntity.active && getUiState().entityActive) {
+          console.log('reset entity active');
+          setUiState({
+            entityActive: false,
+          });
+          renderUi();
+        }
+      }
     }
   );
 };
@@ -95,7 +128,7 @@ interface FetchResponse<T> {
 
 const sendRestRequest = async function <RESP = any>(
   url: string,
-  params?: Record<string, string>
+  params?: Record<string, string | number>
 ): Promise<FetchResponse<RESP>> {
   const queryParams = Object.keys(params ?? {})
     .map(

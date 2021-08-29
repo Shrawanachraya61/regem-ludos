@@ -1,5 +1,6 @@
 interface Game {
   id: string;
+  courseName: string;
   lobbyId: string;
   width: number;
   height: number;
@@ -11,13 +12,30 @@ interface Game {
   planets: string[];
   powerups: string[];
   flags: string[];
+  collisions: [string, string][];
+  round: number;
+  roundFinished: boolean;
+  intervalMs: number;
+  intervalId: number;
+  broadcastMs: number;
+  broadcastId: number;
+  broadcastCt: number;
+}
+
+interface GameBroadcast {
+  id: string;
+  i: number;
+  entityMap: Record<string, Entity | PlayerEntity>;
+  collisions: [string, string][];
   round: number;
 }
 
-type Scorecard = Record<string, []>;
+type Scorecard = Record<string, number[]>;
+type EntityType = '' | 'Player' | 'Planet' | 'Flag';
 
 interface Entity {
   id: string;
+  type: string;
   x: number;
   y: number;
   vx: number;
@@ -27,23 +45,48 @@ interface Entity {
   t: number;
   r: number;
   mass: number;
+  mark?: boolean;
 }
 
+type Vec2 = [number, number];
+
 interface PlayerEntity extends Entity {
+  name: string;
   angle: number;
-  interval: number;
   power: number;
   coins: number;
   color: string;
+  shotCt: number;
   finished: boolean;
   active: boolean;
+  posHistoryI: number;
+  posHistory: Vec2[];
+  ms: number;
 }
 
 interface PlanetEntity extends Entity {
   color: string;
 }
 
+interface ShotArgs {
+  power: number;
+  ms: number;
+  angleDeg: number;
+}
+
 const gameStorage: Game[] = [];
+
+const gameGetPartial = (game: Game): Partial<Game> => {
+  const partialGame: Partial<Game> = {
+    ...game,
+    intervalMs: undefined,
+    intervalId: undefined,
+    broadcastMs: undefined,
+    broadcastId: undefined,
+    broadcastCt: undefined,
+  };
+  return partialGame;
+};
 
 const broadcastGameStatus = (game: Game, started?: boolean) => {
   game.players.map(playerGetById).forEach(player => {
@@ -51,25 +94,61 @@ const broadcastGameStatus = (game: Game, started?: boolean) => {
       sendIoMessage(
         player.socket,
         started ? getShared().G_S_GAME_STARTED : getShared().G_S_GAME_COMPLETE,
-        { game }
+        { game: gameGetPartial(game) }
       );
     }
   });
 };
-const broadcastGameData = (game: Game) => {
+const broadcastGameEntityData = (game: Game) => {
+  const broadcastData: GameBroadcast = {
+    entityMap: {},
+    id: game.id,
+    i: game.broadcastCt,
+    collisions: game.collisions,
+    round: game.round,
+  };
+  for (const i in game.entityMap) {
+    const entity = game.entityMap[i];
+    if (entity.mark) {
+      broadcastData.entityMap[i] = {
+        ...entity,
+        // name: undefined,
+        posHistory: undefined,
+        mark: undefined,
+      };
+      entity.mark = false;
+    }
+  }
+
+  // don't broadcast if there's nothing to update
+  if (
+    Object.keys(broadcastData.entityMap).length === 0 &&
+    !broadcastData.collisions.length
+  ) {
+    return;
+  }
+
+  console.log('Broadcast game data', game.broadcastCt);
+
+  game.broadcastCt++;
   game.players.map(playerGetById).forEach(player => {
     if (player?.socket) {
-      sendIoMessage(player.socket, getShared().G_S_GAME_DATA, { game });
+      sendIoMessage(player.socket, getShared().G_S_GAME_UPDATED, {
+        game: broadcastData,
+      });
     }
   });
 };
 
-const gameCreate = (lobbyId: string, playerIds: string[]): Game => {
+const gameCreate = (lobbyId: string, playerIds: string[]): Partial<Game> => {
   const game: Game = {
     id: randomId(),
+    courseName: 'test',
     lobbyId,
     width: 2019600000000,
     height: 2019600000000,
+    // width: getShared().fromPx(200),
+    // height: getShared().fromPx(200),
     entityMap: {},
     scorecard: playerIds.reduce((obj, id) => {
       obj[id] = [];
@@ -81,29 +160,150 @@ const gameCreate = (lobbyId: string, playerIds: string[]): Game => {
     planets: [],
     powerups: [],
     flags: [],
+    collisions: [],
     round: 0,
+    roundFinished: false,
+    intervalMs: 25,
+    intervalId: -1,
+    broadcastMs: 75,
+    broadcastId: -1,
+    broadcastCt: 0,
   };
 
   console.debug(`Game created ${gameToString(game)}`);
   gameStorage.push(game);
 
-  gameCreatePlanet(game, 1077120000000, 1432170666667, 1e32, 'red');
-  playerIds.forEach(id => {
+  const colors = shuffle(['blue', 'red', 'green', 'yellow']);
+  playerIds.forEach((id, i) => {
     const player = playerGetById(id);
     if (player) {
-      gameCreatePlayer(game, id, game.width / 2, game.height / 2, 'blue');
+      gameCreatePlayer(game, id, player.name, 0, 0, colors[i % colors.length]);
       player.gameId = game.id;
     }
   });
 
-  broadcastGameStatus(game, true);
+  gameLoadRound(game, 0);
 
-  return game;
+  broadcastGameStatus(game, true);
+  gameBeginSimulationLoop(game);
+  return gameGetPartial(game);
+};
+
+const gameLoadRound = (game: Game, round: number) => {
+  const course = courseGetByName(game.courseName);
+  if (course) {
+    const hole = course.holes[round];
+    game.planets = [];
+    game.flags = [];
+    if (hole) {
+      game.round = round;
+      hole.planets.forEach(p => {
+        gameCreatePlanet(game, p.x, p.y, p.r, p.color ?? 'red');
+      });
+      hole.flags.forEach(f => {
+        gameCreateFlag(game, f.x, f.y);
+      });
+      game.players
+        .map(id => getShared().getEntity(game, id))
+        .forEach((p: PlayerEntity, i) => {
+          p.x = hole.start[0] + i * p.r * 4;
+          p.y = hole.start[1];
+          p.active = false;
+          p.finished = false;
+          p.angle = 0;
+          p.posHistory = [[p.x, p.y]];
+          p.posHistoryI = 0;
+          p.shotCt = 0;
+        });
+    } else {
+      throw new Error(
+        `Course "${course.name}" does not have a hole for round: ${round}.`
+      );
+    }
+  }
+};
+
+const gameBeginSimulationLoop = (game: Game) => {
+  let now = +new Date();
+  let prevNow = now;
+  game.intervalId = setInterval(() => {
+    now = +new Date();
+    const nowDt = now - prevNow;
+    prevNow = now;
+
+    getShared().simulate(game, { nowDt });
+
+    game.collisions.forEach(([entityAId, entityBId]: [string, string]) => {
+      const entityA: PlayerEntity = getShared().getEntity(game, entityAId);
+      const entityB: Entity | undefined = getShared().getEntity(
+        game,
+        entityBId
+      );
+
+      console.log('COLLISION', entityA, entityB);
+      if (!entityB || entityB.type === 'planet') {
+        console.log('- hit a planet or out of bounds');
+        entityA.active = false;
+        entityA.shotCt--;
+        entityA.posHistoryI++;
+        gameDropPlayerEntityAtPreviousPosition(entityA);
+        return;
+      }
+
+      if (entityB?.type === 'flag') {
+        console.log('- hit a flag');
+        entityA.active = false;
+        entityA.finished = true;
+      }
+      entityA.mark = true;
+    });
+    const players = game.players.map(id => getShared().getEntity(game, id));
+
+    const isGameCompleted = !players
+      .map((playerEntity: PlayerEntity) => {
+        if (playerEntity.finished) {
+          return true;
+        }
+
+        if (playerEntity.active && now - playerEntity.t > playerEntity.ms) {
+          playerEntity.active = false;
+          playerEntity.posHistory.push([playerEntity.x, playerEntity.y]);
+          playerEntity.posHistoryI++;
+          playerEntity.mark = true;
+        }
+        return false;
+      })
+      .includes(false);
+
+    if (isGameCompleted && !game.roundFinished) {
+      console.log(`${gameToString(game)} round completed!`);
+      game.roundFinished = true;
+      players.forEach(p => {
+        game.scorecard[p.id].push(p.shotCt);
+      });
+      setTimeout(() => {
+        console.log('load round');
+        game.roundFinished = false;
+        gameLoadRound(game, 0);
+        broadcastGameStatus(game, true);
+      }, 3000);
+    }
+  }, game.intervalMs) as any;
+
+  game.broadcastId = setInterval(() => {
+    broadcastGameEntityData(game);
+  }, game.broadcastMs) as any;
+};
+
+const gameEndSimulationLoop = (game: Game) => {
+  clearInterval(game.intervalId);
+  clearInterval(game.broadcastId);
 };
 
 const gameDestroy = (game: Game) => {
   const ind = gameStorage.indexOf(game);
-  if (ind) {
+  gameEndSimulationLoop(game);
+  if (ind > -1) {
     gameStorage.splice(ind, 1);
     const players = game.players.map(playerGetById);
     players.forEach(player => {
@@ -118,6 +318,7 @@ const gameDestroy = (game: Game) => {
 const gameCreateEntity = (game: Game, id: string) => {
   const entity: Entity = {
     id,
+    type: '',
     x: 0,
     y: 0,
     r: getShared().fromPx(25),
@@ -127,6 +328,7 @@ const gameCreateEntity = (game: Game, id: string) => {
     ay: 0,
     t: 0,
     mass: 1,
+    mark: true,
   };
   game.entityMap[entity.id] = entity;
   return entity;
@@ -140,9 +342,11 @@ const gameCreatePlanet = (
   color: string
 ) => {
   const planet = gameCreateEntity(game, 'planet_' + randomId()) as PlanetEntity;
+  planet.type = 'planet';
   planet.mass = mass;
   planet.x = x;
   planet.y = y;
+  planet.r = 119680000000;
   planet.mass = mass;
   planet.color = color;
   console.debug('- PlanetEntity created: ' + JSON.stringify(planet, null, 2));
@@ -152,13 +356,15 @@ const gameCreatePlanet = (
 const gameCreatePlayer = (
   game: Game,
   id: string,
+  name: string,
   x: number,
   y: number,
   color: string
 ) => {
   const player = gameCreateEntity(game, id) as PlayerEntity;
+  player.type = 'player';
+  player.name = name;
   player.angle = 0;
-  player.interval = 5000;
   player.power = 1;
   player.coins = 0;
   player.color = color;
@@ -166,11 +372,25 @@ const gameCreatePlayer = (
   player.active = false;
   player.x = x;
   player.y = y;
+  player.shotCt = 0;
+  player.ms = 0;
+  player.posHistory = [[x, y]];
+  player.posHistoryI = 0;
   console.debug('- PlayerEntity created: ' + JSON.stringify(player, null, 2));
   game.players.push(id);
 };
 
-const gameHasActivePlayers = (game: Game) => {
+const gameCreateFlag = (game: Game, x: number, y: number) => {
+  const flag = gameCreateEntity(game, 'flag_' + randomId());
+  flag.type = 'flag';
+  flag.x = x;
+  flag.y = y;
+  flag.r = getShared().fromPx(30);
+  console.debug('- FlagEntity created: ' + JSON.stringify(flag, null, 2));
+  game.flags.push(flag.id);
+};
+
+const gameHasConnectedPlayers = (game: Game) => {
   const players = game.players.map(playerGetById);
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
@@ -181,10 +401,72 @@ const gameHasActivePlayers = (game: Game) => {
   return false;
 };
 
+const gameAssertPlayerEntityInGame = (
+  game: Game,
+  player: Player
+): PlayerEntity => {
+  const playerEntity = getShared().getEntity(game, player.id);
+  if (!playerEntity) {
+    throw new Error('PlayerEntity is not in this game.');
+  }
+  if (playerEntity.finished) {
+    throw new Error('PlayerEntity is finished.');
+  }
+  return playerEntity;
+};
+
+const gameAssertPlayerCanShoot = (playerEntity: PlayerEntity) => {
+  if (playerEntity.finished || playerEntity.active) {
+    throw new Error('Player is finished or active.');
+  }
+};
+
+const gameSetPlayerAngleDeg = (
+  game: Game,
+  player: Player,
+  angleDeg: number
+) => {
+  const playerEntity = gameAssertPlayerEntityInGame(game, player);
+  playerEntity.angle = angleDeg;
+  playerEntity.mark = true;
+};
+
+const gameShoot = (game: Game, player: Player, args: ShotArgs) => {
+  const playerEntity = gameAssertPlayerEntityInGame(game, player);
+  gameAssertPlayerCanShoot(playerEntity);
+
+  playerEntity.active = true;
+  const angleRad: number = getShared().toRadians(args.angleDeg);
+  playerEntity.vx = 55000 * Math.sin(angleRad);
+  playerEntity.vy = 55000 * Math.cos(angleRad);
+  playerEntity.angle = args.angleDeg;
+  playerEntity.shotCt++;
+  playerEntity.t = +new Date();
+  playerEntity.ms = args.ms;
+};
+
+const gameDropPlayerAtPreviousPosition = (game: Game, player: Player) => {
+  const playerEntity = gameAssertPlayerEntityInGame(game, player);
+  gameDropPlayerEntityAtPreviousPosition(playerEntity);
+};
+
+const gameDropPlayerEntityAtPreviousPosition = (playerEntity: PlayerEntity) => {
+  const i = playerEntity.posHistoryI;
+  const prevPos = playerEntity.posHistory[i - 1];
+  console.debug(`Drop player ${playerEntity.id} at previous position ${i - 1}`);
+  if (prevPos) {
+    playerEntity.posHistory.splice(i, 1);
+    playerEntity.posHistoryI--;
+    playerEntity.x = prevPos[0];
+    playerEntity.y = prevPos[1];
+    playerEntity.shotCt++;
+  }
+};
+
 const gameGetById = (id: string) => {
   return gameStorage.find(game => game.id === id);
 };
 
 const gameToString = (game: Game) => {
-  return `Game: id=${game.id}`;
+  return `Game { id=${game.id} }`;
 };

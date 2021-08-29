@@ -106,7 +106,7 @@ const lobbyGetById = (id: string) => {
 };
 
 const lobbyToString = (lobby: Lobby) => {
-  return `Lobby: ${lobby.name} (id=${
+  return `Lobby { ${lobby.name} (id=${
     lobby.id
-  }) {playerIds=${lobby.playerIds.join(',')}}`;
+  }) [playerIds=${lobby.playerIds.join(',')}]}`;
 };

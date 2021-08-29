@@ -26,6 +26,7 @@ registerIoRequest('disconnect', meta => {
     console.debug('Disconnected: ' + playerToString(player));
     playerDestroy(player);
     if (player.lobbyId) {
+      console.log(' - Player will be removed from lobby.');
       const lobby = lobbyGetById(player.lobbyId);
       if (lobby) {
         lobbyLeave(lobby, player);
@@ -33,7 +34,9 @@ registerIoRequest('disconnect', meta => {
     }
     if (player.gameId) {
       const game = gameGetById(player.gameId);
-      if (game && !gameHasActivePlayers(game)) {
+      console.log(' - Player will be removed from game.');
+      if (game && !gameHasConnectedPlayers(game)) {
+        console.log('game should be destroyed');
         gameDestroy(game);
       }
     }

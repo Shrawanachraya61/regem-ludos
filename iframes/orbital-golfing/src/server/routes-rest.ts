@@ -8,11 +8,13 @@ function registerRestRequest<T = Record<string, string>>(
   restRoutes[route] = (req: any, res: any) => {
     try {
       const socketId = req.headers.socketid;
+      const player = playerGetBySocketId(socketId);
+      console.debug('REST: ' + route, req.query);
       const result = cb(
         {
           req,
           res,
-          player: playerGetBySocketId(socketId),
+          player,
         },
         req.query
       );
@@ -78,14 +80,51 @@ registerRestRequest<{ lobbyId: string; playerName: string }>(
 
 registerRestRequest(getShared().G_R_LOBBY_LEAVE, meta => {
   const player = assertPlayer(meta);
-  if (player.lobbyId) {
-    const lobby = lobbyGetById(player.lobbyId);
-    if (lobby) {
-      lobbyLeave(lobby, player);
-    }
-    return { lobby };
-  }
-  return { lobby: undefined };
+  const lobby = playerAssertInLobby(player);
+  lobbyLeave(lobby, player);
+  return { lobby };
 });
+
+registerRestRequest<{ angleDeg: string }>(
+  getShared().G_R_GAME_SET_ANGLE,
+  (meta, searchParams) => {
+    const player = assertPlayer(meta);
+    const game = playerAssertInGame(player);
+
+    const angleDeg = parseInt(searchParams.angleDeg);
+
+    if ([angleDeg].map(isNaN).includes(true)) {
+      throw new Error('Cannot set angleDeg.  Malformed input args.');
+    }
+
+    gameSetPlayerAngleDeg(game, player, angleDeg);
+
+    return {};
+  }
+);
+
+registerRestRequest<{ angleDeg: string; ms: string; power: string }>(
+  getShared().G_R_GAME_SHOOT,
+  (meta, searchParams) => {
+    const player = assertPlayer(meta);
+    const game = playerAssertInGame(player);
+
+    const ms = parseInt(searchParams.ms);
+    const angleDeg = parseInt(searchParams.angleDeg);
+    const power = parseInt(searchParams.power);
+
+    if ([ms, angleDeg, power].map(isNaN).includes(true)) {
+      throw new Error('Cannot shoot.  Malformed input args.');
+    }
+
+    gameShoot(game, player, {
+      ms,
+      angleDeg,
+      power,
+    });
+
+    return {};
+  }
+);
 
 Object.assign(module.exports, restRoutes);

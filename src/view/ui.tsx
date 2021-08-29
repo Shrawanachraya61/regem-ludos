@@ -136,7 +136,9 @@ const App = () => {
         position: isPositionFixed ? 'fixed' : 'absolute',
         top: '0px',
         left: '0px',
-        width: Math.min(width, window.innerWidth),
+        width: isPositionFixed
+          ? window.innerWidth
+          : Math.min(width, window.innerWidth),
         height: Math.min(height, window.innerHeight),
       }}
     >

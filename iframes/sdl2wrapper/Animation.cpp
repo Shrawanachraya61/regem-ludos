@@ -45,7 +45,7 @@ Animation& Animation::operator=(const Animation& a) {
 bool Animation::isInitialized() const { return sprites.size() > 0; }
 
 const std::string Animation::getCurrentSpriteName() const {
-  if (spriteIndex >= 0 && spriteIndex < sprites.size()) {
+  if (spriteIndex < sprites.size()) {
     const std::string spriteName = sprites[spriteIndex].first;
     if (Store::spriteExists(spriteName)) {
       return spriteName;

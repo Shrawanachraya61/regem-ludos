@@ -5,6 +5,10 @@ const hideEverything = () => {
   hideElement(getLobbyPane());
   hideElement(getGameUiPane());
   hideElement(getGame());
+  hideElement(getGameUiTopPane());
+  hideElement(getGameUiMidPane());
+
+  getCenter().style.height = 'unset';
 };
 
 const showLoading = () => {
@@ -30,5 +34,8 @@ const showError = () => {
 const showGame = () => {
   hideEverything();
   showElement(getGameUiPane());
-  showElement(getGame());
+  showElement(getGameUiTopPane());
+  showElement(getGame(), true);
+
+  getCenter().style.height = '100%';
 };

@@ -68,6 +68,78 @@ const renderGameUi = () => {
     return;
   }
 
+  const myEntity = getMyPlayerEntity(gameData);
+
+  if (uiState.entityActive || myEntity.finished) {
+    getGameUiPane().style.display = 'none';
+  } else {
+    getGameUiPane().style.display = 'block';
+  }
+
+  const shootButton: any = getShootButton();
+  shootButton.onclick = () => {
+    sendRequestToShoot();
+    renderUi();
+  };
+
+  const angleInput: any = getAngleInput();
+  angleInput.oninput = ev => {
+    const value = Number(ev.target.value);
+    setLocalPlayerAngle(value);
+    getAngleLabel().innerHTML = 'Angle ' + value;
+    setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
+  };
+  angleInput.onchange = () => {
+    sendRequestToSetAngle();
+  };
+
+  // const powerInput: any = getPowerInput();
+  setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
+
+  const gameUiTop = getGameUiTopPane();
+  setHTML(gameUiTop, '');
+
+  const colorInfoLabel = createElement('div');
+  setHTML(
+    colorInfoLabel,
+    `You are the <span style="color: light${
+      myEntity.color
+    }">${myEntity.color.toUpperCase()}</span> Player.`
+  );
+  colorInfoLabel.className = 'game-line';
+  gameUiTop.appendChild(colorInfoLabel);
+
+  const shotInfoLabel = createElement('div');
+  setHTML(
+    shotInfoLabel,
+    myEntity.finished
+      ? 'Finished!'
+      : `You are on shot number ${myEntity.shotCt + 1}.`
+  );
+  gameUiTop.appendChild(shotInfoLabel);
+
+  const centerLink = createElement('div');
+  setHTML(centerLink, 'Center on player.');
+  centerLink.className = 'link game-line';
+  centerLink.onclick = () => {
+    centerOnPlayer();
+  };
+  gameUiTop.appendChild(centerLink);
+
+  const gameUiMid = getGameUiMidPane();
+  setHTML(gameUiMid, '');
+  if (myEntity.finished) {
+    showElement(gameUiMid, true);
+  } else {
+    hideElement(gameUiMid);
+  }
+
+  const shotResultLabel = createElement('div');
+  setHTML(shotResultLabel, `You shot a ${myEntity.shotCt}.`);
+  shotResultLabel.style['font-size'] = '42px';
+
+  gameUiMid.appendChild(shotResultLabel);
+
   console.log('RENDER GAME UI', gameData);
 };
 
@@ -95,6 +167,7 @@ const renderUi = () => {
     case 'game': {
       showGame();
       renderGameUi();
+      panZoom();
     }
   }
 };

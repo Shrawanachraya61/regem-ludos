@@ -30,12 +30,14 @@ interface EntityData {
 }
 
 interface PlayerEntityData extends EntityData {
+  name: string;
   angle: number;
   interval: number;
   power: number;
   coins: number;
   color: string;
   finished: boolean;
+  shotCt: number;
   active: boolean;
 }
 
@@ -46,3 +48,10 @@ interface PlanetEntityData extends EntityData {
 let currentGameData: GameData | null = null;
 const getGameData = () => currentGameData;
 const setGameData = (data: GameData | null) => (currentGameData = data);
+
+const getMyPlayerEntity = (gameData: GameData): PlayerEntityData => {
+  return getShared().getEntity(gameData, getPlayerId());
+};
+
+const copyGameData = (gameData: GameData) =>
+  JSON.parse(JSON.stringify(gameData));
