@@ -23,6 +23,7 @@ import * as floor2GuestroomHallway from 'map/floor2-guestroom-hallway.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
 import * as floor2North from 'map/floor2-north.json';
 import * as floor2PrepRoom from 'map/floor2-preproom.json';
+import * as floor2Sports from 'map/floor2-sports.json';
 
 const rooms: Record<string, Room> = ((window as any).rooms = {});
 
@@ -43,6 +44,7 @@ const overworldToRoom = {
   floor2Cafeteria,
   floor2North,
   floor2PrepRoom,
+  floor2Sports,
 
   test3,
 
