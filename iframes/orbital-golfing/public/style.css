@@ -34,6 +34,10 @@ input[type='text'] {
   padding: 7px 8px;
   width: 120px;
 }
+input[type='range'] {
+  padding: 7px 8px;
+  width: 100%;
+}
 h4 {
   text-align: center;
   margin: 0;
@@ -61,11 +65,14 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  pointer-events: none;
 }
 .center {
   width: 500px;
+  position: relative;
 }
 .pane {
+  pointer-events: all;
   border: 1px solid #dedede;
   background: #333;
   margin: 8px 2px;
@@ -92,6 +99,14 @@ h2 {
   margin-right: 8px;
   color: cyan;
 }
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: cyan;
+}
+.game-line {
+  margin: 4px;
+}
 .primary {
   background: darkgreen;
 }
@@ -102,10 +117,44 @@ h2 {
   background: darkred;
 }
 #game {
-  background: #333;
-  width: 4000px;
-  height: 4000px;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 8000px;
+  height: 8000px;
+  /* transform: translate(calc(-2000px + 1500px/2), calc(-2000px + 1200px/2)); */
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  background-image: url(clouds.png);
+  cursor: grab;
+}
+#game-ui {
+  position: absolute;
+  width: calc(100% - 38px);
+  bottom: 0px;
+}
+#game-ui-top {
+  position: absolute;
+  width: calc(100% - 38px);
+  top: 0px;
+  pointer-events: all;
+  padding: 8px;
+  text-align: center;
+}
+#game-ui-mid {
+  position: absolute;
+  top: 0px;
+  width: calc(100% - 38px);
+  height: 100%;
+  display: flex;
+  /* pointer-events: all; */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 #canv {
   border: 1px solid white;
+  box-sizing: border-box;
+  opacity: 0.75;
 }

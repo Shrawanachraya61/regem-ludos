@@ -181,11 +181,11 @@ void Window::setCurrentFont(const std::string& fontName, const int sz) {
 const std::string& Window::getCurrentFontName() const {
   return currentFontName;
 }
-const int Window::getCurrentFontSize() const { return currentFontSize; }
+int Window::getCurrentFontSize() const { return currentFontSize; }
 Uint64 Window::staticGetNow() { return Window::now; }
-const double Window::getNow() const { return SDL_GetPerformanceCounter(); }
-const double Window::getDeltaTime() const { return deltaTime; }
-const double Window::getFrameRatio() const {
+double Window::getNow() const { return SDL_GetPerformanceCounter(); }
+double Window::getDeltaTime() const { return deltaTime; }
+double Window::getFrameRatio() const {
   double sum = 0;
   for (double r : pastFrameRatios) {
     sum += r;
@@ -207,7 +207,7 @@ void Window::setAnimationFromDefinition(const std::string& name,
 }
 
 const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
-  SDL_Color c = {r, g, b};
+  SDL_Color c = {r, g, b, 255};
   return c;
 }
 

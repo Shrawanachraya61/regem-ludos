@@ -1,3 +1,8 @@
+// labels
+const getAngleLabel = () => {
+  return getElement('game-angle-label');
+};
+
 // buttons
 const getCreateGameButton = () => {
   return getElement('menu-create');
@@ -8,10 +13,16 @@ const getLobbyStartButton = () => {
 const getLobbyLeaveButton = () => {
   return getElement('lobby-leave');
 };
+const getShootButton = () => {
+  return getElement('game-shoot');
+};
 
 // inputs
 const getPlayerNameInput = () => {
   return getElement('menu-name');
+};
+const getAngleInput = () => {
+  return getElement('game-angle');
 };
 
 // panes
@@ -39,6 +50,12 @@ const getLobbyName = () => {
 const getGameUiPane = () => {
   return getElement('game-ui');
 };
+const getGameUiTopPane = () => {
+  return getElement('game-ui-top');
+};
+const getGameUiMidPane = () => {
+  return getElement('game-ui-mid');
+};
 
 //game
 const getGame = () => {
@@ -46,4 +63,10 @@ const getGame = () => {
 };
 const getCanvas = () => {
   return getElement('canv');
+};
+const getCtx = (): CanvasRenderingContext2D => {
+  return (getCanvas() as any).getContext('2d');
+};
+const getCenter = () => {
+  return getElement('center');
 };

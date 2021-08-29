@@ -1,6 +1,6 @@
 SDL2_WRAPPER_CODE=Animation.cpp AssetLoader.cpp Events.cpp SDL2Includes.cpp Sprite.cpp Store.cpp Timer.cpp Gauge.cpp Sound.cpp Window.cpp
 SDL2_WRAPPER_SRC=$(SDL2_WRAPPER_CODE:.cpp=.o)
-FLAGS=-g -Wall -std=c++17
+FLAGS=-g -Wall -Wextra -Wno-unused-parameter -std=c++17
 
 ifeq ($(OS),Windows_NT)
   LIBS= -mconsole -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer

@@ -66,11 +66,11 @@ public:
   Events& getEvents();
   void setCurrentFont(const std::string& fontName, const int sz);
   const std::string& getCurrentFontName() const;
-  const int getCurrentFontSize() const;
+  int getCurrentFontSize() const;
   static Uint64 staticGetNow();
-  const double getNow() const;
-  const double getDeltaTime() const;
-  const double getFrameRatio() const;
+  double getNow() const;
+  double getDeltaTime() const;
+  double getFrameRatio() const;
 
   void setAnimationFromDefinition(const std::string& name,
                                   Animation& anim) const;

@@ -9,6 +9,7 @@ import {
   characterGetSize,
 } from 'model/character';
 import { worldToCanvasCoords4by3 } from 'utils';
+import { useEffect } from 'preact/hooks';
 
 interface ICharacterFollowerProps extends IntrinsicProps {
   ch: Character;
@@ -23,13 +24,28 @@ const Root = style('div', () => {
   };
 });
 
+const canvasContainer = document.getElementById('canvas-container');
+let rect = canvasContainer?.getBoundingClientRect();
+
 const CharacterFollower = (props: ICharacterFollowerProps): h.JSX.Element => {
   const { renderKey, ch, style, ...rest } = props;
   useRenderLoop(renderKey);
 
+  useEffect(() => {
+    rect = canvasContainer?.getBoundingClientRect();
+  }, []);
+
   const [x, y, z] = characterGetPosTopLeft(ch);
   const [spriteWidth, spriteHeight] = characterGetSize(ch);
-  const [resultX, resultY] = worldToCanvasCoords4by3(x, y, z);
+  let [resultX, resultY] = worldToCanvasCoords4by3(x, y, z);
+
+  const canvasHeight = 512 * 2;
+  // const canvasWidth = 1366;
+  if (window.innerHeight < canvasHeight) {
+    resultX += rect?.left ?? 0;
+    resultY += 0;
+  }
+
   return (
     <Root
       style={{

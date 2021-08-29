@@ -12,12 +12,15 @@ console.shared = new (class {
   G_R_LOBBY_JOIN = 'lobby-join';
   G_R_LOBBY_LEAVE = 'lobby-leave';
   G_R_LOBBY_START = 'lobby-start';
+  G_R_GAME_SET_ANGLE = 'game-angle';
+  G_R_GAME_SHOOT = 'game-shoot';
 
   G_S_CONNECTED = 'game-connected';
   G_S_LOBBIES_UPDATED = 'lobbies-updated';
   G_S_GAME_STARTED = 'game-started';
   G_S_GAME_COMPLETED = 'game-completed';
   G_S_GAME_UPDATED = 'game-updated';
+  G_S_GAME_SCORE_UPDATED = 'game-score';
 
   normalize(x, A, B, C, D) {
     return C + ((x - A) * (D - C)) / (B - A);
@@ -28,13 +31,47 @@ console.shared = new (class {
   collidesCir(dx, dy, r1, r2) {
     return this.dist(dx, dy) <= r1 + r2;
   }
+  toRadians(deg) {
+    return (Math.PI * deg) / 180;
+  }
   createCollision(self, other) {
-    return [self.id, other.id];
+    return [self.id, other?.id ?? ''];
+  }
+  isInBounds(x, y, width, height, gameData) {
+    const { width: worldWidth, height: worldHeight } = gameData;
+    return (
+      x - width >= -worldWidth &&
+      x + width <= worldWidth &&
+      y - height >= -worldHeight &&
+      y + height <= worldHeight
+    );
   }
   getEntity(gameData, entityId) {
     return gameData.entityMap[entityId];
   }
-
+  getHeadingTowards(myX, myY, x, y) {
+    let lenY = y - myY;
+    let lenX = x - myX;
+    const { sqrt, asin } = Math;
+    let hyp = sqrt(lenX * lenX + lenY * lenY);
+    let ret = 0;
+    if (y >= myY && x >= myX) {
+      ret = (asin(lenY / hyp) * 180) / Math.PI + 90;
+    } else if (y >= myY && x < myX) {
+      ret = (asin(lenY / -hyp) * 180) / Math.PI - 90;
+    } else if (y < myY && x > myX) {
+      ret = (asin(lenY / hyp) * 180) / Math.PI + 90;
+    } else {
+      ret = (asin(-lenY / hyp) * 180) / Math.PI - 90;
+    }
+    if (ret >= 360) {
+      ret = 360 - ret;
+    }
+    if (ret < 0) {
+      ret = 360 + ret;
+    }
+    return isNaN(ret) ? 0 : ret;
+  }
   fromPx(v) {
     return v / this.G_SCALE;
   }
@@ -58,6 +95,7 @@ console.shared = new (class {
     let timeStep = (24 * 3600 * 2 * dt) / this.G_FRAME_MS; // two days / G_FRAME_MS
     for (let i = 0; i < bodies.length; i++) {
       let body = bodies[i];
+      body.mark = true;
       let totalFx = 0,
         totalFy = 0;
       for (let j = 0; j < gravityBodies.length; j++) {
@@ -128,13 +166,26 @@ console.shared = new (class {
     const bodiesAffectedByGravityBodies = gameData.players
       .map(id => this.getEntity(gameData, id))
       .filter(p => p.active);
+    const gravityCollidables = gameData.flags.map(id =>
+      this.getEntity(gameData, id)
+    );
 
-    let collisions = this.applyGravity(
+    // console.log('apply gravity', bodiesAffectedByGravityBodies, gravityBodies);
+
+    gameData.collisions = this.applyGravity(
       bodiesAffectedByGravityBodies,
       gravityBodies,
-      [],
+      gravityCollidables,
       nowDt
     );
+
+    bodiesAffectedByGravityBodies.forEach(p => {
+      if (!this.isInBounds(p.x, p.y, p.r, p.r, currentGameData)) {
+        const c = this.createCollision(p, '');
+        console.log('BOUNDS COLLISION', c);
+        gameData.collisions.push(c);
+      }
+    });
     // gameData.collisions = gameData.collisions.concat(collisions);
     // G_applyFields(projectileList, gameData);
     // G_applyShockwaves(shockwaveList, gameData);

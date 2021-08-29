@@ -10,6 +10,10 @@ const hideElement = (elem: HTMLElement) => {
   elem.style.display = 'none';
 };
 
+const createElement = (name: string) => {
+  return document.createElement(name);
+};
+
 const setHTML = (elem: HTMLElement, html: string) => {
   elem.innerHTML = html;
 };
