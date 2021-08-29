@@ -133,7 +133,7 @@ AnimationDefinition& Store::createAnimationDefinition(const std::string& name,
   return *anims[name];
 }
 void Store::createSound(const std::string& name, const std::string& path) {
-  if (Window::getGlobalWindow().soundForcedDisabled) {
+  if (Window::getGlobalWindow().soundForcedDisabled || !Window::soundCanBeLoaded) {
     std::cout << "[SDL2Wrapper] WARNING sound load skipped due to force sound "
                  "disabled "
                  "exists: '" +
@@ -161,7 +161,7 @@ void Store::createSound(const std::string& name, const std::string& path) {
   soundInds[name] = 0;
 }
 void Store::createMusic(const std::string& name, const std::string& path) {
-  if (Window::getGlobalWindow().soundForcedDisabled) {
+  if (Window::getGlobalWindow().soundForcedDisabled || !Window::soundCanBeLoaded) {
     return;
   }
 

@@ -67,6 +67,7 @@ int Window::instanceCount = 0;
 Uint64 Window::now = 0;
 bool Window::soundEnabled = true;
 int Window::soundPercent = 100;
+bool Window::soundCanBeLoaded = true;
 const double Window::targetFrameMS = 16.0;
 Window* Window::globalWindow = nullptr;
 
@@ -146,6 +147,7 @@ void Window::createWindow(const std::string& title, const int w, const int h) {
       Logger(ERROR) << "SDL_mixer could not initialize! "
                     << std::string(Mix_GetError()) << std::endl;
       soundForcedDisabled = true;
+      Window::soundCanBeLoaded = false;
     }
   }
 
@@ -212,7 +214,7 @@ const SDL_Color Window::makeColor(Uint8 r, Uint8 g, Uint8 b) const {
 void Window::disableSound() { Window::soundEnabled = false; }
 void Window::enableSound() { Window::soundEnabled = true; }
 void Window::playSound(const std::string& name) {
-  if (soundForcedDisabled || !soundEnabled) {
+  if (soundForcedDisabled || !soundEnabled || !Window::soundCanBeLoaded) {
     return;
   }
 
@@ -234,7 +236,7 @@ void Window::stopSound(const std::string& name) {
   }
 }
 void Window::playMusic(const std::string& name) {
-  if (soundForcedDisabled) {
+  if (soundForcedDisabled || !Window::soundCanBeLoaded) {
     return;
   }
 

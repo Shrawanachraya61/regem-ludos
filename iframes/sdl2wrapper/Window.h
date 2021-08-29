@@ -55,6 +55,7 @@ public:
   static const double targetFrameMS;
   static bool soundEnabled;
   static int soundPercent;
+  static bool soundCanBeLoaded;
   static Window* globalWindow;
   static Window& getGlobalWindow();
 
