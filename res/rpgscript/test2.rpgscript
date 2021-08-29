@@ -353,4 +353,5 @@ Shopkeep: "<cascade-letters>......"
 +panCameraBackToPlayer(500,false)
 Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
 Shopkeep: "I have <shake>no idea</> what she wants!</>"
-// A change... =c
+
+#
