@@ -18,7 +18,12 @@ interface GameDataUpdatedResponse {
     scorecard: ScorecardData;
     entityMap: Record<string, EntityData>;
     round: number;
+    collisions: [string, string][];
   };
+}
+
+interface GamePlayerDisconnectedResponse {
+  playerId: string;
 }
 
 const registerSocketListener = function <T>(
@@ -60,12 +65,12 @@ const connectSocket = () => {
       setSocketId(payload.socketId);
       setPlayerId(payload.id);
 
-      await createLobby("Player's Game", 'Player');
+      // await createLobby("Player's Game", 'Player');
 
-      // setUiState({
-      //   activePane: 'menu',
-      // });
-      // renderUi();
+      setUiState({
+        activePane: 'menu',
+      });
+      renderUi();
     }
   );
 
@@ -83,16 +88,16 @@ const connectSocket = () => {
       console.log('game started', payload);
       const gameData = payload.game;
       setGameData(gameData);
-      setUiState({
-        lobbyId: '',
-      });
       const canvas: any = getCanvas();
       canvas.width = gameData.width * getShared().G_SCALE * 2;
       canvas.height = gameData.height * getShared().G_SCALE * 2;
-      console.log('set canvas size', canvas.width, canvas.height);
       setUiState({
+        lobbyId: '',
         activePane: 'game',
       });
+      playSound('start');
+      setLocalPlayerAngle(0, true);
+      setLocalPlayerPowerIndex(1, true);
       centerOnPlayer();
       renderUi();
       startRenderLoop();
@@ -102,19 +107,77 @@ const connectSocket = () => {
   registerSocketListener(
     shared.G_S_GAME_UPDATED,
     (payload: GameDataUpdatedResponse) => {
-      console.log('Update game data', payload.game);
+      // console.log('Update game data', payload.game);
       const gameData = getGameData();
       if (gameData) {
-        for (const i in payload.game.entityMap) {
-          gameData.entityMap[i] = payload.game.entityMap[i];
-        }
+        pushGameState(payload.game as any);
+      }
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_ROUND_COMPLETED,
+    (payload: GameStartedResponse) => {
+      console.log('Round completed', payload.game);
+      const gameData = getGameData();
+      if (gameData) {
+        gameData.scorecard = payload.game.scorecard;
         const myEntity = getMyPlayerEntity(gameData);
-        if (!myEntity.active && getUiState().entityActive) {
-          console.log('reset entity active');
-          setUiState({
-            entityActive: false,
-          });
-          renderUi();
+        setUiState({
+          entityActive: false,
+          roundCompleted: true,
+        });
+        renderUi();
+      }
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_ROUND_STARTED,
+    (payload: GameStartedResponse) => {
+      console.log('Round started', payload.game);
+      const gameData = payload.game;
+      setGameData(gameData);
+      const canvas: any = getCanvas();
+      canvas.width = gameData.width * getShared().G_SCALE * 2;
+      canvas.height = gameData.height * getShared().G_SCALE * 2;
+      setUiState({
+        entityActive: false,
+        roundCompleted: false,
+      });
+      setLocalPlayerAngle(0, true);
+      setLocalPlayerPowerIndex(1, true);
+      renderUi();
+      centerOnPlayer();
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_COMPLETED,
+    (payload: GameStartedResponse) => {
+      console.log('game completed', payload);
+      const gameData = getGameData();
+      if (gameData) {
+        gameData.scorecard = payload.game.scorecard;
+      }
+      playSound('end');
+      setUiState({
+        activePane: 'summary',
+      });
+      renderUi();
+    }
+  );
+
+  registerSocketListener(
+    shared.G_S_GAME_PLAYER_DISCONNECTED,
+    (payload: GamePlayerDisconnectedResponse) => {
+      console.log('player disconnected', payload);
+      const gameData = getGameData();
+      if (gameData) {
+        const discPlayerId = payload.playerId;
+        const entity = getShared().getEntity(gameData, discPlayerId);
+        if (entity) {
+          (entity as PlayerEntityData).disconnected = true;
         }
       }
     }

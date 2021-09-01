@@ -41,13 +41,13 @@ const drawCircle = (x: number, y: number, r: number, color: string) => {
   ctx.fill();
 };
 
-const drawCircleOutline = (x: number, y: number, r: number, color: string) => {
-  const ctx = getCtx();
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, 2 * PI, false);
-  ctx.strokeStyle = color;
-  ctx.stroke();
-};
+// const drawCircleOutline = (x: number, y: number, r: number, color: string) => {
+//   const ctx = getCtx();
+//   ctx.beginPath();
+//   ctx.arc(x, y, r, 0, 2 * PI, false);
+//   ctx.strokeStyle = color;
+//   ctx.stroke();
+// };
 
 interface TextParams {
   font: string;
@@ -88,22 +88,22 @@ const drawText = (
   }
 };
 
-const drawPoly = (pos, points, color) => {
-  const ctx = getCtx();
-  ctx.save();
-  ctx.beginPath();
-  ctx.translate(pos.x, pos.y);
-  ctx.fillStyle = color;
-  const firstPoint = points[0];
-  ctx.moveTo(firstPoint.x, firstPoint.y);
-  for (let i = 1; i < points.length; i++) {
-    const point = points[i];
-    ctx.lineTo(point.x, point.y);
-  }
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-};
+// const drawPoly = (pos, points, color) => {
+//   const ctx = getCtx();
+//   ctx.save();
+//   ctx.beginPath();
+//   ctx.translate(pos.x, pos.y);
+//   ctx.fillStyle = color;
+//   const firstPoint = points[0];
+//   ctx.moveTo(firstPoint.x, firstPoint.y);
+//   for (let i = 1; i < points.length; i++) {
+//     const point = points[i];
+//     ctx.lineTo(point.x, point.y);
+//   }
+//   ctx.closePath();
+//   ctx.fill();
+//   ctx.restore();
+// };
 
 const drawRectangle = (
   x: number,
@@ -143,8 +143,8 @@ const drawPlayers = (players: PlayerEntityData[]) => {
   const G_SCALE = getShared().G_SCALE;
   for (let i = 0; i < players.length; i++) {
     const playerEntity = players[i];
-    const { x, y, r, color, finished } = playerEntity;
-    if (finished) {
+    const { x, y, r, color, finished, disconnected } = playerEntity;
+    if (finished || disconnected) {
       continue;
     }
     let angleDeg = playerEntity.angle;
@@ -158,7 +158,7 @@ const drawPlayers = (players: PlayerEntityData[]) => {
     const sz2 = sz / 2;
 
     drawCircle(px, py, r * G_SCALE, color);
-    drawRectangle(px - sz2, py - sz2, sz, sz, 'blue');
+    drawRectangle(px - sz2, py - sz2, sz, sz, getColor(color, true));
     drawRectangle(
       px - 5,
       py - 30,
@@ -172,12 +172,21 @@ const drawPlayers = (players: PlayerEntityData[]) => {
         py - Math.cos(getShared().toRadians(angleDeg))
       )
     );
-    drawCircle(px, py, sz2 / 1.5, 'lightblue');
+    drawCircle(px, py, sz2 / 1.5, getColor(color));
     drawText(playerEntity.name, px, py - sz - 32, { size: 32 });
   }
 };
 
+let lastFlagTimestamp = +new Date();
+let flagMode = 0;
 const drawFlags = (flags: EntityData[]) => {
+  const timestamp = +new Date();
+
+  if (timestamp - lastFlagTimestamp > 500) {
+    flagMode = (flagMode + 1) % 2;
+    lastFlagTimestamp = timestamp;
+  }
+
   const G_SCALE = getShared().G_SCALE;
   for (let i = 0; i < flags.length; i++) {
     const flagEntity = flags[i];
@@ -186,7 +195,7 @@ const drawFlags = (flags: EntityData[]) => {
 
     const radius = r * G_SCALE;
 
-    drawCircle(px, py, radius, 'lightblue');
+    drawCircle(px, py, radius, 'orange');
     drawCircle(px, py, radius - 4, 'white');
 
     drawRectangle(
@@ -202,8 +211,13 @@ const drawFlags = (flags: EntityData[]) => {
       const y = py - radius;
       const w = 40;
       const h = 30;
-      drawRectangle(x, y, w, h, 'black');
-      drawRectangle(x + 2, y + 2, w - 4, h - 4, 'lightblue');
+      if (flagMode === 1) {
+        drawRectangle(x, y, w, h, 'black');
+        drawRectangle(x + 2, y + 2, w - 4, h - 4, 'orange');
+      } else {
+        drawRectangle(x, y, w, h, 'black', 359);
+        drawRectangle(x + 2, y + 2, w - 4, h - 4, 'orange', 359);
+      }
     }
 
     drawText('Shoot here!', px, py - radius - 32, { size: 32 });
@@ -219,11 +233,9 @@ const drawShotPreview = (preview: Point[]) => {
 
 const drawSimulation = (gameData: GameData) => {
   const { players, planets, flags } = gameData;
-  // const history = G_model_getRenderHistory();
 
   const ctx = getCtx();
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   updateGlobalFrameTime();
 
@@ -235,58 +247,4 @@ const drawSimulation = (gameData: GameData) => {
   if (!myEntity.active && !myEntity.finished) {
     drawShotPreview(getShotPreview());
   }
-
-  // render previous server states
-  // for (let i = 0; i < history.length; i++) {
-  //   const historyGameData = history[i];
-  //   const { projectiles } = history[i];
-  //   for (let j = 0; j < projectiles.length; j++) {
-  //     const projectileId = projectiles[j];
-  //     const projectile = G_getEntityFromEntMap(projectileId, historyGameData);
-
-  //     if (projectile.meta.type === G_action_move) {
-  //       continue;
-  //     }
-
-  //     const { px: x, py: y, r, meta } = projectile;
-  //     const { x: px, y: py } = G_view_worldToPx(x, y);
-  //     const player = G_model_getPlayer(meta.player, gameData);
-  //     view_drawCircle(
-  //       px,
-  //       py,
-  //       r * G_SCALE,
-  //       G_view_getColor('light', player.color)
-  //     );
-  //   }
-  // }
-
-  // G_view_drawProjectiles(
-  //   projectiles
-  //     .map(id => G_getEntityFromEntMap(id, gameData))
-  //     .filter(p => p.type !== G_action_move),
-  //   gameData
-  // );
-
-  // DEBUG: Draw shockwave hit circles
-  // if (G_DEBUG) {
-  //   for (let i in gameData.entMap) {
-  //     const entity = gameData.entMap[i];
-  //     if (entity.type === G_res_shockwave) {
-  //       const { x, y, r } = entity;
-  //       const { x: px, y: py } = G_view_worldToPx(x, y);
-  //       view_drawCircle(px, py, r * G_SCALE, 'orange');
-  //     }
-  //   }
-  // }
-
-  // // DEBUG: Draw resource hit-circles
-  // if (G_DEBUG) {
-  //   for (let i = 0; i < gameData.resources.length; i++) {
-  //     const resourceId = gameData.resources[i];
-  //     const res = G_getEntityFromEntMap(resourceId, gameData);
-  //     const { x, y, r } = res;
-  //     const { x: px, y: py } = G_view_worldToPx(x, y);
-  //     view_drawCircle(px, py, r * G_SCALE, 'white');
-  //   }
-  // }
 };

@@ -82,7 +82,6 @@ import {
   pushEmptyKeyHandler,
   pushKeyHandler,
 } from 'controller/events';
-import HudGamepad from 'lib/hud-gamepad';
 import { pause, unpause } from './loop';
 import { getImageDataScreenshot } from 'view/draw';
 import { getCanvas } from 'model/canvas';
@@ -644,26 +643,24 @@ export const updateOverworld = (overworld: Overworld): void => {
     overworld.collidingTriggerActivators;
   overworld.collidingTriggerActivators = getCurrentlyCollidedTriggerActivators();
 
-  const { 'x-dir': xDir, 'y-dir': yDir } = HudGamepad.GamePad.observe();
-
   let isMoving = false;
   let vx = 0;
   let vy = 0;
   if (getKeyUpdateEnabled()) {
-    if (isKeyDown('ArrowLeft') || xDir < 0) {
+    if (isKeyDown('ArrowLeft')) {
       isMoving = true;
       vx -= 1;
       vy += 1;
-    } else if (isKeyDown('ArrowRight') || xDir > 0) {
+    } else if (isKeyDown('ArrowRight')) {
       isMoving = true;
       vx += 1;
       vy -= 1;
     }
-    if (isKeyDown('ArrowUp') || yDir < 0) {
+    if (isKeyDown('ArrowUp')) {
       isMoving = true;
       vx -= 1;
       vy -= 1;
-    } else if (isKeyDown('ArrowDown') || yDir > 0) {
+    } else if (isKeyDown('ArrowDown')) {
       isMoving = true;
       vx += 1;
       vy += 1;

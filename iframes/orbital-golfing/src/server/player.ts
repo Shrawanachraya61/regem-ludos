@@ -12,10 +12,8 @@ const playerStorage: Player[] = [];
 const playerCreate = (socket: Socket, name?: string): Player => {
   const existingPlayer = playerGetBySocketId(socket.id);
   if (existingPlayer) {
-    throw new Error(
-      'Cannot create Player. Other Player exists: ' +
-        playerToString(existingPlayer)
-    );
+    const plStr = playerToString(existingPlayer);
+    throw new Error(`Cannot create Player. Other Player exists: ${plStr}`);
   }
   const id = randomId();
   const player = {
@@ -33,13 +31,12 @@ const playerCreate = (socket: Socket, name?: string): Player => {
 
 const playerDestroy = (player: Player) => {
   const ind = playerStorage.indexOf(player);
+  const plStr = playerToString(player);
   if (ind > -1) {
-    console.debug(`Player destroyed ${playerToString(player)}`);
+    console.debug(`Player destroyed ${plStr}`);
     playerStorage.splice(ind, 1);
   } else {
-    throw new Error(
-      'Cannot destroy Player. No Player exists:' + playerToString(player)
-    );
+    throw new Error(`Cannot destroy Player. No Player exists: ${plStr}`);
   }
 };
 
@@ -55,11 +52,10 @@ const playerSetName = (player: Player, name: string) => {
     throw new Error('Cannot set player name.  Length is greater than 12.');
   }
   player.name = escapeString(name);
-  // console.debug(`Player set name ${playerToString(player)}`);
 };
 
 const playerToString = (player: Player) => {
-  return `Player { name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}]}`;
+  return `Player { name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}] }`;
 };
 
 const playerAssertInLobby = (player: Player) => {

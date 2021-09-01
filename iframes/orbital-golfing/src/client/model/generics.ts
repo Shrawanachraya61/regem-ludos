@@ -16,7 +16,23 @@ const setPlayerId = (id: string) => (genericPlayerId = id);
 
 let localPlayerAngle = 0;
 const getLocalPlayerAngle = () => localPlayerAngle;
-const setLocalPlayerAngle = (a: number) => (localPlayerAngle = a);
+const setLocalPlayerAngle = (a: number, updateInput?: boolean) => {
+  localPlayerAngle = a;
+  if (updateInput) {
+    const elem: any = getAngleInput();
+    elem.value = a;
+  }
+};
+
+let localPlayerPowerIndex = 0;
+const getLocalPlayerPower = () => POWER_MULTIPLIERS[localPlayerPowerIndex] ?? 1;
+const setLocalPlayerPowerIndex = (v: number, updateInput?: boolean) => {
+  localPlayerPowerIndex = v;
+  if (updateInput) {
+    const elem: any = getPowerInput();
+    elem.value = v;
+  }
+};
 
 let shotPreview: Point[] = [];
 const getShotPreview = () => shotPreview;

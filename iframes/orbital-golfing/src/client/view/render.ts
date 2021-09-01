@@ -6,6 +6,7 @@ const LobbyListItem = (lobby: LobbyState): HTMLElement => {
   button.className = 'secondary';
   button.innerText = `${lobby.name} (${lobby.players.length})`;
   button.onclick = () => {
+    playSound('click');
     joinLobby(lobby.id, uiState.name);
   };
   div.appendChild(button);
@@ -14,9 +15,16 @@ const LobbyListItem = (lobby: LobbyState): HTMLElement => {
 const renderLobbyList = (lobbies: LobbyState[]) => {
   const lobbyList = getLobbyListPane();
   setHTML(lobbyList, '');
-  lobbies.forEach(lobby => {
-    lobbyList.appendChild(LobbyListItem(lobby));
-  });
+  if (lobbies.length) {
+    lobbies.forEach(lobby => {
+      lobbyList.appendChild(LobbyListItem(lobby));
+    });
+  } else {
+    setHTML(
+      lobbyList,
+      '<div style="text-align: center">There are no lobbies right now.</div>'
+    );
+  }
 };
 
 const renderMenu = () => {
@@ -33,6 +41,7 @@ const renderMenu = () => {
 
   const createGameButton: any = getCreateGameButton();
   createGameButton.onclick = () => {
+    playSound('click');
     createLobby(getUiState().name + "'s Game", getUiState().name);
   };
 };
@@ -54,10 +63,12 @@ const renderLobby = (lobby: LobbyState) => {
   const startGameButton: any = getLobbyStartButton();
   startGameButton.disabled = !isPlayerMe(lobby.players[0]);
   startGameButton.onclick = () => {
+    playSound('click');
     startLobby();
   };
   const leaveGameButton = getLobbyLeaveButton();
   leaveGameButton.onclick = () => {
+    playSound('click');
     leaveLobby();
   };
 };
@@ -78,9 +89,18 @@ const renderGameUi = () => {
 
   const shootButton: any = getShootButton();
   shootButton.onclick = () => {
+    playSound('click');
     sendRequestToShoot();
     renderUi();
   };
+
+  const prevButton: any = getPrevButton();
+  prevButton.onclick = () => {
+    playSound('click');
+    sendRequestToGoToPrev();
+    renderUi();
+  };
+  prevButton.disabled = (myEntity as any).posHistoryI === 0;
 
   const angleInput: any = getAngleInput();
   angleInput.oninput = ev => {
@@ -93,7 +113,14 @@ const renderGameUi = () => {
     sendRequestToSetAngle();
   };
 
-  // const powerInput: any = getPowerInput();
+  const powerInput: any = getPowerInput();
+  powerInput.max = POWER_MULTIPLIERS.length - 1;
+  powerInput.oninput = ev => {
+    const value = Number(ev.target.value);
+    setLocalPlayerPowerIndex(value);
+    setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
+  };
+
   setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
 
   const gameUiTop = getGameUiTopPane();
@@ -102,9 +129,9 @@ const renderGameUi = () => {
   const colorInfoLabel = createElement('div');
   setHTML(
     colorInfoLabel,
-    `You are the <span style="color: light${
+    `You are the <span style="${getColorStyles(
       myEntity.color
-    }">${myEntity.color.toUpperCase()}</span> Player.`
+    )}">${myEntity.color.toUpperCase()}</span> Player.`
   );
   colorInfoLabel.className = 'game-line';
   gameUiTop.appendChild(colorInfoLabel);
@@ -134,13 +161,84 @@ const renderGameUi = () => {
     hideElement(gameUiMid);
   }
 
-  const shotResultLabel = createElement('div');
-  setHTML(shotResultLabel, `You shot a ${myEntity.shotCt}.`);
-  shotResultLabel.style['font-size'] = '42px';
+  if (uiState.roundCompleted) {
+    renderScoreCard(gameUiMid);
 
-  gameUiMid.appendChild(shotResultLabel);
+    const div = createElement('div');
+    setHTML(div, 'Next round starting soon...');
+    gameUiMid.appendChild(div);
+  } else {
+    const shotResultLabel = createElement('div');
+    setHTML(shotResultLabel, `You shot a ${myEntity.shotCt}.`);
+    shotResultLabel.style['font-size'] = '42px';
+    gameUiMid.appendChild(shotResultLabel);
+  }
+};
 
-  console.log('RENDER GAME UI', gameData);
+const renderScoreCard = (parent: HTMLElement) => {
+  const gameData = getGameData();
+  if (!gameData) {
+    return;
+  }
+
+  const table = createElement('table');
+  const head = createElement('thead');
+  const row = createElement('tr');
+  for (let i = 0; i < gameData.numRounds + 2; i++) {
+    const column = createElement('th');
+    setHTML(
+      column,
+      i === gameData.numRounds + 1 ? 'Total' : i === 0 ? 'Name' : 'Rd ' + i
+    );
+    row.appendChild(column);
+  }
+  head.appendChild(row);
+  table.appendChild(head);
+
+  gameData.players
+    .map(playerId => getShared().getEntity(gameData, playerId))
+    .forEach((playerEntity: PlayerEntityData) => {
+      if (playerEntity.disconnected) {
+        return;
+      }
+
+      const row = createElement('tr');
+      const scores = gameData.scorecard[playerEntity.id];
+      const label = createElement('td');
+      setHTML(
+        label,
+        `<div style="${getColorStyles(playerEntity.color)}">${
+          playerEntity.name
+        }</div>`
+      );
+      row.appendChild(label);
+      let total = 0;
+      for (let i = 0; i < gameData.numRounds; i++) {
+        const column = createElement('td');
+        total += scores[i] ?? 0;
+        setHTML(column, String(scores[i] ?? '_'));
+        row.appendChild(column);
+      }
+      const totalColumn = createElement('td');
+      setHTML(totalColumn, String(total));
+      row.appendChild(totalColumn);
+      table.appendChild(row);
+    });
+  parent.appendChild(table);
+};
+
+const renderSummary = () => {
+  const summaryScore = getSummaryScorePane();
+  setHTML(summaryScore, '');
+  renderScoreCard(summaryScore);
+
+  const continueButton = getSummaryContinueButton();
+  continueButton.onclick = () => {
+    playSound('click');
+    setUiState({
+      activePane: 'menu',
+    });
+  };
 };
 
 const renderUi = () => {
@@ -162,6 +260,11 @@ const renderUi = () => {
         showLobby(lobby);
         renderLobby(lobby);
       }
+      break;
+    }
+    case 'summary': {
+      showSummary();
+      renderSummary();
       break;
     }
     case 'game': {

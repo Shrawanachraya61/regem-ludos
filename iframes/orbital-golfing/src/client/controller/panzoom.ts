@@ -16,10 +16,30 @@ const gameWidth = 8000;
 const gameHeight = 8000;
 const panZoomTransition = 'transform 200ms ease-out';
 
-const setPanZoomPosition = (x: number, y: number, scale: number) => {
+const setPanZoomPosition = async (x: number, y: number, scale: number) => {
   panZoomState.x = x;
   panZoomState.y = y;
+  panZoomState.scale = 1;
+  panZoom();
+
+  await new Promise(resolve => setTimeout(resolve, 200));
+
+  panZoomState.mx = window.innerWidth / 2;
+  panZoomState.my = window.innerHeight / 2;
+  panZoomToFocalWithScale(scale);
+};
+
+const panZoomToFocalWithScale = (scale: number) => {
+  const [focalX, focalY] = clientToPanZoomCoords(
+    panZoomState.mx,
+    panZoomState.my
+  );
   panZoomState.scale = scale;
+  const [postClientX, postClientY] = panZoomToClientCoords(focalX, focalY);
+  const clientXDiff = panZoomState.mx - postClientX;
+  const clientYDiff = panZoomState.my - postClientY;
+  panZoomState.x -= clientXDiff;
+  panZoomState.y += clientYDiff;
   panZoom();
 };
 
@@ -69,9 +89,9 @@ const registerPanZoomListeners = () => {
   console.log('register panzoom listeners');
 
   const game = getGame();
+  game.style.transition = panZoomTransition;
   game.addEventListener('mousedown', e => {
     if (e.button === 0) {
-      console.log('set panning true');
       getGame().style.transition = 'unset';
       e.preventDefault();
       panZoomState.panning = true;
@@ -84,7 +104,6 @@ const registerPanZoomListeners = () => {
   });
   game.addEventListener('mouseup', e => {
     if (e.button === 0) {
-      console.log('set panning false');
       getGame().style.transition = panZoomTransition;
       panZoomState.panning = false;
       panZoomState.zooming = false;
@@ -174,20 +193,7 @@ const registerPanZoomListeners = () => {
           }
           panZoomState.mx = x;
           panZoomState.my = y;
-          const [focalX, focalY] = clientToPanZoomCoords(
-            panZoomState.mx,
-            panZoomState.my
-          );
-          panZoomState.scale = nextScale;
-          const [postClientX, postClientY] = panZoomToClientCoords(
-            focalX,
-            focalY
-          );
-          const clientXDiff = panZoomState.mx - postClientX;
-          const clientYDiff = panZoomState.my - postClientY;
-          panZoomState.x -= clientXDiff;
-          panZoomState.y += clientYDiff;
-          panZoom();
+          panZoomToFocalWithScale(nextScale);
           panZoomState.touchDist = d;
         }
       } else {
@@ -212,17 +218,7 @@ const registerPanZoomListeners = () => {
     } else if (nextScale > 1.5) {
       nextScale = 1.5;
     }
-    const [focalX, focalY] = clientToPanZoomCoords(
-      panZoomState.mx,
-      panZoomState.my
-    );
-    panZoomState.scale = nextScale;
-    const [postClientX, postClientY] = panZoomToClientCoords(focalX, focalY);
-    const clientXDiff = panZoomState.mx - postClientX;
-    const clientYDiff = panZoomState.my - postClientY;
-    panZoomState.x -= clientXDiff;
-    panZoomState.y += clientYDiff;
-    panZoom();
+    panZoomToFocalWithScale(nextScale);
   };
 
   game.addEventListener('DOMMouseScroll', getScrollDirection, false);

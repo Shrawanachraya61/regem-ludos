@@ -35,9 +35,12 @@ registerIoRequest('disconnect', meta => {
     if (player.gameId) {
       const game = gameGetById(player.gameId);
       console.log(' - Player will be removed from game.');
-      if (game && !gameHasConnectedPlayers(game)) {
-        console.log('game should be destroyed');
-        gameDestroy(game);
+      if (game) {
+        gameDisconnectPlayer(game, player);
+        if (!gameHasConnectedPlayers(game)) {
+          console.log('game should be destroyed');
+          gameDestroy(game);
+        }
       }
     }
   }

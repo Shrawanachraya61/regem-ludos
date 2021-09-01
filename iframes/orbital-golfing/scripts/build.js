@@ -25,6 +25,19 @@ const execAsync = async command => {
   });
 };
 
+let errorNum = 0;
+const replaceErrors = str => {
+  let a = str.slice();
+  let b;
+  do {
+    b = a.match(/new Error\((.*)\)/);
+    if (b) {
+      a = a.slice(0, b.index) + errorNum++ + a.slice(b.index + b[0].length);
+    }
+  } while (b);
+  return a;
+};
+
 const build = async () => {
   console.log('Concat files...');
 
@@ -59,7 +72,7 @@ const build = async () => {
   );
   fs.writeFileSync(
     `${__dirname}/../.build/server.tmp.js`,
-    serverFile.replace(/const /g, 'let ')
+    replaceErrors(serverFile.replace(/const /g, 'let '))
   );
   fs.writeFileSync(`${__dirname}/../.build/shared.tmp.js`, sharedFile);
   fs.writeFileSync(`${__dirname}/../.build/index.tmp.html`, htmlFile);

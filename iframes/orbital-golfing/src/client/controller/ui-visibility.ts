@@ -7,6 +7,7 @@ const hideEverything = () => {
   hideElement(getGame());
   hideElement(getGameUiTopPane());
   hideElement(getGameUiMidPane());
+  hideElement(getSummaryPane());
 
   getCenter().style.height = 'unset';
 };
@@ -24,6 +25,11 @@ const showMenu = () => {
 const showLobby = (lobby: LobbyState) => {
   hideEverything();
   showElement(getLobbyPane());
+};
+
+const showSummary = () => {
+  hideEverything();
+  showElement(getSummaryPane());
 };
 
 const showError = () => {

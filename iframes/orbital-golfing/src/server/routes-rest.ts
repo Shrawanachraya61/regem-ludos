@@ -2,15 +2,15 @@ const restRoutes: Record<string, any> = {};
 
 function registerRestRequest<T = Record<string, string>>(
   route: string,
-  cb: (meta: RestMeta, params: T) => any
+  cb: (meta: RestMeta, params: T) => Promise<any> | any
 ) {
   console.debug('register REST route:', route);
-  restRoutes[route] = (req: any, res: any) => {
+  restRoutes[route] = async (req: any, res: any) => {
     try {
       const socketId = req.headers.socketid;
       const player = playerGetBySocketId(socketId);
       console.debug('REST: ' + route, req.query);
-      const result = cb(
+      const result = await cb(
         {
           req,
           res,
@@ -49,13 +49,14 @@ registerRestRequest<{ lobbyName: string; playerName: string }>(
       lobby = lobbyGetById(player.lobbyId);
     }
     if (!lobby) {
+      const plStr = playerToString(player);
       throw new Error(
-        'Cannot start lobby.  No lobby exists for player: ' +
-          playerToString(player)
+        `Cannot start lobby. No lobby exists for player: ${plStr} `
       );
     }
     const game = gameCreate(lobby.id, lobby.playerIds);
     lobbyDestroy(lobby);
+    broadcastLobbies();
     return {
       game,
     };
@@ -110,8 +111,8 @@ registerRestRequest<{ angleDeg: string; ms: string; power: string }>(
     const game = playerAssertInGame(player);
 
     const ms = parseInt(searchParams.ms);
-    const angleDeg = parseInt(searchParams.angleDeg);
-    const power = parseInt(searchParams.power);
+    const angleDeg = parseFloat(searchParams.angleDeg);
+    const power = parseFloat(searchParams.power);
 
     if ([ms, angleDeg, power].map(isNaN).includes(true)) {
       throw new Error('Cannot shoot.  Malformed input args.');
@@ -122,6 +123,20 @@ registerRestRequest<{ angleDeg: string; ms: string; power: string }>(
       angleDeg,
       power,
     });
+
+    return {};
+  }
+);
+
+registerRestRequest<{ angleDeg: string; ms: string; power: string }>(
+  getShared().G_R_GAME_PREV,
+  async meta => {
+    const player = assertPlayer(meta);
+    const game = playerAssertInGame(player);
+
+    gameDropPlayerAtPreviousPosition(game, player);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     return {};
   }

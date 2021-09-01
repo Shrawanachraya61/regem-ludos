@@ -33,7 +33,6 @@ import {
   characterCreate,
   characterEquipItem,
 } from 'model/character';
-import HudGamepad from 'lib/hud-gamepad';
 
 import { callScript } from 'controller/scene-management';
 import { getAngleTowards } from 'utils';

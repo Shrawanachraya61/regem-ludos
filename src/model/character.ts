@@ -1146,7 +1146,7 @@ export const characterUpdate = (ch: Character): void => {
   const [x, y] = characterGetPos(ch);
   const [, py] = isoToPixelCoords(x, y, 0);
   if (ch.ro) {
-    ch.ro.sortY = py + 35;
+    ch.ro.sortY = py + 33;
   }
   ch.vx = 0;
   ch.vy = 0;

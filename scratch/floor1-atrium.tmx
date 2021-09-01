@@ -123,9 +123,9 @@
   <object id="69" name="Floor1PingPongGuyB" gid="193" x="152" y="316" width="32" height="32"/>
   <object id="70" name="#floor1-atrium-TicTacToeMachine" x="44" y="224" width="32" height="60"/>
   <object id="72" name="MarkerPingPong" gid="194" x="152" y="288" width="32" height="32"/>
-  <object id="73" name="Floor1AtriumGreeterEmployee" gid="193" x="240" y="156" width="32" height="32"/>
+  <object id="73" name="Floor1AtriumGreeterEmployee" gid="193" x="222" y="156.667" width="32" height="32"/>
   <object id="74" name="#floor1-atrium-greeter-employee" x="204" y="204" width="76" height="84"/>
-  <object id="75" name="MarkerFloor1AtriumGreeterEmployeeWalk" gid="194" x="232" y="220" width="32" height="32"/>
+  <object id="75" name="MarkerFloor1AtriumGreeterEmployeeWalk" gid="194" x="222.667" y="217.333" width="32" height="32"/>
   <object id="76" name="MarkerTTTMachineTile" gid="194" x="36" y="244" width="32" height="32"/>
   <object id="79" name="MarkerDoorBowling" gid="194" x="342.5" y="41.5" width="32" height="32"/>
   <object id="80" name="#floor1-atriumOpenBowlingDoor" x="319" y="24.5" width="56" height="46"/>

@@ -46,9 +46,18 @@ h2 {
   text-align: center;
   margin: 0;
 }
+table, th, td {
+  border: 1px solid white;
+  margin: 4px;
+  font-size: 18px;
+}
 @media only screen and (max-width: 500px) {
   .center {
     width: 100% !important;
+  }
+  table, th, td {
+    margin: 2px;
+    font-size: 12px;
   }
 }
 .root {
@@ -122,12 +131,14 @@ h2 {
   top: 0px;
   width: 8000px;
   height: 8000px;
-  /* transform: translate(calc(-2000px + 1500px/2), calc(-2000px + 1200px/2)); */
   justify-content: center;
   align-items: center;
   z-index: -1;
-  background-image: url(clouds.png);
+  background: #888;
   cursor: grab;
+}
+#game-inner {
+  position: relative;
 }
 #game-ui {
   position: absolute;
@@ -136,7 +147,7 @@ h2 {
 }
 #game-ui-top {
   position: absolute;
-  width: calc(100% - 38px);
+  width: calc(100%);
   top: 0px;
   pointer-events: all;
   padding: 8px;
@@ -145,16 +156,42 @@ h2 {
 #game-ui-mid {
   position: absolute;
   top: 0px;
-  width: calc(100% - 38px);
+  width: calc(100%);
   height: 100%;
   display: flex;
   /* pointer-events: all; */
   justify-content: center;
   align-items: center;
   text-align: center;
+  flex-direction: column;
 }
 #canv {
-  border: 1px solid white;
-  box-sizing: border-box;
-  opacity: 0.75;
+  box-shadow: 0 0 32px black;
+  background: radial-gradient(circle, rgba(71,71,71,1) 0%, rgba(36,36,36,1) 100%);
+  border-radius: 16px;
+}
+
+@keyframes expl {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.expl {
+  pointer-events: none;
+  opacity: 0;
+  width: 80px;
+  height: 80px;
+  border: 10px solid rgb(220, 219, 219);
+  border-radius: 80px;
+  background-color: rgb(56, 36, 170);
+  animation: 650ms linear 1 expl;
 }

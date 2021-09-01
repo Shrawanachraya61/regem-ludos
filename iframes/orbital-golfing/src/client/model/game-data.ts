@@ -12,9 +12,13 @@ interface GameData {
   powerups: string[];
   flags: string[];
   round: number;
+  numRounds: number;
+  i: number;
+  timestamp: number;
+  collisions: [string, string][];
 }
 
-type ScorecardData = Record<string, []>;
+type ScorecardData = Record<string, number[]>;
 
 interface EntityData {
   id: string;
@@ -27,6 +31,7 @@ interface EntityData {
   t: number;
   r: number;
   mass: number;
+  active?: boolean;
 }
 
 interface PlayerEntityData extends EntityData {
@@ -39,6 +44,7 @@ interface PlayerEntityData extends EntityData {
   finished: boolean;
   shotCt: number;
   active: boolean;
+  disconnected: boolean;
 }
 
 interface PlanetEntityData extends EntityData {

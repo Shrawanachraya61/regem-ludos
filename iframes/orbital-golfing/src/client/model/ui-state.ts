@@ -4,6 +4,7 @@ interface UIState {
   activePane: string;
   lobbyId: string;
   entityActive: boolean;
+  roundCompleted: boolean;
 }
 
 const STORAGE_NAME_KEY = 'js13k2020_orbital_golfing_name';
@@ -14,6 +15,7 @@ const uiState: UIState = {
   activePane: 'loading',
   lobbyId: '',
   entityActive: false,
+  roundCompleted: false,
 };
 const getUiState = () => uiState;
 const setUiState = (nextState: Partial<UIState>) => {

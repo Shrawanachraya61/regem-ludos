@@ -42,6 +42,17 @@
               <button class="primary" id="lobby-start">Start Game</button>
             </div>
           </div>
+          <div class="pane hidden pane-primary" id="summary">
+            <div class="pane">
+              <h2>Game Completed.</h2>
+            </div>
+            <div class="pane flex-hz">
+              <span class="label" id="summary-score"></span>
+            </div>
+            <div class="pane flex-hz">
+              <button class="primary" id="summary-next">Continue</button>
+            </div>
+          </div>
           <div class="hidden" id="game-ui-top"></div>
           <div class="hidden" id="game-ui-mid"></div>
           <div class="pane hidden pane-primary" id="game-ui">
@@ -59,20 +70,23 @@
             <div>
               <div class="label">Power</div>
               <input
-                id="game-angle"
+                id="game-power"
                 type="range"
-                min="1"
+                min="0"
                 max="4"
-                step="0.5"
+                step="1"
                 value="1"
               />
             </div>
             <button class="primary" id="game-shoot">Shoot</button>
+            <button class="secondary" id="game-prev">Go To Previous (+1 Shot)</button>
           </div>
         </div>
       </div>
       <div class="hidden" id="game">
-        <canvas id="canv"></canvas>
+        <div id="game-inner">
+          <canvas id="canv"></canvas>
+        </div>
       </div>
     </div>
     <script src="socket.io/socket.io.js"></script>

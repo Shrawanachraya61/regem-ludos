@@ -27,7 +27,7 @@ const broadcastLobbies = () => {
 const lobbyCreate = (name: string, creator: Player): Lobby => {
   name = name.trim();
   if (name.length > 20 || name.length === 0) {
-    throw new Error('Cannot create lobby.  Name length invalid:' + name.length);
+    throw new Error(`Cannot create lobby. Name length invalid: ${name.length}`);
   }
   name = escapeString(name);
   const lobby: Lobby = {
@@ -68,11 +68,8 @@ const lobbyGetLeader = (lobby: Lobby): Player | undefined => {
 
 const lobbyJoin = (lobby: Lobby, player: Player) => {
   if (player.lobbyId) {
-    throw new Error(
-      `Cannot join lobby. ${playerToString(player)} is in another lobby: ${
-        player.lobbyId
-      }`
-    );
+    const plStr = playerToString(player);
+    throw new Error(`Cannot join lobby. ${plStr} is in another lobby.`);
   }
   lobby.playerIds.push(player.id);
   player.lobbyId = lobby.id;

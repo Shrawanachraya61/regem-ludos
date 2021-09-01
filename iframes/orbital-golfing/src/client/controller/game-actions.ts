@@ -1,7 +1,9 @@
+const POWER_MULTIPLIERS = [0.75, 1, 1.25, 1.5, 1.75, 2];
+
 const getCurrentShotArgs = (): ShotArgsData => {
   return {
     angleDeg: getLocalPlayerAngle(),
-    power: 1,
+    power: getLocalPlayerPower(),
     ms: 4000,
   };
 };
@@ -29,6 +31,11 @@ const sendRequestToSetAngle = async () => {
   });
 };
 
+const sendRequestToGoToPrev = async () => {
+  await sendRestRequest<{}>(getShared().G_R_GAME_PREV);
+  renderUi();
+};
+
 const centerOnPlayer = () => {
   const gameData = getGameData();
   if (gameData) {
@@ -37,6 +44,6 @@ const centerOnPlayer = () => {
     const canvas: any = getCanvas();
     const width = canvas.width;
     const height = canvas.height;
-    setPanZoomPosition(px - width / 2, -(py - height / 2), 1);
+    setPanZoomPosition(px - width / 2, -(py - height / 2), 0.5);
   }
 };

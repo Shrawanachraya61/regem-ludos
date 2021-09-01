@@ -18,15 +18,54 @@ const createElement = (name) => {
 const setHTML = (elem, html) => {
     elem.innerHTML = html;
 };
+const getColor = (color, dark) => {
+    if (!dark) {
+        return ({
+            blue: '#bbf',
+            red: '#fbb',
+            green: '#bfb',
+            purple: '#b52db5',
+        }[color] ?? color);
+    }
+    return ({
+        blue: '#005',
+        red: '#500',
+        grey: 'black',
+        orange: '#563903',
+        yellow: 'brown',
+        purple: '#340667',
+        green: '#020',
+    }[color] ?? color);
+};
+const getColorStyles = (color) => {
+    return `color: ${getColor(color, true)}; background: ${getColor(color)}`;
+};
+const createExplosionEffect = (x, y) => {
+    const { x: px, y: py } = worldToPx(x, y);
+    const elem = getGameInner();
+    if (elem) {
+        playSound('expl');
+        const div = createElement('div');
+        div.className = 'expl';
+        div.style.position = 'absolute';
+        div.style.left = px - 50 + 'px';
+        div.style.top = py - 50 + 'px';
+        elem.appendChild(div);
+        setTimeout(() => {
+            div.remove();
+        }, 4000);
+    }
+};
 const showErrorMessage = (msg) => {
     const errorPane = getErrorPane();
     errorPane.innerHTML = 'ERROR: ' + msg;
     showError();
 };
+const POWER_MULTIPLIERS = [0.75, 1, 1.25, 1.5, 1.75, 2];
 const getCurrentShotArgs = () => {
     return {
         angleDeg: getLocalPlayerAngle(),
-        power: 1,
+        power: getLocalPlayerPower(),
         ms: 4000,
     };
 };
@@ -47,6 +86,10 @@ const sendRequestToSetAngle = async () => {
         angleDeg: getCurrentShotArgs().angleDeg,
     });
 };
+const sendRequestToGoToPrev = async () => {
+    await sendRestRequest(getShared().G_R_GAME_PREV);
+    renderUi();
+};
 const centerOnPlayer = () => {
     const gameData = getGameData();
     if (gameData) {
@@ -55,7 +98,7 @@ const centerOnPlayer = () => {
         const canvas = getCanvas();
         const width = canvas.width;
         const height = canvas.height;
-        setPanZoomPosition(px - width / 2, -(py - height / 2), 1);
+        setPanZoomPosition(px - width / 2, -(py - height / 2), 0.5);
     }
 };
 const createLobby = async (lobbyName, playerName) => {
@@ -130,6 +173,7 @@ const startRenderLoop = () => {
             prevNow = now;
             getShared().simulate(gameData, { nowDt });
             drawSimulation(gameData);
+            applyGameState(gameData);
         }
     });
 };
@@ -191,7 +235,10 @@ const connectSocket = () => {
         console.log('connected', payload);
         setSocketId(payload.socketId);
         setPlayerId(payload.id);
-        await createLobby("Player's Game", 'Player');
+        setUiState({
+            activePane: 'menu',
+        });
+        renderUi();
     });
     registerSocketListener(shared.G_S_LOBBIES_UPDATED, (payload) => {
         console.log('lobbies updated', payload);
@@ -201,34 +248,75 @@ const connectSocket = () => {
         console.log('game started', payload);
         const gameData = payload.game;
         setGameData(gameData);
-        setUiState({
-            lobbyId: '',
-        });
         const canvas = getCanvas();
         canvas.width = gameData.width * getShared().G_SCALE * 2;
         canvas.height = gameData.height * getShared().G_SCALE * 2;
-        console.log('set canvas size', canvas.width, canvas.height);
         setUiState({
+            lobbyId: '',
             activePane: 'game',
         });
+        playSound('start');
+        setLocalPlayerAngle(0, true);
+        setLocalPlayerPowerIndex(1, true);
         centerOnPlayer();
         renderUi();
         startRenderLoop();
     });
     registerSocketListener(shared.G_S_GAME_UPDATED, (payload) => {
-        console.log('Update game data', payload.game);
         const gameData = getGameData();
         if (gameData) {
-            for (const i in payload.game.entityMap) {
-                gameData.entityMap[i] = payload.game.entityMap[i];
-            }
+            pushGameState(payload.game);
+        }
+    });
+    registerSocketListener(shared.G_S_GAME_ROUND_COMPLETED, (payload) => {
+        console.log('Round completed', payload.game);
+        const gameData = getGameData();
+        if (gameData) {
+            gameData.scorecard = payload.game.scorecard;
             const myEntity = getMyPlayerEntity(gameData);
-            if (!myEntity.active && getUiState().entityActive) {
-                console.log('reset entity active');
-                setUiState({
-                    entityActive: false,
-                });
-                renderUi();
+            setUiState({
+                entityActive: false,
+                roundCompleted: true,
+            });
+            renderUi();
+        }
+    });
+    registerSocketListener(shared.G_S_GAME_ROUND_STARTED, (payload) => {
+        console.log('Round started', payload.game);
+        const gameData = payload.game;
+        setGameData(gameData);
+        const canvas = getCanvas();
+        canvas.width = gameData.width * getShared().G_SCALE * 2;
+        canvas.height = gameData.height * getShared().G_SCALE * 2;
+        setUiState({
+            entityActive: false,
+            roundCompleted: false,
+        });
+        setLocalPlayerAngle(0, true);
+        setLocalPlayerPowerIndex(1, true);
+        renderUi();
+        centerOnPlayer();
+    });
+    registerSocketListener(shared.G_S_GAME_COMPLETED, (payload) => {
+        console.log('game completed', payload);
+        const gameData = getGameData();
+        if (gameData) {
+            gameData.scorecard = payload.game.scorecard;
+        }
+        playSound('end');
+        setUiState({
+            activePane: 'summary',
+        });
+        renderUi();
+    });
+    registerSocketListener(shared.G_S_GAME_PLAYER_DISCONNECTED, (payload) => {
+        console.log('player disconnected', payload);
+        const gameData = getGameData();
+        if (gameData) {
+            const discPlayerId = payload.playerId;
+            const entity = getShared().getEntity(gameData, discPlayerId);
+            if (entity) {
+                entity.disconnected = true;
             }
         }
     });
@@ -266,342 +354,6 @@ const sendRestRequest = async function (url, params) {
     }
     return json;
 };
-const generateShotPreview = (originalGameData, args) => {
-    const gameData = copyGameData(originalGameData);
-    const playerEntity = getMyPlayerEntity(gameData);
-    playerEntity.active = true;
-    playerEntity.vx = 55000 * Math.sin(getShared().toRadians(args.angleDeg));
-    playerEntity.vy = 55000 * Math.cos(getShared().toRadians(args.angleDeg));
-    playerEntity.angle = args.angleDeg;
-    const ret = [];
-    for (let i = 0; i < 12; i++) {
-        getShared().simulate(gameData, { nowDt: 100 });
-        const { x: px, y: py } = worldToPx(playerEntity.x, playerEntity.y);
-        ret.push([px, py]);
-    }
-    return ret;
-};
-const hideEverything = () => {
-    hideElement(getLoadingPane());
-    hideElement(getErrorPane());
-    hideElement(getMenuPane());
-    hideElement(getLobbyPane());
-    hideElement(getGameUiPane());
-    hideElement(getGame());
-    hideElement(getGameUiTopPane());
-    hideElement(getGameUiMidPane());
-    getCenter().style.height = 'unset';
-};
-const showLoading = () => {
-    hideEverything();
-    showElement(getLoadingPane());
-};
-const showMenu = () => {
-    hideEverything();
-    showElement(getMenuPane());
-};
-const showLobby = (lobby) => {
-    hideEverything();
-    showElement(getLobbyPane());
-};
-const showError = () => {
-    hideEverything();
-    showElement(getErrorPane());
-};
-const showGame = () => {
-    hideEverything();
-    showElement(getGameUiPane());
-    showElement(getGameUiTopPane());
-    showElement(getGame(), true);
-    getCenter().style.height = '100%';
-};
-let currentGameData = null;
-const getGameData = () => currentGameData;
-const setGameData = (data) => (currentGameData = data);
-const getMyPlayerEntity = (gameData) => {
-    return getShared().getEntity(gameData, getPlayerId());
-};
-const copyGameData = (gameData) => JSON.parse(JSON.stringify(gameData));
-const getShared = () => console.shared;
-let genericSocket = null;
-const getSocket = () => genericSocket;
-const setSocket = (s) => (genericSocket = s);
-let genericSocketId = '';
-const getSocketId = () => genericSocketId;
-const setSocketId = (s) => (genericSocketId = s);
-let genericPlayerId = '';
-const getPlayerId = () => genericPlayerId;
-const setPlayerId = (id) => (genericPlayerId = id);
-let localPlayerAngle = 0;
-const getLocalPlayerAngle = () => localPlayerAngle;
-const setLocalPlayerAngle = (a) => (localPlayerAngle = a);
-let shotPreview = [];
-const getShotPreview = () => shotPreview;
-const setShotPreview = (s) => (shotPreview = s);
-const isPlayerMe = (player) => {
-    return player.id === getPlayerId();
-};
-const isPlayerEntityMe = (player) => {
-    return player.id === getPlayerId();
-};
-const STORAGE_NAME_KEY = 'js13k2020_orbital_golfing_name';
-const uiState = {
-    lobbies: [],
-    name: localStorage.getItem(STORAGE_NAME_KEY) || 'Player',
-    activePane: 'loading',
-    lobbyId: '',
-    entityActive: false,
-};
-const getUiState = () => uiState;
-const setUiState = (nextState) => {
-    Object.assign(uiState, nextState);
-};
-const setLobbyListState = (lobbies) => {
-    setUiState({
-        lobbies,
-    });
-    if (['menu', 'lobby'].includes(uiState.activePane)) {
-        renderUi();
-    }
-};
-const getCanvasDimensions = (omitPosition) => {
-    const ctx = getCtx();
-    const canvas = ctx.canvas;
-    if (omitPosition) {
-        const { left, top } = canvas.getBoundingClientRect();
-        return { left, top, width: canvas.width, height: canvas.height };
-    }
-    else {
-        return { left: 0, top: 0, width: canvas.width, height: canvas.height };
-    }
-};
-const pxToWorld = (x, y) => {
-    const { width, height } = getCanvasDimensions(true);
-    return {
-        x: (x - width / 2) / getShared().G_SCALE,
-        y: -(y - height / 2) / getShared().G_SCALE,
-    };
-};
-const worldToPx = (x, y) => {
-    const { width, height } = getCanvasDimensions(true);
-    return {
-        x: Math.round(x * getShared().G_SCALE + width / 2),
-        y: Math.round(-y * getShared().G_SCALE + height / 2),
-    };
-};
-const clientToWorld = (x, y) => {
-    const { left, top, width, height } = getCanvasDimensions();
-    return {
-        x: (x - left - width / 2) / getShared().G_SCALE,
-        y: -(y - top - height / 2) / getShared().G_SCALE,
-    };
-};
-const drawCircle = (x, y, r, color) => {
-    const ctx = getCtx();
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2 * PI, false);
-    ctx.fillStyle = color;
-    ctx.fill();
-};
-const drawCircleOutline = (x, y, r, color) => {
-    const ctx = getCtx();
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2 * PI, false);
-    ctx.strokeStyle = color;
-    ctx.stroke();
-};
-const DEFAULT_TEXT_PARAMS = {
-    font: 'monospace',
-    color: '#fff',
-    size: 16,
-    align: 'center',
-    strokeColor: '',
-};
-const drawText = (text, x, y, textParams) => {
-    const { font, size, color, align, strokeColor } = {
-        ...DEFAULT_TEXT_PARAMS,
-        ...(textParams || {}),
-    };
-    const ctx = getCtx();
-    ctx.font = `${size}px ${font}`;
-    ctx.fillStyle = color;
-    ctx.textAlign = align;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, x, y);
-    if (strokeColor) {
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 0.5;
-        ctx.strokeText(text, x, y);
-    }
-};
-const drawPoly = (pos, points, color) => {
-    const ctx = getCtx();
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(pos.x, pos.y);
-    ctx.fillStyle = color;
-    const firstPoint = points[0];
-    ctx.moveTo(firstPoint.x, firstPoint.y);
-    for (let i = 1; i < points.length; i++) {
-        const point = points[i];
-        ctx.lineTo(point.x, point.y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-};
-const drawRectangle = (x, y, w, h, color, deg) => {
-    const ctx = getCtx();
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(x, y);
-    ctx.fillStyle = color;
-    if (deg !== undefined) {
-        const w2 = w / 2;
-        const h2 = h / 2;
-        ctx.translate(w2, h2);
-        ctx.rotate((deg * PI) / 180);
-        ctx.fillRect(-w2, -h / 1.5, w, h);
-    }
-    else {
-        ctx.fillRect(0, 0, w, h);
-    }
-    ctx.restore();
-};
-const drawPlanets = (planets) => {
-    const G_SCALE = getShared().G_SCALE;
-    for (let i = 0; i < planets.length; i++) {
-        const { x, y, r, color } = planets[i];
-        const { x: px, y: py } = worldToPx(x, y);
-        drawCircle(px, py, r * G_SCALE, color);
-    }
-};
-const drawPlayers = (players) => {
-    const G_SCALE = getShared().G_SCALE;
-    for (let i = 0; i < players.length; i++) {
-        const playerEntity = players[i];
-        const { x, y, r, color, finished } = playerEntity;
-        if (finished) {
-            continue;
-        }
-        let angleDeg = playerEntity.angle;
-        if (isPlayerEntityMe(playerEntity)) {
-            angleDeg = getLocalPlayerAngle();
-        }
-        const { x: px, y: py } = worldToPx(x, y);
-        const sz = r * 2 * G_SCALE - 10;
-        const sz2 = sz / 2;
-        drawCircle(px, py, r * G_SCALE, color);
-        drawRectangle(px - sz2, py - sz2, sz, sz, 'blue');
-        drawRectangle(px - 5, py - 30, 10, 60, 'white', getShared().getHeadingTowards(px, py, px + Math.sin(getShared().toRadians(angleDeg)), py - Math.cos(getShared().toRadians(angleDeg))));
-        drawCircle(px, py, sz2 / 1.5, 'lightblue');
-        drawText(playerEntity.name, px, py - sz - 32, { size: 32 });
-    }
-};
-const drawFlags = (flags) => {
-    const G_SCALE = getShared().G_SCALE;
-    for (let i = 0; i < flags.length; i++) {
-        const flagEntity = flags[i];
-        const { x, y, r } = flagEntity;
-        const { x: px, y: py } = worldToPx(x, y);
-        const radius = r * G_SCALE;
-        drawCircle(px, py, radius, 'lightblue');
-        drawCircle(px, py, radius - 4, 'white');
-        drawRectangle(px - radius / 6 - 10, py - radius, radius / 3, radius * 2, 'black');
-        {
-            const x = px - radius / 6 - 10;
-            const y = py - radius;
-            const w = 40;
-            const h = 30;
-            drawRectangle(x, y, w, h, 'black');
-            drawRectangle(x + 2, y + 2, w - 4, h - 4, 'lightblue');
-        }
-        drawText('Shoot here!', px, py - radius - 32, { size: 32 });
-    }
-};
-const drawShotPreview = (preview) => {
-    for (let i = 0; i < preview.length; i++) {
-        const [x, y] = preview[i];
-        drawCircle(x, y, 5, 'rgba(255,255,255,0.25)');
-    }
-};
-const drawSimulation = (gameData) => {
-    const { players, planets, flags } = gameData;
-    const ctx = getCtx();
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    updateGlobalFrameTime();
-    drawPlanets(planets.map(id => getShared().getEntity(gameData, id)));
-    drawPlayers(players.map(id => getShared().getEntity(gameData, id)));
-    drawFlags(flags.map(id => getShared().getEntity(gameData, id)));
-    const myEntity = getMyPlayerEntity(gameData);
-    if (!myEntity.active && !myEntity.finished) {
-        drawShotPreview(getShotPreview());
-    }
-};
-const getAngleLabel = () => {
-    return getElement('game-angle-label');
-};
-const getCreateGameButton = () => {
-    return getElement('menu-create');
-};
-const getLobbyStartButton = () => {
-    return getElement('lobby-start');
-};
-const getLobbyLeaveButton = () => {
-    return getElement('lobby-leave');
-};
-const getShootButton = () => {
-    return getElement('game-shoot');
-};
-const getPlayerNameInput = () => {
-    return getElement('menu-name');
-};
-const getAngleInput = () => {
-    return getElement('game-angle');
-};
-const getLoadingPane = () => {
-    return getElement('loading');
-};
-const getErrorPane = () => {
-    return getElement('error');
-};
-const getMenuPane = () => {
-    return getElement('menu');
-};
-const getLobbyPane = () => {
-    return getElement('lobby');
-};
-const getLobbyListPane = () => {
-    return getElement('menu-lobbies');
-};
-const getLobbyPlayerListPane = () => {
-    return getElement('lobby-players');
-};
-const getLobbyName = () => {
-    return getElement('lobby-name');
-};
-const getGameUiPane = () => {
-    return getElement('game-ui');
-};
-const getGameUiTopPane = () => {
-    return getElement('game-ui-top');
-};
-const getGameUiMidPane = () => {
-    return getElement('game-ui-mid');
-};
-const getGame = () => {
-    return getElement('game');
-};
-const getCanvas = () => {
-    return getElement('canv');
-};
-const getCtx = () => {
-    return getCanvas().getContext('2d');
-};
-const getCenter = () => {
-    return getElement('center');
-};
 const panZoomState = {
     x: 0,
     y: 0,
@@ -619,10 +371,24 @@ const panZoomState = {
 const gameWidth = 8000;
 const gameHeight = 8000;
 const panZoomTransition = 'transform 200ms ease-out';
-const setPanZoomPosition = (x, y, scale) => {
+const setPanZoomPosition = async (x, y, scale) => {
     panZoomState.x = x;
     panZoomState.y = y;
+    panZoomState.scale = 1;
+    panZoom();
+    await new Promise(resolve => setTimeout(resolve, 200));
+    panZoomState.mx = window.innerWidth / 2;
+    panZoomState.my = window.innerHeight / 2;
+    panZoomToFocalWithScale(scale);
+};
+const panZoomToFocalWithScale = (scale) => {
+    const [focalX, focalY] = clientToPanZoomCoords(panZoomState.mx, panZoomState.my);
     panZoomState.scale = scale;
+    const [postClientX, postClientY] = panZoomToClientCoords(focalX, focalY);
+    const clientXDiff = panZoomState.mx - postClientX;
+    const clientYDiff = panZoomState.my - postClientY;
+    panZoomState.x -= clientXDiff;
+    panZoomState.y += clientYDiff;
     panZoom();
 };
 const clientToPanZoomCoords = (clientX, clientY) => {
@@ -661,9 +427,9 @@ const getTouchCenterAndDistance = touches => {
 const registerPanZoomListeners = () => {
     console.log('register panzoom listeners');
     const game = getGame();
+    game.style.transition = panZoomTransition;
     game.addEventListener('mousedown', e => {
         if (e.button === 0) {
-            console.log('set panning true');
             getGame().style.transition = 'unset';
             e.preventDefault();
             panZoomState.panning = true;
@@ -676,7 +442,6 @@ const registerPanZoomListeners = () => {
     });
     game.addEventListener('mouseup', e => {
         if (e.button === 0) {
-            console.log('set panning false');
             getGame().style.transition = panZoomTransition;
             panZoomState.panning = false;
             panZoomState.zooming = false;
@@ -747,14 +512,7 @@ const registerPanZoomListeners = () => {
                     }
                     panZoomState.mx = x;
                     panZoomState.my = y;
-                    const [focalX, focalY] = clientToPanZoomCoords(panZoomState.mx, panZoomState.my);
-                    panZoomState.scale = nextScale;
-                    const [postClientX, postClientY] = panZoomToClientCoords(focalX, focalY);
-                    const clientXDiff = panZoomState.mx - postClientX;
-                    const clientYDiff = panZoomState.my - postClientY;
-                    panZoomState.x -= clientXDiff;
-                    panZoomState.y += clientYDiff;
-                    panZoom();
+                    panZoomToFocalWithScale(nextScale);
                     panZoomState.touchDist = d;
                 }
             }
@@ -780,14 +538,7 @@ const registerPanZoomListeners = () => {
         else if (nextScale > 1.5) {
             nextScale = 1.5;
         }
-        const [focalX, focalY] = clientToPanZoomCoords(panZoomState.mx, panZoomState.my);
-        panZoomState.scale = nextScale;
-        const [postClientX, postClientY] = panZoomToClientCoords(focalX, focalY);
-        const clientXDiff = panZoomState.mx - postClientX;
-        const clientYDiff = panZoomState.my - postClientY;
-        panZoomState.x -= clientXDiff;
-        panZoomState.y += clientYDiff;
-        panZoom();
+        panZoomToFocalWithScale(nextScale);
     };
     game.addEventListener('DOMMouseScroll', getScrollDirection, false);
     game.addEventListener('mousewheel', getScrollDirection, false);
@@ -805,6 +556,477 @@ document.addEventListener('touchmove', function (event) {
         event.preventDefault();
     }
 }, false);
+const generateShotPreview = (originalGameData, args) => {
+    const gameData = copyGameData(originalGameData);
+    const playerEntity = getMyPlayerEntity(gameData);
+    playerEntity.active = true;
+    playerEntity.vx =
+        55000 * args.power * Math.sin(getShared().toRadians(args.angleDeg));
+    playerEntity.vy =
+        55000 * args.power * Math.cos(getShared().toRadians(args.angleDeg));
+    playerEntity.angle = args.angleDeg;
+    const nowDt = 75;
+    let numIterations = 12;
+    if (args.power > 1) {
+        numIterations = 11;
+    }
+    if (args.power > 1.5) {
+        numIterations = 10;
+    }
+    const ret = [];
+    for (let i = 0; i < numIterations; i++) {
+        getShared().simulate(gameData, { nowDt });
+        const { x: px, y: py } = worldToPx(playerEntity.x, playerEntity.y);
+        ret.push([px, py]);
+        if (gameData.collisions.length) {
+            break;
+        }
+    }
+    return ret;
+};
+const previousGameStates = [];
+const pushGameState = (state) => {
+    const gameData = getGameData();
+    if (gameData) {
+        state.collisions.forEach(([entityAId, entityBId]) => {
+            const entityA = getShared().getEntity(gameData, entityAId);
+            const entityB = getShared().getEntity(gameData, entityBId);
+            if (entityA) {
+                if (entityB?.type === 'flag') {
+                    if (entityA.shotCt === 1) {
+                        playSound('holeInOne');
+                    }
+                    else {
+                        playSound('completed');
+                    }
+                }
+                else {
+                    createExplosionEffect(entityA.x, entityA.y);
+                }
+            }
+        });
+        for (const i in state.entityMap) {
+            gameData.entityMap[i] = state.entityMap[i];
+        }
+        const myEntity = getMyPlayerEntity(gameData);
+        if (!myEntity.active && getUiState().entityActive) {
+            console.log('reset entity active');
+            setUiState({
+                entityActive: false,
+            });
+            renderUi();
+        }
+    }
+};
+let lastAppliedState = null;
+const applyGameState = (gameData) => {
+};
+const hideEverything = () => {
+    hideElement(getLoadingPane());
+    hideElement(getErrorPane());
+    hideElement(getMenuPane());
+    hideElement(getLobbyPane());
+    hideElement(getGameUiPane());
+    hideElement(getGame());
+    hideElement(getGameUiTopPane());
+    hideElement(getGameUiMidPane());
+    hideElement(getSummaryPane());
+    getCenter().style.height = 'unset';
+};
+const showLoading = () => {
+    hideEverything();
+    showElement(getLoadingPane());
+};
+const showMenu = () => {
+    hideEverything();
+    showElement(getMenuPane());
+};
+const showLobby = (lobby) => {
+    hideEverything();
+    showElement(getLobbyPane());
+};
+const showSummary = () => {
+    hideEverything();
+    showElement(getSummaryPane());
+};
+const showError = () => {
+    hideEverything();
+    showElement(getErrorPane());
+};
+const showGame = () => {
+    hideEverything();
+    showElement(getGameUiPane());
+    showElement(getGameUiTopPane());
+    showElement(getGame(), true);
+    getCenter().style.height = '100%';
+};
+let zzfx, zzfxV, zzfxX;
+zzfxV = 0.3;
+zzfx = (p = 1, k = 0.05, b = 220, e = 0, r = 0, t = 0.1, q = 0, D = 1, u = 0, y = 0, v = 0, z = 0, l = 0, E = 0, A = 0, F = 0, c = 0, w = 1, m = 0, B = 0) => {
+    let M = Math, R = 44100, d = 2 * M.PI, G = (u *= (500 * d) / R / R), C = (b *= ((1 - k + 2 * k * M.random((k = []))) * d) / R), g = 0, H = 0, a = 0, n = 1, I = 0, J = 0, f = 0, x, h;
+    e = R * e + 9;
+    m *= R;
+    r *= R;
+    t *= R;
+    c *= R;
+    y *= (500 * d) / R ** 3;
+    A *= d / R;
+    v *= d / R;
+    z *= R;
+    l = (R * l) | 0;
+    for (h = (e + m + r + t + c) | 0; a < h; k[a++] = f)
+        ++J % ((100 * F) | 0) ||
+            ((f = q
+                ? 1 < q
+                    ? 2 < q
+                        ? 3 < q
+                            ? M.sin((g % d) ** 3)
+                            : M.max(M.min(M.tan(g), 1), -1)
+                        : 1 - (((((2 * g) / d) % 2) + 2) % 2)
+                    : 1 - 4 * M.abs(M.round(g / d) - g / d)
+                : M.sin(g)),
+                (f =
+                    (l ? 1 - B + B * M.sin((d * a) / l) : 1) *
+                        (0 < f ? 1 : -1) *
+                        M.abs(f) ** D *
+                        p *
+                        zzfxV *
+                        (a < e
+                            ? a / e
+                            : a < e + m
+                                ? 1 - ((a - e) / m) * (1 - w)
+                                : a < e + m + r
+                                    ? w
+                                    : a < h - c
+                                        ? ((h - a - c) / t) * w
+                                        : 0)),
+                (f = c
+                    ? f / 2 +
+                        (c > a ? 0 : ((a < h - c ? 1 : (h - a) / c) * k[(a - c) | 0]) / 2)
+                    : f)),
+            (x = (b += u += y) * M.cos(A * H++)),
+            (g += x - x * E * (1 - ((1e9 * (M.sin(a) + 1)) % 2))),
+            n && ++n > z && ((b += v), (C += v), (n = 0)),
+            !l || ++I % l || ((b = C), (u = G), (n = n || 1));
+    p = zzfxX.createBuffer(1, h, R);
+    p.getChannelData(0).set(k);
+    b = zzfxX.createBufferSource();
+    b.buffer = p;
+    b.connect(zzfxX.destination);
+    b.start();
+    return b;
+};
+zzfxX = new (window.AudioContext || webkitAudioContext)();
+let currentGameData = null;
+const getGameData = () => currentGameData;
+const setGameData = (data) => (currentGameData = data);
+const getMyPlayerEntity = (gameData) => {
+    return getShared().getEntity(gameData, getPlayerId());
+};
+const copyGameData = (gameData) => JSON.parse(JSON.stringify(gameData));
+const getShared = () => console.shared;
+let genericSocket = null;
+const getSocket = () => genericSocket;
+const setSocket = (s) => (genericSocket = s);
+let genericSocketId = '';
+const getSocketId = () => genericSocketId;
+const setSocketId = (s) => (genericSocketId = s);
+let genericPlayerId = '';
+const getPlayerId = () => genericPlayerId;
+const setPlayerId = (id) => (genericPlayerId = id);
+let localPlayerAngle = 0;
+const getLocalPlayerAngle = () => localPlayerAngle;
+const setLocalPlayerAngle = (a, updateInput) => {
+    localPlayerAngle = a;
+    if (updateInput) {
+        const elem = getAngleInput();
+        elem.value = a;
+    }
+};
+let localPlayerPowerIndex = 0;
+const getLocalPlayerPower = () => POWER_MULTIPLIERS[localPlayerPowerIndex] ?? 1;
+const setLocalPlayerPowerIndex = (v, updateInput) => {
+    localPlayerPowerIndex = v;
+    if (updateInput) {
+        const elem = getPowerInput();
+        elem.value = v;
+    }
+};
+let shotPreview = [];
+const getShotPreview = () => shotPreview;
+const setShotPreview = (s) => (shotPreview = s);
+const isPlayerMe = (player) => {
+    return player.id === getPlayerId();
+};
+const isPlayerEntityMe = (player) => {
+    return player.id === getPlayerId();
+};
+const STORAGE_NAME_KEY = 'js13k2020_orbital_golfing_name';
+const uiState = {
+    lobbies: [],
+    name: localStorage.getItem(STORAGE_NAME_KEY) || 'Player',
+    activePane: 'loading',
+    lobbyId: '',
+    entityActive: false,
+    roundCompleted: false,
+};
+const getUiState = () => uiState;
+const setUiState = (nextState) => {
+    Object.assign(uiState, nextState);
+};
+const setLobbyListState = (lobbies) => {
+    setUiState({
+        lobbies,
+    });
+    if (['menu', 'lobby'].includes(uiState.activePane)) {
+        renderUi();
+    }
+};
+const getCanvasDimensions = (omitPosition) => {
+    const ctx = getCtx();
+    const canvas = ctx.canvas;
+    if (omitPosition) {
+        const { left, top } = canvas.getBoundingClientRect();
+        return { left, top, width: canvas.width, height: canvas.height };
+    }
+    else {
+        return { left: 0, top: 0, width: canvas.width, height: canvas.height };
+    }
+};
+const pxToWorld = (x, y) => {
+    const { width, height } = getCanvasDimensions(true);
+    return {
+        x: (x - width / 2) / getShared().G_SCALE,
+        y: -(y - height / 2) / getShared().G_SCALE,
+    };
+};
+const worldToPx = (x, y) => {
+    const { width, height } = getCanvasDimensions(true);
+    return {
+        x: Math.round(x * getShared().G_SCALE + width / 2),
+        y: Math.round(-y * getShared().G_SCALE + height / 2),
+    };
+};
+const clientToWorld = (x, y) => {
+    const { left, top, width, height } = getCanvasDimensions();
+    return {
+        x: (x - left - width / 2) / getShared().G_SCALE,
+        y: -(y - top - height / 2) / getShared().G_SCALE,
+    };
+};
+const drawCircle = (x, y, r, color) => {
+    const ctx = getCtx();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * PI, false);
+    ctx.fillStyle = color;
+    ctx.fill();
+};
+const DEFAULT_TEXT_PARAMS = {
+    font: 'monospace',
+    color: '#fff',
+    size: 16,
+    align: 'center',
+    strokeColor: '',
+};
+const drawText = (text, x, y, textParams) => {
+    const { font, size, color, align, strokeColor } = {
+        ...DEFAULT_TEXT_PARAMS,
+        ...(textParams || {}),
+    };
+    const ctx = getCtx();
+    ctx.font = `${size}px ${font}`;
+    ctx.fillStyle = color;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+    if (strokeColor) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 0.5;
+        ctx.strokeText(text, x, y);
+    }
+};
+const drawRectangle = (x, y, w, h, color, deg) => {
+    const ctx = getCtx();
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(x, y);
+    ctx.fillStyle = color;
+    if (deg !== undefined) {
+        const w2 = w / 2;
+        const h2 = h / 2;
+        ctx.translate(w2, h2);
+        ctx.rotate((deg * PI) / 180);
+        ctx.fillRect(-w2, -h / 1.5, w, h);
+    }
+    else {
+        ctx.fillRect(0, 0, w, h);
+    }
+    ctx.restore();
+};
+const drawPlanets = (planets) => {
+    const G_SCALE = getShared().G_SCALE;
+    for (let i = 0; i < planets.length; i++) {
+        const { x, y, r, color } = planets[i];
+        const { x: px, y: py } = worldToPx(x, y);
+        drawCircle(px, py, r * G_SCALE, color);
+    }
+};
+const drawPlayers = (players) => {
+    const G_SCALE = getShared().G_SCALE;
+    for (let i = 0; i < players.length; i++) {
+        const playerEntity = players[i];
+        const { x, y, r, color, finished, disconnected } = playerEntity;
+        if (finished || disconnected) {
+            continue;
+        }
+        let angleDeg = playerEntity.angle;
+        if (isPlayerEntityMe(playerEntity)) {
+            angleDeg = getLocalPlayerAngle();
+        }
+        const { x: px, y: py } = worldToPx(x, y);
+        const sz = r * 2 * G_SCALE - 10;
+        const sz2 = sz / 2;
+        drawCircle(px, py, r * G_SCALE, color);
+        drawRectangle(px - sz2, py - sz2, sz, sz, getColor(color, true));
+        drawRectangle(px - 5, py - 30, 10, 60, 'white', getShared().getHeadingTowards(px, py, px + Math.sin(getShared().toRadians(angleDeg)), py - Math.cos(getShared().toRadians(angleDeg))));
+        drawCircle(px, py, sz2 / 1.5, getColor(color));
+        drawText(playerEntity.name, px, py - sz - 32, { size: 32 });
+    }
+};
+let lastFlagTimestamp = +new Date();
+let flagMode = 0;
+const drawFlags = (flags) => {
+    const timestamp = +new Date();
+    if (timestamp - lastFlagTimestamp > 500) {
+        flagMode = (flagMode + 1) % 2;
+        lastFlagTimestamp = timestamp;
+    }
+    const G_SCALE = getShared().G_SCALE;
+    for (let i = 0; i < flags.length; i++) {
+        const flagEntity = flags[i];
+        const { x, y, r } = flagEntity;
+        const { x: px, y: py } = worldToPx(x, y);
+        const radius = r * G_SCALE;
+        drawCircle(px, py, radius, 'orange');
+        drawCircle(px, py, radius - 4, 'white');
+        drawRectangle(px - radius / 6 - 10, py - radius, radius / 3, radius * 2, 'black');
+        {
+            const x = px - radius / 6 - 10;
+            const y = py - radius;
+            const w = 40;
+            const h = 30;
+            if (flagMode === 1) {
+                drawRectangle(x, y, w, h, 'black');
+                drawRectangle(x + 2, y + 2, w - 4, h - 4, 'orange');
+            }
+            else {
+                drawRectangle(x, y, w, h, 'black', 359);
+                drawRectangle(x + 2, y + 2, w - 4, h - 4, 'orange', 359);
+            }
+        }
+        drawText('Shoot here!', px, py - radius - 32, { size: 32 });
+    }
+};
+const drawShotPreview = (preview) => {
+    for (let i = 0; i < preview.length; i++) {
+        const [x, y] = preview[i];
+        drawCircle(x, y, 5, 'rgba(255,255,255,0.25)');
+    }
+};
+const drawSimulation = (gameData) => {
+    const { players, planets, flags } = gameData;
+    const ctx = getCtx();
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    updateGlobalFrameTime();
+    drawPlanets(planets.map(id => getShared().getEntity(gameData, id)));
+    drawPlayers(players.map(id => getShared().getEntity(gameData, id)));
+    drawFlags(flags.map(id => getShared().getEntity(gameData, id)));
+    const myEntity = getMyPlayerEntity(gameData);
+    if (!myEntity.active && !myEntity.finished) {
+        drawShotPreview(getShotPreview());
+    }
+};
+const getAngleLabel = () => {
+    return getElement('game-angle-label');
+};
+const getCreateGameButton = () => {
+    return getElement('menu-create');
+};
+const getLobbyStartButton = () => {
+    return getElement('lobby-start');
+};
+const getLobbyLeaveButton = () => {
+    return getElement('lobby-leave');
+};
+const getShootButton = () => {
+    return getElement('game-shoot');
+};
+const getPrevButton = () => {
+    return getElement('game-prev');
+};
+const getSummaryContinueButton = () => {
+    return getElement('summary-next');
+};
+const getPlayerNameInput = () => {
+    return getElement('menu-name');
+};
+const getAngleInput = () => {
+    return getElement('game-angle');
+};
+const getPowerInput = () => {
+    return getElement('game-power');
+};
+const getLoadingPane = () => {
+    return getElement('loading');
+};
+const getErrorPane = () => {
+    return getElement('error');
+};
+const getMenuPane = () => {
+    return getElement('menu');
+};
+const getLobbyPane = () => {
+    return getElement('lobby');
+};
+const getLobbyListPane = () => {
+    return getElement('menu-lobbies');
+};
+const getLobbyPlayerListPane = () => {
+    return getElement('lobby-players');
+};
+const getLobbyName = () => {
+    return getElement('lobby-name');
+};
+const getGameUiPane = () => {
+    return getElement('game-ui');
+};
+const getGameUiTopPane = () => {
+    return getElement('game-ui-top');
+};
+const getGameUiMidPane = () => {
+    return getElement('game-ui-mid');
+};
+const getSummaryPane = () => {
+    return getElement('summary');
+};
+const getSummaryScorePane = () => {
+    return getElement('summary-score');
+};
+const getGame = () => {
+    return getElement('game');
+};
+const getGameInner = () => {
+    return getElement('game-inner');
+};
+const getCanvas = () => {
+    return getElement('canv');
+};
+const getCtx = () => {
+    return getCanvas().getContext('2d');
+};
+const getCenter = () => {
+    return getElement('center');
+};
 const LobbyListItem = (lobby) => {
     const div = document.createElement('div');
     div.className = 'pane flex-hz pane-secondary';
@@ -813,6 +1035,7 @@ const LobbyListItem = (lobby) => {
     button.className = 'secondary';
     button.innerText = `${lobby.name} (${lobby.players.length})`;
     button.onclick = () => {
+        playSound('click');
         joinLobby(lobby.id, uiState.name);
     };
     div.appendChild(button);
@@ -821,9 +1044,14 @@ const LobbyListItem = (lobby) => {
 const renderLobbyList = (lobbies) => {
     const lobbyList = getLobbyListPane();
     setHTML(lobbyList, '');
-    lobbies.forEach(lobby => {
-        lobbyList.appendChild(LobbyListItem(lobby));
-    });
+    if (lobbies.length) {
+        lobbies.forEach(lobby => {
+            lobbyList.appendChild(LobbyListItem(lobby));
+        });
+    }
+    else {
+        setHTML(lobbyList, '<div style="text-align: center">There are no lobbies right now.</div>');
+    }
 };
 const renderMenu = () => {
     const uiState = getUiState();
@@ -837,6 +1065,7 @@ const renderMenu = () => {
     };
     const createGameButton = getCreateGameButton();
     createGameButton.onclick = () => {
+        playSound('click');
         createLobby(getUiState().name + "'s Game", getUiState().name);
     };
 };
@@ -854,10 +1083,12 @@ const renderLobby = (lobby) => {
     const startGameButton = getLobbyStartButton();
     startGameButton.disabled = !isPlayerMe(lobby.players[0]);
     startGameButton.onclick = () => {
+        playSound('click');
         startLobby();
     };
     const leaveGameButton = getLobbyLeaveButton();
     leaveGameButton.onclick = () => {
+        playSound('click');
         leaveLobby();
     };
 };
@@ -875,9 +1106,17 @@ const renderGameUi = () => {
     }
     const shootButton = getShootButton();
     shootButton.onclick = () => {
+        playSound('click');
         sendRequestToShoot();
         renderUi();
     };
+    const prevButton = getPrevButton();
+    prevButton.onclick = () => {
+        playSound('click');
+        sendRequestToGoToPrev();
+        renderUi();
+    };
+    prevButton.disabled = myEntity.posHistoryI === 0;
     const angleInput = getAngleInput();
     angleInput.oninput = ev => {
         const value = Number(ev.target.value);
@@ -888,11 +1127,18 @@ const renderGameUi = () => {
     angleInput.onchange = () => {
         sendRequestToSetAngle();
     };
+    const powerInput = getPowerInput();
+    powerInput.max = POWER_MULTIPLIERS.length - 1;
+    powerInput.oninput = ev => {
+        const value = Number(ev.target.value);
+        setLocalPlayerPowerIndex(value);
+        setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
+    };
     setShotPreview(generateShotPreview(gameData, getCurrentShotArgs()));
     const gameUiTop = getGameUiTopPane();
     setHTML(gameUiTop, '');
     const colorInfoLabel = createElement('div');
-    setHTML(colorInfoLabel, `You are the <span style="color: light${myEntity.color}">${myEntity.color.toUpperCase()}</span> Player.`);
+    setHTML(colorInfoLabel, `You are the <span style="${getColorStyles(myEntity.color)}">${myEntity.color.toUpperCase()}</span> Player.`);
     colorInfoLabel.className = 'game-line';
     gameUiTop.appendChild(colorInfoLabel);
     const shotInfoLabel = createElement('div');
@@ -915,11 +1161,70 @@ const renderGameUi = () => {
     else {
         hideElement(gameUiMid);
     }
-    const shotResultLabel = createElement('div');
-    setHTML(shotResultLabel, `You shot a ${myEntity.shotCt}.`);
-    shotResultLabel.style['font-size'] = '42px';
-    gameUiMid.appendChild(shotResultLabel);
-    console.log('RENDER GAME UI', gameData);
+    if (uiState.roundCompleted) {
+        renderScoreCard(gameUiMid);
+        const div = createElement('div');
+        setHTML(div, 'Next round starting soon...');
+        gameUiMid.appendChild(div);
+    }
+    else {
+        const shotResultLabel = createElement('div');
+        setHTML(shotResultLabel, `You shot a ${myEntity.shotCt}.`);
+        shotResultLabel.style['font-size'] = '42px';
+        gameUiMid.appendChild(shotResultLabel);
+    }
+};
+const renderScoreCard = (parent) => {
+    const gameData = getGameData();
+    if (!gameData) {
+        return;
+    }
+    const table = createElement('table');
+    const head = createElement('thead');
+    const row = createElement('tr');
+    for (let i = 0; i < gameData.numRounds + 2; i++) {
+        const column = createElement('th');
+        setHTML(column, i === gameData.numRounds + 1 ? 'Total' : i === 0 ? 'Name' : 'Rd ' + i);
+        row.appendChild(column);
+    }
+    head.appendChild(row);
+    table.appendChild(head);
+    gameData.players
+        .map(playerId => getShared().getEntity(gameData, playerId))
+        .forEach((playerEntity) => {
+        if (playerEntity.disconnected) {
+            return;
+        }
+        const row = createElement('tr');
+        const scores = gameData.scorecard[playerEntity.id];
+        const label = createElement('td');
+        setHTML(label, `<div style="${getColorStyles(playerEntity.color)}">${playerEntity.name}</div>`);
+        row.appendChild(label);
+        let total = 0;
+        for (let i = 0; i < gameData.numRounds; i++) {
+            const column = createElement('td');
+            total += scores[i] ?? 0;
+            setHTML(column, String(scores[i] ?? '_'));
+            row.appendChild(column);
+        }
+        const totalColumn = createElement('td');
+        setHTML(totalColumn, String(total));
+        row.appendChild(totalColumn);
+        table.appendChild(row);
+    });
+    parent.appendChild(table);
+};
+const renderSummary = () => {
+    const summaryScore = getSummaryScorePane();
+    setHTML(summaryScore, '');
+    renderScoreCard(summaryScore);
+    const continueButton = getSummaryContinueButton();
+    continueButton.onclick = () => {
+        playSound('click');
+        setUiState({
+            activePane: 'menu',
+        });
+    };
 };
 const renderUi = () => {
     const uiState = getUiState();
@@ -942,11 +1247,189 @@ const renderUi = () => {
             }
             break;
         }
+        case 'summary': {
+            showSummary();
+            renderSummary();
+            break;
+        }
         case 'game': {
             showGame();
             renderGameUi();
             panZoom();
         }
     }
+};
+let soundEnabled = true;
+const isSoundEnabled = () => soundEnabled;
+const setSoundEnabled = (v) => (soundEnabled = v);
+const setVolume = (v) => (zzfxV = v);
+const soundStorage = {
+    click: [
+        1.42,
+        0,
+        136,
+        0.01,
+        0.04,
+        0,
+        1,
+        1.15,
+        ,
+        ,
+        -520,
+        ,
+        0.02,
+        ,
+        10,
+        ,
+        0.01,
+        ,
+        0.01,
+        0.15,
+    ],
+    cancel: [
+        [
+            2.32,
+            0,
+            188,
+            0.03,
+            0.03,
+            0,
+            1,
+            1.11,
+            ,
+            -0.1,
+            ,
+            ,
+            ,
+            ,
+            ,
+            0.4,
+            0.19,
+            0.59,
+            0.02,
+        ],
+    ],
+    start: [
+        2.06,
+        0,
+        280,
+        0.03,
+        0.21,
+        0.04,
+        1,
+        2.02,
+        ,
+        ,
+        -820,
+        0.07,
+        0.23,
+        0.1,
+        ,
+        0.1,
+        0.33,
+        ,
+        ,
+        0.36,
+    ],
+    end: [
+        1.99,
+        0,
+        734,
+        0.08,
+        0.06,
+        0.02,
+        1,
+        0.03,
+        ,
+        ,
+        -287,
+        ,
+        0.04,
+        ,
+        ,
+        ,
+        0.24,
+        ,
+        0.1,
+    ],
+    expl: [
+        ,
+        0,
+        499,
+        ,
+        0.22,
+        0.36,
+        3,
+        2.17,
+        0.5,
+        ,
+        ,
+        ,
+        ,
+        0.3,
+        ,
+        0.7,
+        ,
+        0.9,
+        0.02,
+        0.25,
+    ],
+    completed: [
+        ,
+        0,
+        1732,
+        0.08,
+        ,
+        0.02,
+        ,
+        0.26,
+        ,
+        20,
+        -402,
+        0.08,
+        ,
+        ,
+        ,
+        ,
+        ,
+        0.49,
+        0.03,
+    ],
+    holeInOne: [
+        1.25,
+        0,
+        355,
+        0.18,
+        0.01,
+        0.15,
+        2,
+        0.01,
+        ,
+        53,
+        -79,
+        0.18,
+        ,
+        0.7,
+        -2.1,
+        ,
+        0.12,
+        ,
+        0.12,
+        0.02,
+    ],
+};
+const playSound = (soundName) => {
+    if (!isSoundEnabled()) {
+        console.log('sound not enabled');
+        return;
+    }
+    const soundObj = soundStorage[soundName];
+    if (!soundObj) {
+        console.error('No sound exists with name: ' + soundName);
+        return;
+    }
+    const soundVolume = 0.3;
+    setVolume(soundVolume);
+    zzfx(...soundObj);
 };
 //# sourceMappingURL=client.js.map

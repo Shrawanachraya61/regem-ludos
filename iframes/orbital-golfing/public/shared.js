@@ -8,19 +8,24 @@ console.shared = new (class {
   G_MASS_MIN = 5.0 * 10 ** 30;
   G_MASS_MAX = 100.0 * 10 ** 30;
 
-  G_R_LOBBY_CREATE = 'lobby-create';
-  G_R_LOBBY_JOIN = 'lobby-join';
-  G_R_LOBBY_LEAVE = 'lobby-leave';
-  G_R_LOBBY_START = 'lobby-start';
-  G_R_GAME_SET_ANGLE = 'game-angle';
-  G_R_GAME_SHOOT = 'game-shoot';
+  G_R_LOBBY_CREATE = 'lc';
+  G_R_LOBBY_JOIN = 'lj';
+  G_R_LOBBY_LEAVE = 'll';
+  G_R_LOBBY_START = 'ls';
+  G_R_GAME_SET_ANGLE = 'ga';
+  G_R_GAME_SHOOT = 'gs';
+  G_R_GAME_PREV = 'gp';
 
-  G_S_CONNECTED = 'game-connected';
-  G_S_LOBBIES_UPDATED = 'lobbies-updated';
-  G_S_GAME_STARTED = 'game-started';
-  G_S_GAME_COMPLETED = 'game-completed';
-  G_S_GAME_UPDATED = 'game-updated';
-  G_S_GAME_SCORE_UPDATED = 'game-score';
+  G_S_CONNECTED = '1';
+  G_S_LOBBIES_UPDATED = '2';
+  G_S_GAME_STARTED = '3';
+  G_S_GAME_COMPLETED = '4';
+  G_S_GAME_UPDATED = '5';
+  G_S_GAME_COLLISIONS = '6';
+  G_S_GAME_SET_ACTIVE_STATE = '7';
+  G_S_GAME_ROUND_COMPLETED = '8';
+  G_S_GAME_ROUND_STARTED = '9';
+  G_S_GAME_PLAYER_DISCONNECTED = '10';
 
   normalize(x, A, B, C, D) {
     return C + ((x - A) * (D - C)) / (B - A);
@@ -139,38 +144,16 @@ console.shared = new (class {
     let currentGameData = gameData;
     let { projectiles, planets, players, resources, fields } = currentGameData;
     let collisionCallbacks = [];
-    // const projectileList = projectiles.map(id =>
-    //   G_getEntityFromEntMap(id, currentGameData)
-    // );
-    // const shockwaveList = projectileList
-    //   .concat(players.map(id => G_getEntityFromEntMap(id, currentGameData)))
-    //   .concat(
-    //     resources
-    //       .filter(
-    //         id =>
-    //           G_getEntityFromEntMap(id, currentGameData).type !== G_res_shockwave
-    //       )
-    //       .map(id => G_getEntityFromEntMap(id, currentGameData))
-    //   );
-    // const bodyList = projectileList.concat(
-    //   planets.map(id => G_getEntityFromEntMap(id, currentGameData))
-    // );
-    // const gravityCollidables = players
-    //   .map(id => G_getEntityFromEntMap(id, currentGameData))
-    //   .filter(p => !p.dead)
-    //   .concat(resources.map(id => G_getEntityFromEntMap(id, currentGameData)));
 
-    const gravityBodies = gameData.planets.map(id =>
-      this.getEntity(gameData, id)
-    );
     const bodiesAffectedByGravityBodies = gameData.players
       .map(id => this.getEntity(gameData, id))
       .filter(p => p.active);
+    const gravityBodies = gameData.planets.map(id =>
+      this.getEntity(gameData, id)
+    );
     const gravityCollidables = gameData.flags.map(id =>
       this.getEntity(gameData, id)
     );
-
-    // console.log('apply gravity', bodiesAffectedByGravityBodies, gravityBodies);
 
     gameData.collisions = this.applyGravity(
       bodiesAffectedByGravityBodies,
@@ -182,89 +165,8 @@ console.shared = new (class {
     bodiesAffectedByGravityBodies.forEach(p => {
       if (!this.isInBounds(p.x, p.y, p.r, p.r, currentGameData)) {
         const c = this.createCollision(p, '');
-        console.log('BOUNDS COLLISION', c);
         gameData.collisions.push(c);
       }
     });
-    // gameData.collisions = gameData.collisions.concat(collisions);
-    // G_applyFields(projectileList, gameData);
-    // G_applyShockwaves(shockwaveList, gameData);
-    // for (let i = 0; i < gameData.collisions.length; i++) {
-    //   const col = gameData.collisions[i];
-    //   if (col[2]) {
-    //     continue;
-    //   }
-    //   col[2] = true;
-    //   const { remove, cb } = G_handleCollision(col, gameData);
-    //   if (remove) {
-    //     gameData.collisions.splice(i, 1);
-    //     i--;
-    //   }
-    //   if (cb) {
-    //     collisionCallbacks.push(cb);
-    //   }
-    // }
-
-    // for (let i = 0; i < projectiles.length; i++) {
-    //   const p = G_getEntityFromEntMap(projectiles[i], currentGameData);
-    //   if (p.meta.type === G_action_move) {
-    //     const player = G_getEntityFromEntMap(p.meta.player, currentGameData);
-    //     if (player.dead) {
-    //       p.meta.remove = true;
-    //     } else {
-    //       movePlayer(p.meta.player, p.px, p.py, currentGameData);
-    //     }
-    //   }
-    //   if (p.update) {
-    //     p.update(p);
-    //   }
-    //   if (p.meta.remove) {
-    //     projectiles.splice(i, 1);
-    //     delete gameData.entMap[p.id];
-    //     i--;
-    //     continue;
-    //   }
-    //   if (
-    //     gameData.tss - p.tStart >= p.t ||
-    //     !isInBounds(p.px, p.py, p.r, p.r, currentGameData)
-    //   ) {
-    //     const collisionWithNothing = G_createCollision(p, null);
-    //     // handleCollision returns { remove: true } when the collision should be removed
-    //     const { remove, cb } = G_handleCollision(
-    //       collisionWithNothing,
-    //       currentGameData
-    //     );
-    //     if (p.meta.type !== G_action_move && !remove) {
-    //       collisionWithNothing[2] = true;
-    //       currentGameData.collisions.push(collisionWithNothing);
-    //     }
-    //     if (cb) {
-    //       collisionCallbacks.push(cb);
-    //     }
-    //     projectiles.splice(i, 1);
-    //     i--;
-    //     continue;
-    //   }
-    // }
-
-    // for (let i = 0; i < planets.length; i++) {
-    //   const planet = G_getEntityFromEntMap(planets[i], currentGameData);
-    //   if (planet.meta.remove) {
-    //     planets.splice(i, 1);
-    //     i--;
-    //   }
-    // }
-
-    // for (let i = 0; i < fields.length; i++) {
-    //   const field = G_getEntityFromEntMap(fields[i], currentGameData);
-    //   if (field.meta.remove) {
-    //     fields.splice(i, 1);
-    //     i--;
-    //   }
-    // }
-
-    // for (let i = 0; i < collisionCallbacks.length; i++) {
-    //   collisionCallbacks[i]();
-    // }
   }
 })();

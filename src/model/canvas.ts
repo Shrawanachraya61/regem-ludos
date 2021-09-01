@@ -1,5 +1,3 @@
-import WebGL2D from 'lib/webgl-canvas';
-
 export const SCREEN_HEIGHT = 512;
 export const SCREEN_WIDTH = 683;
 export const CANVAS_ID = 'canv';
@@ -24,7 +22,8 @@ export const createCanvas = (
   canvas.height = height || 1;
   let context: any;
   if (isGL) {
-    WebGL2D.enable(canvas);
+    // WebGL2D.enable(canvas);
+    console.error('WebGL rendering has been removed.');
     context = (canvas as any).getContext('webgl-2d');
   } else {
     context = (canvas as any).getContext('2d');

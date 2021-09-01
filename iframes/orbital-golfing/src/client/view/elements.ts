@@ -16,6 +16,12 @@ const getLobbyLeaveButton = () => {
 const getShootButton = () => {
   return getElement('game-shoot');
 };
+const getPrevButton = () => {
+  return getElement('game-prev');
+};
+const getSummaryContinueButton = () => {
+  return getElement('summary-next');
+};
 
 // inputs
 const getPlayerNameInput = () => {
@@ -23,6 +29,9 @@ const getPlayerNameInput = () => {
 };
 const getAngleInput = () => {
   return getElement('game-angle');
+};
+const getPowerInput = () => {
+  return getElement('game-power');
 };
 
 // panes
@@ -56,10 +65,19 @@ const getGameUiTopPane = () => {
 const getGameUiMidPane = () => {
   return getElement('game-ui-mid');
 };
+const getSummaryPane = () => {
+  return getElement('summary');
+};
+const getSummaryScorePane = () => {
+  return getElement('summary-score');
+};
 
 //game
 const getGame = () => {
   return getElement('game');
+};
+const getGameInner = () => {
+  return getElement('game-inner');
 };
 const getCanvas = () => {
   return getElement('canv');

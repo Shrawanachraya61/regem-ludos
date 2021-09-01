@@ -38,6 +38,8 @@ const startRenderLoop = () => {
       prevNow = now;
       getShared().simulate(gameData, { nowDt });
       drawSimulation(gameData);
+
+      applyGameState(gameData);
     }
   });
 };
@@ -61,6 +63,7 @@ const loop = cb => {
     }
     if (looping) {
       requestAnimationFrame(_loop);
+      // setTimeout(_loop, 100);
     }
   };
   requestAnimationFrame(_loop);

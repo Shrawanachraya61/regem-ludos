@@ -36,9 +36,7 @@ void Actor::createAnimationDefinition(const std::string& def) {
   anims[def] = anim;
 }
 
-std::pair<double, double> Actor::get() const {
-  return std::make_pair(x, y);
-}
+std::pair<double, double> Actor::get() const { return std::make_pair(x, y); }
 
 void Actor::set(const double xA, const double yA) {
   x = xA;
@@ -132,15 +130,16 @@ void Actor::update() {
 
   if (gravityEnabled) {
     std::pair<double, double> gravity = game.getGravitationalPull(x, y);
-    // std::cout << "GRAVITY " << gravity.first << "," << gravity.second << std::endl;
+    // std::cout << "GRAVITY " << gravity.first << "," << gravity.second <<
+    // std::endl;
     ax += gravity.first;
     ay += gravity.second;
   }
 
   if (accelerating) {
     double headingRad = degreesToRadians(headingDeg);
-    ax = sin(headingRad) * accelerationRate;
-    ay = -cos(headingRad) * accelerationRate;
+    ax = sin(float(headingRad)) * accelerationRate;
+    ay = -cos(float(headingRad)) * accelerationRate;
   }
 
   // double vxMod = ax * frameRatio * frameRatio;

@@ -1,29 +1,136 @@
-const courseStorage = [
-    {
-        name: 'test',
-        holes: [
+var courseStorage = [{
+        "name": "test",
+        "holes": [
             {
-                width: 2019600000000,
-                height: 2019600000000,
-                par: 2,
-                planets: [
+                "width": 1595733330000,
+                "height": 1595733330000,
+                "par": 2,
+                "planets": [
                     {
-                        x: 1077120000000,
-                        y: 1432170666667,
-                        r: 1e32,
-                    },
+                        "x": 87765330000,
+                        "y": -55850670000,
+                        "r": 394944000000,
+                        "mass": 8.850018724661703e+31
+                    }
                 ],
-                flags: [
+                "flags": [
                     {
-                        x: -1077120000000,
-                        y: 1432170666667,
-                    },
+                        "x": 618346670000,
+                        "y": 714090670000
+                    }
                 ],
-                start: [0, 0],
+                "start": [
+                    -801856000000,
+                    -753984000000
+                ]
             },
-        ],
-    },
-];
+            {
+                "width": 1595733330000,
+                "height": 1595733330000,
+                "par": 2,
+                "planets": [
+                    {
+                        "x": -808559440000,
+                        "y": 831879900000,
+                        "r": 265290670000,
+                        "mass": 3.8829152206245384e+31
+                    },
+                    {
+                        "x": 61226940000,
+                        "y": -181299050000,
+                        "r": 550787740000,
+                        "mass": 1.715166577996147e+32
+                    }
+                ],
+                "flags": [
+                    {
+                        "x": -1079241380000,
+                        "y": -1124347330000
+                    }
+                ],
+                "start": [
+                    943507980000,
+                    1174162040000
+                ]
+            },
+            {
+                "width": 2234026670000,
+                "height": 2234026670000,
+                "par": 2,
+                "planets": [
+                    {
+                        "x": 303899430000,
+                        "y": 770821780000,
+                        "r": 610368000000,
+                        "mass": 2.0899816087705714e+32
+                    },
+                    {
+                        "x": 766191360000,
+                        "y": -384623590000,
+                        "r": 267285330000,
+                        "mass": 3.9446663241074786e+31
+                    },
+                    {
+                        "x": -958626830000,
+                        "y": 276245380000,
+                        "r": 261301330000,
+                        "mass": 3.7608354165744676e+31
+                    },
+                    {
+                        "x": -870528380000,
+                        "y": -1046894820000,
+                        "r": 413348790000,
+                        "mass": 9.705397631948545e+31
+                    }
+                ],
+                "flags": [
+                    {
+                        "x": 1127445440000,
+                        "y": -1309853720000
+                    }
+                ],
+                "start": [
+                    -1127303420000,
+                    1250196430000
+                ]
+            },
+            {
+                "width": 1276586670000,
+                "height": 3191466670000,
+                "par": 2,
+                "planets": [
+                    {
+                        "x": 702361760000,
+                        "y": -2637268410000,
+                        "r": 267285330000,
+                        "mass": 3.9446663241074786e+31
+                    },
+                    {
+                        "x": 552000580000,
+                        "y": 1986339580000,
+                        "r": 261301330000,
+                        "mass": 3.7608354165744676e+31
+                    },
+                    {
+                        "x": -615211970000,
+                        "y": 67458290000,
+                        "r": 413347880000,
+                        "mass": 9.705354540538727e+31
+                    }
+                ],
+                "flags": [
+                    {
+                        "x": 0,
+                        "y": 2547854220000
+                    }
+                ],
+                "start": [
+                    -824114020000,
+                    -2731158370000
+                ]
+            }
+        ]
+    }];
 const courseGetByName = (name) => {
     return courseStorage.find(c => c.name === name);
 };
@@ -39,10 +146,19 @@ const gameGetPartial = (game) => {
     };
     return partialGame;
 };
-const broadcastGameStatus = (game, started) => {
+const broadcastGameStatus = (game, event) => {
     game.players.map(playerGetById).forEach(player => {
         if (player?.socket) {
-            sendIoMessage(player.socket, started ? getShared().G_S_GAME_STARTED : getShared().G_S_GAME_COMPLETE, { game: gameGetPartial(game) });
+            sendIoMessage(player.socket, event, { game: gameGetPartial(game) });
+        }
+    });
+};
+const broadcastPlayerDisconnected = (game, playerId) => {
+    game.players.map(playerGetById).forEach(player => {
+        if (player?.socket) {
+            sendIoMessage(player.socket, getShared().G_S_GAME_PLAYER_DISCONNECTED, {
+                playerId,
+            });
         }
     });
 };
@@ -53,6 +169,7 @@ const broadcastGameEntityData = (game) => {
         i: game.broadcastCt,
         collisions: game.collisions,
         round: game.round,
+        timestamp: +new Date(),
     };
     for (const i in game.entityMap) {
         const entity = game.entityMap[i];
@@ -80,12 +197,14 @@ const broadcastGameEntityData = (game) => {
     });
 };
 const gameCreate = (lobbyId, playerIds) => {
+    const courseName = 'test';
+    const course = courseGetByName(courseName);
     const game = {
         id: randomId(),
-        courseName: 'test',
+        courseName: courseName,
         lobbyId,
-        width: 2019600000000,
-        height: 2019600000000,
+        width: 0,
+        height: 0,
         entityMap: {},
         scorecard: playerIds.reduce((obj, id) => {
             obj[id] = [];
@@ -99,6 +218,7 @@ const gameCreate = (lobbyId, playerIds) => {
         flags: [],
         collisions: [],
         round: 0,
+        numRounds: course.holes.length,
         roundFinished: false,
         intervalMs: 25,
         intervalId: -1,
@@ -108,7 +228,15 @@ const gameCreate = (lobbyId, playerIds) => {
     };
     console.debug(`Game created ${gameToString(game)}`);
     gameStorage.push(game);
-    const colors = shuffle(['blue', 'red', 'green', 'yellow']);
+    const colors = shuffle([
+        'blue',
+        'red',
+        'green',
+        'yellow',
+        'purple',
+        'grey',
+        'orange',
+    ]);
     playerIds.forEach((id, i) => {
         const player = playerGetById(id);
         if (player) {
@@ -117,7 +245,7 @@ const gameCreate = (lobbyId, playerIds) => {
         }
     });
     gameLoadRound(game, 0);
-    broadcastGameStatus(game, true);
+    broadcastGameStatus(game, getShared().G_S_GAME_STARTED);
     gameBeginSimulationLoop(game);
     return gameGetPartial(game);
 };
@@ -125,12 +253,14 @@ const gameLoadRound = (game, round) => {
     const course = courseGetByName(game.courseName);
     if (course) {
         const hole = course.holes[round];
+        game.width = hole.width;
+        game.height = hole.height;
         game.planets = [];
         game.flags = [];
         if (hole) {
             game.round = round;
             hole.planets.forEach(p => {
-                gameCreatePlanet(game, p.x, p.y, p.r, p.color ?? 'red');
+                gameCreatePlanet(game, p.x, p.y, p.mass ?? 25 * 10 ** 30, p.r, p.color ?? '#243F72');
             });
             hole.flags.forEach(f => {
                 gameCreateFlag(game, f.x, f.y);
@@ -170,7 +300,7 @@ const gameBeginSimulationLoop = (game) => {
                 entityA.active = false;
                 entityA.shotCt--;
                 entityA.posHistoryI++;
-                gameDropPlayerEntityAtPreviousPosition(entityA);
+                gameDropPlayerEntityAtPreviousPosition(game, entityA);
                 return;
             }
             if (entityB?.type === 'flag') {
@@ -183,7 +313,7 @@ const gameBeginSimulationLoop = (game) => {
         const players = game.players.map(id => getShared().getEntity(game, id));
         const isGameCompleted = !players
             .map((playerEntity) => {
-            if (playerEntity.finished) {
+            if (playerEntity.finished || playerEntity.disconnected) {
                 return true;
             }
             if (playerEntity.active && now - playerEntity.t > playerEntity.ms) {
@@ -195,17 +325,33 @@ const gameBeginSimulationLoop = (game) => {
             return false;
         })
             .includes(false);
+        if (game.collisions.length) {
+            broadcastGameEntityData(game);
+            game.collisions = [];
+        }
         if (isGameCompleted && !game.roundFinished) {
-            console.log(`${gameToString(game)} round completed!`);
+            console.debug(`${gameToString(game)} round completed!`);
             game.roundFinished = true;
             players.forEach(p => {
                 game.scorecard[p.id].push(p.shotCt);
             });
             setTimeout(() => {
-                console.log('load round');
-                game.roundFinished = false;
-                gameLoadRound(game, 0);
-                broadcastGameStatus(game, true);
+                game.round++;
+                const course = courseGetByName(game.courseName);
+                if (course && game.round >= course.holes.length) {
+                    console.debug('game completed');
+                    broadcastGameStatus(game, getShared().G_S_GAME_COMPLETED);
+                    gameDestroy(game);
+                }
+                else {
+                    console.debug('load round', game.round);
+                    gameLoadRound(game, game.round);
+                    broadcastGameStatus(game, getShared().G_S_GAME_ROUND_COMPLETED);
+                    setTimeout(() => {
+                        game.roundFinished = false;
+                        broadcastGameStatus(game, getShared().G_S_GAME_ROUND_STARTED);
+                    }, 5000);
+                }
             }, 3000);
         }
     }, game.intervalMs);
@@ -249,13 +395,13 @@ const gameCreateEntity = (game, id) => {
     game.entityMap[entity.id] = entity;
     return entity;
 };
-const gameCreatePlanet = (game, x, y, mass, color) => {
+const gameCreatePlanet = (game, x, y, mass, r, color) => {
     const planet = gameCreateEntity(game, 'planet_' + randomId());
     planet.type = 'planet';
     planet.mass = mass;
     planet.x = x;
     planet.y = y;
-    planet.r = 119680000000;
+    planet.r = r;
     planet.mass = mass;
     planet.color = color;
     console.debug('- PlanetEntity created: ' + JSON.stringify(planet, null, 2));
@@ -309,9 +455,17 @@ const gameAssertPlayerEntityInGame = (game, player) => {
     }
     return playerEntity;
 };
-const gameAssertPlayerCanShoot = (playerEntity) => {
+const gameAssertPlayerCanAct = (game, playerEntity) => {
+    if (game.roundFinished) {
+        throw new Error('Round is finished.');
+    }
     if (playerEntity.finished || playerEntity.active) {
         throw new Error('Player is finished or active.');
+    }
+};
+const gameAssertShotArgs = (game, args) => {
+    if (args.power <= 0.5 || args.power > 2) {
+        throw new Error('Invalid ShotArgs power specified.');
     }
 };
 const gameSetPlayerAngleDeg = (game, player, angleDeg) => {
@@ -321,21 +475,25 @@ const gameSetPlayerAngleDeg = (game, player, angleDeg) => {
 };
 const gameShoot = (game, player, args) => {
     const playerEntity = gameAssertPlayerEntityInGame(game, player);
-    gameAssertPlayerCanShoot(playerEntity);
+    gameAssertPlayerCanAct(game, playerEntity);
+    gameAssertShotArgs(game, args);
+    console.debug('- shoot', JSON.stringify(args, null, 2));
     playerEntity.active = true;
     const angleRad = getShared().toRadians(args.angleDeg);
-    playerEntity.vx = 55000 * Math.sin(angleRad);
-    playerEntity.vy = 55000 * Math.cos(angleRad);
+    playerEntity.vx = 55000 * args.power * Math.sin(angleRad);
+    playerEntity.vy = 55000 * args.power * Math.cos(angleRad);
     playerEntity.angle = args.angleDeg;
     playerEntity.shotCt++;
     playerEntity.t = +new Date();
     playerEntity.ms = args.ms;
+    broadcastGameStatus(game, getShared().G_S_GAME_SET_ACTIVE_STATE);
 };
 const gameDropPlayerAtPreviousPosition = (game, player) => {
     const playerEntity = gameAssertPlayerEntityInGame(game, player);
-    gameDropPlayerEntityAtPreviousPosition(playerEntity);
+    gameDropPlayerEntityAtPreviousPosition(game, playerEntity);
 };
-const gameDropPlayerEntityAtPreviousPosition = (playerEntity) => {
+const gameDropPlayerEntityAtPreviousPosition = (game, playerEntity) => {
+    gameAssertPlayerCanAct(game, playerEntity);
     const i = playerEntity.posHistoryI;
     const prevPos = playerEntity.posHistory[i - 1];
     console.debug(`Drop player ${playerEntity.id} at previous position ${i - 1}`);
@@ -345,7 +503,13 @@ const gameDropPlayerEntityAtPreviousPosition = (playerEntity) => {
         playerEntity.x = prevPos[0];
         playerEntity.y = prevPos[1];
         playerEntity.shotCt++;
+        playerEntity.mark = true;
     }
+};
+const gameDisconnectPlayer = (game, player) => {
+    const playerEntity = gameAssertPlayerEntityInGame(game, player);
+    playerEntity.disconnected = true;
+    broadcastPlayerDisconnected(game, player.id);
 };
 const gameGetById = (id) => {
     return gameStorage.find(game => game.id === id);
@@ -393,7 +557,7 @@ const broadcastLobbies = () => {
 const lobbyCreate = (name, creator) => {
     name = name.trim();
     if (name.length > 20 || name.length === 0) {
-        throw new Error('Cannot create lobby.  Name length invalid:' + name.length);
+        throw new Error(`Cannot create lobby. Name length invalid: ${name.length}`);
     }
     name = escapeString(name);
     const lobby = {
@@ -429,7 +593,8 @@ const lobbyGetLeader = (lobby) => {
 };
 const lobbyJoin = (lobby, player) => {
     if (player.lobbyId) {
-        throw new Error(`Cannot join lobby. ${playerToString(player)} is in another lobby: ${player.lobbyId}`);
+        const plStr = playerToString(player);
+        throw new Error(`Cannot join lobby. ${plStr} is in another lobby.`);
     }
     lobby.playerIds.push(player.id);
     player.lobbyId = lobby.id;
@@ -461,8 +626,8 @@ const playerStorage = [];
 const playerCreate = (socket, name) => {
     const existingPlayer = playerGetBySocketId(socket.id);
     if (existingPlayer) {
-        throw new Error('Cannot create Player. Other Player exists: ' +
-            playerToString(existingPlayer));
+        const plStr = playerToString(existingPlayer);
+        throw new Error(`Cannot create Player. Other Player exists: ${plStr}`);
     }
     const id = randomId();
     const player = {
@@ -479,12 +644,13 @@ const playerCreate = (socket, name) => {
 };
 const playerDestroy = (player) => {
     const ind = playerStorage.indexOf(player);
+    const plStr = playerToString(player);
     if (ind > -1) {
-        console.debug(`Player destroyed ${playerToString(player)}`);
+        console.debug(`Player destroyed ${plStr}`);
         playerStorage.splice(ind, 1);
     }
     else {
-        throw new Error('Cannot destroy Player. No Player exists:' + playerToString(player));
+        throw new Error(`Cannot destroy Player. No Player exists: ${plStr}`);
     }
 };
 const playerGetById = (id) => {
@@ -500,7 +666,7 @@ const playerSetName = (player, name) => {
     player.name = escapeString(name);
 };
 const playerToString = (player) => {
-    return `Player { name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}]}`;
+    return `Player { name=${player.name} (id=${player.id}) [socketId=${player?.socket?.id}] }`;
 };
 const playerAssertInLobby = (player) => {
     const lobby = lobbyGetById(player.lobbyId);
@@ -554,9 +720,12 @@ registerIoRequest('disconnect', meta => {
         if (player.gameId) {
             const game = gameGetById(player.gameId);
             console.log(' - Player will be removed from game.');
-            if (game && !gameHasConnectedPlayers(game)) {
-                console.log('game should be destroyed');
-                gameDestroy(game);
+            if (game) {
+                gameDisconnectPlayer(game, player);
+                if (!gameHasConnectedPlayers(game)) {
+                    console.log('game should be destroyed');
+                    gameDestroy(game);
+                }
             }
         }
     }
@@ -578,12 +747,12 @@ Object.assign(module.exports, {
 const restRoutes = {};
 function registerRestRequest(route, cb) {
     console.debug('register REST route:', route);
-    restRoutes[route] = (req, res) => {
+    restRoutes[route] = async (req, res) => {
         try {
             const socketId = req.headers.socketid;
             const player = playerGetBySocketId(socketId);
             console.debug('REST: ' + route, req.query);
-            const result = cb({
+            const result = await cb({
                 req,
                 res,
                 player,
@@ -613,11 +782,12 @@ registerRestRequest(getShared().G_R_LOBBY_START, meta => {
         lobby = lobbyGetById(player.lobbyId);
     }
     if (!lobby) {
-        throw new Error('Cannot start lobby.  No lobby exists for player: ' +
-            playerToString(player));
+        const plStr = playerToString(player);
+        throw new Error(`Cannot start lobby. No lobby exists for player: ${plStr} `);
     }
     const game = gameCreate(lobby.id, lobby.playerIds);
     lobbyDestroy(lobby);
+    broadcastLobbies();
     return {
         game,
     };
@@ -652,8 +822,8 @@ registerRestRequest(getShared().G_R_GAME_SHOOT, (meta, searchParams) => {
     const player = assertPlayer(meta);
     const game = playerAssertInGame(player);
     const ms = parseInt(searchParams.ms);
-    const angleDeg = parseInt(searchParams.angleDeg);
-    const power = parseInt(searchParams.power);
+    const angleDeg = parseFloat(searchParams.angleDeg);
+    const power = parseFloat(searchParams.power);
     if ([ms, angleDeg, power].map(isNaN).includes(true)) {
         throw new Error('Cannot shoot.  Malformed input args.');
     }
@@ -662,6 +832,13 @@ registerRestRequest(getShared().G_R_GAME_SHOOT, (meta, searchParams) => {
         angleDeg,
         power,
     });
+    return {};
+});
+registerRestRequest(getShared().G_R_GAME_PREV, async (meta) => {
+    const player = assertPlayer(meta);
+    const game = playerAssertInGame(player);
+    gameDropPlayerAtPreviousPosition(game, player);
+    await new Promise(resolve => setTimeout(resolve, 100));
     return {};
 });
 Object.assign(module.exports, restRoutes);
