@@ -22,7 +22,7 @@ const InnerRoot = style('div', {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  width: '800px',
+  width: '100%',
   // height: '100%',
 });
 
@@ -219,7 +219,7 @@ const MenuItems = (props: IMenuItemsProps) => {
                 <div
                   style={{
                     background:
-                      i === selectedItemIndex ? colors.DARKGREEN : colors.BLACK,
+                      i === selectedItemIndex ? colors.DARKGREEN : 'unset',
                   }}
                 >
                   {item.label}

@@ -3,7 +3,6 @@ const createExplosionEffect = (x: number, y: number) => {
 
   const elem = getGameInner();
   if (elem) {
-    playSound('expl');
     const div = createElement('div');
     div.className = 'expl';
     div.style.position = 'absolute';

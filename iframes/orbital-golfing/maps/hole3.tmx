@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="35" height="35" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="25">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="35" height="35" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="37">
  <editorsettings>
   <export target="hole3.json" format="json"/>
  </editorsettings>
@@ -46,20 +46,25 @@
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="8" gid="1" x="261.421" y="262.615" width="32" height="32"/>
-  <object id="9" gid="3" x="826.615" y="904.339" width="32" height="32"/>
-  <object id="16" x="483.178" y="213.779" width="306" height="306">
+  <object id="25" gid="1" x="260.693" y="270.111" width="32" height="32"/>
+  <object id="26" gid="3" x="825.887" y="911.836" width="32" height="32"/>
+  <object id="27" x="540.72" y="235.545" width="271.73" height="271.73">
    <ellipse/>
   </object>
-  <object id="20" x="685.06" y="589.413" width="134" height="134">
+  <object id="28" x="696.332" y="616.909" width="134" height="134">
    <ellipse/>
   </object>
-  <object id="21" x="254.202" y="425.254" width="131" height="131">
+  <object id="29" x="229.474" y="438.75" width="131" height="131">
    <ellipse/>
   </object>
-  <object id="23" gid="4" x="454.511" y="677.184" width="32" height="32"/>
-  <object id="24" x="238.173" y="718.81" width="207.227" height="207.227">
+  <object id="30" gid="4" x="438.088" y="688.361" width="32" height="32"/>
+  <object id="31" x="209.445" y="782.306" width="151.227" height="151.227">
    <ellipse/>
   </object>
+  <object id="32" gid="4" x="944.151" y="164.164" width="32" height="32"/>
+  <object id="33" gid="4" x="517.054" y="813.751" width="32" height="32"/>
+  <object id="34" gid="4" x="75.849" y="678.749" width="32" height="32"/>
+  <object id="35" gid="4" x="721.333" y="990.667" width="32" height="32"/>
+  <object id="36" gid="4" x="580" y="574.667" width="32" height="32"/>
  </objectgroup>
 </map>

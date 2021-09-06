@@ -300,7 +300,7 @@
       <array> 
         <dict>
           <key>begin</key>
-          <string>(\b(isnot|gt|lt|is|all|one|as|once|eq|this|with))</string>
+          <string>(\b(isnot|gt|lt|is|all|one|as|once|eq|this|with|func))</string>
           <key>beginCaptures</key>
           <dict>
             <key>1</key>

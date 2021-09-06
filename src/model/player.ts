@@ -1,6 +1,7 @@
 import {
   Character,
   characterCreateFromTemplate,
+  characterGetLevel,
   CharacterTemplate,
 } from 'model/character';
 import { BattlePosition } from 'model/battle';
@@ -124,4 +125,18 @@ export const playerModifyTickets = (player: Player, amount: number) => {
   if (player.tickets < 0) {
     player.tickets = 0;
   }
+};
+
+export const playerAddExperience = (player: Player, amount: number) => {
+  const charactersWhoLeveledUp: Character[] = [];
+  player.partyStorage.forEach(ch => {
+    const prevLevel = characterGetLevel(ch);
+    ch.experience += amount;
+    const postLevel = characterGetLevel(ch);
+    if (prevLevel < postLevel) {
+      charactersWhoLeveledUp.push(ch);
+    }
+  });
+
+  return charactersWhoLeveledUp;
 };

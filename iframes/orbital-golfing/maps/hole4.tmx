@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="20" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="26">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="20" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="27">
  <editorsettings>
-  <export format="json"/>
+  <export target="hole4.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32" tilecount="16" columns="4">
   <image source="tileset.png" width="128" height="128"/>
@@ -68,10 +68,11 @@
   <object id="21" x="392.869" y="236.587" width="131" height="131">
    <ellipse/>
   </object>
-  <object id="23" gid="4" x="475.844" y="1001.85" width="32" height="32"/>
+  <object id="23" gid="4" x="127.844" y="100.518" width="32" height="32"/>
   <object id="24" x="62.1725" y="679.477" width="207.227" height="207.227">
    <ellipse/>
   </object>
   <object id="25" gid="3" x="304" y="177.333" width="32" height="32"/>
+  <object id="26" gid="4" x="482.667" y="93.3333" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -19,6 +19,7 @@ var courseStorage = [{
                         "y": 714090670000
                     }
                 ],
+                "coins": [],
                 "start": [
                     -801856000000,
                     -753984000000
@@ -44,8 +45,18 @@ var courseStorage = [{
                 ],
                 "flags": [
                     {
-                        "x": -1079241380000,
-                        "y": -1124347330000
+                        "x": -612489380000,
+                        "y": -1204133990000
+                    }
+                ],
+                "coins": [
+                    {
+                        "x": 925525330000,
+                        "y": -985365330000
+                    },
+                    {
+                        "x": -1272597330000,
+                        "y": 1260629330000
                     }
                 ],
                 "start": [
@@ -59,39 +70,65 @@ var courseStorage = [{
                 "par": 2,
                 "planets": [
                     {
-                        "x": 303899430000,
-                        "y": 770821780000,
-                        "r": 610368000000,
-                        "mass": 2.0899816087705714e+32
+                        "x": 465096430000,
+                        "y": 752348370000,
+                        "r": 542010770000,
+                        "mass": 1.662415500999831e+32
                     },
                     {
-                        "x": 766191360000,
-                        "y": -384623590000,
+                        "x": 811159130000,
+                        "y": -494314300000,
                         "r": 267285330000,
                         "mass": 3.9446663241074786e+31
                     },
                     {
-                        "x": -958626830000,
-                        "y": 276245380000,
+                        "x": -1057277060000,
+                        "y": 222405330000,
                         "r": 261301330000,
                         "mass": 3.7608354165744676e+31
                     },
                     {
-                        "x": -870528380000,
-                        "y": -1046894820000,
-                        "r": 413348790000,
-                        "mass": 9.705397631948545e+31
+                        "x": -1096833290000,
+                        "y": -1188500190000,
+                        "r": 301647460000,
+                        "mass": 5.082199597864638e+31
                     }
                 ],
                 "flags": [
                     {
-                        "x": 1127445440000,
-                        "y": -1309853720000
+                        "x": 1124541210000,
+                        "y": -1339761750000
+                    }
+                ],
+                "coins": [
+                    {
+                        "x": -422519600000,
+                        "y": -448245480000
+                    },
+                    {
+                        "x": 1596335720000,
+                        "y": 1642951080000
+                    },
+                    {
+                        "x": -107495250000,
+                        "y": -948466660000
+                    },
+                    {
+                        "x": -1867610390000,
+                        "y": -409898680000
+                    },
+                    {
+                        "x": 707441780000,
+                        "y": -1654243560000
+                    },
+                    {
+                        "x": 143616000000,
+                        "y": 5319110000
                     }
                 ],
                 "start": [
-                    -1127303420000,
-                    1250196430000
+                    -1130206060000,
+                    1220293180000
                 ]
             },
             {
@@ -124,9 +161,78 @@ var courseStorage = [{
                         "y": 2547854220000
                     }
                 ],
+                "coins": [
+                    {
+                        "x": -702743430000,
+                        "y": 2854297790000
+                    },
+                    {
+                        "x": 712760890000,
+                        "y": 2882958220000
+                    }
+                ],
                 "start": [
                     -824114020000,
                     -2731158370000
+                ]
+            },
+            {
+                "width": 2872320000000,
+                "height": 2234026670000,
+                "par": 2,
+                "planets": [
+                    {
+                        "x": -2319458240000,
+                        "y": 1653935710000,
+                        "r": 542010770000,
+                        "mass": 1.662415500999831e+32
+                    },
+                    {
+                        "x": -1591510620000,
+                        "y": 1021588480000,
+                        "r": 413348790000,
+                        "mass": 9.705397631948545e+31
+                    },
+                    {
+                        "x": -925525330000,
+                        "y": 478720000000,
+                        "r": 413348790000,
+                        "mass": 9.705397631948545e+31
+                    },
+                    {
+                        "x": -63829330000,
+                        "y": -63829330000,
+                        "r": 542010770000,
+                        "mass": 1.662415500999831e+32
+                    }
+                ],
+                "flags": [
+                    {
+                        "x": 278802540000,
+                        "y": 1708090910000
+                    }
+                ],
+                "coins": [
+                    {
+                        "x": -1374640490000,
+                        "y": -1780680820000
+                    },
+                    {
+                        "x": 2306437060000,
+                        "y": 1770607750000
+                    },
+                    {
+                        "x": -878766360000,
+                        "y": 1727044230000
+                    },
+                    {
+                        "x": 2400976280000,
+                        "y": -1819465120000
+                    }
+                ],
+                "start": [
+                    -2590302060000,
+                    -471186140000
                 ]
             }
         ]
@@ -216,6 +322,7 @@ const gameCreate = (lobbyId, playerIds) => {
         planets: [],
         powerups: [],
         flags: [],
+        coins: [],
         collisions: [],
         round: 0,
         numRounds: course.holes.length,
@@ -257,6 +364,7 @@ const gameLoadRound = (game, round) => {
         game.height = hole.height;
         game.planets = [];
         game.flags = [];
+        game.coins = [];
         if (hole) {
             game.round = round;
             hole.planets.forEach(p => {
@@ -264,6 +372,9 @@ const gameLoadRound = (game, round) => {
             });
             hole.flags.forEach(f => {
                 gameCreateFlag(game, f.x, f.y);
+            });
+            hole.coins.forEach(c => {
+                gameCreateCoin(game, c.x, c.y);
             });
             game.players
                 .map(id => getShared().getEntity(game, id))
@@ -302,6 +413,19 @@ const gameBeginSimulationLoop = (game) => {
                 entityA.posHistoryI++;
                 gameDropPlayerEntityAtPreviousPosition(game, entityA);
                 return;
+            }
+            if (entityB?.type === 'coin') {
+                console.log('- hit a coin.');
+                entityA.shotCt--;
+                if (entityA.shotCt < 0) {
+                    entityA.shotCt = 0;
+                }
+                const playerEntity = entityA;
+                entityA.active = false;
+                playerEntity.posHistory.push([playerEntity.x, playerEntity.y]);
+                playerEntity.posHistoryI++;
+                entityB.removed = true;
+                entityB.mark = true;
             }
             if (entityB?.type === 'flag') {
                 console.log('- hit a flag');
@@ -434,6 +558,16 @@ const gameCreateFlag = (game, x, y) => {
     flag.r = getShared().fromPx(30);
     console.debug('- FlagEntity created: ' + JSON.stringify(flag, null, 2));
     game.flags.push(flag.id);
+};
+const gameCreateCoin = (game, x, y) => {
+    const coin = gameCreateEntity(game, 'coin_' + randomId());
+    coin.type = 'coin';
+    coin.x = x;
+    coin.y = y;
+    coin.r = getShared().fromPx(30);
+    coin.removed = false;
+    console.debug('- CoinEntity created: ' + JSON.stringify(coin, null, 2));
+    game.coins.push(coin.id);
 };
 const gameHasConnectedPlayers = (game) => {
     const players = game.players.map(playerGetById);

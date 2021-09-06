@@ -356,6 +356,7 @@ export class ScriptParser {
       'as',
       'once',
       'with',
+      'func',
     ];
     if (!validTypes.includes(type)) {
       this.throwParsingError(
@@ -368,7 +369,11 @@ export class ScriptParser {
     return {
       type: type,
       args: args.map(arg => {
-        if (typeof arg === 'string' && arg.indexOf('(') !== -1) {
+        if (
+          typeof arg === 'string' &&
+          type !== 'func' &&
+          arg.indexOf('(') !== -1
+        ) {
           return this.parseCommand(arg, lineNum, script);
         } else {
           return arg;

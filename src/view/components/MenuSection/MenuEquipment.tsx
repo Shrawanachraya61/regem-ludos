@@ -24,7 +24,7 @@ const Root = style('div', {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  width: '800px',
+  width: '100%',
   height: '532px',
   // height: '100%',
 });
@@ -379,6 +379,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
             });
           }}
           hideCloseBox={true}
+          backgroundColor={colors.BLACK}
           onClose={() => {
             props.onClose();
           }}
@@ -485,6 +486,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
               });
             }}
             onCloseSound="menu_choice_close"
+            backgroundColor={colors.BLACK}
           />
         </EquipmentTypeSelectWrapper>
         <EquipmentPreview
@@ -514,7 +516,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                       menuState.selectedCharacter &&
                       characterItemIsEquipped(menuState.selectedCharacter, item)
                         ? colors.DARKGREEN
-                        : colors.BLACK,
+                        : 'unset',
                   }}
                 >
                   {item.label}

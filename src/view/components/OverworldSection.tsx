@@ -26,6 +26,7 @@ import {
 import CharacterFollower from 'view/elements/CharacterFollower';
 import { getUiInterface } from 'view/ui';
 import TopBar, { TopBarButtons } from './TopBar';
+import { hexToRGBA } from 'utils';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -109,6 +110,26 @@ const DirectionButtonsArea = style('div', () => {
   };
 });
 
+const NotificationWrapper = style('div', (props: { visible: boolean }) => {
+  return {
+    position: 'absolute',
+    right: '0px',
+    top: '0px',
+    fontSize: '24px',
+    padding: '16px',
+    background: hexToRGBA(colors.DARKBLUE, 0.75),
+    margin: '8px',
+    maxWidth: '35%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    border: '2px solid ' + colors.WHITE,
+    borderBottomColor: colors.BLUE,
+    transition: props.visible ? 'transform 100ms ease-out' : 'unset',
+    transform: props.visible ? 'translateX(0px)' : 'translateX(500px)',
+  };
+});
+
 export const buttonHandlers = (cb: (ev: Event, isDown: boolean) => void) => {
   return {
     onMouseDown: (ev: Event) => {
@@ -128,6 +149,7 @@ export const buttonHandlers = (cb: (ev: Event, isDown: boolean) => void) => {
 
 const OverworldSection = () => {
   const overworldState = getUiInterface()?.appState.overworld;
+  const notifications = getUiInterface()?.appState.notifications;
 
   if (!overworldState) {
     return <div></div>;
@@ -178,6 +200,11 @@ const OverworldSection = () => {
         <CharacterText visible={overworldState.characterText !== ''}>
           {overworldState.characterText || overworldState.prevCharacterText}
         </CharacterText>
+        <NotificationWrapper visible={notifications.length > 0}>
+          {notifications.map((n, i) => {
+            return <p key={i}>{n.text}</p>;
+          })}
+        </NotificationWrapper>
       </TopBarWrapper>
       {shouldShowOnScreenControls() ? (
         <>

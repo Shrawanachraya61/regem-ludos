@@ -51,6 +51,7 @@ import { playMusic, loadSoundSpritesheet } from 'model/sound';
 import { get as getItem } from 'db/items';
 import { colors } from 'view/style';
 import { useEffect } from 'preact/hooks';
+import { beginQuest } from 'controller/quest';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -176,6 +177,9 @@ export const main = async (): Promise<void> => {
 
   console.timeEnd('load');
   setTimeLoaded(+new Date());
+
+  console.log('START QUEST TIC TAC TOE');
+  beginQuest(getCurrentScene(), 'TicTacToe');
 
   await new Promise<void>(resolve => {
     const touchSomething = () => {

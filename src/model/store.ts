@@ -16,6 +16,7 @@ export enum AppSection {
   Save = 'save',
   Menu = 'menu',
   LevelUp = 'level-up',
+  Quest = 'quest',
 }
 
 export enum CutsceneSpeaker {
@@ -115,8 +116,19 @@ export interface ILevelUpState {
   onClose: () => void;
 }
 
+export interface IQuestState {
+  onClose: () => void;
+  questName: string;
+}
+
 export interface IRoomState {
-  particles: Particle[],
+  particles: Particle[];
+}
+
+export interface NotificationState {
+  type: 'success' | 'info' | 'warning' | 'danger';
+  text: string;
+  timeoutId?: number;
 }
 
 export interface AppState {
@@ -132,6 +144,8 @@ export interface AppState {
   save: ISaveState;
   menu: IMenuState;
   levelUp: ILevelUpState;
+  quest: IQuestState;
+  notifications: NotificationState[];
 }
 
 export const AppStateInitial: AppState = {
@@ -202,4 +216,9 @@ export const AppStateInitial: AppState = {
   levelUp: {
     onClose: () => {},
   },
+  quest: {
+    onClose: () => {},
+    questName: '',
+  },
+  notifications: [],
 };

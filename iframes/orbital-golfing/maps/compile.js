@@ -43,7 +43,7 @@ const course = {
   holes: [],
 };
 
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 5; i++) {
   const fileName = __dirname + '/hole' + (i + 1) + '.json';
   const file = JSON.parse(fs.readFileSync(fileName).toString());
   console.log('FILE', fileName);
@@ -54,6 +54,7 @@ for (let i = 0; i < 4; i++) {
 
   const planets = [];
   const flags = [];
+  const coins = [];
   let start = [];
 
   objects.forEach(object => {
@@ -112,7 +113,10 @@ for (let i = 0; i < 4; i++) {
         y: reducePrecision(Math.floor(y)),
       });
     } else if (object.gid === GID_COIN) {
-      // not implemented yet
+      coins.push({
+        x: reducePrecision(Math.floor(x)),
+        y: reducePrecision(Math.floor(y)),
+      });
     }
   });
 
@@ -122,6 +126,7 @@ for (let i = 0; i < 4; i++) {
     par: file.properties?.find(prop => prop.name === 'par')?.value ?? 2,
     planets,
     flags,
+    coins,
     start,
   });
 }

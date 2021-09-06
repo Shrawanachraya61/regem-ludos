@@ -3,7 +3,7 @@ import { h, render, Fragment } from 'preact';
 import { useEffect, useState, useReducer } from 'preact/hooks';
 import { colors, style } from 'view/style';
 
-import { getCurrentPlayer, getIsPaused } from 'model/generics';
+import { getCurrentPlayer, getCurrentScene, getIsPaused } from 'model/generics';
 import { AppState, AppStateInitial, AppSection } from 'model/store';
 import { appReducer } from 'controller/ui-actions';
 import { getDrawScale, SCREEN_WIDTH, SCREEN_HEIGHT } from 'model/canvas';
@@ -25,6 +25,9 @@ import LevelUpSection from './components/LevelUpSection';
 
 import { initiateBattle } from 'controller/battle-management';
 import { get as getBattle } from 'db/encounters';
+import { get as getQuest } from 'db/quests';
+import QuestSection from './components/QuestSection';
+import { questIsCompleted } from 'controller/quest';
 
 interface UIInterface {
   appState: AppState;
@@ -114,6 +117,21 @@ const App = () => {
         // battlePauseTimers(battle);
         // return <BattleConclusion key={key} isVictory={true} />;
         return <MenuSection key={key} />;
+      }
+      case AppSection.Quest: {
+        const quest = getQuest(appState.quest.questName);
+        return (
+          <QuestSection
+            key={key}
+            quest={quest}
+            onClose={appState.quest.onClose}
+            status={
+              questIsCompleted(getCurrentScene(), quest)
+                ? 'completed'
+                : 'started'
+            }
+          />
+        );
       }
       case AppSection.LevelUp: {
         return <LevelUpSection key={key} />;

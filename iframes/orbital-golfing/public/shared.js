@@ -121,7 +121,10 @@ console.shared = new (class {
       if (extraColliders) {
         for (let j = 0; j < extraColliders.length; j++) {
           let other = extraColliders[j];
-          let { x, y, r } = other;
+          let { x, y, r, removed } = other;
+          if (removed) {
+            continue;
+          }
           let c = this.collidesCir(x - body.x, y - body.y, r, body.r);
           if (c) {
             const col = this.createCollision(body, other);
@@ -151,9 +154,9 @@ console.shared = new (class {
     const gravityBodies = gameData.planets.map(id =>
       this.getEntity(gameData, id)
     );
-    const gravityCollidables = gameData.flags.map(id =>
-      this.getEntity(gameData, id)
-    );
+    const gravityCollidables = gameData.flags
+      .concat(gameData.coins)
+      .map(id => this.getEntity(gameData, id));
 
     gameData.collisions = this.applyGravity(
       bodiesAffectedByGravityBodies,

@@ -213,124 +213,139 @@
       "end": 94.52365079365079,
       "loop": false
     },
-    "phone_beep": {
+    "notification": {
       "start": 96,
-      "end": 96.53539682539683,
+      "end": 96.10448979591837,
+      "loop": false
+    },
+    "phone_beep": {
+      "start": 98,
+      "end": 98.53539682539683,
       "loop": false
     },
     "phone_beep_off": {
-      "start": 98,
-      "end": 98.53537414965986,
+      "start": 100,
+      "end": 100.53537414965986,
       "loop": false
     },
     "phone_ring": {
-      "start": 100,
-      "end": 102.31353741496599,
+      "start": 102,
+      "end": 104.31353741496599,
       "loop": false
     },
     "pop": {
-      "start": 104,
-      "end": 104.03020408163265,
+      "start": 106,
+      "end": 106.03020408163265,
+      "loop": false
+    },
+    "quest_completed": {
+      "start": 108,
+      "end": 108.26122448979592,
+      "loop": false
+    },
+    "quest_started": {
+      "start": 110,
+      "end": 110.26122448979592,
       "loop": false
     },
     "rez": {
-      "start": 106,
-      "end": 108.14204081632653,
+      "start": 112,
+      "end": 114.14204081632653,
       "loop": false
     },
     "robot_channel_start": {
-      "start": 110,
-      "end": 111.08020408163266,
+      "start": 116,
+      "end": 117.08020408163266,
       "loop": false
     },
     "robot_charge_up": {
-      "start": 113,
-      "end": 113.81680272108844,
+      "start": 119,
+      "end": 119.81680272108844,
       "loop": false
     },
     "robot_staggered3": {
-      "start": 115,
-      "end": 115.7034693877551,
+      "start": 121,
+      "end": 121.7034693877551,
       "loop": false
     },
     "robot_staggered_damaged2": {
-      "start": 117,
-      "end": 117.32036281179138,
+      "start": 123,
+      "end": 123.32036281179138,
       "loop": false
     },
     "shoot_arrow": {
-      "start": 119,
-      "end": 119.16761904761904,
+      "start": 125,
+      "end": 125.16761904761904,
       "loop": false
     },
     "skye_kick_vending_machine": {
-      "start": 121,
-      "end": 121.26727891156463,
+      "start": 127,
+      "end": 127.26727891156463,
       "loop": false
     },
     "spawn_enemy": {
-      "start": 123,
-      "end": 123.60124716553288,
+      "start": 129,
+      "end": 129.60124716553287,
       "loop": false
     },
     "terminal_cancel": {
-      "start": 125,
-      "end": 125.14190476190477,
+      "start": 131,
+      "end": 131.14190476190475,
       "loop": false
     },
     "use_item": {
-      "start": 127,
-      "end": 127.29020408163265,
+      "start": 133,
+      "end": 133.29020408163265,
       "loop": false
     },
     "vr_portal_activate": {
-      "start": 129,
-      "end": 129.47020408163266,
-      "loop": false
-    },
-    "vr_portal_beep": {
-      "start": 131,
-      "end": 131.23020408163265,
-      "loop": false
-    },
-    "vr_portal_buzz": {
-      "start": 133,
-      "end": 133.6943537414966,
-      "loop": false
-    },
-    "vr_portal_deactivate": {
       "start": 135,
       "end": 135.47020408163266,
       "loop": false
     },
-    "vr_portal_focus": {
+    "vr_portal_beep": {
       "start": 137,
-      "end": 137.69020408163266,
+      "end": 137.23020408163265,
+      "loop": false
+    },
+    "vr_portal_buzz": {
+      "start": 139,
+      "end": 139.6943537414966,
+      "loop": false
+    },
+    "vr_portal_deactivate": {
+      "start": 141,
+      "end": 141.47020408163266,
+      "loop": false
+    },
+    "vr_portal_focus": {
+      "start": 143,
+      "end": 143.69020408163266,
       "loop": false
     },
     "vr_portal_landed": {
-      "start": 139,
-      "end": 139.45020408163265,
+      "start": 145,
+      "end": 145.45020408163265,
       "loop": false
     },
     "vr_portal_start": {
-      "start": 141,
-      "end": 141.95020408163265,
+      "start": 147,
+      "end": 147.95020408163265,
       "loop": false
     },
     "vr_portal_zoom": {
-      "start": 143,
-      "end": 146.60020408163265,
+      "start": 149,
+      "end": 152.60020408163265,
       "loop": false
     },
     "woosh": {
-      "start": 148,
-      "end": 148.4171201814059,
+      "start": 154,
+      "end": 154.4171201814059,
       "loop": false
     },
     "woosh_reverse": {
-      "start": 150,
-      "end": 150.35156462585033,
+      "start": 156,
+      "end": 156.35156462585033,
       "loop": false
     }
   },

@@ -893,7 +893,6 @@ export const roomGetEmptyAdjacentTile = (
     const { x: x2, y: y2 } = ch;
     const dx = x2 - x;
     const dy = y2 - y;
-    console.log('BIAS', dx, dy);
     if (dx < 0) {
       if (dy < 0) {
         adjacentTiles = [right, down, left, up];

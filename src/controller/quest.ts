@@ -18,7 +18,7 @@ export const questIsCompleted = (scene: Scene, quest: QuestTemplate) => {
 };
 
 export const questIsNotStarted = (scene: Scene, quest: QuestTemplate) => {
-  return !!scene.storage[quest.questStartScriptKey];
+  return !scene.storage[quest.questStartScriptKey];
 };
 
 export const getAllActiveQuests = (scene: Scene) => {
@@ -58,8 +58,11 @@ export const getAllCompletedQuests = (scene: Scene) => {
 export const beginQuest = (scene: Scene, questName: string) => {
   const quest = getIfExists(questName);
   if (quest) {
+    console.log('begin quest', quest);
     if (questIsNotStarted(scene, quest)) {
       scene.storage[quest.questStartScriptKey] = true;
+    } else {
+      console.log('somehow the quest is started already?');
     }
   } else {
     console.error('cannot beginQuest, quest not found:', questName);
@@ -68,10 +71,10 @@ export const beginQuest = (scene: Scene, questName: string) => {
 
 export const completeQuest = (scene: Scene, questName: string) => {
   const quest = getIfExists(questName);
+
+  console.log('COMPLETE QUEST', questName);
   if (quest) {
-    if (questIsNotStarted(scene, quest)) {
-      scene.storage[quest.questEndScriptKey] = true;
-    }
+    scene.storage[quest.questEndScriptKey] = true;
   } else {
     console.error('cannot beginQuest, quest not found:', questName);
   }
@@ -84,12 +87,13 @@ export const completeQuestStep = (
 ) => {
   const quest = getIfExists(questName);
   if (quest) {
+    console.log('COMPLETE STEP', questName, ind);
     if (questIsActive(scene, quest)) {
       for (let i = 0; i < quest.steps.length; i++) {
         const step = quest.steps[i];
         if (!scene.storage[step.completedScriptKey]) {
           scene.storage[step.completedScriptKey] = true;
-          if (i >= ind) {
+          if (i < quest.steps.length - 1) {
             return;
           }
         }
@@ -108,7 +112,10 @@ export const getCurrentQuestStep = (scene: Scene, questName: string) => {
       for (let i = 0; i < quest.steps.length; i++) {
         const step = quest.steps[i];
         if (!scene.storage[step.completedScriptKey]) {
-          return step;
+          return {
+            i,
+            ...step,
+          };
         }
       }
     }

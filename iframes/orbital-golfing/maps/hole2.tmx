@@ -37,16 +37,14 @@
  </layer>
  <objectgroup id="2" name="Object Layer 1">
   <object id="8" gid="1" x="620.508" y="121.675" width="32" height="32"/>
-  <object id="9" gid="3" x="113.468" y="697.838" width="32" height="32"/>
+  <object id="9" gid="3" x="230.468" y="717.838" width="32" height="32"/>
   <object id="10" x="130.82" y="124.974" width="133" height="133">
    <ellipse/>
   </object>
   <object id="11" x="277.283" y="304.766" width="276.13" height="281.361">
    <ellipse/>
   </object>
-  <object id="12" gid="4" x="209" y="350" width="32" height="32"/>
-  <object id="13" gid="4" x="331" y="216" width="32" height="32"/>
+  <object id="13" gid="4" x="616" y="663" width="32" height="32"/>
   <object id="14" gid="4" x="65" y="100" width="32" height="32"/>
-  <object id="15" gid="4" x="657" y="663" width="32" height="32"/>
  </objectgroup>
 </map>

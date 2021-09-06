@@ -11,6 +11,7 @@ interface GameData {
   planets: string[];
   powerups: string[];
   flags: string[];
+  coins: string[];
   round: number;
   numRounds: number;
   i: number;
@@ -49,6 +50,10 @@ interface PlayerEntityData extends EntityData {
 
 interface PlanetEntityData extends EntityData {
   color: string;
+}
+
+interface CoinEntityData extends EntityData {
+  removed: boolean;
 }
 
 let currentGameData: GameData | null = null;

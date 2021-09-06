@@ -1,5 +1,5 @@
 /* @jsx h */
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { colors, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { useState } from 'preact/hooks';
@@ -7,6 +7,7 @@ import {
   getAllActiveQuests,
   getAllCompletedQuests,
   getCurrentQuestStep,
+  questIsCompleted,
 } from 'controller/quest';
 import { Scene } from 'model/scene';
 import { QuestTemplateWithName } from 'db/quests';
@@ -37,14 +38,15 @@ const DescriptionWrapper = style('div', {
 
 const DescriptionName = style('div', {
   border: '1px solid ' + colors.WHITE,
-  background: colors.DARKBLUE,
+  background: colors.DARKRED,
   // margin: '2px',
   padding: '16px',
+  textAlign: 'center',
 });
 
 const Description = style('div', {
   border: '1px solid ' + colors.WHITE,
-  background: colors.DARKBLUE,
+  background: colors.DARKRED,
   // margin: '2px',
   padding: '16px',
   height: '72px',
@@ -67,42 +69,86 @@ interface IMenuJournalProps {
 
 const MenuJournal = (props: IMenuJournalProps) => {
   const scene = props.scene;
-  const quests = getAllActiveQuests(scene).concat(getAllCompletedQuests(scene));
+  const quests = getAllActiveQuests(scene)
+    .concat(getAllCompletedQuests(scene))
+    .sort((a, b) => {
+      const completedA = questIsCompleted(scene, a);
+      const completedB = questIsCompleted(scene, b);
+      if (a.name === 'Main') {
+        return -1;
+      } else if (b.name === 'Main') {
+        return 1;
+      } else if (completedA && completedB) {
+        return a.name < b.name ? -1 : 1;
+      } else if (completedA) {
+        return 1;
+      } else if (completedB) {
+        return -1;
+      } else {
+        return a.name < b.name ? -1 : 1;
+      }
+    });
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const selectedQuest: QuestTemplateWithName | undefined =
     quests[selectedItemIndex];
   const selectedQuestStep = getCurrentQuestStep(scene, selectedQuest?.name);
+  const isCompleted = questIsCompleted(scene, selectedQuest);
 
   return (
     <InnerRoot>
       <LeftDiv>
         <DescriptionWrapper>
           <DescriptionName>{selectedQuest?.label ?? ''}</DescriptionName>
-          <Description>{selectedQuest?.description ?? ''}</Description>
+          <Description>{selectedQuest?.summary ?? ''}</Description>
           <DescriptionBody>
-            <p>{selectedQuestStep?.label ?? ''}</p>
-            <p>{selectedQuestStep?.description ?? ''}</p>
+            {isCompleted ? (
+              <p>You have completed this quest.</p>
+            ) : (
+              <>
+                <p>{selectedQuestStep?.label ?? ''}</p>
+                <p>{selectedQuestStep?.description ?? ''}</p>
+              </>
+            )}
+            {selectedQuest.steps.map((questStep, i) => {
+              if (!isCompleted && i >= (selectedQuestStep?.i ?? 0)) {
+                return <></>;
+              }
+              return (
+                <p
+                  key={questStep.completedScriptKey + i}
+                  style={{
+                    textDecoration: 'line-through',
+                    color: colors.LIGHTGREY,
+                  }}
+                >
+                  {questStep.label}
+                </p>
+              );
+            })}
           </DescriptionBody>
         </DescriptionWrapper>
       </LeftDiv>
       <RightDiv>
         <VerticalMenu
           width="100%"
-          maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
+          maxHeight={parseInt(MAX_HEIGHT) - 163 + 'px'}
           open={true}
           isInactive={props.isInactive}
-          hideTitle={true}
+          // hideTitle={true}
+          title="Quest Name"
           items={quests.map((quest, i) => {
+            const isCompleted = questIsCompleted(scene, quest);
+
             return {
               label: (
                 <div
                   style={{
-                    background:
-                      i === selectedItemIndex ? colors.DARKRED : colors.BLACK,
+                    color: isCompleted ? colors.LIGHTGREY : '',
                   }}
                 >
-                  {quest.label}
+                  {quest.label}{' '}
+                  {questIsCompleted(scene, quest) ? ' (completed)' : ''}
                 </div>
               ),
               value: i,
@@ -110,6 +156,9 @@ const MenuJournal = (props: IMenuJournalProps) => {
           })}
           onItemClickSound="menu_select"
           onItemClick={(val: number) => {
+            setSelectedItemIndex(val);
+          }}
+          onItemHover={(val: number) => {
             setSelectedItemIndex(val);
           }}
         />

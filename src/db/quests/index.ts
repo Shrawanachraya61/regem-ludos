@@ -1,16 +1,25 @@
+import { Item } from 'db/items';
 import { init as initPart1 } from './quests-part1';
+import { init as initTest } from './quests-test';
 
 export interface QuestTemplate {
   label: string;
+  summary: string;
   description: string;
   steps: IQuestStep[];
   questStartScriptKey: string;
   questEndScriptKey: string;
+  tokensReward?: number;
+  experienceReward?: number;
+  itemsReward?: () => Item[];
+  icon?: any;
+  iconColor?: string;
 }
 
 export type QuestTemplateWithName = QuestTemplate & { name: string };
 
 export interface IQuestStep {
+  i?: number;
   label: string;
   description: string;
   completedScriptKey: string;
@@ -45,4 +54,12 @@ export const getAll = () => {
 
 export const init = () => {
   initPart1(exp);
+  initTest(exp);
+
+  for (const i in exp) {
+    const quest = exp[i];
+    quest.steps.forEach((step, i) => {
+      step.i = i;
+    });
+  }
 };

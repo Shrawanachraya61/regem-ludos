@@ -24,12 +24,13 @@ export interface Scene {
   isWaitingForAnimation: boolean;
   inputDisabled: boolean; // used only for dialog input
   waitTimeoutId: number;
+  postSceneCallbacks: (() => void)[];
 }
 
 export const sceneCreate = (): Scene => {
   const scene = {
     storage: {
-      'quest_floor1-main': true,
+      // 'quest_floor1-main': true,
     } as Record<string, string | boolean>,
     storageOnce: {} as Record<string, string>,
     storageOnceKeys: {} as Record<string, boolean>,
@@ -44,6 +45,7 @@ export const sceneCreate = (): Scene => {
     isWaitingForAnimation: false,
     inputDisabled: false,
     waitTimeoutId: -1,
+    postSceneCallbacks: [],
   };
   Object.assign(scene.commands, getSceneCommands(scene));
   return scene;
@@ -132,4 +134,8 @@ export const sceneSetCurrentOverworld = (scene: Scene, roomName: string) => {
 
 export const sceneGetCurrentOverworldName = (scene: Scene) => {
   return scene.storage['current_overworld'] ?? 'test2';
+};
+
+export const sceneAddPostSceneCallback = (scene: Scene, cb: () => void) => {
+  scene.postSceneCallbacks.push(cb);
 };

@@ -15,6 +15,8 @@ import {
   IMenuState,
   ILevelUpState,
   IRoomState,
+  NotificationState,
+  IQuestState,
 } from 'model/store';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
 import { getCurrentOverworld } from 'model/generics';
@@ -106,6 +108,9 @@ const resolvers: { [key: string]: MutationFunction } = {
   setLevelUpState: (newState: AppState, payload: Partial<ILevelUpState>) => {
     Object.assign(newState.levelUp, payload);
   },
+  setQuestState: (newState: AppState, payload: Partial<IQuestState>) => {
+    Object.assign(newState.quest, payload);
+  },
   addRoomUiParticle: (newState: AppState, payload: Particle) => {
     newState.room.particles = [...newState.room.particles, payload];
   },
@@ -113,6 +118,15 @@ const resolvers: { [key: string]: MutationFunction } = {
     const ind = newState.room.particles.indexOf(payload);
     if (ind > -1) {
       newState.room.particles.splice(ind, 1);
+    }
+  },
+  showNotification: (newState: AppState, payload: NotificationState) => {
+    newState.notifications.push(payload);
+  },
+  hideNotification: (newState: AppState, payload: NotificationState) => {
+    const ind = newState.notifications.indexOf(payload);
+    if (ind > -1) {
+      newState.notifications.splice(ind);
     }
   },
 };
@@ -523,6 +537,22 @@ export const showLevelUp = (onClose: () => void) => {
   showSection(AppSection.LevelUp, false);
 };
 
+export const showQuestSection = (questName: string, onClose: () => void) => {
+  const payload = {
+    onClose,
+    questName,
+  };
+  getUiInterface().dispatch({
+    action: 'setQuestState',
+    payload,
+  });
+  showSection(AppSection.Quest, false);
+};
+
+export const hideQuestSection = () => {
+  hideSection(AppSection.Quest);
+};
+
 export const showBattleEffect = (
   bChList: BattleCharacter[],
   effectAnimName: string
@@ -534,7 +564,6 @@ export const showBattleEffect = (
       active: true,
     },
   };
-  console.log('SHOW BATTLE EFFECT', effectAnimName);
   getUiInterface().dispatch({
     action: 'setBattleState',
     payload,
@@ -573,4 +602,17 @@ export const removeRoomUiParticle = (particle: Particle) => {
       payload: particle,
     });
   }
+};
+
+export const showNotification = (args: NotificationState) => {
+  args.timeoutId = setTimeout(() => {
+    getUiInterface().dispatch({
+      action: 'hideNotification',
+      payload: args,
+    });
+  }, 3000) as any;
+  getUiInterface().dispatch({
+    action: 'showNotification',
+    payload: args,
+  });
 };

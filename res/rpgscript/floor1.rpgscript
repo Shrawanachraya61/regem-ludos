@@ -474,35 +474,43 @@ action,floor1-atrium-TicTacToeMachine-action
   +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
   +:exclaim(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Oh! <delay=200 cascade>You're from that prep school <color=BLUE>Erran Valley<cascade> a few blocks from here right?"
-  Ada: "Yes, I am.  Why do you ask?"
-  +:teardrop(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "It's nothing!  Well, nothing that important."
-  AtriumGreeterEmployee: "It's just that there's a boy from your school that owns the records for pretty much every arcade machine in this facility."
+  Ada: "Yes, I am.  How did you know?"
+  +:happy(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Oh I can recognize one of you lot from a mile away."
+  AtriumGreeterEmployee: "You kids from that school are a cut above the rest."
+  AtriumGreeterEmployee: "I just have this feeling that something interesting is bound to happen with one of you around."
+  +:lightbulb(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "There's a boy from your school that owns the records for pretty much every arcade machine in this facility."
   AtriumGreeterEmployee: "I believe his name was Carl something-or-another.  Maybe it was <color=ORANGE>Carnold</>?"
+  +:utils-start-Conscience-dialogue-single();
   +setConversation(Conscience);
+  +:lightbulb(Conscience);
   Conscience: "(Carl-Arnold has the record for every arcade machine?  Whoah.)"
   +:bored(Ada);
   Ada: "<cascade-letters>......"
   +setConversation(Ada);
-  AtriumGreeterEmployee: "I gotta tell you though, you kids from that school are a cut above the rest."
+  +lookAtCharacter(Conscience, AtriumGreeterEmployee);
+  +lookAtCharacter(Ada, AtriumGreeterEmployee);
   AtriumGreeterEmployee: "There's obviously a reason why it's the most well-regarded prep school in the state."
-  AtriumGreeterEmployee: "You're all so smart; so clever."
-  +:happy(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "It's always exciting when one of you walks in here."
+  AtriumGreeterEmployee: "I always try to keep my eye out for one of you."
   +:question(Ada);
   Ada: "Are there many students from <color=BLUE>Erran Valley</> who come here?"
   AtriumGreeterEmployee: "From time to time, yeah."
   +:lightbulb(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "Actually, I saw a few of you come in earlier.  Not sure where they went, though."
+  AtriumGreeterEmployee: "Actually, I saw a few of you come in earlier.  Not sure where they all went, though."
   +:heart(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "I love that flower in your hair by the way.  It really brings out your eyes."
+  AtriumGreeterEmployee: "It's rare to have so many of you in here at once!  I can't wait to see what happens!"
   +:teardrop(Ada);
-  Ada: "<cascade>Um.  <cascade-letters>Thanks."
+  Ada: "<cascade>Um.  <cascade-letters>Thanks.  I guess."
   AtriumGreeterEmployee: "Anyway, if you need any assistance, don't hesitate to speak with any of the employees!"
   AtriumGreeterEmployee: "You can recognize us by our hats and white attire."
   AtriumGreeterEmployee: "On behalf of the arcade staff, we hope you have a wonderful time!"
   +setConversationSpeaker(none);
   +panCameraBackToPlayer(500);
+  +setConversation(Conscience);
+  +lookAtEachOther(Ada, Conscience);
+  Conscience: "<cascade>Let's hurry up and get to <color=ORANGE>Carl-Arnold</>."
+  +:utils-stop-Conscience-dialogue();
   +endConversation(500, true);
 
 #floor1-AtriumPingPongSearcher
@@ -519,7 +527,6 @@ Floor1AtriumPingPongSearcher: "And those two guys over there have been playing f
 +:teardrop(Floor1AtriumPingPongSearcher);
 Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
 +endConversation();
-
 
 #floor1-bowling-girl
 action,this
@@ -556,7 +563,7 @@ Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling
 step-first,this
 @this
 // ai needs to be reset cuz this isn't invoked by a talk trigger
-+stopAi(Floor1BowlingEmployee);
++setFromDialog(Floor1BowlingEmployee);
 +lookAtCharacter(Floor1BowlingEmployee, Ada);
 +:exclaim(Floor1BowlingEmployee);
 +panCameraToFitCharacters(500, true, Floor1BowlingEmployee);
@@ -566,4 +573,3 @@ Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without get
 +walkToMarker(Ada, MarkerPreventBowling);
 +panCameraBackToPlayer();
 +endConversation();
-+startAi(Floor1BowlingEmployee);

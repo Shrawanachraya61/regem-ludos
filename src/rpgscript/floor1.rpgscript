@@ -528,7 +528,6 @@ Floor1AtriumPingPongSearcher: "And those two guys over there have been playing f
 Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
 +endConversation();
 
-
 #floor1-bowling-girl
 action,this
 @this
@@ -564,7 +563,7 @@ Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling
 step-first,this
 @this
 // ai needs to be reset cuz this isn't invoked by a talk trigger
-+stopAi(Floor1BowlingEmployee);
++setFromDialog(Floor1BowlingEmployee);
 +lookAtCharacter(Floor1BowlingEmployee, Ada);
 +:exclaim(Floor1BowlingEmployee);
 +panCameraToFitCharacters(500, true, Floor1BowlingEmployee);
@@ -574,4 +573,3 @@ Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without get
 +walkToMarker(Ada, MarkerPreventBowling);
 +panCameraBackToPlayer();
 +endConversation();
-+startAi(Floor1BowlingEmployee);

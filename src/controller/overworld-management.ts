@@ -30,6 +30,8 @@ import {
   showMarkers,
   showTriggers,
   getIsPaused,
+  getCharactersWithSuspendedAi,
+  removeCharacterWithSuspendedAi,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
@@ -61,6 +63,7 @@ import {
   invokeTrigger,
   callScript,
   createAndCallScript,
+  sceneIsPlaying,
 } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
 import { TriggerType } from 'lib/rpgscript';
@@ -324,7 +327,7 @@ const checkAndCallTriggerOfType = async (
   const types = Array.isArray(typeOrTypes) ? typeOrTypes : [typeOrTypes];
 
   const overworld = getCurrentOverworld();
-  const activators = overworld.collidingTriggerActivators; //getCurrentlyCollidedTriggerActivators();
+  const activators = overworld.collidingTriggerActivators;
   for (let i = 0; i < activators.length; i++) {
     const ta = activators[i];
     for (let j = 0; j < types.length; j++) {
@@ -342,6 +345,12 @@ const checkAndCallTriggerOfType = async (
         if (type === TriggerType.ACTION) {
           showSection(AppSection.Debug, false);
         }
+        const charactersWithSuspendedAi = getCharactersWithSuspendedAi();
+        charactersWithSuspendedAi.forEach(ch => {
+          characterStartAi(ch);
+          removeCharacterWithSuspendedAi(ch);
+        });
+
         return ta.name;
       }
     }
@@ -429,10 +438,11 @@ const checkAndCallTreasure = async (): Promise<boolean> => {
 
 export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
+  const scene = getCurrentScene();
   const isPaused = getIsPaused();
 
-  if (isCancelKey(ev.key) || isPauseKey(ev.key)) {
-    if (!isPaused) {
+  if (isCancelKey(ev.key)) {
+    if (!isPaused && !sceneIsPlaying(scene)) {
       pause();
       showMenu(() => {
         unpause();
@@ -451,7 +461,8 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         showSection(AppSection.Debug, true);
         return;
       } else if (await checkAndCallTalkTrigger()) {
-        showSection(AppSection.Debug, true);
+        // don't need this, show section called from talk trigger
+        // showSection(AppSection.Debug, true);
         return;
       }
     }

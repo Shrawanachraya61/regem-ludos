@@ -29,7 +29,7 @@ file_extensions []     = rpgscript;
 
 __MY_CONSTANT \= (\b[a-z][a-z0-9]*)
 __LOGICKEYWORD \= (\?)
-__LOGIC \= (\b(isnot|gt|lt|is|all|one|as|once|eq|this|with))
+__LOGIC \= (\b(isnot|gt|lt|is|all|one|as|once|eq|this|with|func))
 __TRIGGERNAME \= (^#(.)+$)
 __SCENENAME \= (^(\s)*@(.)+$)
 __INLINE \= (^(\s)*\+(.)+$)

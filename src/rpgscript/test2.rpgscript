@@ -290,12 +290,33 @@ Ada: "I am going to leave now."
 +endConversation();
 
 #test-testDialogD
+action,?func(questStepEQ, TestQuest1, 0):test-quest-db1
+action,?func(questStepEQ, TestQuest1, 1):test-quest-db2
+action,?func(questCompleted, TestQuest1):test-quest-db-complete
 action,this
 @this
-+lookAtEachOther(Ada, TestDialogD);
-+setConversation(Ada);
-testDialogD: "This is a test."
-+endConversation();
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "You are now beginning the test quest.  Check your journal for details."
+  +startQuest(TestQuest1);
+  +endConversation();
+@test-quest-db-complete
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "The test has been completed."
+  +endConversation();
+@test-quest-db1
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "Since you have spoken to me, you have completed the first task."
+  +completeQuestStep(TestQuest1, 0);
+  +endConversation();
+@test-quest-db2
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "Since you have spoken to me, you have completed the second task."
+  +completeQuestStep(TestQuest1, 1);
+  +endConversation();
 
 #test-callScriptIntegration
 action,this
@@ -325,7 +346,6 @@ Shopkeep: "Perhaps a pretty girl such as yourself would like one of our charm br
 Shopkeep: "Or maybe you're a little rough around the edges and would enjoy a sharp, utility knife."
 Shopkeep: "If you've got a bit of as sweet tooth, why not try our famous <delay=750 cascade-letters=50 color=BLUE>cream pops</>!"
 Ada: "<cascade-letters>......"
-
 Sigma: "Moo?"
 +lookAtCharacter(ada,sigma);
 +lookAtCharacter(shopkeep,sigma)
@@ -353,5 +373,3 @@ Shopkeep: "<cascade-letters>......"
 +panCameraBackToPlayer(500,false)
 Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
 Shopkeep: "I have <shake>no idea</> what she wants!</>"
-
-#

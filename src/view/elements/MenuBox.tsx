@@ -31,6 +31,7 @@ const MenuContainer = style('div', (props: { maxWidth?: string }) => {
     minWidth: '25%',
     maxWidth: props.maxWidth ?? '90%',
     maxHeight: '1024px',
+    width: props.maxWidth,
     border: `2px solid ${colors.BLUE}`,
     background: colors.BGGREY,
     color: colors.WHITE,
@@ -50,6 +51,8 @@ const MenuContent = style('div', () => {
     margin: '8px',
     padding: '8px',
     fontSize: '16px',
+    display: 'flex',
+    justifyContent: 'center',
   };
 });
 const MenuActionButtons = style('div', () => {

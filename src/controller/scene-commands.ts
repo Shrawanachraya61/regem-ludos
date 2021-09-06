@@ -13,6 +13,9 @@ import {
   showSave,
   showLevelUp,
   startConversationActors,
+  showNotification as showNotificationUi,
+  showQuestSection,
+  hideQuestSection,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -55,6 +58,7 @@ import {
   setCameraTransform,
   getCameraTransform,
   getCurrentBattle,
+  addCharacterWithSuspendedAi,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -74,6 +78,7 @@ import { getIfExists as getOverworld } from 'db/overworlds';
 import { getIfExists as getEncounter } from 'db/encounters';
 import { EmotionBubble, getIfExists as getParticle } from 'db/particles';
 import { getIfExists as getItem } from 'db/items';
+import { getIfExists as getQuest, QuestTemplate } from 'db/quests';
 import {
   playerAddItem,
   playerRemoveItem,
@@ -101,10 +106,15 @@ import {
   ParticleTemplate,
 } from 'model/particle';
 import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
-import { sceneStopWaitingUntil } from 'model/scene';
+import { sceneAddPostSceneCallback, sceneStopWaitingUntil } from 'model/scene';
 import { createTileRenderObject } from 'model/render-object';
 import { pause, unpause } from './loop';
 import { getScreenSize } from 'model/canvas';
+import {
+  beginQuest as beginQuestFromManagement,
+  completeQuestStep as completeQuestStepFromManagement,
+  questIsCompleted,
+} from './quest';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -380,6 +390,26 @@ export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
 
 export const none = () => {
   setConversationSpeaker(CutsceneSpeaker.None);
+};
+
+/**
+ * Some dialog is called from trigger activators instead of dialog.  Dialog triggers
+ * act slightly differently than from a trigger activator.  For example, when a dialog trigger
+ * happens, a character's ai state is saved.  When the cutscene is over, the ai state is restored.
+ * This function is to be called to indicate that a certain character should be treated
+ * as if the current cutscene was called from a dialog trigger.
+ */
+export const setFromDialog = (chName: string) => {
+  const room = getCurrentRoom();
+  const ch = roomGetCharacterByName(room, chName);
+
+  if (!ch) {
+    console.error('Could not find character with name: ' + chName);
+    return;
+  }
+
+  stopAi(chName);
+  addCharacterWithSuspendedAi(ch);
 };
 
 /**
@@ -2242,6 +2272,75 @@ export const setAiState = (
   ch.aiState[aiStateKey] = value;
 };
 
+const startQuest = (questName: string) => {
+  const scene = getCurrentScene();
+  const quest = getQuest(questName);
+
+  if (!quest) {
+    console.error(
+      `Could not startQuest.  No quest exists with name: ${questName}`
+    );
+  }
+
+  none();
+
+  beginQuestFromManagement(scene, questName);
+  console.log('SHOW QUEST SECTION', questName);
+  scene.inputDisabled = true;
+  playSoundName('quest_started');
+  playSoundName('menu_choice_open');
+  showQuestSection(questName, () => {
+    hideQuestSection();
+    sceneStopWaitingUntil(getCurrentScene());
+    scene.inputDisabled = false;
+  });
+  return waitUntil();
+};
+
+const completeQuestStep = (questName: string, stepInd: number) => {
+  const scene = getCurrentScene();
+  const quest = getQuest(questName);
+
+  if (!quest) {
+    console.error(
+      `Could not startQuest.  No quest exists with name: ${questName}`
+    );
+  }
+
+  none();
+
+  completeQuestStepFromManagement(scene, questName, stepInd);
+
+  if (questIsCompleted(scene, quest as QuestTemplate)) {
+    scene.inputDisabled = true;
+    playSoundName('quest_completed');
+    showQuestSection(questName, () => {
+      hideQuestSection();
+      sceneStopWaitingUntil(getCurrentScene());
+      scene.inputDisabled = false;
+    });
+    return waitUntil();
+  } else {
+    showNotification('Your journal has been updated');
+  }
+};
+
+const showNotification = (
+  text: string,
+  type?: 'info' | 'success' | 'warning' | 'danger'
+) => {
+  sceneAddPostSceneCallback(getCurrentScene(), () => {
+    // delay this so that the black bars can disappear before the notification flies in
+    setTimeout(() => {
+      playSoundName('notification');
+      showNotificationUi({
+        text,
+        type: type ?? 'info',
+      });
+    }, 200);
+  });
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -2282,6 +2381,7 @@ const commands = {
   endConversation,
   setConversationSpeaker,
   none,
+  setFromDialog,
   waitMS,
   waitMSPreemptible,
   waitUntil,
@@ -2346,6 +2446,9 @@ const commands = {
   pauseOverworld,
   unpauseOverworld,
   setAiState,
+  startQuest,
+  completeQuestStep,
+  showNotification,
 
   // custom scripts
   floor1TutToggleColorDoors,

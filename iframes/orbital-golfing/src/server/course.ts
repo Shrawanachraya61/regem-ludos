@@ -9,6 +9,7 @@ interface Hole {
   par: number;
   planets: PlanetTemplate[];
   flags: FlagTemplate[];
+  coins: CoinTemplate[];
   start: [number, number];
 }
 
@@ -21,6 +22,11 @@ interface PlanetTemplate {
 }
 
 interface FlagTemplate {
+  x: number;
+  y: number;
+}
+
+interface CoinTemplate {
   x: number;
   y: number;
 }

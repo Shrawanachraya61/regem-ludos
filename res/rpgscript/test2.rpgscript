@@ -290,11 +290,17 @@ Ada: "I am going to leave now."
 +endConversation();
 
 #test-testDialogD
+action,?func(isQuestActive()):test-testDialogD2
 action,this
 @this
 +lookAtEachOther(Ada, TestDialogD);
 +setConversation(Ada);
 testDialogD: "This is a test."
++endConversation();
+@test-testDialogD2
++lookAtEachOther(Ada, TestDialogD);
++setConversation(Ada);
+testDialogD: "This is a test after func called."
 +endConversation();
 
 #test-callScriptIntegration
@@ -325,7 +331,6 @@ Shopkeep: "Perhaps a pretty girl such as yourself would like one of our charm br
 Shopkeep: "Or maybe you're a little rough around the edges and would enjoy a sharp, utility knife."
 Shopkeep: "If you've got a bit of as sweet tooth, why not try our famous <delay=750 cascade-letters=50 color=BLUE>cream pops</>!"
 Ada: "<cascade-letters>......"
-
 Sigma: "Moo?"
 +lookAtCharacter(ada,sigma);
 +lookAtCharacter(shopkeep,sigma)
@@ -353,5 +358,3 @@ Shopkeep: "<cascade-letters>......"
 +panCameraBackToPlayer(500,false)
 Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
 Shopkeep: "I have <shake>no idea</> what she wants!</>"
-
-#

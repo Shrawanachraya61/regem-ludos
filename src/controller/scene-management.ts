@@ -34,6 +34,13 @@ import { roomGetCharacterByName } from 'model/room';
 import sceneCommands, { setStorage } from './scene-commands';
 import { playerHasItem } from 'model/player';
 import { getIfExists as getCharacterTemplate } from 'db/characters';
+import { getIfExists as getQuest } from 'db/quests';
+import {
+  getCurrentQuestStep,
+  questIsActive,
+  questIsCompleted,
+  questIsNotStarted,
+} from './quest';
 
 // if you increase this, you have to change the arg matcher to check for the length
 // of the integer string (number of decimal places) rather than just assuming it's 1
@@ -98,6 +105,10 @@ export const updateScene = (scene: Scene): void => {
           setTimeout(() => updateScene(scene));
         }
       } else {
+        scene.postSceneCallbacks.forEach(cb => {
+          cb();
+        });
+        scene.postSceneCallbacks = [];
         scene.currentScript = null;
         scene.currentTrigger = null;
       }
@@ -147,6 +158,8 @@ export const evalCondition = (
           return false;
         }
       }
+
+      // if the arg
 
       return !!scene.storage[args[0]];
     } else if (type === 'isnot') {
@@ -223,6 +236,63 @@ export const evalCondition = (
       const itemName = args[0] ?? '';
       const player = getCurrentPlayer();
       return itemName && playerHasItem(player, itemName);
+    } else if (type === 'func') {
+      const funcName = args[0] ?? '';
+      const funcArg: string = args[1] ?? '';
+      const funcArg2: string = args[2] ?? '';
+      if (funcName === 'questActive') {
+        const quest = getQuest(funcArg);
+        if (!quest) {
+          console.error(
+            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
+          );
+          return false;
+        }
+
+        return questIsActive(scene, quest);
+      } else if (funcName === 'questCompleted') {
+        const quest = getQuest(funcArg);
+        if (!quest) {
+          console.error(
+            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
+          );
+          return false;
+        }
+
+        const compl = questIsCompleted(scene, quest);
+        return compl;
+      } else if (
+        funcName === 'questStepGT' ||
+        funcName === 'questStepLT' ||
+        funcName === 'questStepEQ'
+      ) {
+        const quest = getQuest(funcArg);
+        if (!quest) {
+          console.error(
+            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
+          );
+          return false;
+        }
+        const step = getCurrentQuestStep(scene, funcArg);
+
+        if (questIsCompleted(scene, quest)) {
+          return false;
+        }
+
+        if (funcName === 'questStepEQ') {
+          return step?.i === parseInt(funcArg2);
+        }
+
+        return funcName === 'questStepGT'
+          ? (step?.i ?? Infinity) > parseInt(funcArg2)
+          : (step?.i ?? Infinity) < parseInt(funcArg2);
+      }
+
+      console.error(
+        'Error in conditional.  Func condition is not registered: ' + funcName,
+        args
+      );
+      return false;
     }
     return false;
   }
@@ -321,6 +391,10 @@ export const createAndCallScript = (scene: Scene, src: string) => {
     scene.onScriptCompleted = resolve;
     updateScene(scene);
   });
+};
+
+export const sceneIsPlaying = (scene: Scene) => {
+  return scene.currentScript || sceneIsWaiting(scene);
 };
 
 export const getSceneCommands = (scene: Scene): Record<string, any> => {

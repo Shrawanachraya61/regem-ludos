@@ -315,6 +315,9 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
     commands = ['<cascade=20>'];
     text = '<cascade=20>' + text;
     // return [defaultPhrase(text)];
+  } else if (text[0] !== '<') {
+    commands = ['<cascade=20>', ...commands];
+    text = '<cascade=20>' + text;
   }
 
   const phrases: IPhrase[] = [];
@@ -324,6 +327,7 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
     const subText = text.slice(0, ind);
     const commandText = commands[i].slice(1, -1);
     const phrase = defaultPhrase(subText);
+
     phrase.commands = lastCommands;
     lastCommands = commandText.split(' ').map(cmd => {
       return {
@@ -341,8 +345,6 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
   const phrase = defaultPhrase(text);
   phrase.commands = lastCommands;
   phrases.push(phrase);
-
-  console.log('phrases before cascade', [...phrases]);
 
   let delayAgg = 0;
   for (let i = 0; i < phrases.length; i++) {
@@ -413,8 +415,6 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
       }
     });
   }
-
-  console.log('PHRASES', phrases);
 
   return phrases;
 });
@@ -567,7 +567,6 @@ const CutsceneSection = () => {
   // The desired effect is that the text fades out, then in when the dialog box
   // changes text.
   useEffect(() => {
-    console.log('CUTSCENE USE EFFECT');
     const textBox = textBoxRef?.current;
     if (textBox) {
       renderTextboxHtml(textBox, cutscene);
@@ -614,7 +613,6 @@ const CutsceneSection = () => {
   };
 
   const actors = getCurrentRoom()?.characters ?? [];
-  console.log('RENDER CUTSCENE!');
 
   return (
     <Root

@@ -6,6 +6,7 @@ import { Overworld } from 'model/overworld';
 import { Scene } from 'model/scene';
 import { ParticleSystem } from 'model/particle-system';
 import { Timer, Transform } from './utility';
+import { Character } from 'model/character';
 import {
   setVolumeForActiveSounds,
   setVolumeForMusic,
@@ -223,3 +224,17 @@ let showOnScreenControls = true;
 export const shouldShowOnScreenControls = () => showOnScreenControls;
 export const setShowOnScreenControls = (v: boolean) =>
   (showOnScreenControls = v);
+
+const charactersWithSuspendedAi: Character[] = [];
+export const addCharacterWithSuspendedAi = (ch: Character) => {
+  charactersWithSuspendedAi.push(ch);
+};
+export const removeCharacterWithSuspendedAi = (ch: Character) => {
+  const ind = charactersWithSuspendedAi.indexOf(ch);
+  if (ind > -1) {
+    charactersWithSuspendedAi.splice(ind, 1);
+  }
+};
+export const getCharactersWithSuspendedAi = () => [
+  ...charactersWithSuspendedAi,
+];

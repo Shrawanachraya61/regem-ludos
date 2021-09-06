@@ -44,7 +44,6 @@ const createExplosionEffect = (x, y) => {
     const { x: px, y: py } = worldToPx(x, y);
     const elem = getGameInner();
     if (elem) {
-        playSound('expl');
         const div = createElement('div');
         div.className = 'expl';
         div.style.position = 'absolute';
@@ -600,7 +599,14 @@ const pushGameState = (state) => {
                         playSound('completed');
                     }
                 }
+                else if (entityB?.type === 'coin') {
+                    if (entityAId === getPlayerId()) {
+                        playSound('coin');
+                    }
+                    createExplosionEffect(entityB.x, entityB.y);
+                }
                 else {
+                    playSound('expl');
                     createExplosionEffect(entityA.x, entityA.y);
                 }
             }
@@ -927,6 +933,31 @@ const drawFlags = (flags) => {
         drawText('Shoot here!', px, py - radius - 32, { size: 32 });
     }
 };
+const drawCoins = (coins) => {
+    const G_SCALE = getShared().G_SCALE;
+    for (let i = 0; i < coins.length; i++) {
+        const coinEntity = coins[i];
+        const { x, y, r, removed } = coinEntity;
+        if (removed) {
+            continue;
+        }
+        const { x: px, y: py } = worldToPx(x, y);
+        const radius = r * G_SCALE;
+        drawText('Shot -1', px, py - radius - 32, { size: 32 });
+        const ctx = getCtx();
+        ctx.save();
+        if (flagMode === 1) {
+            ctx.translate(px, py);
+            ctx.scale(0.5, 1);
+            ctx.translate(-px, -py);
+        }
+        drawCircle(px, py, radius, 'black');
+        drawCircle(px, py, radius - 2, 'yellow');
+        drawCircle(px, py, radius - 4, 'brown');
+        drawCircle(px, py, radius - 6, 'yellow');
+        ctx.restore();
+    }
+};
 const drawShotPreview = (preview) => {
     for (let i = 0; i < preview.length; i++) {
         const [x, y] = preview[i];
@@ -934,13 +965,14 @@ const drawShotPreview = (preview) => {
     }
 };
 const drawSimulation = (gameData) => {
-    const { players, planets, flags } = gameData;
+    const { players, planets, flags, coins } = gameData;
     const ctx = getCtx();
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     updateGlobalFrameTime();
     drawPlanets(planets.map(id => getShared().getEntity(gameData, id)));
     drawPlayers(players.map(id => getShared().getEntity(gameData, id)));
     drawFlags(flags.map(id => getShared().getEntity(gameData, id)));
+    drawCoins(coins.map(id => getShared().getEntity(gameData, id)));
     const myEntity = getMyPlayerEntity(gameData);
     if (!myEntity.active && !myEntity.finished) {
         drawShotPreview(getShotPreview());
@@ -1416,6 +1448,28 @@ const soundStorage = {
         ,
         0.12,
         0.02,
+    ],
+    coin: [
+        1.01,
+        0,
+        1493,
+        ,
+        0.08,
+        0.24,
+        1,
+        0.26,
+        ,
+        ,
+        163,
+        0.08,
+        ,
+        ,
+        ,
+        ,
+        ,
+        0.51,
+        0.02,
+        0.12,
     ],
 };
 const playSound = (soundName) => {

@@ -57,7 +57,13 @@ const pushGameState = (state: GameData) => {
           } else {
             playSound('completed');
           }
+        } else if (entityB?.type === 'coin') {
+          if (entityAId === getPlayerId()) {
+            playSound('coin');
+          }
+          createExplosionEffect(entityB.x, entityB.y);
         } else {
+          playSound('expl');
           createExplosionEffect(entityA.x, entityA.y);
         }
       }

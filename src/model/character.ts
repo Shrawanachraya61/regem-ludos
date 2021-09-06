@@ -689,14 +689,18 @@ export const characterRemoveTimer = (ch: Character, timer: Timer) => {
 };
 
 export const characterStopAi = (ch: Character) => {
-  characterStoreState(ch);
-  ch.aiEnabled = false;
-  characterStopWalking(ch);
+  if (ch.aiEnabled) {
+    characterStoreState(ch);
+    ch.aiEnabled = false;
+    characterStopWalking(ch);
+  }
 };
 
 export const characterStartAi = (ch: Character) => {
-  ch.aiEnabled = true;
-  characterRestoreState(ch);
+  if (!ch.aiEnabled) {
+    ch.aiEnabled = true;
+    characterRestoreState(ch);
+  }
 };
 
 const characterFinishWalking = (ch: Character) => {

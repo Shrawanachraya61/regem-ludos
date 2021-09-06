@@ -49,7 +49,8 @@ export enum MenuLineHeight {
 }
 
 const defaultProps = {
-  backgroundColor: colors.BLACK,
+  backgroundColor:
+    'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(45,45,45,1) 100%);',
   borderColor: colors.WHITE,
   lineHeight: MenuLineHeight.MEDIUM,
   startingIndex: 0,
@@ -94,7 +95,7 @@ const Root = style(
     height?: string;
   }) => {
     return {
-      background: props.backgroundColor,
+      background: colors.BLACK,
       position: 'relative',
       width: props.width || '100%',
       height: props.height || 'unset',
@@ -139,7 +140,7 @@ const MenuItem = style(
       textAlign: 'center',
       ...getMenuLineHeightStyles(props.lineHeight),
       color: 'white',
-      backgroundColor: props.backgroundColor,
+      background: props.backgroundColor,
       cursor: props.clickDisabled ? 'default' : 'pointer',
       // transition: 'transform 0.1s linear',
       filter: props.active ? 'brightness(80%)' : '',

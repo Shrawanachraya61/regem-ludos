@@ -3,6 +3,7 @@ import { QuestTemplate } from '.';
 export const init = (exp: { [key: string]: QuestTemplate }) => {
   exp.Part1MainQuest = {
     label: 'Main',
+    summary: 'Discover what Carl-Arnold wants at the Regem Ludos Arcade.',
     description: 'Discover what Carl-Arnold wants at the Regem Ludos Arcade.',
     questStartScriptKey: 'quest_floor1-main',
     questEndScriptKey: 'quest_floor1-main1-complete',
@@ -30,6 +31,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
 
   exp.Part1MainQuest = {
     label: 'Main',
+    summary: 'Follow employee Jason through the Regem Ludos tutorial.',
     description: 'Follow employee Jason through the Regem Ludos tutorial.',
     questStartScriptKey: 'quest_tutorial_active',
     questEndScriptKey: 'quest_tutorial_complete',
@@ -45,6 +47,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
 
   exp.TicTacToe = {
     label: 'Tic Tac Toe',
+    summary: 'The sad Tic Tac Toe AI deserves a win.',
     description: 'The sad Tic Tac Toe AI deserves a win.',
     questStartScriptKey: 'quest_floor1-atrium_tic-tac-toe',
     questEndScriptKey: 'quest_floor1-atrium_tic-tac-toe-complete',

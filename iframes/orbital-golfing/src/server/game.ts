@@ -12,6 +12,7 @@ interface Game {
   planets: string[];
   powerups: string[];
   flags: string[];
+  coins: string[];
   collisions: [string, string][];
   round: number;
   roundFinished: boolean;
@@ -33,7 +34,7 @@ interface GameBroadcast {
 }
 
 type Scorecard = Record<string, number[]>;
-type EntityType = '' | 'Player' | 'Planet' | 'Flag';
+type EntityType = '' | 'Player' | 'Planet' | 'Flag' | 'Coin';
 
 interface Entity {
   id: string;
@@ -69,6 +70,10 @@ interface PlayerEntity extends Entity {
 
 interface PlanetEntity extends Entity {
   color: string;
+}
+
+interface CoinEntity extends Entity {
+  removed: boolean;
 }
 
 interface ShotArgs {
@@ -172,6 +177,7 @@ const gameCreate = (lobbyId: string, playerIds: string[]): Partial<Game> => {
     planets: [],
     powerups: [],
     flags: [],
+    coins: [],
     collisions: [],
     round: 0,
     numRounds: course.holes.length,
@@ -218,6 +224,7 @@ const gameLoadRound = (game: Game, round: number) => {
     game.height = hole.height;
     game.planets = [];
     game.flags = [];
+    game.coins = [];
     if (hole) {
       game.round = round;
       hole.planets.forEach(p => {
@@ -232,6 +239,9 @@ const gameLoadRound = (game: Game, round: number) => {
       });
       hole.flags.forEach(f => {
         gameCreateFlag(game, f.x, f.y);
+      });
+      hole.coins.forEach(c => {
+        gameCreateCoin(game, c.x, c.y);
       });
       game.players
         .map(id => getShared().getEntity(game, id))
@@ -278,6 +288,20 @@ const gameBeginSimulationLoop = (game: Game) => {
         entityA.posHistoryI++;
         gameDropPlayerEntityAtPreviousPosition(game, entityA);
         return;
+      }
+
+      if (entityB?.type === 'coin') {
+        console.log('- hit a coin.');
+        entityA.shotCt--;
+        if (entityA.shotCt < 0) {
+          entityA.shotCt = 0;
+        }
+        const playerEntity = entityA as PlayerEntity;
+        entityA.active = false;
+        playerEntity.posHistory.push([playerEntity.x, playerEntity.y]);
+        playerEntity.posHistoryI++;
+        (entityB as CoinEntity).removed = true;
+        entityB.mark = true;
       }
 
       if (entityB?.type === 'flag') {
@@ -435,6 +459,17 @@ const gameCreateFlag = (game: Game, x: number, y: number) => {
   flag.r = getShared().fromPx(30);
   console.debug('- FlagEntity created: ' + JSON.stringify(flag, null, 2));
   game.flags.push(flag.id);
+};
+
+const gameCreateCoin = (game: Game, x: number, y: number) => {
+  const coin = gameCreateEntity(game, 'coin_' + randomId()) as CoinEntity;
+  coin.type = 'coin';
+  coin.x = x;
+  coin.y = y;
+  coin.r = getShared().fromPx(30);
+  coin.removed = false;
+  console.debug('- CoinEntity created: ' + JSON.stringify(coin, null, 2));
+  game.coins.push(coin.id);
 };
 
 const gameHasConnectedPlayers = (game: Game) => {
