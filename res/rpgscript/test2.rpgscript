@@ -290,18 +290,33 @@ Ada: "I am going to leave now."
 +endConversation();
 
 #test-testDialogD
-action,?func(isQuestActive()):test-testDialogD2
+action,?func(questStepEQ, TestQuest1, 0):test-quest-db1
+action,?func(questStepEQ, TestQuest1, 1):test-quest-db2
+action,?func(questCompleted, TestQuest1):test-quest-db-complete
 action,this
 @this
-+lookAtEachOther(Ada, TestDialogD);
-+setConversation(Ada);
-testDialogD: "This is a test."
-+endConversation();
-@test-testDialogD2
-+lookAtEachOther(Ada, TestDialogD);
-+setConversation(Ada);
-testDialogD: "This is a test after func called."
-+endConversation();
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "You are now beginning the test quest.  Check your <color=PURPLE>journal</> for details."
+  +startQuest(TestQuest1);
+  +endConversation();
+@test-quest-db-complete
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "The test has been completed."
+  +endConversation();
+@test-quest-db1
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "Since you have spoken to me, you have completed the first task."
+  +completeQuestStep(TestQuest1, 0);
+  +endConversation();
+@test-quest-db2
+  +lookAtEachOther(Ada, TestDialogD);
+  +setConversation(Ada);
+  testDialogD: "Since you have spoken to me, you have completed the second task."
+  +completeQuestStep(TestQuest1, 1);
+  +endConversation();
 
 #test-callScriptIntegration
 action,this

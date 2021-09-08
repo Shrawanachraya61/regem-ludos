@@ -1,6 +1,0 @@
-// need SOME place to track this.
-@setup-quests-floor1-atrium
-  +setStorage(quest_floor1-atrium_acquire-haptic-bracer, false);
-  +setStorage(quest_floor1-atrium_acquire-haptic-bracer-complete, false);
-  +setStorage(quest_floor1-atrium_tic-tac-toe, false);
-  +setStorage(quest_floor1-atrium_tic-tac-toe-complete, false);
