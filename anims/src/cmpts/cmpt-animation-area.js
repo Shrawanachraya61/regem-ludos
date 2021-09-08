@@ -424,7 +424,7 @@ const AnimationArea = ({ appInterface }) => {
           </div>
           <ButtonRow
             style={{
-              justifyContent: 'space-evenly',
+              justifyContent: 'space-between',
             }}
           >
             <Button

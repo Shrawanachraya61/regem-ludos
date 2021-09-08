@@ -10,6 +10,7 @@ export interface QuestTemplate {
   questStartScriptKey: string;
   questEndScriptKey: string;
   tokensReward?: number;
+  ticketsReward?: number;
   experienceReward?: number;
   itemsReward?: () => Item[];
   icon?: any;

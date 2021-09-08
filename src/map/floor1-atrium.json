@@ -40,8 +40,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":96.5,
-                 "y":221.5
+                 "x":77.875,
+                 "y":178.125
                 }, 
                 {
                  "gid":200,
@@ -159,8 +159,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":348,
-                 "y":144
+                 "x":359.375,
+                 "y":126.625
                 }, 
                 {
                  "gid":194,
@@ -171,8 +171,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":312,
-                 "y":84
+                 "x":172.625,
+                 "y":84.375
                 }, 
                 {
                  "gid":194,
@@ -183,8 +183,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":84,
-                 "y":144
+                 "x":150.125,
+                 "y":130.375
                 }, 
                 {
                  "gid":194,
@@ -374,7 +374,7 @@
                  "visible":true,
                  "width":32,
                  "x":222,
-                 "y":156.666666666667
+                 "y":156.667
                 }, 
                 {
                  "height":84,
@@ -396,8 +396,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":222.666666666667,
-                 "y":217.333333333333
+                 "x":222.667,
+                 "y":217.333
                 }, 
                 {
                  "gid":194,
@@ -468,6 +468,42 @@
                  "width":32,
                  "x":90.5,
                  "y":335.5
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":85,
+                 "name":"Floor1AtriumNPC1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":200.5,
+                 "y":59.5
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":86,
+                 "name":"Floor1AtriumNPC2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":218.375,
+                 "y":58.625
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":88,
+                 "name":"FloorAtriumWalkingNPC",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":100.375,
+                 "y":142.125
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -476,7 +512,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":85,
+ "nextobjectid":89,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

@@ -1,6 +1,6 @@
 /* @jsx h */
 import { h } from 'preact';
-import { colors, style } from 'view/style';
+import { colors, keyframes, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { Player } from 'model/player';
 import { useState } from 'preact/hooks';
@@ -11,6 +11,7 @@ import PurseIcon from 'view/icons/Purse';
 import FlowerIcon from 'view/icons/Flower';
 import SwordIcon from 'view/icons/Sword';
 import PotionIcon from 'view/icons/Potion';
+import ArrowIcon from 'view/icons/Arrow';
 import { playSound, playSoundName } from 'model/sound';
 import { ItemType } from 'db/items';
 import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
@@ -23,6 +24,7 @@ const InnerRoot = style('div', {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   width: '100%',
+  zIndex: '1',
   // height: '100%',
 });
 
@@ -71,6 +73,27 @@ const FilterItem = style('div', (props: { highlighted: boolean }) => {
     '&:hover': {
       borderColor: colors.YELLOW,
     },
+  };
+});
+
+const arrowPulse = keyframes({
+  '0%': {
+    opacity: '1',
+  },
+  '50%': {
+    opacity: '0',
+  },
+  '100%': {
+    opacity: '1',
+  },
+});
+
+const ArrowIndicator = style('div', (props: { left?: boolean }) => {
+  return {
+    width: '16px',
+    transform: props.left ? 'rotate(180deg)' : 'unset',
+    marginTop: '24px',
+    animation: `${arrowPulse} 750ms linear infinite`,
   };
 });
 
@@ -191,6 +214,25 @@ const MenuItems = (props: IMenuItemsProps) => {
                       setFilter(i);
                     }}
                   >
+                    {i === filterIndex ? (
+                      <div
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          height: '0px',
+                          position: 'relative',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <ArrowIndicator left>
+                          <ArrowIcon color={colors.WHITE} />
+                        </ArrowIndicator>
+                        <ArrowIndicator>
+                          <ArrowIcon color={colors.WHITE} />
+                        </ArrowIndicator>
+                      </div>
+                    ) : null}
                     <div
                       style={{
                         width: '22px',

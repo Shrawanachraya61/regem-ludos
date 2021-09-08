@@ -331,8 +331,10 @@ step-off,floor1-atriumOpenBowlingDoorClose
 
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest
-  action,?all(isnot(quest_floor1-atrium_tic-tac-toe-complete),once()):floor1-atrium-TicTacToeGirl-first
-  action,?isnot(quest_floor1-atrium_tic-tac-toe-complete):floor1-atrium-TicTacToeGirl-rest
+  // action,?all(isnot(quest_floor1-atrium_tic-tac-toe-complete),once()):floor1-atrium-TicTacToeGirl-first
+  // action,?isnot(quest_floor1-atrium_tic-tac-toe-complete):floor1-atrium-TicTacToeGirl-rest
+  action,?func(questNotStarted, TicTacToe):floor1-atrium-TicTacToeGirl-first
+  action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-rest
   // default
   action,this
 @this
@@ -349,6 +351,7 @@ step-off,floor1-atriumOpenBowlingDoorClose
   Tic Tac Toe Girl: "Honestly, I feel kinda bad for it.  I wonder if it feels sad to lose all the time."
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
   +setFacing('Tic Tac Toe Girl', rightdown);
+  +startQuest(TicTacToe);
   +endConversation();
 @floor1-atrium-TicTacToeGirl-rest
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
@@ -372,7 +375,7 @@ step-off,floor1-atriumOpenBowlingDoorClose
   +waitMS(1000);
   +:bored(Tic Tac Toe Girl);
   Tic Tac Toe Girl: "Well, <delay=750 cascade=50> I'm glad I wasn't the one who lost to it."
-  +setStorage(quest_floor1-atrium_tic-tac-toe-complete);
+  +completeQuestStep(TicTacToe, 0);
   +resetAi('Tic Tac Toe Girl');
   +changeTileAtMarker(MarkerTTTMachineTile, TIC_TAC_TOE_NORMAL);
   +endConversation();
@@ -396,7 +399,7 @@ action,floor1-atrium-TicTacToeMachine-action
   +panCameraToFitCharacters(500, false, Ada, Tic Tac Toe Girl);
   +:question(Tic Tac Toe Girl);
   Tic Tac Toe Girl: "You looking to play that game?"
-  +callScript(floor1-atrium-TicTacToeGirl-first);
+  +:floor1-atrium-TicTacToeGirl-first();
   +panCameraBackToPlayer(500);
   +setStorage(floor1-atrium-TicTacToeGirl);
   +waitMS(1000);
@@ -572,4 +575,36 @@ step-first,this
 Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without getting a pair of shoes from here first!"
 +walkToMarker(Ada, MarkerPreventBowling);
 +panCameraBackToPlayer();
++endConversation();
+
+#floor1-AtriumNPC1NPC2
+action,this
+@this
++setConversation(Ada);
++lookAtCharacter(Ada, Floor1AtriumNPC1);
++lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
++:bored(Floor1AtriumNPC1);
+Floor1AtriumNPC1: "Oh my gawwd... Where is your friend?"
+Floor1AtriumNPC1: "He said he'd be here like 30 minutes ago."
++:teardrop(Floor1AtriumNPC2);
+Floor1AtriumNPC2: "Ya... I have no idea."
++none();
++waitMS(100);
++setFacing(Floor1AtriumNPC2, down);
++waitMS(500);
++setFacing(Floor1AtriumNPC2, leftdown);
++waitMS(100);
+Floor1AtriumNPC2: "I'm sure something just held him up."
++setFacing(Floor1AtriumNPC2, leftdown);
+Floor1AtriumNPC1: "If he's not here in the next two minutes, I'm going to that <color=BLUE>Vortex</> machine and not leaving until I have the high score."
++lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
+Floor1AtriumNPC1: "I mean it.  I'm sick of waiting around for you guys."
++endConversation();
+
+#floor1-AtriumWalkingNPC
+action,this
+@this
++setConversation(Ada);
++lookAtEachOther(Ada, FloorAtriumWalkingNPC);
+FloorAtriumWalkingNPC: "Sometimes I just like to come in here and walk around."
 +endConversation();

@@ -1,4 +1,7 @@
+import { colors } from 'view/style';
 import { QuestTemplate } from '.';
+
+import TicTacToeIcon from 'view/icons/TicTacToe';
 
 export const init = (exp: { [key: string]: QuestTemplate }) => {
   exp.Part1MainQuest = {
@@ -47,16 +50,22 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
 
   exp.TicTacToe = {
     label: 'Tic Tac Toe',
-    summary: 'The sad Tic Tac Toe AI deserves a win.',
-    description: 'The sad Tic Tac Toe AI deserves a win.',
+    summary: 'The sad Tic Tac Toe AI deserves a few wins.',
+    description:
+      'A girl standing by the Tic Tac Toe machines feels sorry for the AI programmed inside of them.  After all, the game is so simple that it does an awful lot of losing.  She thinks someone ought to lose a few games to help its self esteem.',
     questStartScriptKey: 'quest_floor1-atrium_tic-tac-toe',
     questEndScriptKey: 'quest_floor1-atrium_tic-tac-toe-complete',
+    icon: TicTacToeIcon,
+    iconColor: colors.WHITE,
+    experienceReward: 3,
+    ticketsReward: 10,
+    itemsReward: () => [],
     steps: [
       {
         completedScriptKey: 'quest_floor1-atrium_tic-tac-toe-1',
         label: 'Lose at Tic Tac Toe.',
         description:
-          'Lose all three games in a row in one round at the Tic Tac Toe arcade cabinets by the entrance on floor 1.',
+          'Lose all three games in a single round at the Tic Tac Toe arcade cabinets by the entrance on floor 1.',
       },
     ],
   };

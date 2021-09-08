@@ -87,6 +87,41 @@ export const init = () => {
     animationState: AnimationState.IDLE,
   };
 
+  exp.Floor1AtriumNPC1 = {
+    name: 'Floor1AtriumNPC1',
+    nameLabel: 'Girl',
+    spriteBase: 'girl5',
+    talkTrigger: 'floor1-AtriumNPC1NPC2',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
+  exp.Floor1AtriumNPC2 = {
+    name: 'Floor1AtriumNPC2',
+    nameLabel: 'Boy',
+    spriteBase: 'guy5',
+    talkTrigger: 'floor1-AtriumNPC1NPC2',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+  };
+  exp.FloorAtriumWalkingNPC = {
+    name: 'FloorAtriumWalkingNPC',
+    nameLabel: 'Walking Boy',
+    spriteBase: 'guy6',
+    talkTrigger: 'floor1-AtriumWalkingNPC',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 0.5,
+    overworldAi: createWalkerAI(
+      ['MarkerNPCWalkA', 'MarkerNPCWalkB', 'MarkerNPCWalkC'],
+      {
+        pauseDurationMs: 3500,
+        onReachDestination: ch => {
+          characterSetFacing(ch, Facing.DOWN);
+        },
+      }
+    ),
+  };
+
   exp.Floor1BowlingGirl = {
     name: 'Floor1BowlingGirl',
     nameLabel: 'Girl',

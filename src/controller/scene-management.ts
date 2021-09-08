@@ -250,6 +250,16 @@ export const evalCondition = (
         }
 
         return questIsActive(scene, quest);
+      } else if (funcName === 'questNotStarted') {
+        const quest = getQuest(funcArg);
+        if (!quest) {
+          console.error(
+            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
+          );
+          return false;
+        }
+
+        return questIsNotStarted(scene, quest);
       } else if (funcName === 'questCompleted') {
         const quest = getQuest(funcArg);
         if (!quest) {

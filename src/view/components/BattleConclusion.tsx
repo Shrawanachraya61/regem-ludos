@@ -92,7 +92,7 @@ const LevelUpText = style('div', (props: { offset?: boolean }) => {
     whiteSpace: 'pre',
     marginLeft: props.offset ? 'unset' : '16px',
     animation: `3s ${props.offset ? pulse : pulseO} linear infinite`,
-    color: props.offset ? colors.BLUE : colors.BLACK,
+    color: props.offset ? colors.WHITE : colors.BLACK,
   };
 });
 

@@ -178,9 +178,6 @@ export const main = async (): Promise<void> => {
   console.timeEnd('load');
   setTimeLoaded(+new Date());
 
-  console.log('START QUEST TIC TAC TOE');
-  beginQuest(getCurrentScene(), 'TicTacToe');
-
   await new Promise<void>(resolve => {
     const touchSomething = () => {
       window.removeEventListener('keydown', touchSomething);

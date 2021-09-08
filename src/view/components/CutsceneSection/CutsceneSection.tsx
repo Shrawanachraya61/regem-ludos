@@ -75,6 +75,19 @@ const BottomBarWrapper = style('div', (props: { visible: boolean }) => ({
   background: colors.DARKGREY,
 }));
 
+const BarBackground = style('div', () => {
+  return {
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: '100%',
+    height: '100%',
+    opacity: '0.04',
+    backgroundImage: 'url(/res/bg/flowers_menu_bg.png)',
+    zIndex: 0,
+  };
+});
+
 const Portrait = style(
   'div',
   (props: { align: 'left' | 'right'; activeState: PortraitActiveState }) => {
@@ -622,10 +635,14 @@ const CutsceneSection = () => {
     >
       <TopBarWrapper
         visible={cutscene.visible && cutscene.showBars && barsVisible}
-      ></TopBarWrapper>
+      >
+        <BarBackground />
+      </TopBarWrapper>
       <BottomBarWrapper
         visible={cutscene.visible && cutscene.showBars && barsVisible}
-      ></BottomBarWrapper>
+      >
+        <BarBackground />
+      </BottomBarWrapper>
       <div
         style={{
           position: 'absolute',
@@ -642,7 +659,7 @@ const CutsceneSection = () => {
             hideSection(AppSection.Settings);
             // showSection(AppSection.Cutscene, false);
           }}
-        />
+        ></TopBar>
       </div>
       <PortraitWrapper visible={cutscene.visible && barsVisible}>
         {cutscene.portraitLeft !== '' ? (

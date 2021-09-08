@@ -32,9 +32,9 @@ import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 const RewardsList = style('div', () => {
   return {
     fontSize: '16px',
-    width: '288px',
+    width: '50%',
     boxSizing: 'border-box',
-    padding: '8px',
+    padding: '16px',
     margin: '8px',
     border: `2px solid ${colors.WHITE}`,
     background: 'rgba(0, 0, 0, 0.5)',
@@ -57,13 +57,14 @@ const QuestDescription = style('div', () => {
     padding: '8px',
     background: colors.DARKGREY_ALT,
     border: '2px solid ' + colors.WHITE,
-    margin: '16px 0px',
+    margin: '64px 0px',
   };
 });
 
 const IconsWrapper = style('div', () => {
   return {
     width: '100%',
+    height: '36px',
     display: 'flex',
     justifyContent: 'space-between',
   };
@@ -72,6 +73,7 @@ const IconsWrapper = style('div', () => {
 const IconContainer = style('div', () => {
   return {
     width: '96px',
+    height: '96px',
     border: '2px solid ' + colors.BLUE,
     borderTopColor: colors.WHITE,
   };
@@ -99,6 +101,14 @@ const QuestSection = (props: IQuestSectionProps) => {
         if (leveledUp) {
           playSoundName('level_up');
           showNotification({ text: leveledUpText, type: 'info' });
+        }
+
+        const player = getCurrentPlayer();
+        if (quest.tokensReward) {
+          player.tokens += quest.tokensReward;
+        }
+        if (quest.ticketsReward) {
+          player.tickets += quest.ticketsReward;
         }
       }, 250);
     }
@@ -134,6 +144,9 @@ const QuestSection = (props: IQuestSectionProps) => {
               {quest.tokensReward ? (
                 <div>{quest.tokensReward} Tokens</div>
               ) : null}
+              {quest.ticketsReward ? (
+                <div>{quest.ticketsReward} Tickets</div>
+              ) : null}
               {quest.itemsReward
                 ? quest.itemsReward().map((item, i) => {
                     return <div key={i}>{item.label}</div>;
@@ -166,11 +179,11 @@ const QuestSection = (props: IQuestSectionProps) => {
         ) : (
           <QuestContent>
             <div style={{ fontSize: '24px' }}> Quest Started! </div>
-            <p>
-              You have started:{' '}
-              <span style={{ color: colors.YELLOW }}>{quest.label}</span>
-            </p>
             <QuestDescription>
+              <p>
+                You have started:{' '}
+                <span style={{ color: colors.YELLOW }}>{quest.label}</span>
+              </p>
               <p style={{ width: '100%' }}> {quest.description}</p>
             </QuestDescription>
             <IconsWrapper>

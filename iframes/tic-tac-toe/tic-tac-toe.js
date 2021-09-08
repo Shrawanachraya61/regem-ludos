@@ -12,6 +12,8 @@ let currentTurn = null;
 let lastStart = CPU;
 let isPlaying = false;
 let numGamesPlayed = 0;
+let cursorX = 0;
+let cursorY = 0;
 
 const drawX = (x, y) => {
   const halfSize = BOX_SIZE / 2 - 10;
@@ -51,8 +53,19 @@ const drawBoard = () => {
     ctx.moveTo(0, BOX_SIZE * i);
     ctx.lineTo(SCREEN_SIZE, BOX_SIZE * i);
   }
+
   ctx.closePath();
   ctx.stroke();
+
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 2;
+  const padding = 8;
+  ctx.strokeRect(
+    cursorX * BOX_SIZE + padding,
+    cursorY * BOX_SIZE + padding,
+    BOX_SIZE - padding * 2,
+    BOX_SIZE - padding * 2
+  );
 };
 
 const draw = board => {
@@ -156,6 +169,9 @@ const getRandomPassiveAggressiveWinningPhrase = () => {
     'You have somehow won.',
     'You won that game.',
     'You clicked correctly this time.',
+    "You actually think you're good",
+    'So stupid.',
+    'Leave me alone.',
   ];
   return phrases[Math.floor(Math.random() * phrases.length)];
 };
@@ -272,6 +288,7 @@ const end = (window.end = () => {
   } else {
     score = wins;
   }
+  isPlaying = false;
   // Tells Lib the game is done
   window.Lib.notifyGameCompleted(score);
   menu();
@@ -280,7 +297,7 @@ const end = (window.end = () => {
 const menu = () => {
   clear();
   clearInterval(menuFlashInterval);
-  isPlaying = true;
+  // isPlaying = true;
 
   document.getElementById('score-area').style.display = 'none';
   if (window.Lib.getConfig().startButtonEnabled) {
@@ -413,6 +430,66 @@ const init = async () => {
             }
           }
         }
+      }
+    }
+  });
+
+  canvas.addEventListener('mousemove', ev => {
+    if (isPlaying) {
+      const xClick = ev.offsetX;
+      const yClick = ev.offsetY;
+      for (let i = 0; i < 9; i++) {
+        const [x, y] = indToPos(i);
+        if (
+          pointRectCollides(
+            xClick,
+            yClick,
+            BOX_SIZE * x,
+            BOX_SIZE * y,
+            BOX_SIZE * (x + 1),
+            BOX_SIZE * (y + 1)
+          )
+        ) {
+          const lastX = cursorX;
+          const lastY = cursorY;
+          cursorX = x;
+          cursorY = y;
+
+          if (lastX !== cursorX || lastY !== cursorY) {
+            draw(board);
+          }
+        }
+      }
+    }
+  });
+
+  window.addEventListener('keydown', ev => {
+    if (isPlaying) {
+      if (ev.key === 'ArrowLeft') {
+        cursorX = (cursorX + 3 - 1) % 3;
+      } else if (ev.key === 'ArrowRight') {
+        cursorX = (cursorX + 1) % 3;
+      } else if (ev.key === 'ArrowUp') {
+        cursorY = (cursorY + 3 - 1) % 3;
+      } else if (ev.key === 'ArrowDown') {
+        cursorY = (cursorY + 1) % 3;
+      } else if (ev.key.toLowerCase() === 'x') {
+        if (currentTurn === PLAYER) {
+          const i = cursorX * 3 + cursorY;
+          onPositionSelected(i);
+        } else if (currentTurn === NONE && numGamesPlayed < 3) {
+          window.newGameFromButton();
+        }
+      }
+      draw(board);
+    } else {
+      // HACK checking the start button visibility as a way to know if the game is initiated
+      // from an arcade machine or if somebody just loaded the page
+      if (
+        ev.key.toLowerCase() === 'x' &&
+        document.getElementById('start').style.display !== 'none'
+      ) {
+        start();
       }
     }
   });

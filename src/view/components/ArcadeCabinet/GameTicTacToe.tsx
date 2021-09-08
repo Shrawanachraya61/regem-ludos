@@ -17,10 +17,11 @@ import {
   getCurrentOverworld,
   getCurrentScene,
 } from 'model/generics';
-import { modifyTickets } from 'controller/scene-commands';
 import { hideArcadeGame, hideSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pause, unpause } from 'controller/loop';
+import { questIsCompleted } from 'controller/quest';
+import { getIfExists as getQuest } from 'db/quests';
 
 registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
   title: 'Tic Tac Toe',
@@ -63,11 +64,13 @@ registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {
   onGameCompleted: async (result: any) => {
     const score: number = result;
     const scene = getCurrentScene();
+    const quest = getQuest('TicTacToe');
+    if (!quest) {
+      console.error('No TicTacToe quest exists.');
+      return;
+    }
     console.log('GAME HAS BEEN COMPLETED', result);
-    if (
-      score === -1 &&
-      !scene.storage['quest_floor1-atrium_tic-tac-toe-complete']
-    ) {
+    if (score === -1 && !questIsCompleted(scene, quest)) {
       // player lost to AI 3 times
       const scene = getCurrentScene();
       hideArcadeGame();

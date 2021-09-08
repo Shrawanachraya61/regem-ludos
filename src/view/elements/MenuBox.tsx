@@ -37,6 +37,19 @@ const MenuContainer = style('div', (props: { maxWidth?: string }) => {
     color: colors.WHITE,
   };
 });
+const MenuBackground = style('div', () => {
+  return {
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: '100%',
+    height: '100%',
+    opacity: '0.04',
+    backgroundImage: 'url(/res/bg/flowers_menu_bg.png)',
+    zIndex: 0,
+    pointerEvents: 'none',
+  };
+});
 const MenuTitle = style('div', () => {
   return {
     margin: '8px',
@@ -44,6 +57,7 @@ const MenuTitle = style('div', () => {
     fontSize: '32px',
     textTransform: 'uppercase',
     borderBottom: `2px solid ${colors.BLUE}`,
+    zIndex: 2,
   };
 });
 const MenuContent = style('div', () => {
@@ -53,6 +67,7 @@ const MenuContent = style('div', () => {
     fontSize: '16px',
     display: 'flex',
     justifyContent: 'center',
+    zIndex: 2,
   };
 });
 const MenuActionButtons = style('div', () => {
@@ -61,6 +76,7 @@ const MenuActionButtons = style('div', () => {
     justifyContent: 'flex-end',
     padding: '8px',
     margin: '8px',
+    zIndex: 2,
   };
 });
 interface IMenuProps {
@@ -97,6 +113,7 @@ const MenuBox = (props: IMenuProps) => {
         id={'menu-container-' + props.title}
         maxWidth={props.maxWidth}
       >
+        <MenuBackground />
         {!props.hideTitle ? <MenuTitle>{props.title}</MenuTitle> : null}
         <MenuContent>{props.children}</MenuContent>
         {props.hideClose ? null : (

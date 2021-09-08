@@ -297,7 +297,7 @@ action,this
 @this
   +lookAtEachOther(Ada, TestDialogD);
   +setConversation(Ada);
-  testDialogD: "You are now beginning the test quest.  Check your journal for details."
+  testDialogD: "You are now beginning the test quest.  Check your <color=PURPLE>journal</> for details."
   +startQuest(TestQuest1);
   +endConversation();
 @test-quest-db-complete

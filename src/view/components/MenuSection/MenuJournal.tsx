@@ -19,6 +19,7 @@ const InnerRoot = style('div', {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   width: '100%',
+  zIndex: '1',
   // height: '100%',
 });
 

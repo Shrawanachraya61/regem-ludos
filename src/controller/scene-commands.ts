@@ -1657,7 +1657,7 @@ export const removeItem = (itemName: string, itemText?: string) => {
 export const modifyTokens = (amount: number) => {
   const player = getCurrentPlayer();
   playerModifyTokens(player, amount);
-  if (amount > 0) {
+  if (amount >= 0) {
     return playDialogue('Narrator', `Gained ${amount} Regem Ludos Tokens.`);
   } else {
     return playDialogue('Narrator', `Removed ${-amount} Regem Ludos Tokens.`);
@@ -1670,7 +1670,7 @@ export const modifyTokens = (amount: number) => {
 export const modifyTickets = (amount: number) => {
   const player = getCurrentPlayer();
   playerModifyTickets(player, amount);
-  if (amount > 0) {
+  if (amount >= 0) {
     return playDialogue('Narrator', `Gained ${amount} Prize Tickets.`);
   } else {
     return playDialogue('Narrator', `Removed ${-amount} Prize Tickets.`);
