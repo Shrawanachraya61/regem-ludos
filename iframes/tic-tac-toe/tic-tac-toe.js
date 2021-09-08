@@ -169,9 +169,11 @@ const getRandomPassiveAggressiveWinningPhrase = () => {
     'You have somehow won.',
     'You won that game.',
     'You clicked correctly this time.',
-    "You actually think you're good",
+    "You actually think you're good.",
     'So stupid.',
     'Leave me alone.',
+    "It's just a game.",
+    'Play again.  Go on.',
   ];
   return phrases[Math.floor(Math.random() * phrases.length)];
 };

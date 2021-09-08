@@ -504,6 +504,18 @@
                  "width":32,
                  "x":100.375,
                  "y":142.125
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":89,
+                 "name":"MarkerAdaNPC1NPC2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":210.25,
+                 "y":91.75
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -512,7 +524,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":89,
+ "nextobjectid":90,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

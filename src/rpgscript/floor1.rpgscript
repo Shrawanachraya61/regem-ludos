@@ -580,6 +580,7 @@ Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without get
 #floor1-AtriumNPC1NPC2
 action,this
 @this
++walkToMarker(Ada, MarkerAdaNPC1NPC2);
 +setConversation(Ada);
 +lookAtCharacter(Ada, Floor1AtriumNPC1);
 +lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
@@ -596,9 +597,13 @@ Floor1AtriumNPC2: "Ya... I have no idea."
 +waitMS(100);
 Floor1AtriumNPC2: "I'm sure something just held him up."
 +setFacing(Floor1AtriumNPC2, leftdown);
-Floor1AtriumNPC1: "If he's not here in the next two minutes, I'm going to that <color=BLUE>Vortex</> machine and not leaving until I have the high score."
+Floor1AtriumNPC1: "If he's not here in the next three minutes, I'm going to that <color=BLUE>Vortex</> machine and not leaving until I have the high score."
 +lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
 Floor1AtriumNPC1: "I mean it.  I'm sick of waiting around for you guys."
+Floor1AtriumNPC2: "Isn't this supposed to be a date or something?"
+Floor1AtriumNPC2: "I'm supposed to introduce him and then go somewhere else."
+Floor1AtriumNPC1: "Well this <italic>date</> sucks."
+Floor1AtriumNPC1: "He's got three minutes, then <delay=300>I am outta here."
 +endConversation();
 
 #floor1-AtriumWalkingNPC
