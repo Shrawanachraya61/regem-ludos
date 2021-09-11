@@ -203,6 +203,7 @@ const processZipImagesArchiveJSZip = async imagesArchive => {
   });
 };
 
+// probably don't need this, but it's fine to have for justin
 const processZipSoundArchiveJSZip = async soundsArchive => {
   return Promise.all(
     Object.keys(soundsArchive.files).map(async soundName => {

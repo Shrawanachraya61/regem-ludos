@@ -54,10 +54,11 @@ const QuestContent = style('div', () => {
 
 const QuestDescription = style('div', () => {
   return {
-    padding: '8px',
+    padding: '16px',
     background: colors.DARKGREY_ALT,
     border: '2px solid ' + colors.WHITE,
     margin: '64px 0px',
+    marginTop: '42px',
   };
 });
 
@@ -178,9 +179,16 @@ const QuestSection = (props: IQuestSectionProps) => {
           </QuestContent>
         ) : (
           <QuestContent>
-            <div style={{ fontSize: '24px' }}> Quest Started! </div>
+            <div style={{ fontSize: '24px', marginTop: '16px' }}>
+              Quest Started!
+            </div>
             <QuestDescription>
-              <p>
+              <p
+                style={{
+                  marginTop: '10px',
+                  fontSize: '24px',
+                }}
+              >
                 You have started:{' '}
                 <span style={{ color: colors.YELLOW }}>{quest.label}</span>
               </p>
@@ -214,7 +222,7 @@ const QuestSection = (props: IQuestSectionProps) => {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            marginTop: '16px',
+            margin: '16px',
           }}
         >
           <VerticalMenu

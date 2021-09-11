@@ -246,15 +246,6 @@ export const playSound = (soundObj: ISound, volume?: number) => {
       const sprite = soundObj.sprite;
       const sound: any =
         spritesheetSound.nodes[spritesheetSound.currentNodeIndex]; //spritesheetSound.sound;
-      console.log(
-        'play sound from node',
-        spritesheetSound.currentNodeIndex,
-        sound.id,
-        'len=' + spritesheetSound.nodes.length,
-        'next=' +
-          ((spritesheetSound.currentNodeIndex + 1) %
-            spritesheetSound.nodes.length)
-      );
       sound.volume = (volume || 1) * soundObj.volumeModifier;
       sound.currentTime = sprite.start;
       setSoundSprite(sound, sprite);

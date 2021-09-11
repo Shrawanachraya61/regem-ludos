@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="90">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="94">
  <editorsettings>
   <export target="../src/map/floor1-atrium.json" format="json"/>
  </editorsettings>
@@ -19,7 +19,7 @@
   <image source="../res/walls128.png" width="256" height="256"/>
  </tileset>
  <tileset firstgid="353" source="../res/props-dynamic.tiled-sheet.tsx"/>
- <tileset firstgid="357" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+ <tileset firstgid="358" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../res/props_small.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tiles" width="32" height="32">
@@ -95,7 +95,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="19" name="MarkerPlayer" gid="194" x="77.875" y="178.125" width="32" height="32"/>
+  <object id="19" name="MarkerPlayer" gid="194" x="317.125" y="108.875" width="32" height="32"/>
   <object id="42" name="MarkerDoorEntrance" gid="200" x="236" y="368" width="32" height="32"/>
   <object id="43" name="MarkerFromBowling" gid="198" x="358" y="80" width="32" height="32"/>
   <object id="45" name="Floor1AtriumDeskEmployee" gid="193" x="348" y="352" width="32" height="32"/>
@@ -117,8 +117,8 @@
   <object id="63" name="MarkerJasonA" gid="194" x="436" y="72" width="32" height="32"/>
   <object id="64" name="MarkerDoorTutTile" gid="194" x="456" y="40" width="32" height="32"/>
   <object id="65" name="MarkerTTTMachine" gid="194" x="56" y="248" width="32" height="32"/>
-  <object id="66" gid="359" x="340" y="320" width="32" height="32"/>
-  <object id="67" gid="359" x="308" y="320" width="32" height="32"/>
+  <object id="66" gid="360" x="340" y="320" width="32" height="32"/>
+  <object id="67" gid="360" x="308" y="320" width="32" height="32"/>
   <object id="68" name="Floor1PingPongGuyA" gid="193" x="152" y="260" width="32" height="32"/>
   <object id="69" name="Floor1PingPongGuyB" gid="193" x="152" y="316" width="32" height="32"/>
   <object id="70" name="#floor1-atrium-TicTacToeMachine" x="44" y="224" width="32" height="60"/>
@@ -136,5 +136,6 @@
   <object id="86" name="Floor1AtriumNPC2" gid="193" x="218.375" y="58.625" width="32" height="32"/>
   <object id="88" name="FloorAtriumWalkingNPC" gid="193" x="100.375" y="142.125" width="32" height="32"/>
   <object id="89" name="MarkerAdaNPC1NPC2" gid="194" x="210.25" y="91.75" width="32" height="32"/>
+  <object id="93" type="front" gid="357" x="309.5" y="4.5" width="49" height="35"/>
  </objectgroup>
 </map>

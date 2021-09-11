@@ -40,6 +40,7 @@ module.exports = {
       '/*.png': 'http://localhost:8888',
       '/*.txt': 'http://localhost:8888',
       '/*.json': 'http://localhost:8888',
+      '/*.zip': 'http://localhost:8888',
     },
   },
 };

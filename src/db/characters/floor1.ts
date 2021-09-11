@@ -1,4 +1,5 @@
 import { BattleActions } from 'controller/battle-actions';
+import { setAtMarker } from 'controller/scene-commands';
 import { createWalkerAI } from 'db/overworld-ai';
 import { battleStatsCreate } from 'model/battle';
 import {
@@ -8,9 +9,59 @@ import {
   WeaponEquipState,
   characterSetFacing,
 } from 'model/character';
+import { getCurrentRoom } from 'model/generics';
+import { roomRemoveCharacter } from 'model/room';
 
 export const init = () => {
   const exp = {} as { [key: string]: CharacterTemplate };
+
+  exp.Floor1BlueCar = {
+    name: 'Floor1BlueCar',
+    spriteBase: 'blue_car',
+    spriteSize: [96, 96],
+    sortOffset: 48,
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 4,
+    overworldAi: createWalkerAI(['MarkerBlueCar1'], {
+      pauseDurationMs: 1500,
+      onReachDestination: ch => {
+        setAtMarker(ch.name, 'MarkerBlueCar2');
+      },
+    }),
+  };
+
+  exp.Floor1GreenCar = {
+    name: 'Floor1GreenCar',
+    spriteBase: 'green_car',
+    spriteSize: [96, 96],
+    sortOffset: 48,
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 5,
+    overworldAi: createWalkerAI(['MarkerGreenCar1'], {
+      pauseDurationMs: 1000,
+      onReachDestination: ch => {
+        setAtMarker(ch.name, 'MarkerGreenCar2');
+      },
+    }),
+  };
+
+  exp.Floor1WhiteCar = {
+    name: 'Floor1WhiteCar',
+    spriteBase: 'white_car',
+    spriteSize: [96, 96],
+    sortOffset: 48,
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 5,
+    overworldAi: createWalkerAI(['MarkerWhiteCar1'], {
+      pauseDurationMs: 1000,
+      onReachDestination: ch => {
+        roomRemoveCharacter(getCurrentRoom(), ch);
+      },
+    }),
+  };
 
   exp.Floor1AtriumDeskEmployee = {
     name: 'Atrium Desk Employee',

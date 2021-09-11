@@ -183,6 +183,7 @@ export interface Character {
   template: CharacterTemplate | null;
   encounter?: BattleTemplate;
   encounterStuckRetries: number;
+  sortOffset?: number;
   ro?: RenderObject;
 }
 
@@ -215,6 +216,7 @@ export interface CharacterTemplate {
     accessory2?: Item;
     armor?: Item;
   };
+  sortOffset?: number;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -266,6 +268,7 @@ export const characterCreate = (name: string): Character => {
     collisionSize: [16, 16],
     collisionOffset: [0, 0],
     encounterStuckRetries: 0,
+    sortOffset: undefined,
     template: null,
   };
   ch.ro = {
@@ -310,6 +313,9 @@ export const characterCreateFromTemplate = (
   if (template.spriteSize) {
     ch.spriteWidth = template.spriteSize[0];
     ch.spriteHeight = template.spriteSize[1];
+
+    // umm. this might break some things.
+    ch.sortOffset = ch.spriteHeight + 1;
   }
   if (template.canGetStuckWhileWalking) {
     // if walkRetries cannot be incremented, then the character is able to get stuck
@@ -358,6 +364,9 @@ export const characterCreateFromTemplate = (
       characterOverrideAnimation(ch, anim);
     }
   }
+  if (template.sortOffset !== undefined) {
+    ch.sortOffset = template.sortOffset;
+  }
   ch.template = template;
   return ch;
 };
@@ -385,11 +394,14 @@ export const characterGetAnimation = (ch: Character): Animation => {
     }
   }
 
-  const animStr = characterGetAnimKey(ch);
+  let animStr = characterGetAnimKey(ch);
   const anim = storedAnimations[animStr];
   if (anim) {
     return anim;
   } else {
+    if (!hasAnimation(animStr)) {
+      animStr = 'ada_idle_down';
+    }
     const anim = createAnimation(animStr);
     storedAnimations[animStr] = anim;
     return anim;
@@ -410,11 +422,19 @@ export const characterSetAnimationState = (
       ch.animationPromise = undefined;
     }
 
+    if (!hasAnimation(newAnimKey)) {
+      console.log(
+        `Warning, tried to set animKey for character which did not exist: ${newAnimKey}`
+      );
+      return;
+    }
+
     if (ch.animationState === AnimationState.OVERRIDDEN) {
       return;
     }
 
     ch.animationKey = newAnimKey;
+
     const anim = characterGetAnimation(ch);
     anim.reset();
     anim.start();
@@ -1150,7 +1170,11 @@ export const characterUpdate = (ch: Character): void => {
   const [x, y] = characterGetPos(ch);
   const [, py] = isoToPixelCoords(x, y, 0);
   if (ch.ro) {
-    ch.ro.sortY = py + 33;
+    let sortOffset = 33;
+    if (ch.sortOffset !== undefined) {
+      sortOffset = ch.sortOffset;
+    }
+    ch.ro.sortY = py + sortOffset;
   }
   ch.vx = 0;
   ch.vy = 0;

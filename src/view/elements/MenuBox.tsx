@@ -5,11 +5,10 @@ import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 const MenuWrapper = style('div', (props: { dark?: boolean }) => {
   return {
-    transition: 'opacity 100ms',
     position: 'fixed',
     left: '0px',
     top: '0px',
@@ -35,6 +34,8 @@ const MenuContainer = style('div', (props: { maxWidth?: string }) => {
     border: `2px solid ${colors.BLUE}`,
     background: colors.BGGREY,
     color: colors.WHITE,
+    transform: 'scale(0)',
+    transition: 'opacity 100ms, transform 100ms',
   };
 });
 const MenuBackground = style('div', () => {
@@ -107,12 +108,19 @@ const MenuBox = (props: IMenuProps) => {
     }
   }, []);
 
+  const rootId = 'menu-wrapper-' + props.title;
+  const containerId = 'menu-container-' + props.title;
+
+  useEffect(() => {
+    const elem = document.getElementById(containerId);
+    if (elem) {
+      elem.style.transform = 'scale(1)';
+    }
+  });
+
   return (
-    <MenuWrapper id={'menu-wrapper-' + props.title} dark={props.dark}>
-      <MenuContainer
-        id={'menu-container-' + props.title}
-        maxWidth={props.maxWidth}
-      >
+    <MenuWrapper id={rootId} dark={props.dark}>
+      <MenuContainer id={containerId} maxWidth={props.maxWidth}>
         <MenuBackground />
         {!props.hideTitle ? <MenuTitle>{props.title}</MenuTitle> : null}
         <MenuContent>{props.children}</MenuContent>

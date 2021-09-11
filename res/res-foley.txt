@@ -69,6 +69,11 @@ Sound,emotion,foley/emotion.mp3,0.15,zzfx
 Sound,notification,foley/notification.mp3,0.3,zzfx
 Sound,quest_started,foley/quest_started.mp3,0.3,zzfx
 Sound,quest_completed,foley/quest_completed.mp3,0.3,zzfx
+Sound,car_woosh,foley/car_woosh.mp3,1.0,Creative Commons https://freesound.org/people/NachtmahrTV/sounds/553259/ cut and sped up
+Sound,sliding_door_open,foley/sliding_door_open.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ reversed cut and sped up
+Sound,sliding_door_close,foley/sliding_door_close.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ cut and sped up
+Sound,red_door_open,foley/red_door_open.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut
+Sound,red_door_close,foley/red_door_close.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut pitch down
 
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3

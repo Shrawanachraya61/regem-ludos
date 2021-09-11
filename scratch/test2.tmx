@@ -110,11 +110,11 @@
   <object id="9" name="#floor1-vendingPanel" gid="195" x="28" y="268" width="32" height="32"/>
   <object id="11" name="#floor1-vendingPanel" x="12" y="152" width="140" height="44"/>
   <object id="18" name="Roger" gid="193" x="97.25" y="35.75" width="32" height="32"/>
-  <object id="20" name="#floor1-openDoorA" x="428" y="280" width="32" height="64"/>
-  <object id="21" name="#floor1-openDoorB" x="428" y="220" width="32" height="60"/>
+  <object id="20" name="#test2-openDoorA" x="428" y="286.667" width="32" height="57.3333"/>
+  <object id="21" name="#test2-openDoorB" x="428" y="220" width="32" height="55.3333"/>
   <object id="22" name="markerDoorA" gid="194" x="436" y="308" width="32" height="32"/>
   <object id="23" name="markerDoorB" gid="194" x="436" y="244" width="32" height="32"/>
-  <object id="26" name="#floor1-closeDoorsAB" x="412" y="200" width="64" height="164"/>
+  <object id="26" name="#test2-closeDoorsAB" x="412" y="200" width="64" height="164"/>
   <object id="29" name="MarkerSpawnAtMarker" gid="194" x="366.625" y="89.875" width="32" height="32"/>
   <object id="35" name="Sigma" gid="193" x="385.125" y="42.875" width="32" height="32"/>
   <object id="44" x="459.625" y="232.875"/>
@@ -147,7 +147,7 @@
   <object id="75" name="TestDialogA" gid="193" x="44" y="540" width="32" height="32"/>
   <object id="76" name="TestDialogD" gid="193" x="94" y="524" width="32" height="32"/>
   <object id="77" name="Shopkeep" gid="193" x="449.25" y="33.75" width="32" height="32"/>
-  <object id="78" name="MarkerPlayer" gid="194" x="92.5" y="484.833" width="32" height="32"/>
+  <object id="78" name="MarkerPlayer" gid="194" x="460.75" y="390.583" width="32" height="32"/>
   <object id="79" name="#test-ada-sigma-shopkeep" x="407.937" y="14.9375" width="73.125" height="69.125"/>
   <object id="80" name="MarkerAdaShopkeep" gid="194" x="457" y="82.3333" width="32" height="32"/>
  </objectgroup>

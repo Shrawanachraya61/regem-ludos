@@ -4,7 +4,7 @@ action,this
 @this
 +setStorage('overworld', 'floor1');
 +setCharacterAtMarker('Ada', 'MarkerPlayer');
-+callScript('floor1-closeDoorsAB');
++callScript('test2-closeDoorsAB-no-sound');
 
 #floor1-skyeIntro
 action,floor1-Skye_intro
@@ -170,23 +170,28 @@ Ada: "Have you nothing further to say?"
 Roger: "The conversation has concluded.  I bid you good day."
 +endConversation();
 
-#floor1-closeDoorsAB
-step,this
+#test2-closeDoorsAB
+step-off,this
 @this
++playSound(red_door_close);
++:test2-closeDoorsAB-no-sound();
+@test2-closeDoorsAB-no-sound
 +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
 +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
 
-#floor1-openDoorA
-step,this
+#test2-openDoorA
+step-first,this
 @this
++playSound(red_door_open);
 +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN2);
 +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN1, 16, 0);
 
-#floor1-openDoorB
-step,this
+#test2-openDoorB
+step-first,this
 @this
++playSound(red_door_open);
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
 +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);
 

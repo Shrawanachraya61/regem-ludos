@@ -49,10 +49,10 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
   };
 
   exp.TicTacToe = {
-    label: 'Tic Tac Toe',
+    label: 'Tic Tac Woe',
     summary: 'The sad Tic Tac Toe AI deserves a few wins.',
     description:
-      'A girl standing by the Tic Tac Toe machines feels sorry for the AI programmed inside of them.  After all, the game is so simple that it does an awful lot of losing.  She thinks someone ought to lose a few games to help its self esteem.',
+      'A girl standing by the Tic Tac Toe machines feels sorry for the AI programmed inside of them.  After all, the game is so simple that it does an awful lot of losing.  Someone ought to let it win a couple of games so that it doesn\'t need to have it so rough.',
     questStartScriptKey: 'quest_floor1-atrium_tic-tac-toe',
     questEndScriptKey: 'quest_floor1-atrium_tic-tac-toe-complete',
     icon: TicTacToeIcon,

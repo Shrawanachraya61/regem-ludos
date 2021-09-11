@@ -1,5 +1,9 @@
 import Animation from './animation';
 
+const JSZip = window.JSZip;
+const zipImages = {};
+let shouldUseZip = true;
+
 class AssetLoader {
   constructor(display) {
     this.isLoading = false;
@@ -171,11 +175,60 @@ class AssetLoader {
     });
   }
 
+  async loadZip() {
+    this.loading = true;
+    if (shouldUseZip) {
+      const zips = await Promise.all([fetchZipArchive('images.zip')]);
+      const imagesArchive = zips[0];
+      await processZipImagesArchiveJSZip(imagesArchive);
+    }
+    this.loading = false;
+  }
+
   async loadAssets(resTxt) {
     this.loading = true;
     await this.processAssetFile('res.txt', resTxt);
     this.loading = false;
   }
 }
+
+const fetchZipArchive = async url => {
+  const zip = await fetch(url)
+    .then(function(response) {
+      if (response.status === 200 || response.status === 0) {
+        return Promise.resolve(response.blob());
+      } else {
+        return Promise.reject(new Error(response.statusText));
+      }
+    })
+    .then(JSZip.loadAsync);
+  return zip;
+};
+
+const processZipImagesArchiveJSZip = async imagesArchive => {
+  return Promise.all(
+    Object.keys(imagesArchive.files).map(async imageName => {
+      const zip = imagesArchive.files[imageName];
+      const blob = new Blob([await zip.async('arraybuffer')], {
+        type: 'image/png',
+      });
+      const imgData = URL.createObjectURL(blob);
+      const image = document.createElement('img');
+      image.src = imgData;
+      zipImages[imageName] = image;
+    })
+  ).catch(e => {
+    console.error('Failed to fetch images archive', e);
+  });
+};
+
+export const getZipImageData = imageName => {
+  const imgData = zipImages[imageName];
+  if (imgData) {
+    return imgData;
+  } else {
+    return null;
+  }
+};
 
 export default AssetLoader;

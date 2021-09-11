@@ -15,8 +15,8 @@ export const createCanvas = (
   isGL?: boolean
 ): [HTMLCanvasElement, CanvasRenderingContext2D, number, number] => {
   const canvas =
-    mainCanvas && window.OffscreenCanvas
-      ? new window.OffscreenCanvas(width || 1, height || 1)
+    mainCanvas && (window as any).OffscreenCanvas
+      ? new (window as any).OffscreenCanvas(width || 1, height || 1)
       : document.createElement('canvas');
   canvas.width = width || 1;
   canvas.height = height || 1;

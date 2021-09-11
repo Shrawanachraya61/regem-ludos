@@ -193,7 +193,9 @@ const TextBox = style(
 
     return {
       border: '2px solid ' + colors.WHITE,
-      background: props.isNarration ? colors.DARKBLUE : colors.BLACK,
+      background: props.isNarration
+        ? colors.DARKBLUE
+        : 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(45,45,45,1) 100%)',
       boxShadow: '0px 0px 24px 16px rgba(0, 0, 0, 0.75)',
       boxSizing: 'border-box',
       width: '100%',
@@ -237,7 +239,6 @@ const NameLabelWrapper = style(
       marginBottom: '16px',
       opacity: props.visible ? '100%' : '0%',
       justifyContent: props.align === 'right' ? 'flex-end' : 'flex-start',
-      //transition: 'opacity 0.1s linear, width 0.1s',
     };
   }
 );
@@ -730,7 +731,10 @@ const CutsceneSection = () => {
         <TextBox
           id="cutscene-textbox"
           align={textBoxAlign}
-          isNarration={!cutscene.speakerName && !isNoneSpeaker}
+          isNarration={
+            (!cutscene.speakerName && !isNoneSpeaker) ||
+            cutscene.speakerName?.toLowerCase() === 'narrator'
+          }
         >
           <div
             id="cutscene-textbox-content"

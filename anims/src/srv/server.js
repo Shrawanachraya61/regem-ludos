@@ -8,6 +8,7 @@ const SPRITESHEETS_DIR = `${__dirname}/../../../res`;
 const TXT_DIR = `${__dirname}/../../txt`;
 const EXPORT_DIR_RES = `${__dirname}/../../../res`;
 const EXPORT_DIR_PNG = `${__dirname}/../../../res`;
+const ZIP_DIR = `${__dirname}/../../../res`;
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,6 +29,11 @@ const execAsync = cmd => {
     });
   });
 };
+
+app.get('/images.zip', (req, res) => {
+  console.log(`[Anims SRV] GET/images.zip`, req.body);
+  res.sendFile(ZIP_DIR + '/images.zip');
+});
 
 app.get('/spritesheets', (req, res) => {
   console.log(`[Anims SRV] GET/spritesheets`, req.body);
@@ -55,16 +61,31 @@ app.get('/txt', (req, res) => {
     err: null,
   };
 
-  fs.readdir(TXT_DIR, (err, files) => {
+  fs.readdir(TXT_DIR, async (err, files) => {
     if (err) {
       resp.err = err;
     } else {
-      resp.files = files
-        .filter(fileName => fileName.indexOf('.txt') > -1)
-        .sort()
-        .map(fileName => {
-          return fs.readFileSync(TXT_DIR + '/' + fileName).toString();
-        });
+      resp.files = await Promise.all(
+        files
+          .filter(fileName => fileName.indexOf('.txt') > -1)
+          .sort()
+          .map(fileName => {
+            return new Promise((resolve, reject) => {
+              fs.readFile(TXT_DIR + '/' + fileName, (err, data) => {
+                if (err) {
+                  console.err(
+                    'Failed to read file',
+                    TXT_DIR + '/' + fileName,
+                    err
+                  );
+                  reject(err);
+                } else {
+                  resolve(data.toString());
+                }
+              });
+            });
+          })
+      );
     }
     res.send(JSON.stringify(resp));
   });

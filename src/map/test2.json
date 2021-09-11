@@ -103,20 +103,20 @@
                  "y":35.75
                 }, 
                 {
-                 "height":64,
+                 "height":57.3333333333333,
                  "id":20,
-                 "name":"#floor1-openDoorA",
+                 "name":"#test2-openDoorA",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
                  "x":428,
-                 "y":280
+                 "y":286.666666666667
                 }, 
                 {
-                 "height":60,
+                 "height":55.3333333333333,
                  "id":21,
-                 "name":"#floor1-openDoorB",
+                 "name":"#test2-openDoorB",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -151,7 +151,7 @@
                 {
                  "height":164,
                  "id":26,
-                 "name":"#floor1-closeDoorsAB",
+                 "name":"#test2-closeDoorsAB",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -492,8 +492,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":92.5000333333333,
-                 "y":484.833
+                 "x":460.75,
+                 "y":390.583
                 }, 
                 {
                  "height":69.125,

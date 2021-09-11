@@ -1,6 +1,8 @@
 import Animation from './animation';
-import AssetLoader from './asset-loader';
+import AssetLoader, { getZipImageData } from './asset-loader';
 import { randomId } from 'utils';
+
+const shouldUseZip = true;
 
 const display = {
   canvases: [],
@@ -84,29 +86,60 @@ display.loadPicture = async function(name, url, spriteWidth, spriteHeight) {
       return;
     }
 
-    display.pictures[name] = [];
-    const img = new global.Image();
-    img.onload = () => {
-      display.sprites[name] = new Sprite(name, 0, 0, img.width, img.height);
-      const cbs = display.pictures[name];
-      display.pictures[name] = {
-        img,
-        imageName: name,
-        spriteWidth,
-        spriteHeight,
-        animations: [],
-        totalSprites: 0,
+    // console.log('LOAD IMAGE', name, url);
+
+    if (shouldUseZip) {
+      display.pictures[name] = [];
+      const img = getZipImageData(url);
+      if (img) {
+        display.sprites[name] = new Sprite(name, 0, 0, img.width, img.height);
+        const cbs = display.pictures[name];
+        display.pictures[name] = {
+          img,
+          imageName: name,
+          spriteWidth,
+          spriteHeight,
+          animations: [],
+          totalSprites: 0,
+        };
+        display.updatePictureSpriteSize(
+          name,
+          spriteWidth || 64,
+          spriteHeight || 64
+        );
+        display.createAnimationFromPicture(name);
+        if (cbs) {
+          cbs.forEach(cb => cb());
+        }
+        resolve(img);
+      } else {
+        throw new Error('Failed to load ZIP image: ' + url);
+      }
+    } else {
+      display.pictures[name] = [];
+      const img = new global.Image();
+      img.onload = () => {
+        display.sprites[name] = new Sprite(name, 0, 0, img.width, img.height);
+        const cbs = display.pictures[name];
+        display.pictures[name] = {
+          img,
+          imageName: name,
+          spriteWidth,
+          spriteHeight,
+          animations: [],
+          totalSprites: 0,
+        };
+        display.updatePictureSpriteSize(
+          name,
+          spriteWidth || 64,
+          spriteHeight || 64
+        );
+        display.createAnimationFromPicture(name);
+        cbs.forEach(cb => cb());
+        resolve(img);
       };
-      display.updatePictureSpriteSize(
-        name,
-        spriteWidth || 64,
-        spriteHeight || 64
-      );
-      display.createAnimationFromPicture(name);
-      cbs.forEach(cb => cb());
-      resolve(img);
-    };
-    img.src = url;
+      img.src = url;
+    }
   });
 };
 
@@ -553,10 +586,14 @@ display.getImageList = async function getImageList() {
 };
 
 display.loadImages = async function loadImages(files) {
+  console.log('load zip');
+  const l = new AssetLoader(display);
+  await l.loadZip();
+
+  console.log('load pictures');
   const callbacks = files.map(async fileName => {
     return display.loadPicture(fileName.slice(0, -4), fileName);
   });
-
   await Promise.all(callbacks);
 };
 

@@ -245,6 +245,7 @@ const nonFlippedVariants = [
   /props(.*)/,
   /floors(.*)/,
   /effect_/,
+  /effects(.*)/,
   /control/,
   /walls(.*)/,
   /walls-anims/,

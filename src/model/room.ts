@@ -687,7 +687,6 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         addCharacter(object);
       } else {
         addProp(object);
-        // console.error('Skipped loading unnamed tiled object', object);
       }
     });
   }

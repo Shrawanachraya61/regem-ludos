@@ -5,23 +5,6 @@
 step-first,this
 @this
 +:utils-change-room(floor1Atrium, MarkerFromBowling);
-// #floor1-closeBowlingDoor
-// step,this
-// @this
-// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED2);
-// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_CLOSED1, 16, 0);
-// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED2);
-// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_CLOSED1, 16, 0);
-// #floor1-openBowlingDoor
-// step,this
-// @this
-// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN2);
-// +changeTileAtMarker(markerDoorA, RED_DOOR_BCK_OPEN1, 16, 0);
-// #floor1-openDoorB
-// step,this
-// @this
-// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN2);
-// +changeTileAtMarker(markerDoorB, RED_DOOR_BCK_OPEN1, 16, 0);
 
 #floor1-transitionToBowlingFromAtrium
 step,this
@@ -32,9 +15,11 @@ step,this
 step-first,this
 step-off,floor1-atriumOpenBowlingDoorClose
 @this
++playSound(sliding_door_open);
 +:openDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
 +:openDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
 @floor1-atriumOpenBowlingDoorClose
++playSound(sliding_door_close);
 +:closeDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
 +:closeDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
 
@@ -305,6 +290,7 @@ step-off,floor1-atriumOpenBowlingDoorClose
   +walkToMarker(Atrium Employee Jason, MarkerDoorTut);
   +setFacing(Atrium Employee Jason, 'rightup');
   +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, OPEN);
+  +playSound(red_door_open);
   +waitMS(500);
   +despawnCharacter(Atrium Employee Jason);
   +waitMS(500);
@@ -479,11 +465,11 @@ action,floor1-atrium-TicTacToeMachine-action
   AtriumGreeterEmployee: "Oh! <delay=200 cascade>You're from that prep school <color=BLUE>Erran Valley<cascade> a few blocks from here right?"
   Ada: "Yes, I am.  How did you know?"
   +:happy(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "Oh I can recognize one of you lot from a mile away."
-  AtriumGreeterEmployee: "You kids from that school are a cut above the rest."
+  AtriumGreeterEmployee: "Oh, you kids from that school are a cut above the rest.  I can recognize one of you lot from a mile away."
+  AtriumGreeterEmployee: "I'm not sure how to describe it.  Something about you is just... exciting."
   AtriumGreeterEmployee: "I just have this feeling that something interesting is bound to happen with one of you around."
   +:lightbulb(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "There's a boy from your school that owns the records for pretty much every arcade machine in this facility."
+  AtriumGreeterEmployee: "Speaking of which, there's a boy from your school that owns the records for pretty much every arcade machine in this facility."
   AtriumGreeterEmployee: "I believe his name was Carl something-or-another.  Maybe it was <color=ORANGE>Carnold</>?"
   +:utils-start-Conscience-dialogue-single();
   +setConversation(Conscience);
@@ -512,7 +498,7 @@ action,floor1-atrium-TicTacToeMachine-action
   +panCameraBackToPlayer(500);
   +setConversation(Conscience);
   +lookAtEachOther(Ada, Conscience);
-  Conscience: "<cascade>Let's hurry up and get to <color=ORANGE>Carl-Arnold</>."
+  Conscience: "<cascade>Looks like <color=ORANGE>Carl-Arnold</> has somewhat of a name around here."
   +:utils-stop-Conscience-dialogue();
   +endConversation(500, true);
 
@@ -603,7 +589,7 @@ Floor1AtriumNPC1: "I mean it.  I'm sick of waiting around for you guys."
 Floor1AtriumNPC2: "Isn't this supposed to be a date or something?"
 Floor1AtriumNPC2: "I'm supposed to introduce him and then go somewhere else."
 Floor1AtriumNPC1: "Well this <italic>date</> sucks."
-Floor1AtriumNPC1: "He's got three minutes, then <delay=300>I am outta here."
+Floor1AtriumNPC1: "He's got three minutes, then <delay=300>I am outta here<cascade> and you guys can go on the date together."
 +endConversation();
 
 #floor1-AtriumWalkingNPC
