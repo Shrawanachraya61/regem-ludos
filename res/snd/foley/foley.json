@@ -93,259 +93,284 @@
       "end": 37.05020408163265,
       "loop": false
     },
-    "change_room": {
+    "car_woosh": {
       "start": 39,
-      "end": 39.723174603174606,
+      "end": 40.30612244897959,
+      "loop": false
+    },
+    "change_room": {
+      "start": 42,
+      "end": 42.723174603174606,
       "loop": false
     },
     "dead3": {
-      "start": 41,
-      "end": 41.83877551020408,
+      "start": 44,
+      "end": 44.83877551020408,
       "loop": false
     },
     "despawn": {
-      "start": 43,
-      "end": 43.910272108843536,
+      "start": 46,
+      "end": 46.910272108843536,
       "loop": false
     },
     "despawn_tut_wall": {
-      "start": 45,
-      "end": 45.660204081632656,
+      "start": 48,
+      "end": 48.660204081632656,
       "loop": false
     },
     "dialog_select": {
-      "start": 47,
-      "end": 47.39693877551021,
+      "start": 50,
+      "end": 50.39693877551021,
       "loop": false
     },
     "dialog_woosh": {
-      "start": 49,
-      "end": 49.23625850340136,
+      "start": 52,
+      "end": 52.23625850340136,
       "loop": false
     },
     "eject_tokens": {
-      "start": 51,
-      "end": 52.01997732426304,
+      "start": 54,
+      "end": 55.01997732426304,
       "loop": false
     },
     "emotion": {
-      "start": 54,
-      "end": 54.23786848072562,
+      "start": 57,
+      "end": 57.23786848072562,
       "loop": false
     },
     "encounter": {
-      "start": 56,
-      "end": 58.091473922902495,
+      "start": 59,
+      "end": 61.091473922902495,
       "loop": false
     },
     "evasion3": {
-      "start": 60,
-      "end": 60.99265306122449,
+      "start": 63,
+      "end": 63.99265306122449,
       "loop": false
     },
     "exp_gain2": {
-      "start": 62,
-      "end": 63.671836734693876,
+      "start": 65,
+      "end": 66.67183673469388,
       "loop": false
     },
     "fanfare": {
-      "start": 65,
-      "end": 68.60489795918367,
+      "start": 68,
+      "end": 71.60489795918367,
       "loop": false
     },
     "gain_token": {
-      "start": 70,
-      "end": 70.36934240362812,
+      "start": 73,
+      "end": 73.36934240362812,
       "loop": false
     },
     "get_item2": {
-      "start": 72,
-      "end": 72.78367346938775,
+      "start": 75,
+      "end": 75.78367346938775,
       "loop": false
     },
     "insert_token": {
-      "start": 74,
-      "end": 74.83056689342403,
+      "start": 77,
+      "end": 77.83056689342403,
       "loop": false
     },
     "jump2": {
-      "start": 76,
-      "end": 76.24532879818594,
+      "start": 79,
+      "end": 79.24532879818594,
       "loop": false
     },
     "jump_cutscene": {
-      "start": 78,
-      "end": 78.18020408163265,
+      "start": 81,
+      "end": 81.18020408163265,
       "loop": false
     },
     "level_up": {
-      "start": 80,
-      "end": 80.53020408163265,
+      "start": 83,
+      "end": 83.53020408163265,
       "loop": false
     },
     "menu_cancel": {
-      "start": 82,
-      "end": 82.20485260770975,
+      "start": 85,
+      "end": 85.20485260770975,
       "loop": false
     },
     "menu_choice_close": {
-      "start": 84,
-      "end": 84.33104308390023,
+      "start": 87,
+      "end": 87.33104308390023,
       "loop": false
     },
     "menu_choice_open2": {
-      "start": 86,
-      "end": 86.32380952380953,
+      "start": 89,
+      "end": 89.32380952380953,
       "loop": false
     },
     "menu_move2": {
-      "start": 88,
-      "end": 88.10020408163265,
+      "start": 91,
+      "end": 91.10020408163265,
       "loop": false
     },
     "menu_select2": {
-      "start": 90,
-      "end": 90.36390022675737,
+      "start": 93,
+      "end": 93.36390022675737,
       "loop": false
     },
     "menu_sparkle2": {
-      "start": 92,
-      "end": 94.52365079365079,
+      "start": 95,
+      "end": 97.52365079365079,
       "loop": false
     },
     "notification": {
-      "start": 96,
-      "end": 96.10448979591837,
+      "start": 99,
+      "end": 99.10448979591837,
       "loop": false
     },
     "phone_beep": {
-      "start": 98,
-      "end": 98.53539682539683,
+      "start": 101,
+      "end": 101.53539682539683,
       "loop": false
     },
     "phone_beep_off": {
-      "start": 100,
-      "end": 100.53537414965986,
+      "start": 103,
+      "end": 103.53537414965986,
       "loop": false
     },
     "phone_ring": {
-      "start": 102,
-      "end": 104.31353741496599,
+      "start": 105,
+      "end": 107.31353741496599,
       "loop": false
     },
     "pop": {
-      "start": 106,
-      "end": 106.03020408163265,
+      "start": 109,
+      "end": 109.03020408163265,
       "loop": false
     },
     "quest_completed": {
-      "start": 108,
-      "end": 108.26122448979592,
+      "start": 111,
+      "end": 111.26122448979592,
       "loop": false
     },
     "quest_started": {
-      "start": 110,
-      "end": 110.26122448979592,
+      "start": 113,
+      "end": 113.26122448979592,
+      "loop": false
+    },
+    "red_door_close": {
+      "start": 115,
+      "end": 115.73142857142857,
+      "loop": false
+    },
+    "red_door_open": {
+      "start": 117,
+      "end": 117.88816326530612,
       "loop": false
     },
     "rez": {
-      "start": 112,
-      "end": 114.14204081632653,
+      "start": 119,
+      "end": 121.14204081632653,
       "loop": false
     },
     "robot_channel_start": {
-      "start": 116,
-      "end": 117.08020408163266,
+      "start": 123,
+      "end": 124.08020408163266,
       "loop": false
     },
     "robot_charge_up": {
-      "start": 119,
-      "end": 119.81680272108844,
+      "start": 126,
+      "end": 126.81680272108844,
       "loop": false
     },
     "robot_staggered3": {
-      "start": 121,
-      "end": 121.7034693877551,
+      "start": 128,
+      "end": 128.7034693877551,
       "loop": false
     },
     "robot_staggered_damaged2": {
-      "start": 123,
-      "end": 123.32036281179138,
+      "start": 130,
+      "end": 130.32036281179137,
       "loop": false
     },
     "shoot_arrow": {
-      "start": 125,
-      "end": 125.16761904761904,
+      "start": 132,
+      "end": 132.16761904761904,
       "loop": false
     },
     "skye_kick_vending_machine": {
-      "start": 127,
-      "end": 127.26727891156463,
+      "start": 134,
+      "end": 134.26727891156463,
+      "loop": false
+    },
+    "sliding_door_close": {
+      "start": 136,
+      "end": 136.44408163265305,
+      "loop": false
+    },
+    "sliding_door_open": {
+      "start": 138,
+      "end": 138.44408163265305,
       "loop": false
     },
     "spawn_enemy": {
-      "start": 129,
-      "end": 129.60124716553287,
+      "start": 140,
+      "end": 140.60124716553287,
       "loop": false
     },
     "terminal_cancel": {
-      "start": 131,
-      "end": 131.14190476190475,
+      "start": 142,
+      "end": 142.14190476190475,
       "loop": false
     },
     "use_item": {
-      "start": 133,
-      "end": 133.29020408163265,
+      "start": 144,
+      "end": 144.29020408163265,
       "loop": false
     },
     "vr_portal_activate": {
-      "start": 135,
-      "end": 135.47020408163266,
+      "start": 146,
+      "end": 146.47020408163266,
       "loop": false
     },
     "vr_portal_beep": {
-      "start": 137,
-      "end": 137.23020408163265,
+      "start": 148,
+      "end": 148.23020408163265,
       "loop": false
     },
     "vr_portal_buzz": {
-      "start": 139,
-      "end": 139.6943537414966,
+      "start": 150,
+      "end": 150.6943537414966,
       "loop": false
     },
     "vr_portal_deactivate": {
-      "start": 141,
-      "end": 141.47020408163266,
+      "start": 152,
+      "end": 152.47020408163266,
       "loop": false
     },
     "vr_portal_focus": {
-      "start": 143,
-      "end": 143.69020408163266,
+      "start": 154,
+      "end": 154.69020408163266,
       "loop": false
     },
     "vr_portal_landed": {
-      "start": 145,
-      "end": 145.45020408163265,
+      "start": 156,
+      "end": 156.45020408163265,
       "loop": false
     },
     "vr_portal_start": {
-      "start": 147,
-      "end": 147.95020408163265,
+      "start": 158,
+      "end": 158.95020408163265,
       "loop": false
     },
     "vr_portal_zoom": {
-      "start": 149,
-      "end": 152.60020408163265,
+      "start": 160,
+      "end": 163.60020408163265,
       "loop": false
     },
     "woosh": {
-      "start": 154,
-      "end": 154.4171201814059,
+      "start": 165,
+      "end": 165.4171201814059,
       "loop": false
     },
     "woosh_reverse": {
-      "start": 156,
-      "end": 156.35156462585033,
+      "start": 167,
+      "end": 167.35156462585033,
       "loop": false
     }
   },
