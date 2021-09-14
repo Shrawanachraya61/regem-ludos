@@ -1,43 +1,44 @@
 @intro
-+fadeOut();
+// +fadeOut();
++setAtMarker(ada, MarkerAdaStart);
 +setConversation('Ada');
-+playSound('phone_ring');
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(200);
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(200);
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(200);
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(200);
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(200);
-+spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
-+waitMS(1100);
-+fadeIn(1000);
-+setAnimationAndWait('Ada', 'ada_phone_answer');
-+setAnimation('Ada', 'ada_phone_loop');
-+playSound('phone_beep');
-+waitMS(500);
-Ada: "This is Ada."
-Voice On Phone: "Have you arrived yet?"
-Ada: "I am just outside."
+// +playSound('phone_ring');
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(200);
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(200);
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(200);
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(200);
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(200);
+// +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
+// +waitMS(1100);
+// +fadeIn(1000);
+// +setAnimationAndWait('Ada', 'ada_phone_answer');
+// +setAnimation('Ada', 'ada_phone_loop');
+// +playSound('phone_beep');
+// +waitMS(500);
+// Ada: "This is Ada."
+// Voice On Phone: "Have you arrived yet?"
+// Ada: "I am just outside."
 +playMusic('music_outside_arcade');
-+setConversationSpeaker('none');
-+setAnimation('Ada', 'ada_phone_rightup');
-+panCameraRelativeToPlayer(40, -65);
-Ada: "The Regem Ludos Arcade.  It looks like quite a large building."
-+setConversationSpeaker('none');
+// +setConversationSpeaker('none');
+// +setAnimation('Ada', 'ada_phone_rightup');
+// +panCameraRelativeToPlayer(40, -65);
+// Ada: "The Regem Ludos Arcade.  It looks like quite a large building."
+// +setConversationSpeaker('none');
 +spawnCharacterAtCharacter('Conscience', 'Ada');
 +setAtMarker('Conscience', 'MarkerConscience');
 +setFacing('Conscience', 'leftdown');
-+panCameraBackToPlayer();
-+setAnimationAndWait('Ada', 'ada_phone_down');
-+setAnimation('Ada', 'ada_phone_loop');
-Voice On Phone: "Yes! Large grey building, right?  It's actually even bigger than it looks."
-Ada: "Is that so?"
-Ada: "How long is this going to take?  I have better things to do than trying to find you in there."
-Voice on Phone: "Oh, don't worry about that!"
+// +panCameraBackToPlayer();
+// +setAnimationAndWait('Ada', 'ada_phone_down');
+// +setAnimation('Ada', 'ada_phone_loop');
+// Voice On Phone: "Yes! Large grey building, right?  It's actually even bigger than it looks."
+// Ada: "Is that so?"
+// Ada: "How long is this going to take?  I have better things to do than trying to find you in there."
+// Voice on Phone: "Oh, don't worry about that!"
 Voice on Phone: "You brought your... friend with you, right?"
 +setConversationSpeaker('none');
 +setAnimation('Ada', 'ada_phone_rightdown');
@@ -55,10 +56,13 @@ Voice on Phone: "You brought your... friend with you, right?"
 +setFacing('Conscience', 'leftdown');
 +waitMS(50);
 +setFacing('Conscience', 'left');
-+waitMS(500);
++spawnCharacterAtMarker(Floor1WhiteCar, MarkerWhiteCar2);
++waitMS(350);
 +setFacing('Conscience', 'leftdown');
++waitMS(500);
++playSound(car_woosh);
 +waitMS(250);
-+callScript('utils-character-jump', 'Conscience');
++:jump(Conscience);
 Ada: "Of course.  She is always with me."
 +setConversationSpeaker('none');
 +panCameraBackToPlayer();

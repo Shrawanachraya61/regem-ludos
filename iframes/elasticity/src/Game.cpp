@@ -131,8 +131,8 @@ void Game::initWorld() {
                 {0, 1, 0, 1, 1, 0, 1, 0},
                 {1, 2, 1, 0, 0, 1, 2, 1},
                 {0, 1, 0, 1, 1, 0, 1, 0},
-                {1, 0, 1, 1, 1, 1, 0, 1},
-                {0, 1, 0, 3, 3, 0, 1, 0},
+                {1, 0, 1, 3, 3, 1, 0, 1},
+                {0, 1, 0, 1, 1, 0, 1, 0},
                 {1, 0, 1, 1, 1, 1, 0, 1},
                 {0, 1, 3, 0, 0, 3, 1, 0},
                 {1, 0, 1, 1, 1, 1, 0, 1},
@@ -400,7 +400,9 @@ void Game::handleKeyUpdate() {
 }
 
 void Game::handleKeyMenu(const std::string& key) {
-  if (key == "Return" || key == "Space") {
+  if (key == "Escape") {
+    shouldExit = true;
+  } else {
     levelIndex = 0;
     score = 0;
     combo = 0;
@@ -419,9 +421,6 @@ void Game::handleKeyMenu(const std::string& key) {
         particles.push_back(std::make_unique<Particle>(*this, "fade_in", 1000));
       });
     });
-  }
-  if (key == "Escape") {
-    shouldExit = true;
   }
 }
 
@@ -800,7 +799,8 @@ void Game::drawRetry() {
   window.drawTextCentered("Yes.",
                           GameOptions::width - GameOptions::width / 3,
                           GameOptions::height - GameOptions::height / 3,
-                          startingGame ? window.makeColor(255, 0, 0) : window.makeColor(255, 255, 255));
+                          startingGame ? window.makeColor(255, 0, 0)
+                                       : window.makeColor(255, 255, 255));
 
   if (retryIndex == 0) {
     window.drawSprite("mana_0",

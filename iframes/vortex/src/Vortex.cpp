@@ -45,10 +45,8 @@ int main(int argc, char* argv[]) {
     window.setCurrentFont("default", 18);
     Game game(window);
 
-    SDL2Wrapper::loadAssetsFromFile("sprite",
-    "assets/intro/intro_sprites.txt");
-    SDL2Wrapper::loadAssetsFromFile("sound",
-    "assets/intro/intro_sounds.txt");
+    SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro/intro_sprites.txt");
+    SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro/intro_sounds.txt");
 
     bool isWaitingToStart = includes("wait", args) ? true : false;
 
