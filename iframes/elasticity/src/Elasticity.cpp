@@ -7,7 +7,11 @@
 #include <map>
 #include <vector>
 
+#include "LibHTML.h"
+
 const std::string GameOptions::programName = "Elasticity";
+// const int GameOptions::width = 512;
+// const int GameOptions::height = 512;
 
 void parseArgs(int argc, char* argv[], std::vector<std::string>& args) {
   for (int i = 0; i < argc; i++) {
@@ -27,76 +31,6 @@ bool includes(const std::string& arg, const std::vector<std::string>& args) {
   }
 }
 
-class Intro {
-public:
-  bool isPlayingIntro;
-  bool isPaused;
-  bool isBgMoving;
-  bool isFgShowing;
-  bool isFading;
-  SDL2Wrapper::BoolTimer introTimer;
-  SDL2Wrapper::BoolTimer pausedTimer;
-  SDL2Wrapper::BoolTimer introBgTimer;
-  SDL2Wrapper::BoolTimer introFadeTimer;
-  SDL2Wrapper::FuncTimer introFgTimer;
-  Intro(SDL2Wrapper::Window& window)
-      : isPlayingIntro(true),
-        isPaused(true),
-        isBgMoving(true),
-        isFgShowing(false),
-        isFading(false),
-        introTimer(SDL2Wrapper::BoolTimer(window, 4400, isPlayingIntro)),
-#ifdef __EMSCRIPTEN__
-        pausedTimer(SDL2Wrapper::BoolTimer(window, 350, isPaused)),
-#else
-        pausedTimer(SDL2Wrapper::BoolTimer(window, 650, isPaused)),
-#endif
-        introBgTimer(SDL2Wrapper::BoolTimer(window, 900, isBgMoving)),
-        introFadeTimer(SDL2Wrapper::BoolTimer(window, 900, isFading)),
-        introFgTimer(SDL2Wrapper::FuncTimer(window, 1200, [&]() {
-          isFgShowing = true;
-          introFadeTimer.restart();
-        })) {
-  }
-  ~Intro() {}
-  void load() {
-    SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
-    SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
-  }
-  void render(SDL2Wrapper::Window& window) {
-    introTimer.update();
-    pausedTimer.update();
-    if (pausedTimer.shouldRemove()) {
-      pausedTimer.remove();
-      introBgTimer.update();
-      introFgTimer.update();
-    }
-    double introOffset = (512.0 * introBgTimer.getPctComplete());
-    window.drawSprite("cpp_splash_bg", 0, 0, false);
-    if (isBgMoving) {
-      window.drawSprite("cpp_splash_black", introOffset, 0, false);
-    }
-    if (isFgShowing) {
-      window.globalAlpha =
-          static_cast<int>(introFadeTimer.getPctComplete() * 255);
-      window.drawSprite("cpp_splash_black", 0, 0, false);
-      window.globalAlpha = 255;
-      window.drawSprite("cpp_splash_fg", 0, 0, false);
-      introFadeTimer.update();
-    }
-
-    if (introTimer.shouldRemove()) {
-      introTimer.remove();
-    }
-    if (introBgTimer.shouldRemove()) {
-      introBgTimer.remove();
-    }
-    if (introFgTimer.shouldRemove()) {
-      introFgTimer.remove();
-    }
-  }
-};
-
 int main(int argc, char* argv[]) {
   SDL2Wrapper::Logger(GameOptions::programName)
       << "Program Begin." << std::endl;
@@ -107,15 +41,14 @@ int main(int argc, char* argv[]) {
   try {
     SDL2Wrapper::Window window(
         GameOptions::programName, GameOptions::width, GameOptions::height);
+    SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
+    window.setCurrentFont("default", 18);
     Game game(window);
-    Intro intro(window);
 
-    intro.isPlayingIntro = includes("nointro", args) ? false : true;
-    intro.load();
+    SDL2Wrapper::loadAssetsFromFile("sprite", "assets/intro_sprites.txt");
+    SDL2Wrapper::loadAssetsFromFile("sound", "assets/intro_sounds.txt");
 
-    if (intro.isPlayingIntro) {
-      window.playSound("cpp_intro");
-    }
+    bool isWaitingToStart = includes("wait", args) ? true : false;
 
     // SDL2Wrapper::Store::logFonts();
     // SDL2Wrapper::Store::logSprites();
@@ -123,9 +56,19 @@ int main(int argc, char* argv[]) {
 
     bool firstRender = true;
 
+    auto pressButton = [&](const std::string& key) {
+      isWaitingToStart = false;
+    };
+    SDL2Wrapper::Events& events = window.getEvents();
+    events.setKeyboardEvent("keydown", pressButton);
+    notifyGameReady();
+
     window.startRenderLoop([&]() {
-      if (intro.isPlayingIntro) {
-        intro.render(window);
+      if (isWaitingToStart) {
+        window.setCurrentFont("default", 20);
+        window.drawSprite("cpp_splash_bg", 0, 0, false);
+        window.drawTextCentered(
+            "Press button.", 256, 256, window.makeColor(255, 255, 255));
         return true;
       } else {
         if (firstRender) {
