@@ -31,6 +31,7 @@ interface IVerticalMenuProps<T> {
   style?: Record<string, string>;
   hideTitle?: boolean;
   resetCursor?: boolean;
+  useSpaceBarConfirm?: boolean;
 }
 
 interface VerticalMenuItem<T> {
@@ -350,7 +351,10 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         } else if (ev.code === 'ArrowUp') {
           playSoundName('menu_move');
           dispatch({ type: 'Decrement' });
-        } else if (isConfirmKey(ev.code)) {
+        } else if (
+          isConfirmKey(ev.code) ||
+          (props.useSpaceBarConfirm && ev.key === ' ')
+        ) {
           dispatch({ type: 'Select' });
           if (props.onItemClickSound) {
             playSoundName(props.onItemClickSound);

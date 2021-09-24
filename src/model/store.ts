@@ -76,6 +76,7 @@ export interface IBattleUiState {
 export interface IOverworldAppState {
   characterText: string;
   prevCharacterText: string;
+  interfaceDisabled: boolean;
 }
 
 export enum ModalSection {
@@ -156,6 +157,7 @@ export const AppStateInitial: AppState = {
   overworld: {
     characterText: '',
     prevCharacterText: '',
+    interfaceDisabled: false,
   },
   cutscene: {
     id: '',

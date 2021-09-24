@@ -18,9 +18,15 @@ import {
   NotificationState,
   IQuestState,
 } from 'model/store';
-import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
-import { getCurrentOverworld } from 'model/generics';
-import { overworldShow } from 'model/overworld';
+import {
+  ArcadeGamePath,
+  getArcadeGamePathMeta,
+} from 'view/components/ArcadeCabinet';
+import {
+  getCurrentOverworld,
+  setOverworldUpdateKeysDisabled,
+} from 'model/generics';
+import { overworldHide, overworldShow } from 'model/overworld';
 import { playSoundName } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
@@ -167,7 +173,7 @@ export const showSection = (
     action: 'showSection',
     payload: {
       section,
-      sectionsToHide,
+      hideSections: sectionsToHide,
     },
   });
 };
@@ -193,6 +199,7 @@ export const hideSection = (section: AppSection) => {
 };
 
 export const hideConversation = () => {
+  setOverworldUpdateKeysDisabled(false);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -225,6 +232,7 @@ export const showConversation = () => {
 };
 
 export const startConversation = (portrait: string, showBars: boolean) => {
+  setOverworldUpdateKeysDisabled(true);
   showSection(AppSection.Cutscene, false, [AppSection.Debug]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
@@ -252,6 +260,7 @@ export const startConversation2 = (
   portraitLeft: string,
   portraitRight: string
 ) => {
+  setOverworldUpdateKeysDisabled(true);
   showSection(AppSection.Cutscene, false, [AppSection.Debug]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
@@ -281,6 +290,7 @@ export const startConversationActors = (
   actors: Character[],
   showBars: boolean
 ) => {
+  setOverworldUpdateKeysDisabled(true);
   showSection(AppSection.Cutscene, false, [AppSection.Debug]);
 
   const actorsWithPortraits = actors.filter(
@@ -345,7 +355,6 @@ export const setCutsceneText = (
 };
 
 export const showArcadeGame = (path: ArcadeGamePath) => {
-  pause();
   const payload = {
     path,
     isGameRunning: false,
@@ -355,7 +364,16 @@ export const showArcadeGame = (path: ArcadeGamePath) => {
     action: 'setArcadeGameState',
     payload,
   });
-  showSection(AppSection.ArcadeCabinet, true);
+  const meta = getArcadeGamePathMeta(path);
+  setOverworldUpdateKeysDisabled(true);
+  if (meta?.cabinet?.disabled) {
+    setInterfaceStateDisabled(true);
+    showSection(AppSection.ArcadeCabinet, false);
+  } else {
+    overworldHide(getCurrentOverworld());
+    pause();
+    showSection(AppSection.ArcadeCabinet, true);
+  }
 };
 
 export const setArcadeGameRunning = (v: boolean) => {
@@ -390,7 +408,9 @@ export const hideArcadeGame = () => {
     payload,
   });
   showSection(AppSection.Debug, true);
+  setInterfaceStateDisabled(false);
 
+  setOverworldUpdateKeysDisabled(false);
   const overworld = getCurrentOverworld();
   overworldShow(overworld);
 };
@@ -457,7 +477,6 @@ export const showModal = (
     filter?: (a: any) => boolean;
   }
 ) => {
-  console.log('SHOW MODAL', section, modalParams);
   const payload = {
     section,
     onClose: modalParams.onClose,
@@ -614,5 +633,14 @@ export const showNotification = (args: NotificationState) => {
   getUiInterface().dispatch({
     action: 'showNotification',
     payload: args,
+  });
+};
+
+export const setInterfaceStateDisabled = (disabled: boolean) => {
+  getUiInterface().dispatch({
+    action: 'setOverworldState',
+    payload: {
+      interfaceDisabled: disabled,
+    },
   });
 };

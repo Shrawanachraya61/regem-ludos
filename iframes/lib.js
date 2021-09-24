@@ -29,11 +29,19 @@ function LIB() {
     const board = document.getElementById('board');
     const canvas = document.getElementById('canvas');
     if (config.originalScale) {
-      board.className = 'board';
-      canvas.className = '';
+      if (board) {
+        board.className = 'board';
+      }
+      if (canvas) {
+        canvas.className = '';
+      }
     } else {
-      board.className = 'board-original';
-      canvas.className = 'canvas-original';
+      if (board) {
+        board.className = 'board-original';
+      }
+      if (canvas) {
+        canvas.className = 'canvas-original';
+      }
     }
     config.originalScale = !config.originalScale;
   };
@@ -124,6 +132,12 @@ function LIB() {
   this.notifyGameCancelled = function () {
     this.notifyParentFrame('GAME_CANCELLED', {});
     config.gameStarted = false;
+  };
+
+  this.notifyRPGScript = function (scriptSrc) {
+    this.notifyParentFrame('RUN_RPGSCRIPT', {
+      scriptSrc,
+    });
   };
 
   const SOUND_PATH = '';
@@ -228,6 +242,27 @@ function LIB() {
 
   this.getConfig = function () {
     return config;
+  };
+
+  this.getActionKey = function () {
+    return {
+      key: ' ',
+      label: 'Space',
+    };
+  };
+
+  this.getCancelKey = function () {
+    return {
+      key: 'z',
+      label: 'Z',
+    };
+  };
+
+  this.getAuxKey = function () {
+    return {
+      key: 'Shift',
+      label: 'Shift',
+    };
   };
 }
 
@@ -345,7 +380,9 @@ async function localInit() {
     console.error('[IFRAME] Content took too long to load.');
     Lib.showError();
   }, 60000);
-  await window.init();
+  await window.init({
+    params,
+  });
 }
 
 function verify() {
@@ -385,6 +422,8 @@ if (tapToStart === 'true') {
     loadingElem.style.display = 'none';
   }
   window.onTapToStart = function () {
+    window.removeEventListener('mousedown', window.onTapToStart);
+    window.removeEventListener('touchstart', window.onTapToStart);
     if (loadingElem) {
       loadingElem.style.display = 'flex';
     }
@@ -393,8 +432,9 @@ if (tapToStart === 'true') {
   };
   div.innerHTML = 'Tap to Start';
   div.className = 'tap-to-start';
-  div.onclick = window.onTapToStart;
   document.body.appendChild(div);
+  window.addEventListener('mousedown', window.onTapToStart);
+  window.addEventListener('touchstart', window.onTapToStart);
 } else {
   try {
     localInit();

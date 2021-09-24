@@ -16,7 +16,7 @@ import { playSoundName } from 'model/sound';
 import { getCurrentPlayer, getCurrentScene } from 'model/generics';
 import { characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import DialogBox from 'view/elements/DialogBox';
 import MenuBox from 'view/elements/MenuBox';
 import { getCancelKeyLabel, getConfirmKeyLabel } from 'controller/events';
@@ -49,6 +49,22 @@ const InnerRoot = style('div', {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
+  backgroundColor: colors.BGGREY,
+  position: 'relative',
+});
+
+const MenuBackground = style('div', () => {
+  return {
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: '100%',
+    height: '100%',
+    opacity: '0.04',
+    backgroundImage: 'url(/res/bg/flowers_menu_bg.png)',
+    zIndex: 0,
+    pointerEvents: 'none',
+  };
 });
 
 const PartyMember = style(
@@ -281,6 +297,13 @@ const MenuSection = () => {
     }
   };
 
+  useEffect(() => {
+    const elem = document.getElementById('menu-main');
+    if (elem) {
+      elem.style.transform = 'scale(1)';
+    }
+  }, []);
+
   const player = getCurrentPlayer();
 
   // ensures that empty spaces show up if no party members are available (so it looks nicer)
@@ -288,8 +311,16 @@ const MenuSection = () => {
 
   return (
     <Root>
-      <Card size={CardSize.XLARGE}>
+      <Card
+        id="menu-main"
+        size={CardSize.XLARGE}
+        style={{
+          transform: 'scale(0)',
+          transition: 'opacity 100ms, transform 100ms',
+        }}
+      >
         <InnerRoot id="menu-inner-root">
+          <MenuBackground />
           <VerticalMenu
             title="Party"
             width="60%"

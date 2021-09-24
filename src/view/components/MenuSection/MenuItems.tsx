@@ -209,6 +209,7 @@ const MenuItems = (props: IMenuItemsProps) => {
               {filters.map((obj, i) => {
                 return (
                   <FilterItem
+                    key={obj.label + i}
                     highlighted={i === filterIndex}
                     onClick={() => {
                       setFilter(i);

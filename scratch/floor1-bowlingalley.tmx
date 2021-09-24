@@ -82,7 +82,7 @@
   <object id="119" gid="337" x="252.5" y="187.5" width="32" height="32"/>
   <object id="120" gid="337" x="252" y="156" width="32" height="32"/>
   <object id="121" gid="337" x="252" y="124" width="32" height="32"/>
-  <object id="122" gid="342" x="303" y="79" width="32" height="32"/>
+  <object id="122" gid="342" x="300.818" y="76.8182" width="32" height="32"/>
   <object id="127" type="24" gid="344" x="277" y="47" width="32" height="32"/>
   <object id="128" type="6" gid="344" x="287" y="57" width="32" height="32"/>
   <object id="129" type="12" gid="344" x="284" y="36" width="32" height="32"/>
@@ -98,8 +98,8 @@
   <object id="139" name="Floor1BowlingEmployee" gid="193" x="310" y="70" width="32" height="32"/>
   <object id="140" name="#floor1-bowling-prevent-bowling" x="238" y="94" width="22" height="34"/>
   <object id="145" name="#floor1-bowling-employee" x="279" y="68" width="63.5" height="40"/>
-  <object id="146" name="MarkerBowlReady" gid="194" x="152" y="118" width="32" height="32"/>
-  <object id="147" name="MarkerBowlBall" gid="194" x="206.5" y="117.5" width="32" height="32"/>
+  <object id="146" name="MarkerBowlReady" gid="194" x="170.813" y="114.688" width="32" height="32"/>
+  <object id="147" name="MarkerBowlBall" gid="194" x="152.313" y="115.938" width="32" height="32"/>
   <object id="148" gid="343" x="253.5" y="268.5" width="32" height="32"/>
   <object id="149" gid="343" x="254" y="238" width="32" height="32"/>
   <object id="150" gid="343" x="253.5" y="204.5" width="32" height="32"/>

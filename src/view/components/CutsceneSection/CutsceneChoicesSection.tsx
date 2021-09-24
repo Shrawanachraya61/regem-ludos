@@ -50,6 +50,7 @@ const CutsceneChoicesSection = () => {
             value: i,
           };
         })}
+        useSpaceBarConfirm={true}
         onItemClickSound="menu_select"
         onItemClick={(i: number) => {
           const scene = getCurrentScene();

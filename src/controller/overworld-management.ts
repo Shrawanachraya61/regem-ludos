@@ -32,6 +32,7 @@ import {
   getIsPaused,
   getCharactersWithSuspendedAi,
   removeCharacterWithSuspendedAi,
+  isOverworldUpdateKeysDisabled,
 } from 'model/generics';
 import { Player } from 'model/player';
 import {
@@ -97,6 +98,7 @@ import { RenderObject } from 'model/render-object';
 import { Timer } from 'model/utility';
 import { createEmotionBubbleParticle } from 'model/particle';
 import { EmotionBubble } from 'db/particles';
+import { getUiInterface } from 'view/ui';
 
 export const initiateOverworld = (
   player: Player,
@@ -184,6 +186,13 @@ export const initiateOverworld = (
     return overworld;
   }
   return null;
+};
+
+const shouldShowOverworldUi = () => {
+  return (
+    getCurrentOverworld().visible &&
+    !getUiInterface().appState.sections.includes(AppSection.ArcadeCabinet)
+  );
 };
 
 export const enableOverworldControl = () => {
@@ -342,7 +351,12 @@ const checkAndCallTriggerOfType = async (
           disableKeys: true,
           setPlayerIdle: false,
         });
-        if (type === TriggerType.ACTION) {
+        if (
+          type === TriggerType.ACTION &&
+          getCurrentOverworld().visible &&
+          !getUiInterface().appState.sections.includes(AppSection.ArcadeCabinet)
+        ) {
+          console.log('SHOW SECTION AFTER CALLING A TRIGGER');
           showSection(AppSection.Debug, false);
         }
         const charactersWithSuspendedAi = getCharactersWithSuspendedAi();
@@ -440,6 +454,9 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
   const scene = getCurrentScene();
   const isPaused = getIsPaused();
+  if (isOverworldUpdateKeysDisabled()) {
+    return;
+  }
 
   if (isCancelKey(ev.key)) {
     if (!isPaused && !sceneIsPlaying(scene)) {
@@ -455,7 +472,9 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   if (isConfirmKey(ev.key)) {
     if (!isPaused && overworld.triggersEnabled) {
       if (await checkAndCallTriggerOfType(TriggerType.ACTION)) {
-        showSection(AppSection.Debug, true);
+        if (shouldShowOverworldUi()) {
+          showSection(AppSection.Debug, true);
+        }
         return;
       } else if (await checkAndCallTreasure()) {
         showSection(AppSection.Debug, true);
@@ -593,11 +612,17 @@ export const callStepTriggers = async (overworld: Overworld) => {
   if (isStandingOnActiveStepTrigger) {
     if (overworld.playerIsCollidingWithInteractable) {
       await checkAndCallTriggerOfType(TriggerType.STEP);
+      if (shouldShowOverworldUi()) {
+        showSection(AppSection.Debug, true);
+      }
     } else {
       await checkAndCallTriggerOfType([
         TriggerType.STEP_FIRST,
         TriggerType.STEP,
       ]);
+      if (shouldShowOverworldUi()) {
+        showSection(AppSection.Debug, true);
+      }
     }
   }
 
@@ -657,7 +682,7 @@ export const updateOverworld = (overworld: Overworld): void => {
   let isMoving = false;
   let vx = 0;
   let vy = 0;
-  if (getKeyUpdateEnabled()) {
+  if (getKeyUpdateEnabled() && !isOverworldUpdateKeysDisabled()) {
     if (isKeyDown('ArrowLeft')) {
       isMoving = true;
       vx -= 1;
@@ -679,7 +704,7 @@ export const updateOverworld = (overworld: Overworld): void => {
 
     if (isMoving || leader.walkTarget) {
       characterSetAnimationState(leader, AnimationState.WALK);
-    } else {
+    } else if (!isOverworldUpdateKeysDisabled()) {
       characterSetAnimationState(leader, AnimationState.IDLE);
     }
     leader.vx = vx;

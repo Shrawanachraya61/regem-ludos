@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="72">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="73">
  <editorsettings>
   <export target="../src/map/floor1-tut-vr1.json" format="json"/>
  </editorsettings>
@@ -103,5 +103,6 @@
   <object id="69" name="MarkerJason0" gid="194" x="188" y="196" width="32" height="32"/>
   <object id="70" name="MarkerFromVR2" gid="198" x="192" y="176" width="32" height="32"/>
   <object id="71" name="#floor1-tut-vr1-to-vr2" x="160" y="128" width="48" height="32"/>
+  <object id="72" name="MarkerJason2" gid="194" x="183.25" y="261.25" width="32" height="32"/>
  </objectgroup>
 </map>

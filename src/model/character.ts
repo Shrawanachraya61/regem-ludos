@@ -422,14 +422,14 @@ export const characterSetAnimationState = (
       ch.animationPromise = undefined;
     }
 
+    if (ch.animationState === AnimationState.OVERRIDDEN) {
+      return;
+    }
+
     if (!hasAnimation(newAnimKey)) {
       console.log(
         `Warning, tried to set animKey for character which did not exist: ${newAnimKey}`
       );
-      return;
-    }
-
-    if (ch.animationState === AnimationState.OVERRIDDEN) {
       return;
     }
 
@@ -459,7 +459,7 @@ export const characterOverrideAnimation = (
   ch.animationOverride = animation;
   if (cb) {
     if (animation.loop) {
-      animation;
+      // animation;
     } else {
       animation.awaits.push(cb);
     }

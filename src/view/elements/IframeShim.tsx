@@ -12,18 +12,19 @@ interface IIframeShimProps {
   loading: boolean;
   style?: Record<string, string>;
   ref: any;
+  borderImageUrl?: string;
 }
 
 const IframeBorder = style(
   'div',
   (props: {
     expanded: boolean;
-    borderImageUrl: string;
+    borderImageUrl?: string;
     width: string;
     height: string;
   }) => {
     return {
-      border: '20px solid black',
+      border: props.borderImageUrl ? '20px solid black' : 'none',
       transition: 'width 0.25s, height 0.25s, marginTop 0.25s',
       borderImage: `url(${props.borderImageUrl}) 20 round`,
       width: props.expanded ? 'calc(100% - 40px)' : props.width,
@@ -33,7 +34,7 @@ const IframeBorder = style(
       justifyContent: 'center',
       alignItems: 'center',
       pointerEvents: 'all',
-      background: colors.BLACK,
+      // background: colors.BLACK,
       [MEDIA_QUERY_PHONE_WIDTH]: {
         width: props.expanded ? 'calc(100% - 40px)' : props.width,
         height: props.expanded ? 'calc(100% - 40px - 7.75rem)' : props.height,
@@ -61,7 +62,7 @@ const IframeShim = (props: IIframeShimProps) => {
   return (
     <IframeBorder
       expanded={props.expanded}
-      borderImageUrl="res/img/arcade-border-1.png"
+      borderImageUrl={props.borderImageUrl}
       width={props.width}
       height={props.height}
     >
@@ -72,15 +73,25 @@ const IframeShim = (props: IIframeShimProps) => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            background: 'rgba(0, 0, 0, 0.5)',
+            padding: '8px',
+            borderRadius: '8px',
           }}
         >
-          Loading game...
+          <span
+            style={{
+              marginBottom: '8px',
+            }}
+          >
+            Loading game...
+          </span>
           <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
         </div>
       ) : null}
       <iframe
         id={props.id}
         ref={ref}
+        allowTransparency={true}
         // src={memoizedSrc}
         style={{
           border: '0px',

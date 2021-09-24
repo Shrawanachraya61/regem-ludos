@@ -251,12 +251,32 @@ const nonFlippedVariants = [
   /walls-anims/,
 ];
 
+const flippedVariants = [
+  /^ada/,
+  /^conscience/,
+  /^sigma/,
+  /^rho/,
+  /^skye*/,
+  /^port(.*)/,
+  /^guy(\d*)/,
+  /^girl(\d*)/,
+  /^ch_*/,
+  /^tut_*/,
+  /^employee-*/,
+];
+
 const hasFlippedVariant = (baseSpriteName: string) => {
-  for (let i = 0; i < nonFlippedVariants.length; i++) {
-    const regex = nonFlippedVariants[i];
+  // for (let i = 0; i < nonFlippedVariants.length; i++) {
+  //   const regex = nonFlippedVariants[i];
+  //   if (regex.test(baseSpriteName)) {
+  //     return false;
+  //   }
+  // }
+  for (let i = 0; i < flippedVariants.length; i++) {
+    const regex = flippedVariants[i];
     if (regex.test(baseSpriteName)) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 };

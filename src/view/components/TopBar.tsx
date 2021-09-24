@@ -57,7 +57,7 @@ interface ITopBarProps {
   onSettingsClick?: () => void;
   onMenuClose?: () => void;
   onMenuClick?: () => void;
-  buttons: TopBarButtons[];
+  buttons: (TopBarButtons | undefined)[];
 }
 
 const TopBar = (props: ITopBarProps) => {

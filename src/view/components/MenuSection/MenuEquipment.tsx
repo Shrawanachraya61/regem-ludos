@@ -155,7 +155,7 @@ const EquipmentPreview = (props: {
     <EquipmentPreviewWrapper>
       {stats.map(stat => {
         return (
-          <EquipmentPreviewStatsItem>
+          <EquipmentPreviewStatsItem key={stat}>
             <span>{stat.slice(0, 4)}</span>
             <label>{characterGetStat(ch, stat)}</label>
             {conditionalModifier(stat)}
@@ -176,6 +176,7 @@ const EquipmentDescriptionWrapper = style('div', () => {
     height: '232px',
     boxSizing: 'border-box',
     overflowY: 'auto',
+    background: colors.BLACK,
   };
 });
 
@@ -270,7 +271,9 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
       }
       return nextState;
     },
-    {} as IMenuEquipmentState
+    {
+      selectedCharacter: props.player.party[0],
+    } as IMenuEquipmentState
   );
 
   const [hoverMenuSwitch, resetHoverMenuSwitch] = useState(true);

@@ -50,8 +50,9 @@ export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
     let cmd: Command | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
-      // console.log('EVAL', cmd.conditional);
-      if (evalCondition(scene, cmd.conditional)) {
+      const conditionResult = evalCondition(scene, cmd.conditional);
+      // console.log('EVAL', cmd.conditional, conditionResult);
+      if (conditionResult) {
         const commands = sceneGetCommands(scene);
         const commandFunction = commands[cmd.type];
         if (!commandFunction) {

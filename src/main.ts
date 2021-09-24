@@ -3,7 +3,7 @@ import { runMainLoop } from 'controller/loop';
 import { loadRes } from 'controller/res-loader';
 import { getCanvas, setDrawScale } from 'model/canvas';
 import { initEvents } from 'controller/events';
-import { mountUi, renderUi } from 'view/ui';
+import { getUiInterface, mountUi, renderUi } from 'view/ui';
 import { initHooks } from 'view/hooks';
 import { initScene } from 'model/scene';
 import initDb from 'db';
@@ -16,6 +16,7 @@ import {
   getCurrentRoom,
   setUseZip,
   setTimeLoaded,
+  setCurrentPlayer,
 } from 'model/generics';
 
 import ArcadeCabinet, { ArcadeGamePath } from 'view/components/ArcadeCabinet';
@@ -41,6 +42,7 @@ import { BattleActions } from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
 import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
 import {
+  loadGame,
   loadSettingsFromLS,
   setCurrentSettings,
 } from 'controller/save-management';
@@ -52,6 +54,7 @@ import { get as getItem } from 'db/items';
 import { colors } from 'view/style';
 import { useEffect } from 'preact/hooks';
 import { beginQuest } from 'controller/quest';
+import { getIfExists as getSave } from 'db/saves';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -106,6 +109,7 @@ export const main = async (): Promise<void> => {
     loadRPGScript('floor1-tut', scene),
     loadRPGScript('floor2-throne-room', scene),
     loadRPGScript('intro', scene),
+    loadRPGScript('bowling', scene),
   ]);
 
   console.timeEnd('rpgscript');
@@ -203,13 +207,37 @@ export const main = async (): Promise<void> => {
   if (query.room) {
     const overworldTemplate = getOverworld(query.room);
     initiateOverworld(player, overworldTemplate);
+  } else if (query.save) {
+    // load save
+    setCurrentPlayer(player);
+    const save = getSave(query.save);
+    console.log('Load save from QueryParams', save);
+    if (!save) {
+      const loading = document.getElementById('page-loading');
+      if (loading) {
+        loading.style.display = 'flex';
+        loading.style.color = colors.RED;
+        loading.innerHTML =
+          'The save specified in the query string does not exist in the save database.';
+      }
+      return;
+    }
+    loadGame(save);
   } else {
     initiateOverworld(player, getOverworld('test2'));
   }
   enableOverworldControl();
 
-  // load save
-  scene.storage.quest_tutorial_active = true;
+  let debounceResizeId: any;
+  window.addEventListener('resize', () => {
+    if (debounceResizeId !== false) {
+      clearTimeout(debounceResizeId);
+    }
+    debounceResizeId = setTimeout(() => {
+      getUiInterface().render();
+      debounceResizeId = false;
+    }, 50);
+  });
 
   console.log('run loop');
   runMainLoop();

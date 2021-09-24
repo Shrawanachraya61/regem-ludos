@@ -154,6 +154,7 @@ Conscience: "Where are we?  How did I get over here?"
 +setConversationSpeaker(none);
 +waitMS(750);
 Atrium Employee Jason: "Oh.  There are two of you?"
++walkToMarker(Atrium Employee Jason, MarkerJason2);
 +panCameraRelativeToPlayer(50, -25);
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
@@ -188,7 +189,7 @@ Ada: "So I guess that answers my question.  Apparently in here he can see you wi
 Conscience: "It appears that way, yes."
 // Ada wry smile?
 Ada: "Although <cascade-letters>twins?<cascade delay=100> I do find that amusing."
-Conscience: "Meh, it's basically true."
+Conscience: "It's basically true, if you <color=Blue scale=0.75> ignore some things</>."
 Conscience: "This is pretty cool though, they've got quite an advanced interface."
 +setConversationSpeaker('none');
 +callScript('utils-character-jump', 'Conscience');
@@ -196,13 +197,12 @@ Conscience: "This is pretty cool though, they've got quite an advanced interface
 +callScript('utils-character-spin', 'Conscience');
 +waitMS(1000);
 +lookAtEachOther('Ada', 'Conscience');
-+callScript('utils-character-giggle', 'Conscience');
-Conscience: "I've always liked doing that!"
++:happy(Conscience);
+Conscience: "I've always liked doing that in these advance VR simulations!"
 Ada: "<cascade>Please focus on the task at hand.  The faster we get through this 'tutorial', the faster we can see <color=ORANGE>Carl-Arnold<cascade> and get out of here."
 Conscience: "Don't be a stick in the mud. This is supposed to be FUN, not stressful."
 +waitMS(500);
 +setConversationSpeaker(none);
-+callScript('utils-character-giggle', 'Conscience');
 +waitMS(750);
 Ada: "Can we just go?"
 +setConversationSpeaker('none');

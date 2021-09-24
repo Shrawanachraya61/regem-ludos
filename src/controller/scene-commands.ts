@@ -16,6 +16,7 @@ import {
   showNotification as showNotificationUi,
   showQuestSection,
   hideQuestSection,
+  hideSection,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import { popKeyHandler, pushKeyHandler } from 'controller/events';
@@ -59,6 +60,7 @@ import {
   getCameraTransform,
   getCurrentBattle,
   addCharacterWithSuspendedAi,
+  setOverworldUpdateKeysDisabled,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -383,6 +385,12 @@ export const endConversation = (ms?: number, hideCutscene?: boolean) => {
 export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
   const uiState = getUiInterface().appState;
 
+  // Hack.  'none' actor name is only loosely enforced.  It's more of a guideline
+  // than a hard name that indicates nobody is speaking.
+  if (!uiState.cutscene.visible) {
+    return;
+  }
+
   if (uiState.sections.includes(AppSection.Cutscene)) {
     setCutsceneText('', speaker);
   }
@@ -566,7 +574,10 @@ const waitForUserInputDialog = (cb?: () => void) => {
 /**
  * Sets a key/value pair on a player's save file.  Useful setting variables.
  */
-export const setStorage = (key: string, value: string) => {
+export const setStorage = (key: string, value: string | boolean) => {
+  if (value === 'false') {
+    value = false;
+  }
   console.log('Set Storage', key, value ?? true);
   const scene = getCurrentScene();
   scene.storage[key] = value ?? true;
@@ -793,7 +804,9 @@ export const offsetCharacter = (
  *
  * Optional params (xOffset, yOffset) can be provided to change the final destination of
  * the character.  This is useful for telling multiple characters to walk towards a marker
- * but you don't want them all standing in exactly the same spot.
+ * but you don't want them all standing in exactly the same spot.  X and Y specified
+ * in world coordinates, a y offset of -1 will move the target up right one unit
+ * on the screen.  Each tile is 16 units, so -16 will move the target up 1 tile.
  *
  * Optional param skipWait may be set to `true` if the cutscene should set the character
  * to walk towards the marker, but not wait for that character to reach their destination
@@ -1755,9 +1768,8 @@ export const runArcadeCabinetGame = (gameName: string) => {
     return;
   }
 
-  overworldHide(getCurrentOverworld());
   playSoundName('start_arcade_game');
-  pause();
+  hideSection(AppSection.Cutscene);
   showArcadeGame(gamePath);
 };
 
@@ -1810,6 +1822,7 @@ export const setAnimation = (chName: string, animName: string) => {
     return;
   }
 
+  console.log('SET ANIMATION FOR CH', chName, animName);
   const anim = createAnimation(animName);
   characterOverrideAnimation(ch, anim);
 };
@@ -1841,8 +1854,8 @@ export const resetAi = (chName: string) => {
 
   characterStartAi(ch);
 };
-
 export const startAi = resetAi;
+
 export const stopAi = (chName: string) => {
   const room = getCurrentRoom();
   const ch = roomGetCharacterByName(room, chName);

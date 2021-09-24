@@ -48,7 +48,7 @@ interface ICardProps extends IntrinsicProps {
 
 const Card = (props: ICardProps) => {
   return (
-    <Root size={props.size} style={props.style}>
+    <Root size={props.size} style={props.style} id={props.id}>
       {props.children}
     </Root>
   );

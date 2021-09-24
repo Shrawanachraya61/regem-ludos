@@ -1,0 +1,129 @@
+#bowling-test
+step-first,this
+@this
++fadeOut(500);
++setAtMarker(Ada, MarkerBowlReady);
++setFacing(Ada, leftup);
++runArcadeCabinetGame(BOWLING);
++waitMS(1000);
++fadeIn(500);
+
+@begin-bowling
++setAtMarker(Ada, MarkerBowlReady);
++setFacing(Ada, leftup);
++runArcadeCabinetGame(BOWLING);
++waitMS(1000);
++fadeIn(500);
+
+#floor1-bowling-employee-standalone
+action,this
+@this
++setConversation(Ada);
++lookAtEachOther(Ada, Floor1BowlingEmployee);
+Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?"
++?is(bowling_tried_to_leave):{
+  +awaitChoice('Yes, I would like to go bowling.', 'No, thank you.', 'I cannot seem to leave this room.');
+}
++?isnot(bowling_tried_to_leave):{
+  +awaitChoice('Yes, I would like to go bowling.', 'No, thank you.');
+}
++?eq(lastChoiceIndex, 0):{
+  Floor1BowlingEmployee: "Let me grab you a pair of shoes."
+  +fadeOut(500);
+  +endConversation();
+  +:begin-bowling();
+}
++?eq(lastChoiceIndex, 1):{
+  +none()
+  +setAnimationAndWait('Ada', 'ada_shake_head_down');
+  Ada: "I am just looking around."
+  Floor1BowlingEmployee: "Okay, come back if you change your mind.  We're always open!"
+  +endConversation();
+}
++?eq(lastChoiceIndex, 2):{
+  +setStorage(bowling_tried_to_leave, false);
+  +:teardrop(Floor1BowlingEmployee);
+  Floor1BowlingEmployee: "<cascade-letters>Yeah... so about that..."
+  Floor1BowlingEmployee: "It's <color=BLUE>true</>, <delay=500 cascade> you're not allowed to leave here."
+  Floor1BowlingEmployee: "The <color=ORANGE>developer</> does not want you to be able to leave this room."
+  +:question(Ada);
+  Ada: "Excuse me?"
+  Ada: "The <color=ORANGE cascade-letters=25>developer</>?"
+  Floor1BowlingEmployee: "Yeah... <delay=500 cascade> I wasn't really supposed to mention that explicitly but<cascade-letters=50>...<delay=250 cascade-letters> there it is."
+  +:bored(Ada);
+  Ada: "I cannot even fathom a response."
+  +:happy(Floor1BowlingEmployee);
+  Floor1BowlingEmployee: "Look on the bright side!  We've got an <italic>amazing</> bowling alley here!"
+  Floor1BowlingEmployee: "You can play any time you want!"
+  Ada: "Looks like you will be of no help to me, <italic cascade-letters>whatsoever."
+  +endConversation();
+}
+
+#floor1-bowling-employee
+action,this
+@this
++setConversation(Ada);
++lookAtEachOther(Ada, Floor1BowlingEmployee);
+Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?  It's 5 tokens to play."
++awaitChoice('Yes, I would like to go bowling.', 'No, thank you.');
++?eq(lastChoiceIndex, 0):{
+  +modifyTokens(-5);
+  Floor1BowlingEmployee: "Let me grab you a pair of shoes."
+  +fadeOut(500);
+  +endConversation();
+  +:begin-bowling();
+}
++?eq(lastChoiceIndex, 1):{
+  +none()
+  +setAnimationAndWait('Ada', 'ada_shake_head_down');
+  Ada: "I am just looking around."
+  Floor1BowlingEmployee: "Okay, come back if you change your mind.  We're always open!"
+  +endConversation();
+}
+
+
+#floor1-bowling-prevent-bowling
+step-first,this
+@this
+// ai needs to be reset cuz this isn't invoked by a talk trigger
++setFromDialog(Floor1BowlingEmployee);
++lookAtCharacter(Floor1BowlingEmployee, Ada);
++:exclaim(Floor1BowlingEmployee);
++panCameraToFitCharacters(500, true, Floor1BowlingEmployee);
++lookAtCharacter(Ada, Floor1BowlingEmployee);
++setConversation(Ada);
+Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without getting a pair of shoes from here first!"
++walkToMarker(Ada, MarkerPreventBowling);
++panCameraBackToPlayer();
++endConversation();
+
+#bowling-standalone-prevent-leave
+step-first,?once(bowling-standalone-prevent-leave1):bowling-standalone-prevent-leave1
+step-first,?once(bowling-standalone-prevent-leave2):bowling-standalone-prevent-leave2
+step-first,bowling-standalone-prevent-leave3
+@bowling-standalone-prevent-leave1
++:exclaim(Ada);
++walkToMarker(Ada, MarkerFromAtrium, 0, -32);
++setConversation(Ada);
++setFacing(Ada, leftdown);
+Ada: "There appears to be a path out of this room, but for some reason I cannot seem to leave."
++setStorage(bowling_tried_to_leave);
++endConversation();
+
+@bowling-standalone-prevent-leave2
++:exclaim(Ada);
++walkToMarker(Ada, MarkerFromAtrium, 0, -32);
++setConversation(Ada);
++setFacing(Ada, leftdown);
+Ada: "Again, I cannot leave for some reason!"
+Ada: "Some <color=ORANGE>outside force</> very much wants me to stay in here."
++endConversation();
+
+@bowling-standalone-prevent-leave3
++:exclaim(Ada);
++walkToMarker(Ada, MarkerFromAtrium, 0, -32);
++setConversation(Ada);
++setFacing(Ada, leftdown);
+Ada: "I still cannot seem to walk out of this room."
++endConversation();
+

@@ -342,7 +342,7 @@ audiosprite@^0.7.2:
     underscore "~1.8.3"
     winston "~1.0.0"
 
-babel-eslint@^10.1.0:
+babel-eslint@^10.0.1, babel-eslint@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.1.0.tgz#6968e568a910b78fb3779cdd8b6ac2f479943232"
   integrity sha512-ifWaTHQ0ce+448CYop8AdrQiBsGrnC+bMgfyKFdi6EsPLTAWG+QfyDeM6OH+FmWnKvEq5NnBMLvlBUPKQZoDSg==
@@ -721,6 +721,17 @@ eslint-config-developit@^1.1.1:
     eslint-plugin-mocha "^6.3.0"
     eslint-plugin-react "^7.0.0"
 
+eslint-config-preact@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/eslint-config-preact/-/eslint-config-preact-1.1.4.tgz#1b80394beb00e90391d23d132a8e1048f81ecfe8"
+  integrity sha512-j00/BpjPpVoaX8UTpXFPAsfBIzuwJX+sBvgPFyb53Lqi31fM0Oiq516qYXRyaZ7q1BRCjO8s67NCLal6v/Z8Lg==
+  dependencies:
+    babel-eslint "^10.0.1"
+    eslint-plugin-compat "^3.5.1"
+    eslint-plugin-jest "^23.7.0"
+    eslint-plugin-react "^7.0.0"
+    eslint-plugin-react-hooks "^4.2.0"
+
 eslint-config-prettier@^6.4.0:
   version "6.15.0"
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-6.15.0.tgz#7f93f6cb7d45a92f1537a70ecc06366e1ac6fed9"
@@ -749,7 +760,7 @@ eslint-plugin-compat@^3.5.1:
     lodash.memoize "4.1.2"
     semver "7.3.2"
 
-eslint-plugin-jest@^23.8.2:
+eslint-plugin-jest@^23.7.0, eslint-plugin-jest@^23.8.2:
   version "23.20.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-23.20.0.tgz#e1d69c75f639e99d836642453c4e75ed22da4099"
   integrity sha512-+6BGQt85OREevBDWCvhqj1yYA4+BFK4XnRZSGJionuEYmcglMZYLNNBBemwzbqUAckURaHdJSBcjHPyrtypZOw==
@@ -777,6 +788,11 @@ eslint-plugin-prettier@^3.1.4:
   integrity sha512-jZDa8z76klRqo+TdGDTFJSavwbnWK2ZpqGKNZ+VvweMW516pDUMmQ2koXvxEE4JhzNvTv+radye/bWGBmA6jmg==
   dependencies:
     prettier-linter-helpers "^1.0.0"
+
+eslint-plugin-react-hooks@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.2.0.tgz#8c229c268d468956334c943bb45fc860280f5556"
+  integrity sha512-623WEiZJqxR7VdxFCKLI6d6LLpwJkGPYKODnkH3D7WpOG5KM8yWueBd8TLsNAetEJNF5iJmolaAKO3F8yzyVBQ==
 
 eslint-plugin-react@^7.0.0:
   version "7.22.0"

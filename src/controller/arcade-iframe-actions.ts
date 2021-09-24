@@ -22,6 +22,7 @@ enum ArcadeIframeResponseMessage {
   GAME_STARTED = 'GAME_STARTED',
   GAME_CONCLUDED = 'GAME_CONCLUDED',
   GAME_CANCELLED = 'GAME_CANCELLED',
+  RUN_RPGSCRIPT = 'RUN_RPGSCRIPT',
 }
 
 const arcadeIframeId = 'arcade-iframe';
@@ -62,6 +63,14 @@ window.addEventListener('message', async event => {
   } else if (data.action === ArcadeIframeResponseMessage.GAME_CANCELLED) {
     console.log('game cancelled');
     setArcadeGameRunning(false);
+  } else if (data.action === ArcadeIframeResponseMessage.RUN_RPGSCRIPT) {
+    console.log('run rpgscript from iframe', data.payload);
+    createAndCallScript(getCurrentScene(), data.payload.scriptSrc);
+  } else {
+    console.error(
+      'Got message event listener with invalid action',
+      data.action
+    );
   }
 });
 

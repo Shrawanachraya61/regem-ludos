@@ -25,6 +25,8 @@ import * as floor2North from 'map/floor2-north.json';
 import * as floor2PrepRoom from 'map/floor2-preproom.json';
 import * as floor2Sports from 'map/floor2-sports.json';
 
+import * as bowlingAlleyStandalone from 'map/bowling-alley-standalone.json';
+
 const rooms: Record<string, Room> = ((window as any).rooms = {});
 
 // keys on this object are each a roomName
@@ -50,6 +52,8 @@ const overworldToRoom = {
 
   battle1: battle1Json,
   battleTut1,
+
+  bowlingAlleyStandalone,
 };
 
 const loadRoom = async (roomName: string, json: any) => {
@@ -136,11 +140,20 @@ export const init = async () => {
     };
   }
 
+  Object.assign(exp.bowlingAlleyStandalone ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_bowling',
+  });
+
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
 
   Object.assign(exp.floor1Atrium ?? {}, {
     backgroundColor: colors.BLACK,
     music: 'music_atrium',
+  });
+  Object.assign(exp.floor1Bowling ?? {}, {
+    // backgroundColor: colors.BLACK,
+    music: 'music_bowling',
   });
 
   Object.assign(exp.floor2GuestroomHallway ?? {}, {

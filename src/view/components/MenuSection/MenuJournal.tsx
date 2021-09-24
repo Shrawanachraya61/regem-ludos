@@ -93,14 +93,22 @@ const MenuJournal = (props: IMenuJournalProps) => {
 
   const selectedQuest: QuestTemplateWithName | undefined =
     quests[selectedItemIndex];
-  const selectedQuestStep = getCurrentQuestStep(scene, selectedQuest?.name);
-  const isCompleted = questIsCompleted(scene, selectedQuest);
+  const selectedQuestStep = selectedQuest
+    ? getCurrentQuestStep(scene, selectedQuest?.name)
+    : undefined;
+  const isCompleted = selectedQuest
+    ? questIsCompleted(scene, selectedQuest)
+    : false;
 
   return (
     <InnerRoot>
       <LeftDiv>
         <DescriptionWrapper>
-          <DescriptionName>{selectedQuest?.label ?? ''}</DescriptionName>
+          <DescriptionName>
+            {selectedQuest?.label ?? (
+              <span style={{ color: colors.GREY }}>(No quest selected.)</span>
+            )}
+          </DescriptionName>
           <Description>{selectedQuest?.summary ?? ''}</Description>
           <DescriptionBody>
             {isCompleted ? (
@@ -111,7 +119,7 @@ const MenuJournal = (props: IMenuJournalProps) => {
                 <p>{selectedQuestStep?.description ?? ''}</p>
               </>
             )}
-            {selectedQuest.steps.map((questStep, i) => {
+            {selectedQuest?.steps?.map((questStep, i) => {
               if (!isCompleted && i >= (selectedQuestStep?.i ?? 0)) {
                 return <></>;
               }

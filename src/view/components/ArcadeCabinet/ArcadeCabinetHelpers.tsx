@@ -1,4 +1,17 @@
 /* @jsx h */
+import { createAndCallScript } from 'controller/scene-management';
+import {
+  hideArcadeGame,
+  hideSection,
+  setInterfaceStateDisabled,
+  showSection,
+} from 'controller/ui-actions';
+import {
+  disableKeyUpdate,
+  enableKeyUpdate,
+  getCurrentScene,
+} from 'model/generics';
+import { AppSection } from 'model/store';
 import { h } from 'preact';
 import { colors, style } from 'view/style';
 
@@ -23,14 +36,24 @@ export enum ArcadeGamePath {
   INVADERZ = 'iframes/invaderz/dist/index.html',
   ELASTICITY = 'iframes/elasticity/dist/elasticity.html',
   VORTEX = 'iframes/vortex/dist/index.html',
+  BOWLING = 'iframes/regem-ludos-bowling/dist/index.html',
+}
+
+export interface IArcadeCabinetConfig {
+  disabled?: boolean;
+  cabinetImagePath?: string;
+  cabinetBorderImagePath?: string;
+  backgroundColor?: string;
 }
 
 export interface IArcadeGameMeta {
   title: string;
   tokensRequired: number;
-  controls: (props: IControlsProps) => h.JSX.Element;
+  cabinet?: IArcadeCabinetConfig;
+  controls?: (props: IControlsProps) => h.JSX.Element;
   help?: (props: IHelpProps) => h.JSX.Element;
   onGameCompleted?: (result: any) => Promise<void>;
+  onGameCancelled?: () => Promise<void>;
 }
 
 export const ArcadeGamePathMeta: Record<string, IArcadeGameMeta> = {
@@ -45,6 +68,18 @@ export const ArcadeGamePathMeta: Record<string, IArcadeGameMeta> = {
 
 export const getArcadeGamePathMeta = (path: ArcadeGamePath) => {
   return ArcadeGamePathMeta[path];
+};
+
+export const callScriptSrcFromArcadeEvent = async (src: string) => {
+  const scene = getCurrentScene();
+  hideSection(AppSection.Debug);
+  hideArcadeGame();
+  disableKeyUpdate();
+  setInterfaceStateDisabled(true);
+  await createAndCallScript(scene, src);
+  enableKeyUpdate();
+  setInterfaceStateDisabled(false);
+  showSection(AppSection.Debug, true);
 };
 
 export const CabinetControlButton = style(

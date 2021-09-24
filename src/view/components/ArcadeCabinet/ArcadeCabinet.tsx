@@ -32,6 +32,7 @@ import { playSoundName } from 'model/sound';
 import {
   ArcadeGamePath,
   ArcadeGamePathMeta,
+  IArcadeCabinetConfig,
   IArcadeGameMeta,
 } from './ArcadeCabinetHelpers';
 import { unpause } from 'controller/loop';
@@ -52,6 +53,7 @@ import './GamePresident';
 import './GameInvaderz';
 import './GameElasticity';
 import './GameVortex';
+import './GameBowling';
 
 export enum SDLKeyID {
   Enter = 13,
@@ -96,20 +98,23 @@ interface IArcadeCabinetProps {
   game: ArcadeGamePath | '';
 }
 
-const CabinetWrapper = style('div', () => {
-  return {
-    background: colors.BGGREY,
-    position: 'fixed',
-    left: '0px',
-    top: '0px',
-    width: '100%',
-    height: '100%',
-  };
-});
+const CabinetWrapper = style(
+  'div',
+  (props: { background: string; fixed: boolean }) => {
+    return {
+      background: props.background,
+      position: props.fixed ? 'fixed' : 'absolute',
+      left: '0px',
+      top: '0px',
+      width: '100%',
+      height: '100%',
+    };
+  }
+);
 
-const CabinetHeader = style('div', (props: {}) => {
+const CabinetHeader = style('div', (props: { fixed: boolean }) => {
   return {
-    position: 'fixed',
+    position: props.fixed ? 'fixed' : 'absolute',
     left: '0px',
     top: '0px',
     padding: '1rem',
@@ -358,6 +363,126 @@ const InsertTokens = (props: { meta: IArcadeGameMeta; expanded: boolean }) => {
   );
 };
 
+interface ICabinetInnerProps {
+  expanded: boolean;
+  meta: IArcadeGameMeta;
+  iframeRef: any;
+  isGameReady: boolean;
+  isGameRunning: boolean;
+  setHelpDialogOpen: (v: boolean) => void;
+  helpDialogOpen: boolean;
+  muted: boolean;
+  game: ArcadeGamePath | '';
+}
+const CabinetInner = (props: ICabinetInnerProps) => {
+  const expanded = props.expanded;
+  const meta = props.meta;
+  const iframeRef = props.iframeRef;
+  const isGameReady = props.isGameReady;
+  const isGameRunning = props.isGameRunning;
+  const setHelpDialogOpen = props.setHelpDialogOpen;
+  const helpDialogOpen = props.helpDialogOpen;
+  const muted = props.muted;
+  return (
+    <CabinetInnerWrapper>
+      {expanded ? null : <CabinetTitle>{meta.title}</CabinetTitle>}
+      <div
+        style={{
+          transition: 'height 0.25s',
+          height: expanded ? '0px' : '32px',
+          width: '646px',
+          position: 'relative',
+        }}
+      >
+        {expanded ? null : <CabinetImage />}
+      </div>
+
+      {props.game ? (
+        <IframeShim
+          id="arcade-iframe"
+          ref={iframeRef}
+          src={
+            (isDevelopmentMode()
+              ? transformIframeUrlForDevelopment(props.game)
+              : props.game) + `?cabinet=true&mute=${muted}`
+          }
+          width={expanded ? '100%' : 512 + 'px'}
+          height={expanded ? '100%' : 512 + 'px'}
+          expanded={expanded}
+          loading={!isGameReady}
+          borderImageUrl={
+            meta?.cabinet?.cabinetBorderImagePath ??
+            'res/img/arcade-border-1.png'
+          }
+        ></IframeShim>
+      ) : (
+        <div>No game was specified.</div>
+      )}
+      {expanded && !isGameRunning ? (
+        <div
+          style={{
+            pointerEvents: 'all',
+            margin: '8px',
+          }}
+        >
+          <InsertTokens meta={meta} expanded={expanded} />
+        </div>
+      ) : null}
+      {expanded ? null : (
+        <CabinetControls id="controls-arcade">
+          {isGameRunning ? (
+            meta.controls ? (
+              <meta.controls setHelpDialogOpen={setHelpDialogOpen} />
+            ) : (
+              <div></div>
+            )
+          ) : (
+            <InsertTokens meta={meta} expanded={expanded} />
+          )}
+        </CabinetControls>
+      )}
+      {meta?.help && helpDialogOpen ? (
+        <meta.help setHelpDialogOpen={setHelpDialogOpen} />
+      ) : null}
+    </CabinetInnerWrapper>
+  );
+};
+
+const CabinetSkeleton = (props: ICabinetInnerProps) => {
+  // const expanded = props.expanded;
+  const meta = props.meta;
+  const iframeRef = props.iframeRef;
+  const isGameReady = props.isGameReady;
+  const isGameRunning = props.isGameRunning;
+  // const setHelpDialogOpen = props.setHelpDialogOpen;
+  // const helpDialogOpen = props.helpDialogOpen;
+  const muted = props.muted;
+
+  return (
+    <CabinetInnerWrapper>
+      {props.game ? (
+        <IframeShim
+          id="arcade-iframe"
+          ref={iframeRef}
+          src={
+            (isDevelopmentMode()
+              ? transformIframeUrlForDevelopment(props.game)
+              : props.game) + `?cabinet=true&mute=${muted}`
+          }
+          width={'100%'}
+          height={'100%'}
+          expanded={true}
+          loading={!isGameReady}
+          borderImageUrl={undefined}
+          // loading={true}
+        ></IframeShim>
+      ) : (
+        <div>No game was specified.</div>
+      )}
+    </CabinetInnerWrapper>
+  );
+};
+
 const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const [expanded, setExpanded] = useState(false);
   const [muted, setMuted] = useState(isArcadeGameMuted());
@@ -378,16 +503,34 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
     }
   });
 
+  const cancelGame = async () => {
+    if (meta.onGameCancelled) {
+      await meta.onGameCancelled();
+    } else {
+      hideArcadeGame();
+      unpause();
+    }
+  };
+
+  let backgroundColor = colors.BGGREY;
+  if (meta?.cabinet?.backgroundColor) {
+    backgroundColor = meta?.cabinet?.backgroundColor;
+  } else if (meta?.cabinet?.disabled) {
+    backgroundColor = 'unset';
+  }
+
   return (
-    <CabinetWrapper>
-      <CabinetHeader>
+    <CabinetWrapper
+      background={backgroundColor}
+      fixed={!meta?.cabinet?.disabled}
+    >
+      <CabinetHeader fixed={!meta?.cabinet?.disabled}>
         <CabinetHeaderContainer>
           <CabinetHeaderButtonsContainer>
             <Button
               type={ButtonType.CANCEL}
               onClick={() => {
-                unpause();
-                hideArcadeGame();
+                cancelGame();
               }}
               style={{
                 marginRight: '1rem',
@@ -395,39 +538,41 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
             >
               Back
             </Button>
-            <Button
-              type={ButtonType.PRIMARY}
-              style={{
-                marginRight: '1rem',
-              }}
-              onClick={() => {
-                const nextExpanded = !expanded;
-                setExpanded(nextExpanded);
-                if (nextExpanded) {
-                  if (isGameReadyToPlay || isGameRunning) {
-                    showControls();
+            {meta.cabinet?.disabled ? null : (
+              <Button
+                type={ButtonType.PRIMARY}
+                style={{
+                  marginRight: '1rem',
+                }}
+                onClick={() => {
+                  const nextExpanded = !expanded;
+                  setExpanded(nextExpanded);
+                  if (nextExpanded) {
+                    if (isGameReadyToPlay || isGameRunning) {
+                      showControls();
+                    } else {
+                      hideControls();
+                    }
+                    setScaleWindow();
                   } else {
                     hideControls();
+                    setScaleOriginal();
                   }
-                  setScaleWindow();
-                } else {
-                  hideControls();
-                  setScaleOriginal();
-                }
-              }}
-            >
-              {expanded ? (
-                <ButtonContentWithIcon>
-                  <Contract color={colors.WHITE} />
-                  Contract
-                </ButtonContentWithIcon>
-              ) : (
-                <ButtonContentWithIcon>
-                  <Expand color={colors.WHITE} />
-                  Expand
-                </ButtonContentWithIcon>
-              )}
-            </Button>
+                }}
+              >
+                {expanded ? (
+                  <ButtonContentWithIcon>
+                    <Contract color={colors.WHITE} />
+                    Contract
+                  </ButtonContentWithIcon>
+                ) : (
+                  <ButtonContentWithIcon>
+                    <Expand color={colors.WHITE} />
+                    Expand
+                  </ButtonContentWithIcon>
+                )}
+              </Button>
+            )}
             <Button
               type={ButtonType.PRIMARY}
               style={{
@@ -462,59 +607,31 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
           </CabinetHeaderButtonsContainer>
         </CabinetHeaderContainer>
       </CabinetHeader>
-      <CabinetInnerWrapper>
-        {expanded ? null : <CabinetTitle>{meta.title}</CabinetTitle>}
-        <div
-          style={{
-            transition: 'height 0.25s',
-            height: expanded ? '0px' : '32px',
-            width: '646px',
-            position: 'relative',
-          }}
-        >
-          {expanded ? null : <CabinetImage />}
-        </div>
-
-        {props.game ? (
-          <IframeShim
-            id="arcade-iframe"
-            ref={iframeRef}
-            src={
-              (isDevelopmentMode()
-                ? transformIframeUrlForDevelopment(props.game)
-                : props.game) + `?cabinet=true&mute=${muted}`
-            }
-            width={expanded ? '100%' : 512 + 'px'}
-            height={expanded ? '100%' : 512 + 'px'}
-            expanded={expanded}
-            loading={!isGameReady}
-          ></IframeShim>
-        ) : (
-          <div>No game was specified.</div>
-        )}
-        {expanded && !isGameRunning ? (
-          <div
-            style={{
-              pointerEvents: 'all',
-              margin: '8px',
-            }}
-          >
-            <InsertTokens meta={meta} expanded={expanded} />
-          </div>
-        ) : null}
-        {expanded ? null : (
-          <CabinetControls id="controls-arcade">
-            {isGameRunning ? (
-              <meta.controls setHelpDialogOpen={setHelpDialogOpen} />
-            ) : (
-              <InsertTokens meta={meta} expanded={expanded} />
-            )}
-          </CabinetControls>
-        )}
-        {meta?.help && helpDialogOpen ? (
-          <meta.help setHelpDialogOpen={setHelpDialogOpen} />
-        ) : null}
-      </CabinetInnerWrapper>
+      {meta?.cabinet?.disabled ? (
+        <CabinetSkeleton
+          expanded={expanded}
+          meta={meta}
+          iframeRef={iframeRef}
+          isGameReady={isGameReady}
+          isGameRunning={isGameRunning}
+          setHelpDialogOpen={setHelpDialogOpen}
+          helpDialogOpen={helpDialogOpen}
+          muted={muted}
+          game={props.game}
+        />
+      ) : (
+        <CabinetInner
+          expanded={expanded}
+          meta={meta}
+          iframeRef={iframeRef}
+          isGameReady={isGameReady}
+          isGameRunning={isGameRunning}
+          setHelpDialogOpen={setHelpDialogOpen}
+          helpDialogOpen={helpDialogOpen}
+          muted={muted}
+          game={props.game}
+        />
+      )}
     </CabinetWrapper>
   );
 };

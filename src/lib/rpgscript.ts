@@ -440,7 +440,6 @@ export class ScriptParser {
   }
 
   parse(src: string, scene: Scene) {
-    console.log('PARSE SCRIPT', this.name);
     const triggers = {};
     const scripts = {};
 

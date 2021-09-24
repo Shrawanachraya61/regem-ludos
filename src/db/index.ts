@@ -9,6 +9,7 @@ import { init as initParticles } from './particles';
 import { init as initQuests } from './quests';
 import { init as initItems } from './items';
 import { init as initBattleActions } from './battle-actions';
+import { init as initSaves } from './saves';
 
 export default async () => {
   initQuests();
@@ -21,5 +22,6 @@ export default async () => {
   initAnimMetadata();
   initItems();
   initBattleActions();
+  initSaves();
   await initOverworlds();
 };

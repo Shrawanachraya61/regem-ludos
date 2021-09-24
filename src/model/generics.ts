@@ -130,7 +130,7 @@ export const setSoundEnabled = (v: boolean) => (soundEnabled = v);
 
 const volumeLevels = {
   [SoundType.NORMAL]: 0.5,
-  [SoundType.MUSIC]: 0.5,
+  [SoundType.MUSIC]: 0.25,
 };
 export const setVolume = (type: SoundType, volumeDecimal: number) => {
   if (volumeDecimal > 1) {
@@ -238,3 +238,13 @@ export const removeCharacterWithSuspendedAi = (ch: Character) => {
 export const getCharactersWithSuspendedAi = () => [
   ...charactersWithSuspendedAi,
 ];
+
+let overworldUpdateKeysDisabled = false;
+export const setOverworldUpdateKeysDisabled = (v: boolean) => {
+  overworldUpdateKeysDisabled = v;
+};
+export const isOverworldUpdateKeysDisabled = () => overworldUpdateKeysDisabled;
+
+let debugModeEnabled = true;
+export const setDebugModeEnabled = (v: boolean) => (debugModeEnabled = v);
+export const isDebugModeEnabled = () => debugModeEnabled;

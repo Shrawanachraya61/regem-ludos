@@ -215,6 +215,15 @@ AnimSprite,ada_13,51
 AnimSprite,ada_14,51
 AnimSprite,ada_15,51
 AnimSprite,ada_16,51
+Animation,ada_bowl_prepare,true
+AnimSprite,ada_86,100
+AnimSprite,ada_87,100
+AnimSprite,ada_88,800
+AnimSprite,ada_87,100
+Animation,ada_bowl_ball,false
+AnimSprite,ada_89,75
+AnimSprite,ada_90,75
+AnimSprite,ada_91,75
 Picture,battle-terrain1,battle-terrain1.png,64,64
 Picture,battlePortraits,battlePortraits.png,64,64
 Animation,battlePortraits_ada,false
@@ -1862,6 +1871,7 @@ AnimSprite,guy9_7,90
 AnimSprite,guy9_1,90
 AnimSprite,guy9_8,90
 Picture,indicator,indicator.png,64,64
+Picture,iso-text/bowl_here,iso-text/bowl_here.png,64,64
 Picture,markerGreen,markerGreen.png,64,64
 Picture,markerOrange,markerOrange.png,64,64
 Picture,port_ada512,port_ada512.png,512,512

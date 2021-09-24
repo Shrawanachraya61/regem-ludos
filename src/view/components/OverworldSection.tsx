@@ -9,6 +9,7 @@ import {
   getTriggersVisible,
   hideMarkers,
   hideTriggers,
+  isDebugModeEnabled,
   setKeyDown,
   setKeyUp,
   shouldShowOnScreenControls,
@@ -172,31 +173,35 @@ const OverworldSection = () => {
     }
   };
 
+  console.log('RENDER OVERWORLD SECTION', isDebugModeEnabled());
+
   return (
     <>
       <TopBarWrapper>
-        <TopBar
-          buttons={[
-            TopBarButtons.MENU,
-            TopBarButtons.SETTINGS,
-            TopBarButtons.DEBUG,
-            TopBarButtons.ON_SCREEN_CONTROLS,
-          ]}
-          onMenuClick={() => {
-            pause();
-          }}
-          onMenuClose={() => {
-            unpause();
-            showSection(AppSection.Debug, true);
-          }}
-          onSettingsClick={() => {
-            pause();
-          }}
-          onSettingsClose={() => {
-            unpause();
-            showSection(AppSection.Debug, true);
-          }}
-        />
+        {!overworldState.interfaceDisabled ? (
+          <TopBar
+            buttons={[
+              TopBarButtons.MENU,
+              TopBarButtons.SETTINGS,
+              isDebugModeEnabled() ? TopBarButtons.DEBUG : undefined,
+              TopBarButtons.ON_SCREEN_CONTROLS,
+            ]}
+            onMenuClick={() => {
+              pause();
+            }}
+            onMenuClose={() => {
+              unpause();
+              showSection(AppSection.Debug, true);
+            }}
+            onSettingsClick={() => {
+              pause();
+            }}
+            onSettingsClose={() => {
+              unpause();
+              showSection(AppSection.Debug, true);
+            }}
+          />
+        ) : null}
         <CharacterText visible={overworldState.characterText !== ''}>
           {overworldState.characterText || overworldState.prevCharacterText}
         </CharacterText>
@@ -206,7 +211,7 @@ const OverworldSection = () => {
           })}
         </NotificationWrapper>
       </TopBarWrapper>
-      {shouldShowOnScreenControls() ? (
+      {shouldShowOnScreenControls() && !overworldState.interfaceDisabled ? (
         <>
           <ActionButtonsArea>
             <ActionButton

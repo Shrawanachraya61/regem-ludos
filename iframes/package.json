@@ -19,7 +19,8 @@
   "jsIframes": [
     "tic-tac-toe",
     "president",
-    "golems"
+    "golems",
+    "regem-ludos-bowling"
   ],
   "dependencies": {},
   "devDependencies": {

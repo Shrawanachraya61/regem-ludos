@@ -213,8 +213,6 @@ export const runMainLoop = async (): Promise<void> => {
       }
 
       reLoop();
-      // if ((window as any).running)
-      //   setTimeout(() => loop(performance.now()), 100); // for debugging
       return;
     }
 

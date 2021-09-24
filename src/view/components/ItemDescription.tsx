@@ -95,7 +95,16 @@ const ItemDescription = (props: IItemDescriptionProps) => {
         </Button>
       ) : null}
       <EquipmentDescriptionText>
-        {props.item?.description}
+        {props.item?.description ?? (
+          <div
+            style={{
+              color: colors.LIGHTGREY,
+              textAlign: 'center',
+            }}
+          >
+            Hover over an item to see a description.
+          </div>
+        )}
       </EquipmentDescriptionText>
       {modStrings.length > 0 ? (
         <EquipmentDescriptionText>
@@ -105,7 +114,7 @@ const ItemDescription = (props: IItemDescriptionProps) => {
       {skillStrings.length > 0 ? (
         <EquipmentDescriptionText>
           {skillStrings.map(str => {
-            return <div>{'Skill: ' + str}</div>;
+            return <div key={str}>{'Skill: ' + str}</div>;
           })}
         </EquipmentDescriptionText>
       ) : null}

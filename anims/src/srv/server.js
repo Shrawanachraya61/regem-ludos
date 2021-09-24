@@ -4,7 +4,11 @@ const bodyParser = require('body-parser');
 const exec = require('child_process').exec;
 
 const PORT = 8888;
+
 const SPRITESHEETS_DIR = `${__dirname}/../../../res`;
+
+const SPRITESHEETS_SUB_DIRS = ['iso-text'];
+
 const TXT_DIR = `${__dirname}/../../txt`;
 const EXPORT_DIR_RES = `${__dirname}/../../../res`;
 const EXPORT_DIR_PNG = `${__dirname}/../../../res`;
@@ -42,14 +46,30 @@ app.get('/spritesheets', (req, res) => {
     err: null,
   };
 
-  fs.readdir(SPRITESHEETS_DIR, (err, files) => {
+  const filterFiles = files =>
+    files.filter(fileName => fileName.indexOf('.png') > -1);
+
+  fs.readdir(SPRITESHEETS_DIR, async (err, files) => {
     if (err) {
       resp.err = err;
     } else {
-      resp.files = files
-        .filter(fileName => fileName.indexOf('.png') > -1)
-        .sort();
+      resp.files = filterFiles(files);
+      for (let i = 0; i < SPRITESHEETS_SUB_DIRS.length; i++) {
+        const subPath = SPRITESHEETS_SUB_DIRS[i];
+        const fullPath = SPRITESHEETS_DIR + '/' + subPath;
+        try {
+          const subFiles = fs.readdirSync(fullPath);
+          resp.files = resp.files.concat(
+            filterFiles(subFiles.map(fileName => subPath + '/' + fileName))
+          );
+        } catch (e) {
+          console.error('Failed to load sub dir: ' + fullPath, e);
+          continue;
+        }
+      }
+      resp.files = resp.files.sort();
     }
+
     res.send(JSON.stringify(resp));
   });
 });

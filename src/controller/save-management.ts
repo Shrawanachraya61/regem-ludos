@@ -9,6 +9,7 @@ import {
   isArcadeGameMuted,
   setArcadeGameMuted,
   setArcadeGameVolume,
+  setDebugModeEnabled,
   setDurationPlayed,
   setTimeLoaded,
   setVolume,
@@ -47,6 +48,7 @@ export interface ISave {
   timestampSaved: Date;
   timestampLoaded: Date;
   durationPlayed: number;
+  debug: boolean;
   overworld: {
     name: string;
   };
@@ -178,6 +180,7 @@ export const loadSaveListFromLS = (): ISave[] => {
       (save: any): ISave => {
         return {
           id: save.id,
+          debug: save.debug ?? true,
           timestampSaved: new Date(save.timestampSaved),
           timestampLoaded: new Date(save.timestampLoaded),
           durationPlayed: save.durationPlayed,
@@ -240,6 +243,7 @@ export const createSave = (params: {
 
   const save: ISave = {
     id: params.saveId,
+    debug: true,
     timestampSaved: new Date(),
     timestampLoaded: params.lastTimestampLoaded,
     durationPlayed:
@@ -384,6 +388,7 @@ export const loadGame = (save: ISave) => {
 
   setTimeLoaded(+new Date());
   setDurationPlayed(save.durationPlayed);
+  setDebugModeEnabled(save.debug ?? true);
 };
 
 const characterToICharacterSave = (
