@@ -79,3 +79,4 @@ Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3
 Music,music_atrium,music/atrium3.mp3
 Music,music_outside_arcade,music/outside_arcade2.mp3
+Music,music_bowling,music/regem_ludos_bowling.mp3

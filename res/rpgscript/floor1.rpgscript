@@ -12,9 +12,9 @@ step,this
 +:utils-change-room(floor1Bowling, MarkerFromAtrium);
 
 #floor1-atriumOpenBowlingDoor
-step-first,this
+step-first,floor1-atriumOpenBowlingDoorOpen
 step-off,floor1-atriumOpenBowlingDoorClose
-@this
+@floor1-atriumOpenBowlingDoorOpen
 +playSound(sliding_door_open);
 +:openDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
 +:openDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
@@ -523,44 +523,9 @@ action,this
 +lookAtEachOther(Ada, Floor1BowlingGirl);
 +setConversation(Ada);
 Floor1BowlingGirl: "I just realized that bowling is kinda like golf."
-Floor1BowlingGirl: "<cascade>Not like physically or anything -- I meen sheesh, those bowling balls are super heavy -- but like, in the <italic>game sense."
-Floor1BowlingGirl: "In both games you gotta pick an aiming direction, power, and technique."
-Floor1BowlingGirl: "Everything's got a connection, ain't that true."
-+endConversation();
-
-#floor1-bowling-employee
-action,this
-@this
-+setConversation(Ada);
-+lookAtEachOther(Ada, Floor1BowlingEmployee);
-Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?  It's <color=BLUE cascade>5 tokens<cascade> to play."
-+awaitChoice('Yes, I would like to go bowling.', 'No, thank you.');
-+?eq(lastChoiceIndex, 0):{
-  +modifyTokens(-5);
-  Floor1BowlingEmployee: "Let me grab you a pair of shoes.  What's your size?"
-  +fadeOut(1000);
-  +fadeIn(1000);
-}
-+?eq(lastChoiceIndex, 1):{
-  +none()
-  +setAnimationAndWait('Ada', 'ada_shake_head_down');
-  Ada: "I am just looking around."
-  Floor1BowlingEmployee: "Okay, come back if you change your mind.  We're always open!"
-}
-+endConversation();
-#floor1-bowling-prevent-bowling
-step-first,this
-@this
-// ai needs to be reset cuz this isn't invoked by a talk trigger
-+setFromDialog(Floor1BowlingEmployee);
-+lookAtCharacter(Floor1BowlingEmployee, Ada);
-+:exclaim(Floor1BowlingEmployee);
-+panCameraToFitCharacters(500, true, Floor1BowlingEmployee);
-+lookAtCharacter(Ada, Floor1BowlingEmployee);
-+setConversation(Ada);
-Floor1BowlingEmployee: "Please don't walk out onto the bowling floor without getting a pair of shoes from here first!"
-+walkToMarker(Ada, MarkerPreventBowling);
-+panCameraBackToPlayer();
+Floor1BowlingGirl: "<cascade>Not like physically or anything -- I mean sheesh, those bowling balls are super heavy -- but like, in the <italic>game sense."
+Floor1BowlingGirl: "In both games you gotta pick a starting point, spin, and aiming direction."
+Floor1BowlingGirl: "Feels like everything's got a connection sometimes, you know."
 +endConversation();
 
 #floor1-AtriumNPC1NPC2
