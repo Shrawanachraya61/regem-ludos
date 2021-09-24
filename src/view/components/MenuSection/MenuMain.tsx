@@ -61,7 +61,7 @@ const MenuBackground = style('div', () => {
     width: '100%',
     height: '100%',
     opacity: '0.04',
-    backgroundImage: 'url(/res/bg/flowers_menu_bg.png)',
+    backgroundImage: 'url(res/bg/flowers_menu_bg.png)',
     zIndex: 0,
     pointerEvents: 'none',
   };
