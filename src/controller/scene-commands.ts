@@ -87,6 +87,8 @@ import {
   playerModifyTokens,
   playerModifyTickets,
   playerGetCameraOffset,
+  playerAddToActiveParty,
+  playerRemoveFromActiveParty,
 } from 'model/player';
 import { Transform, TransformEase } from 'model/utility';
 import { ArcadeGamePath } from 'view/components/ArcadeCabinet';
@@ -1949,6 +1951,14 @@ export const enterCombat = (encounterName: string) => {
   );
 };
 
+export const addPartyMemberToActiveParty = (chName: string) => {
+  playerAddToActiveParty(getCurrentPlayer(), chName);
+};
+
+export const removePartyMemberFromActiveParty = (chName: string) => {
+  playerRemoveFromActiveParty(getCurrentPlayer(), chName);
+};
+
 export const panCameraRelativeToPlayer = (
   relX: number,
   relY: number,
@@ -2009,6 +2019,13 @@ export const panCameraToFitCharacters = (
   skipWait?: boolean,
   ...characterNames: string[]
 ) => {
+  if (typeof (ms as any) === 'string') {
+    console.error(
+      'Invalid argument to panCameraToFitCharacters, did you forget ms and/or skipWait?'
+    );
+    return;
+  }
+
   console.log('PAN TO FIT', ms, skipWait, characterNames);
   none();
   const room = getCurrentRoom();
@@ -2444,6 +2461,8 @@ const commands = {
   setDoorStateAtMarker,
   awaitChoice,
   enterCombat,
+  addPartyMemberToActiveParty,
+  removePartyMemberFromActiveParty,
   panCameraRelativeToPlayer,
   panCameraBackToPlayer,
   panCameraToFitCharacters,

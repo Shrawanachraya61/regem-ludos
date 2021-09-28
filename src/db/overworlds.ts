@@ -12,6 +12,7 @@ import * as test3 from 'map/test3.json';
 import * as floor1Outside from 'map/floor1-outside.json';
 import * as floor1Atrium from 'map/floor1-atrium.json';
 import * as floor1Bowling from 'map/floor1-bowlingalley.json';
+import * as floor1Primary from 'map/floor1-primary.json';
 import * as floor1TutEntrance from 'map/floor1-tut-entrance.json';
 import * as floor1TutVR1 from 'map/floor1-tut-vr1.json';
 import * as floor1TutVR2 from 'map/floor1-tut-vr2.json';
@@ -34,6 +35,7 @@ const overworldToRoom = {
   floor1Outside,
   floor1Atrium,
   floor1Bowling,
+  floor1Primary,
   floor1TutEntrance,
   floor1TutVR1,
   floor1TutVR2,

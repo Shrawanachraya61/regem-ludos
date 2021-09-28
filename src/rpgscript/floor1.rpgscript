@@ -11,6 +11,16 @@ step,this
 @this
 +:utils-change-room(floor1Bowling, MarkerFromAtrium);
 
+#floor1-transitionToPrimaryFromAtrium
+step,this
+@this
++:utils-change-room(floor1Primary, MarkerFromAtrium);
+
+#floor1-transitionToAtriumFromPrimary
+step,this
+@this
++:utils-change-room(floor1Atrium, MarkerFromPrimary);
+
 #floor1-atriumOpenBowlingDoor
 step-first,floor1-atriumOpenBowlingDoorOpen
 step-off,floor1-atriumOpenBowlingDoorClose
@@ -22,6 +32,30 @@ step-off,floor1-atriumOpenBowlingDoorClose
 +playSound(sliding_door_close);
 +:closeDoor(MarkerDoorBowling, TALL_RED_DOOR_BCK);
 +:closeDoor(MarkerDoorBowling2, TALL_RED_DOOR_BCK);
+
+#floor1-atriumOpenNorthDoor
+step-first,floor1-atriumOpenNorthDoorOpen
+step-off,floor1-atriumOpenNorthDoorClose
+@floor1-atriumOpenNorthDoorOpen
++playSound(sliding_door_open);
++:openDoor(MarkerDoorNorth1, RED_DOOR_FWDL);
++:openDoor(MarkerDoorNorth2, RED_DOOR_FWDR);
+@floor1-atriumOpenNorthDoorClose
++playSound(sliding_door_close);
++:closeDoor(MarkerDoorNorth1, RED_DOOR_FWDL);
++:closeDoor(MarkerDoorNorth2, RED_DOOR_FWDR);
+
+#floor1-openDoorsToAtriumFromPrimary
+step-first,floor1-openDoorsToAtriumFromPrimaryOpen
+step-off,floor1-openDoorsToAtriumFromPrimaryClose
+@floor1-openDoorsToAtriumFromPrimaryOpen
++playSound(sliding_door_open);
++:openDoor(MarkerDoorToAtrium1, RED_DOOR_FWDL);
++:openDoor(MarkerDoorToAtrium2, RED_DOOR_FWDR);
+@floor1-openDoorsToAtriumFromPrimaryClose
++playSound(sliding_door_close);
++:closeDoor(MarkerDoorToAtrium1, RED_DOOR_FWDL);
++:closeDoor(MarkerDoorToAtrium2, RED_DOOR_FWDR);
 
 #floor1-atrium-desk-employee
   action,?once():this
@@ -238,10 +272,9 @@ step-off,floor1-atriumOpenBowlingDoorClose
 #floor1-atrium-employee-jason
   action,?is(quest_tutorial_active):floor1-atrium-employee-jason-tutorial-active
   // haven't spoken to front desk yet
-  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
+  // action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
   // don't have Haptic Bracer yet
   action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once()):floor1-atrium-employee-jason-haptic-bracer
-  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete)):floor1-atrium-employee-jason-haptic-bracer-ask
   action,floor1-atrium-employee-jason-default
 @floor1-atrium-employee-jason-haptic-bracer
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -257,35 +290,13 @@ step-off,floor1-atriumOpenBowlingDoorClose
   +walkToMarker(Atrium Employee Jason, MarkerJasonA);
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
   Atrium Employee Jason: "Here you are!"
-  +acquireItem('HapticBracer');
-  Atrium Employee Jason: "Would you like me to run you through how to use it?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
-  +?eq(lastChoiceIndex, 0):{
-    Ada: "Sure."
-    +callScript('floor1-atrium-employee-jason-start-tutorial');
-  }
-  +?eq(lastChoiceIndex, 1):{
-    Ada: "Not right now."
-    Atrium Employee Jason: "No worries.  Come back when you're ready."
-  }
-  +endConversation();
-@floor1-atrium-employee-jason-haptic-bracer-ask
-  +lookAtEachOther('Ada', 'Atrium Employee Jason');
-  +setConversation('Ada');
-  Atrium Employee Jason: "Would you like me to run you through how to use your Haptic Bracer?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
-  +?eq(lastChoiceIndex, 0):{
-    Ada: "Sure"
-    +callScript('floor1-atrium-employee-jason-start-tutorial');
-  }
-  +?eq(lastChoiceIndex, 1):{
-    Ada: "Not right now."
-    Atrium Employee Jason: "No worries.  Come back when you're ready."
-  }
-  +endConversation();
+  +:utils-get-treasure-cutscene('HapticBracer');
+  Atrium Employee Jason: "Let us start the tutorial, shall we?"
+  +callScript('floor1-atrium-employee-jason-start-tutorial');
 @floor1-atrium-employee-jason-start-tutorial
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
   +setStorage('quest_tutorial_active', true);
-  Atrium Employee Jason: "Excellent!  Follow me please."
+  Atrium Employee Jason: "Follow me please."
   +setConversationSpeaker('none');
   +walkToMarker(Atrium Employee Jason, MarkerDoorTut);
   +setFacing(Atrium Employee Jason, 'rightup');
@@ -299,7 +310,7 @@ step-off,floor1-atriumOpenBowlingDoorClose
   //pass control to the script in the next room
   +callScript('floor1-tut-entrance-begin-tut');
 @floor1-atrium-employee-jason-quest-not-started
-  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
   +setConversation('Ada');
   Atrium Employee Jason: "Hello!  How may I help you today?"
   Ada: "Hello.  What is that room behind you?"
@@ -317,8 +328,6 @@ step-off,floor1-atriumOpenBowlingDoorClose
 
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest
-  // action,?all(isnot(quest_floor1-atrium_tic-tac-toe-complete),once()):floor1-atrium-TicTacToeGirl-first
-  // action,?isnot(quest_floor1-atrium_tic-tac-toe-complete):floor1-atrium-TicTacToeGirl-rest
   action,?func(questNotStarted, TicTacToe):floor1-atrium-TicTacToeGirl-first
   action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-rest
   // default
@@ -337,8 +346,8 @@ step-off,floor1-atriumOpenBowlingDoorClose
   Tic Tac Toe Girl: "Honestly, I feel kinda bad for it.  I wonder if it feels sad to lose all the time."
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
   +setFacing('Tic Tac Toe Girl', rightdown);
-  +startQuest(TicTacToe);
   +endConversation();
+  +startQuest(TicTacToe);
 @floor1-atrium-TicTacToeGirl-rest
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
@@ -361,10 +370,12 @@ step-off,floor1-atriumOpenBowlingDoorClose
   +waitMS(1000);
   +:bored(Tic Tac Toe Girl);
   Tic Tac Toe Girl: "Well, <delay=750 cascade=50> I'm glad I wasn't the one who lost to it."
-  +completeQuestStep(TicTacToe, 0);
   +resetAi('Tic Tac Toe Girl');
   +changeTileAtMarker(MarkerTTTMachineTile, TIC_TAC_TOE_NORMAL);
+  +:teardrop(Tic Tac Toe Girl);
+  Tic Tac Toe Girl: "Here, take some of my tickets for the trouble."
   +endConversation();
+  +completeQuestStep(TicTacToe, 0);
 
 #floor1-atrium-TicTacToeMachine
 step-first,this

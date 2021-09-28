@@ -424,7 +424,18 @@ export class ScriptParser {
   }
 
   createDialogCommand(line: string, script: Script): Command {
-    let [actorName, subtitle] = line.split(':');
+    const firstIndOfColon = line.indexOf(':');
+    if (firstIndOfColon === -1) {
+      this.throwParsingError(
+        'Dialog command did not have a ":" character.',
+        -1,
+        line
+      );
+    }
+
+    let actorName = line.slice(0, firstIndOfColon);
+    let subtitle = line.slice(firstIndOfColon + 1);
+
     let type = 'playDialogue';
     if (actorName[0] === '_') {
       actorName = actorName.slice(1);

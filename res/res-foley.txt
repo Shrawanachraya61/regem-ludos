@@ -17,6 +17,7 @@ Sound,get_item,foley/get_item2.mp3
 Sound,skye_kick_vending_machine,foley/skye_kick_vending_machine.mp3,Creative Commons https://freesound.org/people/CS279/sounds/202757/
 Sound,dialog_select,foley/dialog_select.mp3,Creative Commons https://freesound.org/people/CS279/sounds/198449/
 Sound,dialog_woosh,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
+Sound,dialog_start,foley/dialog_start.mp3,0.7, zzfx
 Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
 Sound,battle_encountered,foley/encounter.mp3,jsfxr
 Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
@@ -53,6 +54,7 @@ Sound,vr_portal_focus,foley/vr_portal_focus.mp3,0.7,zzfx
 Sound,vr_portal_start,foley/vr_portal_start.mp3,0.7,zzfx
 Sound,despawn_tut_wall,foley/despawn_tut_wall.mp3,0.7,zzfx
 Sound,terminal_beep,foley/blip.mp3,0.7,zzfx
+Sound,beep,foley/blip.mp3,0.7,zzfx
 Sound,terminal_cancel,foley/terminal_cancel.mp3,0.7,zzfx
 Sound,spawn_enemy,foley/spawn_enemy.mp3,0.7,zzfx
 Sound,change_room,foley/change_room.mp3,1,Attribution https://freesound.org/people/newagesoup/sounds/377830/ 

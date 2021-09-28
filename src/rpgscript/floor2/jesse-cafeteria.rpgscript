@@ -23,12 +23,15 @@ Ada: "Hello, Jesse."
 +:surprised(Jesse);
 Jesse: "Ada?  What are you doing here?"
 Ada: "I could ask you the same thing."
-Ada: "I seem to remember that you and I were set to study tonight before you flaked."
+Ada: "I seem to remember that you and I were set to study tonight. That was, until you flaked."
 +:teardrop(Jesse);
 Jesse: "Yeah... as fun as that sounded, something else popped up that seemed more interesting."
++:bored(Jesse);
 Jesse: "At least, that's what I thought."
 Jesse: "I'm actually supposed to be on a <color=BLUE>blind date</> right now."
-Ada: "Being alone at a table is your idea of a date?"
++:question(Ada);
+Ada: "Alone at a table is your idea of a date?"
++:teardrop(Jesse);
 Jesse: "Yeah, well, I can't seem to find the guy I'm supposed to meet."
 Jesse: "He texted me when he entered the arcade. He said he'd come up to the cafeteria..."
 +:sad(Jesse);
@@ -38,34 +41,44 @@ Ada: "Or perhaps he is in the <color=ORANGE>tutorial</>?  I had somewhat of an a
 +:bored(Jesse);
 Jesse: "Or he stood me up."
 +:angry(Ada);
-Ada: "I refuse to contemplate the existance of one who would do that to you."
+Ada: "I refuse to contemplate the existence of one who would do that to you."
 +:smirk(Jesse);
 Jesse: "You refuse to think about a lot of silly things, Ada."
 Jesse: "But yeah, I don't think he did.  He keeps sending me text messages telling me that he's on his way."
+Jesse: "Apparently he's coming from work."
++:question(Ada);
+Ada: "What does he do?"
++:teardrop(Jesse);
+Jesse: "No idea."
 +:smirk(Jesse);
 Jesse: "Anyway, my original question still stands.  What are you doing here?  Is Conscience with you?"
 +:angry(Ada);
 Ada: "No, she is not!"
-Ada: "I actually came here to find <color=ORANGE>Carl-Arnold</>."
+Ada: "I actually only came to this dumb arcade at the behest of <color=ORANGE>Carl-Arnold</>."
 +:lightbulb(Jesse);
 Jesse: "Isn't that the guy who keeps badgering you in class?"
 Ada: "<cascade-letters>Indeed he is."
 Ada: "Apparently he figured out that everybody can see Conscience in the advanced VR in this arcade, and tricked me into showing her to him."
-Jesse: "Aren't you not supposed to be showing her off to too many people?"
+Jesse: "People can see her?  <scale=0.75 cascade>Oh I'd like to see that."
++:question(Jesse);
+Jesse: "But aren't you not supposed to be showing her off to too many people?"
+Jesse: "Last I heard your dad wasn't too happy that most of the school knows about her."
 +:bored(Ada);
-Ada: "Yes.  But she <scale=1.25 cascade-letters>insisted</> that we come here, as she is so wont to do."
-Ada: "And now Carl-Arnold has somehow trapped her in the VR and challenged me to a duel on the tenth floor in order to free her."
+Ada: "Yes.  That is true. <delay=500>  But she <scale=1.25 cascade-letters>insisted</> that we come here, as she is so wont to do."
+Ada: "And now <color=ORANGE>Carl-Arnold</> has somehow trapped her in the VR and refuses to let her go until I duel him or something."
 +:surprised(Jesse);
 Jesse: "Wow, that's pretty hardcore.  I didn't think he'd go <italic>that</> far."
-+:heart(Jesse);
-Jesse: "Maybe he likes you."
 +:bored(Ada);
-Ada: "<cascade-letters>......"
 Ada: "I need to get her back.  Can you help me?"
 +:exclaim(Jesse);
-Jesse: "I can't leave until I find my date!  I want to be here in case he comes."
+Jesse: "No way!  I can't leave until I find my date!  I want to be here in case he comes."
++:jump(Ada);
++:exclaim(Ada);
+Ada: "Jesse, this is serious!  Conscience has been abducted!"
++:teardrop(Jesse);
+Jesse: "I realize that, but..."
 +:heart(Jesse);
-Jesse: "I really want to meet him!  He seems like a nice guy."
+Jesse: "I really want to meet him!  He seems like a nice guy.  And I don't want to stand him up if he does come!"
 +:bored(Ada);
 Ada: "Fine.  But if you change your mind, I could use some assistance."
 +endConversation();

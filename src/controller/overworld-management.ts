@@ -99,6 +99,7 @@ import { Timer } from 'model/utility';
 import { createEmotionBubbleParticle } from 'model/particle';
 import { EmotionBubble } from 'db/particles';
 import { getUiInterface } from 'view/ui';
+import { playSoundName } from 'model/sound';
 
 export const initiateOverworld = (
   player: Player,
@@ -189,9 +190,11 @@ export const initiateOverworld = (
 };
 
 const shouldShowOverworldUi = () => {
+  const visibleSections = getUiInterface().appState.sections;
   return (
     getCurrentOverworld().visible &&
-    !getUiInterface().appState.sections.includes(AppSection.ArcadeCabinet)
+    !visibleSections.includes(AppSection.ArcadeCabinet) &&
+    !visibleSections.includes(AppSection.Debug)
   );
 };
 
@@ -402,6 +405,7 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
             );
           }
         }
+        playSoundName('dialog_start');
         await callTriggerScriptCaller(scriptCaller, {
           hideUi: true,
           disableKeys: true,

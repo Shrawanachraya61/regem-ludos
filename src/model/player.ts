@@ -140,3 +140,28 @@ export const playerAddExperience = (player: Player, amount: number) => {
 
   return charactersWhoLeveledUp;
 };
+
+export const playerAddToActiveParty = (
+  player: Player,
+  partyMemberName: string
+) => {
+  const chInStorage = player.partyStorage.find(
+    ch => ch.name.toLowerCase() === partyMemberName.toLowerCase()
+  );
+  if (chInStorage && !player.party.includes(chInStorage)) {
+    player.party.push(chInStorage);
+  }
+};
+
+export const playerRemoveFromActiveParty = (
+  player: Player,
+  partyMemberName: string
+) => {
+  const chInStorage = player.partyStorage.find(
+    ch => ch.name.toLowerCase() === partyMemberName.toLowerCase()
+  );
+  const ind = player.party.indexOf(chInStorage as any);
+  if (ind > -1) {
+    player.party.splice(ind, 1);
+  }
+};

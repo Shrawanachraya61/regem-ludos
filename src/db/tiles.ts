@@ -89,6 +89,47 @@ export const init = () => {
     isWall: false,
   };
 
+  exp.RED_DOOR_BCKL_CLOSED = {
+    baseSprite: 'walls_14',
+    animName: 'walls-anims_red_door_bck_close1',
+    isWall: true,
+  };
+  exp.RED_DOOR_BCKR_CLOSED = {
+    baseSprite: 'walls_14',
+    animName: 'walls-anims_red_door_bck_close2',
+    isWall: true,
+  };
+  exp.RED_DOOR_FWDL_CLOSED = {
+    baseSprite: 'walls_13',
+    animName: 'walls-anims_red_door_fwd_close1',
+    isWall: true,
+  };
+  exp.RED_DOOR_FWDR_CLOSED = {
+    baseSprite: 'walls_13',
+    animName: 'walls-anims_red_door_fwd_close2',
+    isWall: true,
+  };
+  exp.RED_DOOR_BCKL_OPEN = {
+    baseSprite: 'walls_14',
+    animName: 'walls-anims_red_door_bck_open1',
+    isWall: false,
+  };
+  exp.RED_DOOR_BCKR_OPEN = {
+    baseSprite: 'walls_14',
+    animName: 'walls-anims_red_door_bck_open2',
+    isWall: false,
+  };
+  exp.RED_DOOR_FWDL_OPEN = {
+    baseSprite: 'walls_13',
+    animName: 'walls-anims_red_door_fwd_open1',
+    isWall: false,
+  };
+  exp.RED_DOOR_FWDR_OPEN = {
+    baseSprite: 'walls_13',
+    animName: 'walls-anims_red_door_fwd_open2',
+    isWall: false,
+  };
+
   exp.ELEVATOR_BCK_CLOSED1 = {
     baseSprite: 'walls_7',
     animName: 'walls-anims_elevator_bck_close1',

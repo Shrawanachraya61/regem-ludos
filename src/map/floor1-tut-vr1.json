@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"floor1-tut-vr1.json"
-        }
-    },
  "height":32,
  "infinite":false,
  "layers":[
@@ -50,8 +42,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":180,
-                 "y":208
+                 "x":182,
+                 "y":374
                 }, 
                 {
                  "gid":194,
@@ -108,8 +100,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":188,
-                 "y":196
+                 "x":186,
+                 "y":198
                 }, 
                 {
                  "gid":198,
@@ -133,6 +125,30 @@
                  "width":48,
                  "x":160,
                  "y":128
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":72,
+                 "name":"MarkerJason2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":183.25,
+                 "y":261.25
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":73,
+                 "name":"MarkerJason3",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":182,
+                 "y":240
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -141,7 +157,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":72,
+ "nextobjectid":74,
  "orientation":"isometric",
  "properties":[
         {
@@ -150,7 +166,7 @@
          "value":"#BCB7C5"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.2",
  "tileheight":16,
  "tilesets":[
         {
@@ -224,6 +240,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":32
 }

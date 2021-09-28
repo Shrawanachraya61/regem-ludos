@@ -76,7 +76,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="19" name="MarkerPlayer" gid="194" x="311.928" y="142.043" width="32" height="32"/>
+  <object id="19" name="MarkerPlayer" gid="194" x="311" y="173" width="32" height="32"/>
   <object id="43" name="MarkerFromAtrium" gid="200" x="310.5" y="317.5" width="32" height="32"/>
   <object id="115" gid="337" x="253.5" y="254.5" width="32" height="32"/>
   <object id="118" gid="337" x="252" y="220" width="32" height="32"/>
@@ -107,10 +107,10 @@
   <object id="158" gid="337" x="254" y="286" width="32" height="32"/>
   <object id="159" name="MarkerPreventBowling" gid="194" x="269.457" y="109.696" width="32" height="32"/>
   <object id="160" name="#bowling-standalone-prevent-leave" x="286.5" y="320.5" width="33" height="29"/>
-  <object id="162" gid="346" x="18.5" y="123.5" width="32" height="32"/>
-  <object id="163" gid="346" x="18.5" y="171.5" width="32" height="32"/>
-  <object id="164" gid="346" x="18.5" y="219.5" width="32" height="32"/>
-  <object id="165" gid="346" x="18.5" y="267.5" width="32" height="32"/>
+  <object id="162" type="-10" gid="346" x="18.5" y="123.5" width="32" height="32"/>
+  <object id="163" type="-10" gid="346" x="18.5" y="171.5" width="32" height="32"/>
+  <object id="164" type="-10" gid="346" x="17.5" y="218.5" width="32" height="32"/>
+  <object id="165" type="-10" gid="346" x="17.5" y="266.5" width="32" height="32"/>
   <object id="166" gid="347" x="-4.5" y="100.5" width="32" height="32"/>
   <object id="167" gid="347" x="-4.5" y="148.5" width="32" height="32"/>
   <object id="168" gid="347" x="-5.5" y="195.5" width="32" height="32"/>

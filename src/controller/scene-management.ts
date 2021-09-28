@@ -61,6 +61,7 @@ export const updateScene = (scene: Scene): void => {
           );
         }
         const commandArgs: any[] = cmd?.args.map(arg => {
+          // console.log('MAP COMMAND ARGS', arg);
           if (typeof arg === 'string') {
             let match: any;
             while ((match = arg.match(/\[ARG\d\]/))) {
@@ -75,6 +76,7 @@ export const updateScene = (scene: Scene): void => {
             return arg;
           }
         });
+
         // console.log('next cmd', cmd.type, cmd.args, commandArgs);
         if (commandFunction(...commandArgs)) {
           break;
@@ -330,9 +332,9 @@ export const invokeTrigger = (
           dontTriggerOnce,
           type
         );
-        type !== 'step' &&
-          type !== 'step-first' &&
-          console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
+        // type !== 'step' &&
+        //   type !== 'step-first' &&
+        //   console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
         if (c) {
           return async () => {
             await callScript(scene, scriptCall.scriptName);
@@ -347,7 +349,7 @@ export const invokeTrigger = (
   return null;
 };
 
-export const callScript = async (
+export const callScript = ((window as any).callScript = async (
   scene: Scene,
   scriptName: string,
   ...args: any[]
@@ -382,7 +384,7 @@ export const callScript = async (
     }
     updateScene(scene);
   });
-};
+});
 
 export const createAndCallScript = (scene: Scene, src: string) => {
   return new Promise<void>(resolve => {

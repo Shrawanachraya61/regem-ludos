@@ -106,8 +106,9 @@ export const main = async (): Promise<void> => {
     loadRPGScript('example', scene),
     loadRPGScript('utils', scene),
     loadRPGScript('floor1', scene),
-    loadRPGScript('floor1-tut', scene),
+    loadRPGScript('floor1/floor1-tut', scene),
     loadRPGScript('floor2-throne-room', scene),
+    loadRPGScript('floor2/jesse-cafeteria', scene),
     loadRPGScript('intro', scene),
     loadRPGScript('bowling', scene),
   ]);
@@ -170,7 +171,7 @@ export const main = async (): Promise<void> => {
   // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
-  player.leader.hp = 0;
+  // player.leader.hp = 0;
 
   characterEquipItem(conscience, player.backpack[1]);
 

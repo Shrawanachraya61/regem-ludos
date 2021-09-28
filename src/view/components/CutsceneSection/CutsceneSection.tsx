@@ -140,7 +140,7 @@ const TextBoxWrapper = style(
       height = '50%';
       transition = 'height 0.1s, left 0.25s, transform 0.1s ease-in';
     } else if (props.align === 'center-low') {
-      height = '35%';
+      height = '40%';
       left = '25%';
       width = '50%';
     } else if (!props.visible) {
@@ -627,6 +627,7 @@ const CutsceneSection = () => {
   };
 
   const actors = getCurrentRoom()?.characters ?? [];
+  console.log('RENDER CUTSCENE', getUiInterface().appState.cutscene);
 
   return (
     <Root
@@ -733,7 +734,7 @@ const CutsceneSection = () => {
           align={textBoxAlign}
           isNarration={
             (!cutscene.speakerName && !isNoneSpeaker) ||
-            cutscene.speakerName?.toLowerCase() === 'narrator'
+            cutscene.actorName?.toLowerCase() === 'narrator'
           }
         >
           <div

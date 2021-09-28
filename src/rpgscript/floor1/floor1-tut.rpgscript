@@ -16,22 +16,26 @@ action,this
 Atrium Employee Jason: "<cascade>The <color=ORANGE cascade>Regem Ludos Arcade<cascade> features a brand new, state-of-the-art VR System."
 Atrium Employee Jason: "<cascade>With this system, a player can be transported into the VR Realm; a place where <scale=1.25>anything</> is possible."
 Atrium Employee Jason: "<cascade>All a player needs is a <color=BLUE>Haptic Bracer</>."
++:jump(Atrium Employee Jason);
 Atrium Employee Jason: "This bracer is the key to all the incredible features of this arcade, so be sure not to lose it!"
 +setConversationSpeaker(none);
-+panCameraRelativeToPlayer(90, 50);
++panCameraRelativeToPlayer(90, 35);
 +setFacing(Atrium Employee Jason, 'rightdown');
 +setFacing(Ada, 'rightdown');
 Atrium Employee Jason: "This platform right here a VR Portal."
 Atrium Employee Jason: "<cascade>When you stand on it and raise your <color=BLUE>Haptic Bracer<cascade> up above your head, and the system will initiate VR mode."
-Atrium Employee Jason: "<cascade>This is made possible by our advanced VR technology.  You'll feel like you've been <scale=1.25>physically<cascade> transported into VR!"
+Atrium Employee Jason: "<cascade>This is made possible by our advanced VR technology.  You'll feel like you've been <scale=1.33>physically<cascade> transported into VR!"
 +setConversationSpeaker(none);
 +panCameraBackToPlayer();
-Conscience: "Physically being in VR, huh?  Sounds pretty awesome!"
-Ada: "I am not even sure what that means."
-Ada: "I suppose I will believe it when I see it."
++:question(Ada);
+Ada: "Physically being in VR?  What is that supposed to mean?"
++:happy(Atrium Employee Jason);
+Atrium Employee Jason: "You'll just have to see it for yourself!"
 Atrium Employee Jason: "While you are in VR, the arcade will appear quite a bit different."
++:lightbulb(Atrium Employee Jason);
 Atrium Employee Jason: "It might not even look like the arcade at all."
-Atrium Employee Jason: "We are able to construct fantastic landscapes straight out of your imagination."
++:jump(Atrium Employee Jason);
+Atrium Employee Jason: "We are able to construct fantastic landscapes straight out of your imagination!"
 +setConversationSpeaker(none);
 +waitMS(250);
 +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -40,11 +44,11 @@ Atrium Employee Jason: "We will start with something simple for now though."
 Atrium Employee Jason: "<cascade>I will take you to our tutorial area: the <color=BLUE>Skyway</>."
 Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge, meet me on the other side."
 +setConversationSpeaker(none);
-+panCameraRelativeToPlayer(90, 50);
++panCameraRelativeToPlayer(90, 35);
 +setFacing(Ada, 'rightdown');
 +walkToMarker(Atrium Employee Jason, 'MarkerVRLanding');
 +setFacing(Atrium Employee Jason, 'down');
-+waitMS(1500);
++waitMS(750);
 +playSound('spawn_enemy');
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, Atrium Employee Jason, 'normal');
 +waitMS(400);
@@ -52,45 +56,42 @@ Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge
 +waitMS(500);
 +panCameraBackToPlayer();
 +waitMS(500);
++:floor1-tut-entrance-begin-tut2();
+
+@floor1-tut-entrance-begin-tut2
 +callScript('utils-start-Conscience-dialogue');
 Conscience: "Whoah, he's gone!"
 Ada: "Where did he go?"
 Conscience: "He went into VR! That's what he said, isn't it?"
 Ada: "Interesting.  How do you suppose it works?  Did he get transported somewhere without us seeing?"
-+setConversationSpeaker(none);
-+waitMS(250);
-+callScript('utils-character-shrug', 'Conscience');
-+waitMS(250);
-Conscience: "I dunno... But I wanna go check it out!"
-+waitMS(500);
 +jump(Conscience);
-+waitMS(500);
+Conscience: "I'm not sure, but I <shake>TOTALLY<cascade> wanna go check it out!"
++:teardrop(Ada);
 Ada: "Conscience, wait a moment."
 Ada: "If that portal takes us into a VR like this Instructor Jason claims, what exactly does that mean for you?"
 Conscience: "I dunno."
 Ada: "I mean, if it's a real, true VR, then..." 
++:question(Ada);
 Ada: "Is he going to be able to see you in there?"
-Conscience: "Not sure, honestly.  Would be pretty cool though.  We should find out!"
+Conscience: "Not sure, honestly.  That would be interesting though.  We should find out!"
++:bored(Ada);
 Ada: "You do not seem very concerned about this."
++:lightbulb(Ada);
 Ada: "What if they think you are some kind of virus and try to kick you out?"
-Conscience: "Nah, they wouldn't do that!"
-+setConversationSpeaker(none);
-+waitMS(750);
+Conscience: "Nah, they wouldn't do that..."
++:question(Conscience);
 Conscience: "Would they?"
-+setConversationSpeaker(none);
-+waitMS(750);
++:teardrop(Ada);
 +callScript('utils-character-shake-z', 'Ada');
 +waitMS(500);
 Ada: "Just promise me that you will refrain from wandering off somewhere."
-Ada: "Stick by me, okay."
+Ada: "Stick by me, okay.  Father said we are not supposed to be cavorting around too much."
 Conscience: "I wouldn't DREAM of leaving your side!"
 Ada: "And you will let me know if there is something WRONG, right?"
++:happy(Conscience);
 Conscience: "Immediately!"
-+setConversationSpeaker(none);
-+waitMS(250);
-+setAnimationAndWait('Ada', 'ada_shake_head_down');
-+lookAtEachOther('Ada','Conscience');
-+waitMS(750);
++none();
++:teardrop(Ada);
 Ada: "To the portal then, I suppose."
 +callScript('utils-stop-Conscience-dialogue');
 +endConversation();
@@ -144,6 +145,7 @@ step-first,this
 }
 
 @floor1-tut-vr1-emerge-from-portal
++spawnPartyMembersInFormation();
 +setAnimationState('Ada', 'idle');
 +spawnCharacterAtMarker('Floor1AtriumEmployeeJason', 'MarkerJason0');
 +setConversation2('Ada', 'Conscience');
@@ -153,33 +155,46 @@ Conscience: "Whoah!  That was kind of intense."
 Conscience: "Where are we?  How did I get over here?"
 +setConversationSpeaker(none);
 +waitMS(750);
++panCameraToFitCharacters(500, false, Ada, Conscience, Atrium Employee Jason);
 Atrium Employee Jason: "Oh.  There are two of you?"
-+walkToMarker(Atrium Employee Jason, MarkerJason2);
-+panCameraRelativeToPlayer(50, -25);
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
++none();
++walkToMarker(Atrium Employee Jason, MarkerJason2);
++panCameraToFitCharacters(500, false, Ada, Conscience, Atrium Employee Jason);
 Atrium Employee Jason: "I apologize, I must have missed you."
 +setConversationSpeaker('none');
 +lookAtEachOther('Ada', 'Conscience');
-+waitMS(1000);
++waitMS(750);
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
-+waitMS(1000);
++waitMS(750);
 +lookAtEachOther('Ada', 'Conscience');
-+waitMS(1000);
-Conscience: "No worries!  I kinda snuck in here anyway."
++waitMS(750);
++lookAtCharacter('Ada', 'Atrium Employee Jason');
++lookAtCharacter('Conscience', 'Atrium Employee Jason');
++waitMS(200);
+Conscience: "Uh, I kinda snuck in here, so don't worry about it."
++:question(Atrium Employee Jason);
 Atrium Employee Jason: "You two look really similar.  Are you twins or something?"
 Ada: "<cascade-letters>......"
++:happy(Conscience);
 Conscience: "Yeah, let's go with that."
 +setConversationSpeaker('none');
 +waitMS(1000);
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
-+waitMS(1000);
-Atrium Employee Jason: "<cascade>Well, anyway, I am happy to accommodate the both of you.  Welcome to our tutorial area: the <color=BLUE>Skyway</>!"
++:happy(Atrium Employee Jason);
+Atrium Employee Jason: "<cascade>Well, I am happy to accommodate the both of you.  Welcome to our tutorial area: the <color=BLUE>Skyway</>!"
 Atrium Employee Jason: "We hope that you enjoy your time here; it is a truly magical place."
 Atrium Employee Jason: "If you don't mind, please follow me further to the tutorial area and I can show you a bit about how this place works."
 +setConversationSpeaker('none');
++walkToMarker('Atrium Employee Jason', 'MarkerJason3');
++lookAtCharacter(Atrium Employee Jason, Ada);
++:lightbulb(Atrium Employee Jason);
+Atrium Employee Jason: "<cascade-letters>And, uh....<cascade delay=500> Try not to fall off the platform."
+Atrium Employee Jason: "Many of our players have reported that it is not a very pleasant experience."
++none();
 +walkToMarker('Atrium Employee Jason', 'MarkerJason1');
 +despawnCharacter('Atrium Employee Jason');
 +panCameraBackToPlayer();
@@ -201,9 +216,7 @@ Conscience: "This is pretty cool though, they've got quite an advanced interface
 Conscience: "I've always liked doing that in these advance VR simulations!"
 Ada: "<cascade>Please focus on the task at hand.  The faster we get through this 'tutorial', the faster we can see <color=ORANGE>Carl-Arnold<cascade> and get out of here."
 Conscience: "Don't be a stick in the mud. This is supposed to be FUN, not stressful."
-+waitMS(500);
-+setConversationSpeaker(none);
-+waitMS(750);
++:teardrop(Ada);
 Ada: "Can we just go?"
 +setConversationSpeaker('none');
 +despawnPartyMembers();
@@ -239,7 +252,6 @@ Ada: "I should probably not leave while the tutorial is active."
 +setConversation('Ada');
 Atrium Employee Jason: "I will now begin the tutorial for the Regem Ludos Battle System."
 +setConversationSpeaker(none);
-+waitMS(1000);
 +callScript('utils-character-look-around', 'Atrium Employee Jason');
 Atrium Employee Jason: "While you are in VR, you will come across various monsters which will attack you."
 Atrium Employee Jason: "When this happens, you must battle and defeat them in order to proceed."
@@ -247,17 +259,21 @@ Atrium Employee Jason: "The first thing you require in order to engage in battle
 Atrium Employee Jason: "I will provide you your first ones for now, but you will certainly find better ones later on."
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
-+waitMS(100);
-+acquireItem(TrainingSword);
++waitMS(400);
++playSound(terminal_beep);
++waitMS(400);
++:utils-get-treasure-cutscene(TrainingSword);
 +equipWeaponOrArmor(TrainingSword, Ada);
 +setConversationSpeaker(none);
-+waitMS(100);
-+acquireItem(TrainingBow);
++waitMS(400);
++playSound(terminal_beep);
++waitMS(400);
++:utils-get-treasure-cutscene(TrainingBow);
 +equipWeaponOrArmor(TrainingBow, Conscience);
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'down');
 +waitMS(500);
-Atrium Employee Jason: "I am giving you a sword and a bow.  They will be automatically equipped."
+Atrium Employee Jason: "I've given you a sword and a bow.  They will be automatically equipped."
 Atrium Employee Jason: "Any time you gain a piece of equipment, you may go to the Equipment menu to equip it."
 +setConversationSpeaker(none);
 +lookAtEachOther(Conscience, Ada);
@@ -289,17 +305,18 @@ Atrium Employee Jason: "Alright, can one of you please step forward."
 +endConversation(100);
 +setConversation2('Ada', 'Conscience');
 Conscience: "You go!  I want to watch."
++:question(Ada);
 Ada: "You want me to go first?"
 Ada: "What are you, nervous?"
 Ada: "What happened to all that excitement you had just a second ago?"
-+waitMS(500);
-+setConversationSpeaker(none);
-+callScript('utils-character-giggle', 'Conscience');
-+waitMS(750);
++:happy(Conscience);
 Conscience: "Oooh, I just want to see if you're cut out for this sort of thing."
++:jump(Conscience);
 Conscience: "Robots can be quite dangerous after all."
 Conscience: "I need to be sure you can handle yourself in a scrap."
++:bored(Ada);
 Ada: "Whatever.  Fine."
++removePartyMemberFromActiveParty(Conscience);
 +setConversationSpeaker(none);
 +waitMS(500);
 +walkToOffset(Ada, 0, -8);
@@ -364,6 +381,7 @@ Atrium Employee Jason: "This robot looks similar to the last one, but it has a v
 +showUISection(Modal, TUTORIAL_STAGGER);
 
 @floor1-tut-vr2-battle1_5-on-after-end
++addPartyMemberToActiveParty(Conscience);
 +setAnimationState(Ada, idle);
 +lookAtEachOther(Ada, Atrium Employee Jason);
 +setConversation('Ada');
