@@ -648,6 +648,14 @@ Animation,effect_emotions_grumpy,true
 AnimSprite,effect_emotions_10,100
 Animation,effect_emotions_blush,true
 AnimSprite,effect_emotions_11,100
+Animation,effect_emotions_angry,true
+AnimSprite,effect_emotions_12,100
+Animation,effect_emotions_wink,true
+AnimSprite,effect_emotions_13,100
+Animation,effect_emotions_flat,true
+AnimSprite,effect_emotions_14,100
+Animation,effect_emotions_yawn,true
+AnimSprite,effect_emotions_15,100
 Picture,effect_fireball_explosion,effect_fireball_explosion.png,100,100
 Animation,effect_fireball_explosion_anim,false
 AnimSprite,effect_fireball_explosion_0,40

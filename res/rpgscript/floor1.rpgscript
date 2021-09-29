@@ -272,10 +272,9 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 #floor1-atrium-employee-jason
   action,?is(quest_tutorial_active):floor1-atrium-employee-jason-tutorial-active
   // haven't spoken to front desk yet
-  action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
+  // action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
   // don't have Haptic Bracer yet
   action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once()):floor1-atrium-employee-jason-haptic-bracer
-  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete)):floor1-atrium-employee-jason-haptic-bracer-ask
   action,floor1-atrium-employee-jason-default
 @floor1-atrium-employee-jason-haptic-bracer
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -291,35 +290,13 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +walkToMarker(Atrium Employee Jason, MarkerJasonA);
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
   Atrium Employee Jason: "Here you are!"
-  +acquireItem('HapticBracer');
-  Atrium Employee Jason: "Would you like me to run you through how to use it?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
-  +?eq(lastChoiceIndex, 0):{
-    Ada: "Sure."
-    +callScript('floor1-atrium-employee-jason-start-tutorial');
-  }
-  +?eq(lastChoiceIndex, 1):{
-    Ada: "Not right now."
-    Atrium Employee Jason: "No worries.  Come back when you're ready."
-  }
-  +endConversation();
-@floor1-atrium-employee-jason-haptic-bracer-ask
-  +lookAtEachOther('Ada', 'Atrium Employee Jason');
-  +setConversation('Ada');
-  Atrium Employee Jason: "Would you like me to run you through how to use your Haptic Bracer?"
-  +awaitChoice('Yes. (Enters Tutorial)', 'No.');
-  +?eq(lastChoiceIndex, 0):{
-    Ada: "Sure"
-    +callScript('floor1-atrium-employee-jason-start-tutorial');
-  }
-  +?eq(lastChoiceIndex, 1):{
-    Ada: "Not right now."
-    Atrium Employee Jason: "No worries.  Come back when you're ready."
-  }
-  +endConversation();
+  +:utils-get-treasure-cutscene('HapticBracer');
+  Atrium Employee Jason: "Let us start the tutorial, shall we?"
+  +callScript('floor1-atrium-employee-jason-start-tutorial');
 @floor1-atrium-employee-jason-start-tutorial
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
   +setStorage('quest_tutorial_active', true);
-  Atrium Employee Jason: "Excellent!  Follow me please."
+  Atrium Employee Jason: "Follow me please."
   +setConversationSpeaker('none');
   +walkToMarker(Atrium Employee Jason, MarkerDoorTut);
   +setFacing(Atrium Employee Jason, 'rightup');
@@ -333,7 +310,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   //pass control to the script in the next room
   +callScript('floor1-tut-entrance-begin-tut');
 @floor1-atrium-employee-jason-quest-not-started
-  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +lookAtEachOther('Ada', 'Atrium Employee Jason');
   +setConversation('Ada');
   Atrium Employee Jason: "Hello!  How may I help you today?"
   Ada: "Hello.  What is that room behind you?"
