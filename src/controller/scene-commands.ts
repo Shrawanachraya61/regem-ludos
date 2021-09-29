@@ -791,7 +791,24 @@ export const offsetCharacter = (
   }
   const [cX, cY, cZ] = characterGetPos(ch);
 
-  characterSetPos(ch, [cX + x, cY + y, cZ + (z ?? 0)]);
+  x = parseInt(x as any);
+  y = parseInt(y as any);
+  z = parseInt((z ?? 0) as any);
+
+  if (isNaN(x)) {
+    console.error('Could not offset character, the offsetX is NaN', x, y, z);
+    return;
+  }
+  if (isNaN(y)) {
+    console.error('Could not offset character, the offsetX is NaN', x, y, z);
+    return;
+  }
+  if (isNaN((z ?? 0))) {
+    console.error('Could not offset character, the offsetZ is NaN', x, y, z);
+    return;
+  }
+
+  characterSetPos(ch, [cX + x, cY + y, cZ + z]);
 };
 
 /**
@@ -1947,7 +1964,7 @@ export const enterCombat = (encounterName: string) => {
       leaderFacing,
       encounter
     ),
-    true
+    false
   );
 };
 

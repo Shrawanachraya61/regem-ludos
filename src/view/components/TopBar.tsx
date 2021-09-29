@@ -58,6 +58,7 @@ interface ITopBarProps {
   onMenuClose?: () => void;
   onMenuClick?: () => void;
   buttons: (TopBarButtons | undefined)[];
+  disabled?: boolean;
 }
 
 const TopBar = (props: ITopBarProps) => {
@@ -102,12 +103,18 @@ const TopBar = (props: ITopBarProps) => {
     uiInterface?.render();
   };
 
+  const buttonStyle: Record<string, string> = {};
+  if (!props.disabled) {
+    buttonStyle.pointerEvents = 'all';
+  }
+
   return (
     <>
       <TopBarWrapper>
         {props.buttons.includes(TopBarButtons.MENU) ? (
           <Button
-            style={{ pointerEvents: 'all' }}
+            disabled={props.disabled}
+            style={buttonStyle}
             type={ButtonType.PRIMARY}
             onClick={handleMenuClick}
           >
@@ -119,7 +126,8 @@ const TopBar = (props: ITopBarProps) => {
         ) : null}
         {props.buttons.includes(TopBarButtons.BATTLE_MENU) ? (
           <Button
-            style={{ pointerEvents: 'all' }}
+            disabled={props.disabled}
+            style={buttonStyle}
             type={ButtonType.PRIMARY}
             onClick={props.onMenuClick}
           >
@@ -131,7 +139,8 @@ const TopBar = (props: ITopBarProps) => {
         ) : null}
         {props.buttons.includes(TopBarButtons.SETTINGS) ? (
           <Button
-            style={{ pointerEvents: 'all' }}
+            disabled={props.disabled}
+            style={buttonStyle}
             type={ButtonType.PRIMARY}
             onClick={handleSettingsClick}
           >
@@ -143,7 +152,8 @@ const TopBar = (props: ITopBarProps) => {
         ) : null}
         {props.buttons.includes(TopBarButtons.DEBUG) ? (
           <Button
-            style={{ pointerEvents: 'all' }}
+            disabled={props.disabled}
+            style={buttonStyle}
             type={ButtonType.SECONDARY}
             onClick={handleToggleDebug}
           >
@@ -152,7 +162,8 @@ const TopBar = (props: ITopBarProps) => {
         ) : null}
         {props.buttons.includes(TopBarButtons.ON_SCREEN_CONTROLS) ? (
           <Button
-            style={{ pointerEvents: 'all' }}
+            disabled={props.disabled}
+            style={buttonStyle}
             type={ButtonType.SECONDARY}
             onClick={handleToggleOnScreenControls}
           >

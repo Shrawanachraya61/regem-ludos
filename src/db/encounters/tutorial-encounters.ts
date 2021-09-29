@@ -146,12 +146,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
         ai: BATTLE_AI_ATTACK,
       },
       {
-        chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
-        position: BattlePosition.FRONT,
+        chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
+        position: BattlePosition.MIDDLE,
         ai: BATTLE_AI_ATTACK,
       },
       {
-        chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
+        chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.MIDDLE,
         ai: BATTLE_AI_ATTACK,
       },
@@ -175,14 +175,11 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON1 = {
     roomName: 'battleTut1',
-    baseExperience: 5,
+    baseExperience: 2,
     baseTokens: 1,
-    getDrops: () => {
-      return [getItem('FeeblePotion'), getItem('RezGem')];
-    },
     enemies: [
       {
-        chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
+        chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
         ai: BATTLE_AI_ATTACK,
       },
@@ -198,9 +195,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
     roomName: 'battleTut1',
     baseExperience: 2,
     baseTokens: 1,
+    getDrops: () => {
+      return [getItem('FeeblePotion'), getItem('RezGem')];
+    },
     enemies: [
       {
-        chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
+        chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
         ai: BATTLE_AI_ATTACK,
       },
@@ -214,8 +214,11 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON3 = {
     roomName: 'battleTut1',
-    baseExperience: 2,
+    baseExperience: 5,
     baseTokens: 1,
+    getDrops: () => {
+      return [getItem('FeeblePotion')];
+    },
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
@@ -237,8 +240,11 @@ export const init = (exp: Record<string, BattleTemplate>) => {
 
   exp.ENCOUNTER_TUT_DUNGEON4 = {
     roomName: 'battleTut1',
-    baseExperience: 2,
+    baseExperience: 5,
     baseTokens: 1,
+    getDrops: () => {
+      return [getItem('RezGem')];
+    },
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),

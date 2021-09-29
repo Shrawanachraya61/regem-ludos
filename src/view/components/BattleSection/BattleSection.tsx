@@ -147,6 +147,9 @@ const BattleSection = (props: IBattleSectionProps) => {
 
   const isPaused = getIsPaused();
   const isEffectActive = uiState.effect.active;
+  const isCutsceneVisible = getUiInterface().appState.sections.includes(
+    AppSection.Cutscene
+  );
 
   const [
     currentlyActingAllegiance,
@@ -167,7 +170,7 @@ const BattleSection = (props: IBattleSectionProps) => {
 
   useKeyboardEventListener(
     ev => {
-      if (isEffectActive) {
+      if (isEffectActive || isCutsceneVisible) {
         return;
       }
 
@@ -330,6 +333,7 @@ const BattleSection = (props: IBattleSectionProps) => {
       {!isEffectActive ? (
         <>
           <TopBar
+            disabled={isCutsceneVisible}
             buttons={[
               TopBarButtons.BATTLE_MENU,
               TopBarButtons.SETTINGS,

@@ -1,6 +1,6 @@
 /* @jsx h */
 import { h, Fragment } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { colors, keyframes, style } from 'view/style';
 import { getCurrentBattle, getCurrentPlayer } from 'model/generics';
 import { BattleEvent, battleGetRewards, battleInvokeEvent } from 'model/battle';
@@ -27,6 +27,8 @@ const Root = style('div', () => {
     height: '100%',
     fontSize: '4rem',
     color: colors.WHITE,
+    transition: 'transform 200ms',
+    transform: 'scale(1)',
   };
 });
 
@@ -97,6 +99,7 @@ const LevelUpText = style('div', (props: { offset?: boolean }) => {
 });
 
 const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
+  const [onwardClicked, setOnwardClicked] = useState(false);
   const player = getCurrentPlayer();
   const party = player.party;
 
@@ -119,6 +122,7 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
 
   const handleContinueClick = () => {
     const battle = getCurrentBattle();
+    setOnwardClicked(true);
     if (battle) {
       battleInvokeEvent(battle, BattleEvent.onCompletion, battle);
     }
@@ -175,7 +179,7 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
       ind: 1,
       working: true,
     });
-    await await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 300));
     party.forEach(async ch => {
       const s = state[ch.name];
       s.pct = characterGetExperiencePct(ch);
@@ -187,8 +191,17 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
     });
   };
 
+  useEffect(() => {
+    if (onwardClicked) {
+      const elem = document.getElementById('battle-conclusion-root');
+      if (elem) {
+        elem.style.transform = 'scale(0)';
+      }
+    }
+  }, [onwardClicked]);
+
   return (
-    <Root>
+    <Root id="battle-conclusion-root">
       {props.isVictory ? (
         <>
           <span>VICTORY!</span>
@@ -284,7 +297,7 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
         ]}
         onItemClickSound="menu_select"
         onItemClick={() => {
-          if (state.working) {
+          if (state.working || onwardClicked) {
             return;
           }
           if (state.ind === 1) {

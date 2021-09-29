@@ -60,8 +60,8 @@ export const updateScene = (scene: Scene): void => {
             `Script runtime error.  No command exists with name '${cmd.type}'`
           );
         }
+        // console.log('MAP COMMAND ARGS', cmd);
         const commandArgs: any[] = cmd?.args.map(arg => {
-          // console.log('MAP COMMAND ARGS', arg);
           if (typeof arg === 'string') {
             let match: any;
             while ((match = arg.match(/\[ARG\d\]/))) {
@@ -71,7 +71,8 @@ export const updateScene = (scene: Scene): void => {
                 scene.storage[argKey] +
                 arg.slice(match.index + 6);
             }
-            return arg;
+            // HACK replace -- with + so negative negative numbers parse as positive
+            return arg.replace(/--/g, '+');
           } else {
             return arg;
           }

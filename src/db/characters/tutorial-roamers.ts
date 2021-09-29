@@ -29,7 +29,7 @@ export const init = () => {
   };
 
   exp.TutRobotDummy0 = {
-    name: 'TutRobotDummy1',
+    name: 'TutRobotDummy0',
     spriteBase: 'tut_robot_roamer',
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,

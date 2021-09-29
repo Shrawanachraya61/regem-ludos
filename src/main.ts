@@ -100,7 +100,6 @@ export const main = async (): Promise<void> => {
   initScene();
   const scene = getCurrentScene();
   await Promise.all([
-    loadRPGScript('quest', scene),
     loadRPGScript('test2', scene),
     loadRPGScript('test', scene),
     loadRPGScript('example', scene),

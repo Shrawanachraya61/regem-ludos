@@ -173,8 +173,6 @@ const OverworldSection = () => {
     }
   };
 
-  console.log('RENDER OVERWORLD SECTION', isDebugModeEnabled());
-
   return (
     <>
       <TopBarWrapper>

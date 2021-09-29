@@ -204,18 +204,8 @@ step,this
 +waitMS(33);
 +offsetCharacter([ARG0], 0, 0, -2);
 +waitMS(33);
-+offsetCharacter([ARG0], 0, 0, 2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, -2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, 2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, -2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, 2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, -2);
-+waitMS(500);
++offsetCharacter([ARG0], 0, 0, 0);
++waitMS(300);
 @shakeZ
 +callScript(utils-character-shake-z,[ARG0]);
 
@@ -233,14 +223,8 @@ step,this
 +waitMS(33);
 +offsetCharacter([ARG0], -2, 0, 0);
 +waitMS(33);
-+offsetCharacter([ARG0], 2, 0, 0);
-+waitMS(33);
-+offsetCharacter([ARG0], -2, 0, 0);
-+waitMS(33);
-+offsetCharacter([ARG0], -2, 0, 0);
-+waitMS(33);
-+offsetCharacter([ARG0], -2, 0, 0);
-+waitMS(500);
++offsetCharacter([ARG0], 0, 0, 0);
++waitMS(300);
 @shakeX
 +callScript(utils-character-shake-x,[ARG0]);
 
@@ -272,6 +256,13 @@ step,this
 +setConversation('Ada');
 +acquireItem([ARG0]);
 +endConversation();
+
+// ARG0 = item template name
+@utils-get-treasure-cutscene
++spawnParticleAtCharacter(EFFECT_TEMPLATE_TREASURE, 'Ada', 'rise');
++playSound('get_item');
++setConversation('Ada');
++acquireItem([ARG0]);
 
 // ARG0 = marker where the top side door is
 // ARG1 = door sprite, eg RED_DOOR_BCK

@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"floor1-tut-vr3.json"
-        }
-    },
  "height":32,
  "infinite":false,
  "layers":[
@@ -414,7 +406,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON4"
+                         "value":"ENCOUNTER_TUT_DUNGEON2"
                         }, 
                         {
                          "name":"overworldAi",
@@ -437,7 +429,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON4"
+                         "value":"ENCOUNTER_TUT_DUNGEON1"
                         }, 
                         {
                          "name":"overworldAi",
@@ -460,7 +452,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON4"
+                         "value":"ENCOUNTER_TUT_DUNGEON2"
                         }, 
                         {
                          "name":"overworldAi",
@@ -483,7 +475,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON4"
+                         "value":"ENCOUNTER_TUT_DUNGEON1"
                         }, 
                         {
                          "name":"overworldAi",
@@ -590,6 +582,18 @@
                  "width":32,
                  "x":236,
                  "y":28
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":176,
+                 "name":"MarkerSpotSavePoint",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":122.5,
+                 "y":451.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -598,7 +602,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":176,
+ "nextobjectid":177,
  "orientation":"isometric",
  "properties":[
         {
@@ -607,7 +611,7 @@
          "value":"#BCB7C5"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.2",
  "tileheight":16,
  "tilesets":[
         {
@@ -681,6 +685,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":32
 }

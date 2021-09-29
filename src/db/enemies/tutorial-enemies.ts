@@ -34,6 +34,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
     RobotSwingNormalNNStaggerable: {
       name: 'RobotSwingNormalNNStaggerable',
+      label: 'Robot',
       description: 'AI',
       cooldown: 10000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
@@ -56,6 +57,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     },
     RobotSwingNormalNN: {
       name: 'RobotSwingNormalNN',
+      label: 'Robot',
       description: 'AI',
       cooldown: 10000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
@@ -78,6 +80,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     },
     RobotSwingSpeedyN: {
       name: 'RobotSwingSpeedyN',
+      label: 'Robot',
       description: 'AI',
       cooldown: 4000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,

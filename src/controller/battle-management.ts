@@ -153,6 +153,12 @@ export const transitionToBattle = async (
     battle.isPaused = false;
     battle.isStarted = true;
     battleUnpauseTimers(battle);
+    battleSubscribeEvent(battle, BattleEvent.onCompletion, () => {
+      stopCurrentMusic(1000);
+      if (onCompletion) {
+        onCompletion();
+      }
+    });
     return;
   }
 
@@ -396,18 +402,18 @@ export const callScriptDuringBattle = async (scriptName: string) => {
 
 export const keyToAllyIndex = (key: string): number | undefined => {
   const keys = {
-    d: 0,
-    c: 1,
+    x: 0,
+    z: 1,
     s: 2,
-    x: 3,
-    a: 4,
-    z: 5,
+    a: 3,
+    w: 4,
+    q: 5,
   };
   return keys[key.toLowerCase()];
 };
 
 export const allyIndexToKey = (ind: number): string | undefined => {
-  const keys = ['d', 'c', 's', 'x', 'a', 'z'];
+  const keys = ['x', 'z', 's', 'a', 'w', 'q'];
   return keys[ind]?.toUpperCase();
 };
 
@@ -424,7 +430,7 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
     return;
   }
 
-  const isBattleKey = /^[azsxdcAZSXDC]$/.test(ev.key);
+  const isBattleKey = /^[xzsawqXZSAWQ]$/.test(ev.key);
   if (!isPaused && isBattleKey) {
     const key = ev.key.toLowerCase();
 
@@ -449,18 +455,18 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
-    case 'q':
-    case 'Q': {
-      const bCh = battle.alliesStorage[0];
-      const particle = createParticleAtCharacter(
-        {
-          ...EFFECT_TEMPLATE_DEAD32,
-        },
-        bCh.ch
-      );
-      roomAddParticle(battle.room, particle);
-      break;
-    }
+    // case 'q':
+    // case 'Q': {
+    //   const bCh = battle.alliesStorage[0];
+    //   const particle = createParticleAtCharacter(
+    //     {
+    //       ...EFFECT_TEMPLATE_DEAD32,
+    //     },
+    //     bCh.ch
+    //   );
+    //   roomAddParticle(battle.room, particle);
+    //   break;
+    // }
     case 'ArrowLeft': {
       if (!isPaused) {
         if (battleCycleMeleeTarget(battle)) {

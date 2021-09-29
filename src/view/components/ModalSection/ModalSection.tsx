@@ -8,7 +8,12 @@ import { colors, style } from 'view/style';
 import { getUiInterface } from 'view/ui';
 import { playSound } from 'controller/scene-commands';
 import { timeoutPromise } from 'utils';
-import { getCancelKeyLabel } from 'controller/events';
+import {
+  getBattleActionKey,
+  getBattleActionLabel,
+  getCancelKeyLabel,
+  getPauseKeyLabel,
+} from 'controller/events';
 import { getCurrentPlayer } from 'model/generics';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
@@ -48,9 +53,10 @@ const TutorialAttackModal = (props: ICustomModalProps) => {
     >
       <p>Welcome to the Regem Ludos Battle System!</p>
       <p>
-        To attack an enemy, wait for the action bar to fill up, then click the
-        character portrait or press the action button corresponding to that
-        character.
+        Wait for the action bar to fill up, then initiate an attack by tapping
+        the character portrait or button <b>{getBattleActionLabel(0)}</b>.
+        Characters may have multiple attacks, so keep tapping until they are all
+        used up!
       </p>
       <CenterAligned>
         <img
@@ -71,7 +77,7 @@ const TutorialPausing = (props: ICustomModalProps) => {
     >
       <p>
         At any time you can pause the game via the button in the top left or by
-        pressing <b>Spacebar.</b>
+        pressing <b>{getPauseKeyLabel()}.</b>
       </p>
       <p>
         When the game is paused, you can see information about the currently
@@ -180,12 +186,12 @@ const TutorialMagic = (props: ICustomModalProps) => {
         To use a <b>Magic</b> action, however, a character must prepare the
         action first by entering into a CASTING state. During this state, a
         character cannot act until the CASTING is complete, or that character is
-        interrupted. When a character is interrupted, the spell is stopped the
+        interrupted. When a character is interrupted, the spell is stopped and the
         character's action timer is reset.
       </p>
       <p>
         While a character is CASTING, they can be interrupted by taking damage
-        from a character with a <b> Swing </b> action. A <b>Ranged</b> action
+        from a character with a <b> Swing </b> action. However, a <b>Ranged</b> action
         does not interrupt a cast unless it otherwise states on the action
         description.
       </p>

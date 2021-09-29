@@ -122,3 +122,27 @@ export const isAuxKey = (key: string) => {
 export const getPauseKeyLabel = () => '(Space)';
 export const isPauseKey = (key: string) => [' '].includes(key);
 export const getAuxKeyLabel = () => '(C)';
+
+export const getBattleActionKey = (ind: number) => {
+  switch (ind) {
+    case 0: return 'KeyX';
+    case 1: return 'KeyZ';
+    case 2: return 'KeyS';
+    case 3: return 'KeyA';
+    case 4: return 'KeyW';
+    case 5: return 'keyQ';
+  }
+  return '';
+}
+
+export const getBattleActionLabel = (ind: number) => {
+  switch (ind) {
+    case 0: return '(X)';
+    case 1: return '(Z)';
+    case 2: return '(S)';
+    case 3: return '(A)';
+    case 4: return '(W)';
+    case 5: return '(Q)';
+  }
+  return '';
+}

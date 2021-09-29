@@ -48,10 +48,8 @@ export const useInputEventStack = (
   captures?: any[]
 ) => {
   useEffect(() => {
-    console.log('Add keyboard event');
     inputEventStack.push(cb);
     return () => {
-      console.log('Remove keyboard event');
       const ind = inputEventStack.indexOf(cb);
       if (ind > -1) {
         inputEventStack.splice(ind, 1);

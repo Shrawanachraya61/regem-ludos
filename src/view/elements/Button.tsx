@@ -98,6 +98,7 @@ const ButtonStyled = style(
         ? colors.GREY
         : ButtonTypeToColor[props.type].top
     }`,
+    pointerEvents: props.disabled ? 'none' : 'unset',
     borderBottom: `2px solid ${colors.GREY}`,
     filter: props.disabled ? 'brightness(80%)' : 'unset',
     minWidth: '80px',

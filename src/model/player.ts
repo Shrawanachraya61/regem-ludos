@@ -151,6 +151,9 @@ export const playerAddToActiveParty = (
   if (chInStorage && !player.party.includes(chInStorage)) {
     player.party.push(chInStorage);
   }
+  if (chInStorage && !player.battlePositions.includes(chInStorage)) {
+    player.battlePositions.push(chInStorage);
+  }
 };
 
 export const playerRemoveFromActiveParty = (
@@ -161,7 +164,11 @@ export const playerRemoveFromActiveParty = (
     ch => ch.name.toLowerCase() === partyMemberName.toLowerCase()
   );
   const ind = player.party.indexOf(chInStorage as any);
-  if (ind > -1) {
+  if (chInStorage && ind > -1) {
     player.party.splice(ind, 1);
+  }
+  const indBattle = player.battlePositions.indexOf(chInStorage as any);
+  if (chInStorage && indBattle > -1) { 
+    player.battlePositions.splice(indBattle, 1);
   }
 };

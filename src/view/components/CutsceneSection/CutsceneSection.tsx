@@ -587,14 +587,16 @@ const CutsceneSection = () => {
     }
   });
 
+  const handleSettingsClose = () => {
+    hideSection(AppSection.Settings);
+  };
+
   useKeyboardEventListener(ev => {
     if (
       isAuxKey(ev.key) &&
       !getUiInterface().appState.sections.includes(AppSection.Settings)
     ) {
-      showSettings(() => {
-        showSection(AppSection.Cutscene, true);
-      });
+      showSettings(handleSettingsClose);
     }
   });
 
@@ -657,10 +659,7 @@ const CutsceneSection = () => {
         <TopBar
           buttons={[TopBarButtons.SETTINGS]}
           onSettingsClick={() => {}}
-          onSettingsClose={() => {
-            hideSection(AppSection.Settings);
-            // showSection(AppSection.Cutscene, false);
-          }}
+          onSettingsClose={handleSettingsClose}
         ></TopBar>
       </div>
       <PortraitWrapper visible={cutscene.visible && barsVisible}>

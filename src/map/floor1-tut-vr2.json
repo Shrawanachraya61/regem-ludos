@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"floor1-tut-vr2.json"
-        }
-    },
  "height":32,
  "infinite":false,
  "layers":[
@@ -50,8 +42,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":348,
-                 "y":124
+                 "x":382.5,
+                 "y":97.5
                 }, 
                 {
                  "height":0,
@@ -458,7 +450,7 @@
          "value":"#BCB7C5"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.7.2",
  "tileheight":16,
  "tilesets":[
         {
@@ -532,6 +524,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":32
 }
