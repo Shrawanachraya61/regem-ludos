@@ -260,12 +260,13 @@ Atrium Employee Jason: "I will provide you your first ones for now, but you will
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
 +waitMS(400);
++:bumpX(Atrium Employee Jason, -2);
 +playSound(terminal_beep);
 +waitMS(400);
 +:utils-get-treasure-cutscene(TrainingSword);
 +equipWeaponOrArmor(TrainingSword, Ada);
-+setConversationSpeaker(none);
 +waitMS(400);
++:bumpX(Atrium Employee Jason, -2);
 +playSound(terminal_beep);
 +waitMS(400);
 +:utils-get-treasure-cutscene(TrainingBow);
@@ -274,7 +275,7 @@ Atrium Employee Jason: "I will provide you your first ones for now, but you will
 +setFacing(Atrium Employee Jason, 'down');
 +waitMS(500);
 Atrium Employee Jason: "I've given you a sword and a bow.  They will be automatically equipped."
-Atrium Employee Jason: "Any time you gain a piece of equipment, you may go to the Equipment menu to equip it."
+Atrium Employee Jason: "Any time you gain a piece of equipment, you may go to the <color=BLUE>Equipment Menu</> to equip it."
 +setConversationSpeaker(none);
 +lookAtEachOther(Conscience, Ada);
 +endConversation(100);
@@ -287,14 +288,16 @@ Conscience: "Nifty!"
 +lookAtEachOther(Atrium Employee Jason, Ada);
 Atrium Employee Jason: "I will now spawn one of our tutorial robots."
 Atrium Employee Jason: "These helpful machines will allow you to try your skills out on them without putting up TOO MUCH of a fight."
-+setConversationSpeaker(none);
++none();
++waitMS(400);
 +setFacing(Atrium Employee Jason, 'leftup');
-+waitMS(500);
-+playSound('terminal_beep');
++:bumpX(Atrium Employee Jason, -2);
++playSound(terminal_beep);
 +waitMS(500);
 +callScript('utils-spawn-character-at-marker', TutRobotDummy0, MarkerRobot1);
 +setFacing(Atrium Employee Jason, 'rightdown');
 +waitMS(500);
++:happy(Atrium Employee Jason);
 Atrium Employee Jason: "There's the little guy!"
 +lookAtEachOther(Atrium Employee Jason, Ada);
 Atrium Employee Jason: "Alright, can one of you please step forward."
@@ -339,8 +342,8 @@ Atrium Employee Jason: "There we go.  You should see the UI now.  It's got lots 
 Atrium Employee Jason: "For now defeat this robot in order to proceed with the tutorial."
 +endConversation();
 +showUISection(Modal, TUTORIAL_ATTACK);
-+showUISection(Modal, TUTORIAL_ATTACK_AMOUNTS);
-+showUISection(Modal, TUTORIAL_PAUSING);
+// +showUISection(Modal, TUTORIAL_ATTACK_AMOUNTS);
+// +showUISection(Modal, TUTORIAL_PAUSING);
 
 @floor1-tut-vr2-battle1-on-after-end
 +setAnimationState(Ada, idle);
@@ -353,7 +356,7 @@ Ada: "This does not seem TOO difficult..."
 +lookAtCharacter(Ada, Atrium Employee Jason);
 Atrium Employee Jason: "Not at first, of course."
 Atrium Employee Jason: "But you should see some of the upper floors... sheesh."
-Atrium Employee Jason: "You have to wonder what the developers were thinking with some of those monsters!"
+Atrium Employee Jason: "You have to wonder what the <color=ORANGE>developers<cascade> were thinking with some of those monsters!"
 +setConversationSpeaker(none);
 +waitMS(1000);
 Atrium Employee Jason: "Anyway, Im going to spawn another robot for you to fight.  This one is a bit different than the last."
@@ -368,6 +371,8 @@ Atrium Employee Jason: "Anyway, Im going to spawn another robot for you to fight
 Atrium Employee Jason: "We can use this robot to learn about how to STAGGER an enemy!"
 +endConversation(100);
 +setConversation('Ada');
++:angry(TutRobotDummy0);
++playSound(robot_staggered_damaged);
 Robot: "*bzzt* *bzzt*"
 +enterCombat(ENCOUNTER_TUT1_5);
 +endConversation();
@@ -459,7 +464,7 @@ Conscience: "Yes!  All right, I'm fired up!"
 @floor1-tut-vr2-battle2-on-start
 +waitMS(500);
 +setConversationWithoutBars('Ada');
-Robot: "*bzzt* *bzzt* *bzzt*"
+Robot M: "*bzzt* *bzzt* *bzzt*"
 +endConversation();
 +showUISection('BattleUI');
 +showUISection(Modal, TUTORIAL_BACK_ROW);
@@ -502,7 +507,9 @@ Atrium Employee Jason: "Check out these ones which can cast MAGIC."
 @floor1-tut-vr2-battle3-on-end
 +waitMS(500);
 +setConversation('Ada');
-Robot: "*bzzt* G...O...N...E... *bzzt*"
+Narrator: "One of the robots appears to be attempting to say something:"
++playSound(robot_staggered_damaged);
+Robot: "<cascade-letters color=LIGHTBLUE>*bzzt* G...O...N...E... *bzzt*"
 +endConversation();
 
 @floor1-tut-vr2-battle3-on-after-end
@@ -512,7 +519,7 @@ Robot: "*bzzt* G...O...N...E... *bzzt*"
 +waitMS(500);
 Atrium Employee Jason: "Well that's interesting..."
 +lookAtEachOther(Conscience, Ada);
-Conscience: "Did that robot just try to say something?"
+Conscience: "Did that robot just try to speak to us?"
 +lookAtEachOther(Ada, Atrium Employee Jason);
 +lookAtEachOther(Conscience, Atrium Employee Jason);
 Atrium Employee Jason: "They aren't normally supposed to be programmed for that sort of thing."
@@ -561,18 +568,20 @@ step-first,?once():this
 +lookAtEachOther(Conscience, Atrium Employee Jason);
 +lookAtEachOther(Ada, Atrium Employee Jason);
 Atrium Employee Jason: "This is the final terminal, where I can spawn yet MORE advanced robots."
+Atrium Employee Jason: "Let me just press this right here and we can get the <shake>REAL<cascade> fighting started."
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'rightup');
-+waitMS(500);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
 +waitMS(1000);
 +playSound('terminal_cancel');
 +waitMS(1000);
 +setFacing(Atrium Employee Jason, 'left');
++:question(Atrium Employee Jason);
 Atrium Employee Jason: "Huh?"
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'rightup');
-+waitMS(500);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
 +waitMS(1000);
 +playSound('terminal_cancel');
@@ -602,33 +611,39 @@ Atrium Employee Jason: "What the...?"
 +waitMS(500);
 +setFacing(Conscience, 'rightup');
 +setFacing(Ada, 'rightup');
++playSound(robot_staggered_damaged);
 +waitMS(1200);
++:exclaim(Ada);
 Ada: "Something tells me this is not part of the tutorial."
 +callScript('utils-character-jump', 'Conscience');
-+endConversation(100);
 +setConversation(Conscience);
++:surprised(Conscience);
 Conscience: "These ones seem much more aggressive!"
 +setConversationSpeaker(none);
 +waitMS(1000);
++playSound(robot_staggered_damaged);
 +walkToOffset(TutRobotDummy2, 0, -8, true);
 +walkToOffset(TutRobotDummy1, 0, 8, true);
 +waitMS(1000);
++:exclaim(Atrium Employee Jason);
 Atrium Employee Jason: "Uhh... Please hold on a moment!"
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'rightup');
-+waitMS(500);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
-+waitMS(500);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
-+waitMS(200);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
-+waitMS(200);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
 +waitMS(750);
++:exclaim(Atrium Employee Jason);
 Atrium Employee Jason: "It's not working for some reason!"
 Conscience: "Looks like we'll have to fight them!"
 +setConversationSpeaker(none);
-+waitMS(1000);
++waitMS(500);
++playSound(robot_staggered_damaged);
 +walkToOffset(TutRobotDummy2, 0, -8, true);
 +walkToOffset(TutRobotDummy1, 0, 8, true);
 +waitMS(200);
@@ -640,7 +655,8 @@ Conscience: "Looks like we'll have to fight them!"
 @floor1-tut-vr2-battle4-on-start
 +waitMS(250);
 +setConversationWithoutBars(Ada);
-Robot: "*bzzt* A...V...E...N...G...E... *bzzt*"
++playSound(robot_staggered_damaged);
+Robot: "<cascade-letters color=LIGHTBLUE>A...V...E...N...G...E..."
 +setConversationSpeaker(none);
 +waitMS(500);
 +showUISection('BattleUI');
@@ -650,7 +666,8 @@ Robot: "*bzzt* A...V...E...N...G...E... *bzzt*"
 @floor1-tut-vr2-battle4-on-end
 +waitMS(500);
 +setConversation('Ada');
-Robot: "*bzzt* F...A...I...L...U...R...E... *bzzt*"
++playSound(robot_staggered_damaged);
+Robot: "<cascade-letters color=LIGHTBLUE> F...A...I...L...U...R...E..."
 +endConversation();
 
 @floor1-tut-vr2-battle4-on-after-end
@@ -666,11 +683,12 @@ Ada: "PLEASE tell me that was some sort of gag you put on for new players."
 +waitMS(200);
 +setFacing(Atrium Employee Jason, left);
 +waitMS(500);
++:teardrop(Atrium Employee Jason);
 Atrium Employee Jason: "I'm actually not sure what's happening right now, but it might be best to try and head back the way we came."
 Atrium Employee Jason: "Let me see if I can shut that wall off behind us."
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'rightup');
-+waitMS(500);
++:bumpY(Atrium Employee Jason, -2);
 +playSound('terminal_beep');
 +waitMS(1000);
 +playSound('bass_kicks');
@@ -698,12 +716,14 @@ Ada: "What was that?"
 +setFacing(Conscience, up);
 +panCameraRelativeToPlayer(0, -30);
 +setConversation('Ada');
-Robot: "*bzzt* A...V...E...N...G...E...! *bzzt*"
++playSound(robot_staggered_damaged);
+Robot: "<cascade-letters color=BLUE>A...V...E...N...G...E...!"
 +setConversationSpeaker(none);
 +setFacing(Ada, down);
 +setFacing(Conscience, down);
 +panCameraRelativeToPlayer(0, 30);
-Robot: "*bzzt* A...V...E...N...G...E...!!! *bzzt*"
++playSound(robot_staggered_damaged);
+Robot: "<cascade-letters color=BLUE>A...V...E...N...G...E...!!!"
 +setConversationSpeaker(none);
 +setFacing(Ada, leftdown);
 +setFacing(Conscience, rightup);
@@ -717,9 +737,10 @@ Ada: "Jason!  What is happening?"
 +callScript('utils-character-shake-z', Atrium Employee Jason);
 Atrium Employee Jason: "It's a ROBOT UPRISING!"
 +setFacing(Atrium Employee Jason, 'down');
-+callScript('utils-character-shake-z', Atrium Employee Jason);
++:exclaim(Atrium Employee Jason);
 Atrium Employee Jason: "I can't control them!!"
 +setFacing(Atrium Employee Jason, 'rightup');
++:exclaim(Atrium Employee Jason);
 Atrium Employee Jason: "Run for your lives!!!"
 +setConversationSpeaker(none);
 +waitMS(500);
@@ -727,6 +748,7 @@ Atrium Employee Jason: "Run for your lives!!!"
 +waitMS(200);
 +callScript('utils-despawn-character', Atrium Employee Jason);
 +panCameraBackToPlayer();
++:exclaim(Ada);
 Ada: "Jason!!"
 +endConversation(100);
 +setConversation('Conscience');
@@ -738,6 +760,33 @@ Conscience: "C'mon!  We gotta go!"
 +walkToMarker(Ada, MarkerJason8);
 +callScript('utils-change-room', 'floor1TutVR3', 'MarkerDoorFromVR2');
 +walkToMarker('Ada', 'MarkerAda0');
++:utils-start-Conscience-dialogue();
+Conscience: "Sheesh, that was a close one!"
++:question(Ada);
+Ada: "What do we do now?"
+Conscience: "Well, we got here through some kind of <color=BLUE>portal</>."
++:teardrop(Conscience);
+Conscience: "I guess we have to go find another one to get out?"
+Ada: "I suppose that makes sense..."
++:lookAround(Conscience);
++setFacing(Conscience, leftdown);
++:lightbulb(Conscience);
+Conscience: "Hey, what's that?"
++panCameraRelativeToPlayer(0, 35);
++walkToMarker(Conscience, MarkerSpotSavePoint);
++setFacing(Conscience, leftdown);
+Ada: "Some kind of pyramid?"
+Conscience: "It seems like one of those places where you can <color=BLUE cascade> save the game</>."
++:question(Ada);
+Ada: "What what? <delay=500 cascade> It does? <delay=500 cascade> How do you know that?"
++lookAtEachOther(Ada, Conscience);
++:flat(Conscience);
+Conscience: "Just trust me.  I know these sorts of things."
++:happy(Conscience);
+Conscience: "C'mon.  Try it out!"
++panCameraBackToPlayer();
++:utils-stop-Conscience-dialogue();
++endConversation();
 
 // VR3 SECTION ---------------------------------------------------------------------------
 // Variables:
