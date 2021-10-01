@@ -88,6 +88,54 @@
                  "width":22.5,
                  "x":493.5,
                  "y":200.5
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":107,
+                 "name":"Floor1PrimaryGuy1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":375,
+                 "y":231
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":108,
+                 "name":"Floor1PrimaryGuy2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":378,
+                 "y":138
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":109,
+                 "name":"Floor1PrimaryGirl1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":376,
+                 "y":100
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":110,
+                 "name":"MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":425,
+                 "y":179
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -96,7 +144,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":106,
+ "nextobjectid":111,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

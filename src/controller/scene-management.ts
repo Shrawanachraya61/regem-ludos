@@ -300,6 +300,12 @@ export const evalCondition = (
         return funcName === 'questStepGT'
           ? (step?.i ?? Infinity) > parseInt(funcArg2)
           : (step?.i ?? Infinity) < parseInt(funcArg2);
+      } else if (funcName === 'isInParty') {
+        const player = getCurrentPlayer();
+        const chName = funcArg.toLowerCase();
+        return Boolean(
+          player.party.find(ch => ch.name.toLowerCase() === chName)
+        );
       }
 
       console.error(
