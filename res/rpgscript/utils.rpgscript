@@ -1,3 +1,7 @@
+// this exists because of the number of times I've accidentally written +:none()
+@none
++none();
+
 // ARG0 = name of map to transition to
 // ARG1 = name of marker to place player at
 @utils-change-room
@@ -280,6 +284,37 @@ step,this
 @closeDoor
 +changeTileAtMarker([ARG0], [ARG1]_CLOSED);
 
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpX
++setConversationSpeaker(none);
++waitMS(100);
++offsetCharacter([ARG0], [ARG1]/2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], [ARG1]/2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
+
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpY
++setConversationSpeaker(none);
++waitMS(100);
++offsetCharacter([ARG0], 0, [ARG1], 0);
++waitMS(50);
++offsetCharacter([ARG0], 0, -[ARG1], 0);
+
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpZ
++setConversationSpeaker(none);
++waitMS(100);
++offsetCharacter([ARG0], 0, 0, [ARG1]);
++waitMS(100);
++offsetCharacter([ARG0], 0, 0, -[ARG1]);
+
 @exclaim
 +none()
 +playSound(emotion);
@@ -339,6 +374,34 @@ step,this
 +none()
 +playSound(emotion);
 +spawnEmotionParticleAtCharacter([ARG0], blush);
++waitMS(1000);
+@angry
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], angry);
++waitMS(1000);
+@wink
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], wink);
++waitMS(1000);
+@flat
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], flat);
++waitMS(1000);
+@yawn
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], yawn);
++waitMS(1000);
+@serious
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], serious);
++waitMS(1000);
+@minorPause
++none();
 +waitMS(1000);
 @nervous
 +setConversationSpeaker(none);
