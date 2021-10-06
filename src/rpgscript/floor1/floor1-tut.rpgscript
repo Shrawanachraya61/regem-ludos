@@ -23,8 +23,8 @@ Atrium Employee Jason: "This bracer is the key to all the incredible features of
 +setFacing(Atrium Employee Jason, 'rightdown');
 +setFacing(Ada, 'rightdown');
 Atrium Employee Jason: "This platform right here a VR Portal."
-Atrium Employee Jason: "<cascade>When you stand on it and raise your <color=BLUE>Haptic Bracer<cascade> up above your head, and the system will initiate VR mode."
-Atrium Employee Jason: "<cascade>This is made possible by our advanced VR technology.  You'll feel like you've been <scale=1.33>physically<cascade> transported into VR!"
+Atrium Employee Jason: "<cascade>When you stand on it and raise your <color=BLUE>Haptic Bracer<cascade> up above your head, the system will initiate <color=LIGHTBLUE cascade-letters>VR mode</>."
+Atrium Employee Jason: "<cascade>This is made possible by our advanced VR technology.  You'll feel like you've been <scale=1.5>PHYSICALLY<cascade> transported into VR!"
 +setConversationSpeaker(none);
 +panCameraBackToPlayer();
 +:question(Ada);
@@ -42,7 +42,7 @@ Atrium Employee Jason: "We are able to construct fantastic landscapes straight o
 +waitMS(250);
 Atrium Employee Jason: "We will start with something simple for now though."
 Atrium Employee Jason: "<cascade>I will take you to our tutorial area: the <color=BLUE>Skyway</>."
-Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge, meet me on the other side."
+Atrium Employee Jason: "Please follow me through the VR portal. When you emerge, you can meet me on the other side."
 +setConversationSpeaker(none);
 +panCameraRelativeToPlayer(90, 35);
 +setFacing(Ada, 'rightdown');
@@ -63,21 +63,27 @@ Atrium Employee Jason: "Please, follow me through the VR portal. When you emerge
 Conscience: "Whoah, he's gone!"
 Ada: "Where did he go?"
 Conscience: "He went into VR! That's what he said, isn't it?"
-Ada: "Interesting.  How do you suppose it works?  Did he get transported somewhere without us seeing?"
+Ada: "If that is true, how do you suppose it works?  Did he get transported somewhere without us seeing?"
 +jump(Conscience);
 Conscience: "I'm not sure, but I <shake>TOTALLY<cascade> wanna go check it out!"
 +:teardrop(Ada);
 Ada: "Conscience, wait a moment."
-Ada: "If that portal takes us into a VR like this Instructor Jason claims, what exactly does that mean for you?"
-Conscience: "I dunno."
+Ada: "If that portal takes us into a VR like this <color=ORANGE>Instructor Jason</> claims, what exactly does that mean for you?"
+Conscience: "What do you mean?"
 Ada: "I mean, if it's a real, true VR, then..." 
-+:question(Ada);
-Ada: "Is he going to be able to see you in there?"
-Conscience: "Not sure, honestly.  That would be interesting though.  We should find out!"
-+:bored(Ada);
-Ada: "You do not seem very concerned about this."
 +:lightbulb(Ada);
+Ada: "Is he going to be able to <italic>SEE</> you in there?"
++:question(Conscience);
+Conscience: "<cascade-letters>Hmmm....."
+Conscience: "Not sure, honestly.  <delay=250>That would be kinda interesting though."
++:happy(Conscience);
+Conscience: "We should find out!"
++:bored(Ada);
+Ada: "You do not seem very <italic>concerned</> about this."
+Conscience: "Oh please, it'll be fine.  What's the worst that could happen?"
++:serious(Ada);
 Ada: "What if they think you are some kind of virus and try to kick you out?"
++:jump(Conscience);
 Conscience: "Nah, they wouldn't do that..."
 +:question(Conscience);
 Conscience: "Would they?"
@@ -85,7 +91,8 @@ Conscience: "Would they?"
 +callScript('utils-character-shake-z', 'Ada');
 +waitMS(500);
 Ada: "Just promise me that you will refrain from wandering off somewhere."
-Ada: "Stick by me, okay.  Father said we are not supposed to be cavorting around too much."
+Ada: "Stick by me, okay.  <color=ORANGE>Father</> said we are not supposed to be cavorting around too much."
++:exclaim(Conscience);
 Conscience: "I wouldn't DREAM of leaving your side!"
 Ada: "And you will let me know if there is something WRONG, right?"
 +:happy(Conscience);
@@ -93,6 +100,7 @@ Conscience: "Immediately!"
 +none();
 +:teardrop(Ada);
 Ada: "To the portal then, I suppose."
++waitMS(300);
 +callScript('utils-stop-Conscience-dialogue');
 +endConversation();
 
@@ -174,6 +182,7 @@ Atrium Employee Jason: "I apologize, I must have missed you."
 +lookAtCharacter('Ada', 'Atrium Employee Jason');
 +lookAtCharacter('Conscience', 'Atrium Employee Jason');
 +waitMS(200);
++:teardrop(Conscience);
 Conscience: "Uh, I kinda snuck in here, so don't worry about it."
 +:question(Atrium Employee Jason);
 Atrium Employee Jason: "You two look really similar.  Are you twins or something?"
@@ -204,7 +213,7 @@ Ada: "So I guess that answers my question.  Apparently in here he can see you wi
 Conscience: "It appears that way, yes."
 // Ada wry smile?
 Ada: "Although <cascade-letters>twins?<cascade delay=100> I do find that amusing."
-Conscience: "It's basically true, if you <color=Blue scale=0.75> ignore some things</>."
+Conscience: "It's basically true, if you <color=Blue scale=0.5> ignore <color=LIGHTBLUE scale=0.5>some <scale=0.5>things."
 Conscience: "This is pretty cool though, they've got quite an advanced interface."
 +setConversationSpeaker('none');
 +callScript('utils-character-jump', 'Conscience');
@@ -218,6 +227,9 @@ Ada: "<cascade>Please focus on the task at hand.  The faster we get through this
 Conscience: "Don't be a stick in the mud. This is supposed to be FUN, not stressful."
 +:teardrop(Ada);
 Ada: "Can we just go?"
+Ada: "I can only take so much of this before I get so irritated that I become ill."
++:wink(Conscience);
+Conscience: "I'd actually <color=LIGHTRED>LOVE</> to see that!"
 +setConversationSpeaker('none');
 +despawnPartyMembers();
 +endConversation();
@@ -359,7 +371,7 @@ Atrium Employee Jason: "But you should see some of the upper floors... sheesh."
 Atrium Employee Jason: "You have to wonder what the <color=ORANGE>developers<cascade> were thinking with some of those monsters!"
 +setConversationSpeaker(none);
 +waitMS(1000);
-Atrium Employee Jason: "Anyway, Im going to spawn another robot for you to fight.  This one is a bit different than the last."
+Atrium Employee Jason: "Anyway, Im going to spawn another robot for you to fight.  This one is just a bit different."
 +setConversationSpeaker(none);
 +setFacing(Atrium Employee Jason, 'leftup');
 +waitMS(500);
@@ -778,9 +790,9 @@ Conscience: "Hey, what's that?"
 Ada: "Some kind of pyramid?"
 Conscience: "It seems like one of those places where you can <color=BLUE cascade> save the game</>."
 +:question(Ada);
-Ada: "What what? <delay=500 cascade> It does? <delay=500 cascade> How do you know that?"
+Ada: "What what? <delay=250 cascade> What game? <delay=250 cascade> What are you talking about?"
 +lookAtEachOther(Ada, Conscience);
-+:flat(Conscience);
++:wink(Conscience);
 Conscience: "Just trust me.  I know these sorts of things."
 +:happy(Conscience);
 Conscience: "C'mon.  Try it out!"

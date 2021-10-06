@@ -656,6 +656,8 @@ Animation,effect_emotions_flat,true
 AnimSprite,effect_emotions_14,100
 Animation,effect_emotions_yawn,true
 AnimSprite,effect_emotions_15,100
+Animation,effect_emotions_serious,true
+AnimSprite,effect_emotions_16,100
 Picture,effect_fireball_explosion,effect_fireball_explosion.png,100,100
 Animation,effect_fireball_explosion_anim,false
 AnimSprite,effect_fireball_explosion_0,40

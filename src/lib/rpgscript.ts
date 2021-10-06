@@ -103,6 +103,7 @@ export interface Conditional {
 }
 
 export interface Command {
+  i: number;
   conditional?: Conditional | boolean;
   type: string;
   args: (
@@ -200,6 +201,7 @@ export class Script {
       if (cmd) {
         this.currentCommandIndex++;
         const ret = {
+          i: this.currentBlockIndex,
           args: cmd.args,
           type: cmd.type,
           conditional: block.conditional,
@@ -229,7 +231,7 @@ export class Script {
     const soundNameCh = this.name + '/' + actorName + '-' + n;
 
     this.sounds++;
-    return { soundNameIndexed, soundNameCh };
+    return { soundNameIndexed, soundNameCh, n };
   }
 
   addCommandBlock(): CommandBlock {
@@ -257,7 +259,7 @@ export class ScriptParser {
     throw new Error('Parsing error');
   }
 
-  parseCommand(commandSrc: string, lineNum: number, script?: Script) {
+  parseCommand(commandSrc: string, lineNum: number, script?: Script): Command {
     commandSrc = commandSrc.trim();
 
     // shorthand for callScript(scriptName, ...args)
@@ -334,6 +336,7 @@ export class ScriptParser {
     });
 
     return {
+      i: lineNum,
       type: commandSrc.substr(0, firstParenIndex),
       args: formatArgs(args),
     };
@@ -442,9 +445,12 @@ export class ScriptParser {
       type = 'playDialogueInterruptable';
     }
     subtitle = subtitle.trim();
-    const { soundNameCh, soundNameIndexed } = script.getNextDialog(actorName);
+    const { soundNameCh, soundNameIndexed, n } = script.getNextDialog(
+      actorName
+    );
     this.soundsToLoad.push({ soundNameCh, soundNameIndexed });
     return {
+      i: parseInt(String(n)),
       type,
       args: formatArgs([actorName, subtitle, soundNameCh]),
     };
@@ -507,6 +513,7 @@ export class ScriptParser {
           currentBlock = currentScript.addCommandBlock();
           currentBlock.conditional = true;
           currentBlock.commands.push({
+            i: lineNum,
             type: 'showChoices',
             args: [],
           });
@@ -603,6 +610,7 @@ export class ScriptParser {
             currentScript
           );
           const command = {
+            i: lineNum,
             type,
             args,
           };
@@ -678,6 +686,7 @@ export class ScriptParser {
       } else if (firstCh === '>') {
         if (currentBlock) {
           currentBlock.commands.push({
+            i: lineNum,
             type: 'callScript',
             args: [line.substr(1)],
           });
@@ -759,4 +768,20 @@ export const getTrigger = (triggerName: string): Trigger => {
     throw new Error(`Cannot get trigger with name ${triggerName}`);
   }
   return trigger;
+};
+
+export const scriptExists = (scriptName: string) => {
+  const script = scripts[scriptName];
+  if (!script) {
+    return false;
+  }
+  return true;
+};
+
+export const triggerExists = (triggerName: string) => {
+  const trigger = triggers[triggerName];
+  if (!trigger) {
+    return false;
+  }
+  return true;
 };

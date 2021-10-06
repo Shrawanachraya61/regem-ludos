@@ -10,8 +10,10 @@ import { init as initQuests } from './quests';
 import { init as initItems } from './items';
 import { init as initBattleActions } from './battle-actions';
 import { init as initSaves } from './saves';
+import { init as initScripts } from './scripts';
+import { Scene } from 'model/scene';
 
-export default async () => {
+export default async (scene: Scene) => {
   initQuests();
   initParticles();
   initEnemies();
@@ -23,5 +25,6 @@ export default async () => {
   initItems();
   initBattleActions();
   initSaves();
+  await initScripts(scene);
   await initOverworlds();
 };

@@ -88,8 +88,16 @@ const ActionSelectMenu = (props: IActionSelectMenuProps) => {
       {skills.map((action, i) => {
         const isActive = props.bCh.ch.skillIndex === i;
         const isSelected = props.cursorIndex === i;
+        if (!action) {
+          console.error('NULL ACTION', action, skills, props.bCh.ch);
+          return <div></div>;
+        }
+
         return (
-          <ButtonRow id={'action-select-menu-button-row-' + i}>
+          <ButtonRow
+            id={'action-select-menu-button-row-' + i}
+            key={'action-button-' + i}
+          >
             {isSelected ? <Cursor /> : null}
             <Button
               type={isActive ? ButtonType.PRIMARY : ButtonType.NEUTRAL}

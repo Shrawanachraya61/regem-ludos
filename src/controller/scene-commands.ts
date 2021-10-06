@@ -431,12 +431,14 @@ export const waitMS = (ms: number, cb?: () => void) => {
   const scene = getCurrentScene();
   scene.isWaitingForTime = true;
   clearTimeout(scene.waitTimeoutId);
-  scene.waitTimeoutId = setTimeout(() => {
+  scene.waitTimeoutCb = () => {
     scene.isWaitingForTime = false;
     if (cb) {
       cb();
     }
-  }, ms) as any;
+    scene.waitTimeoutCb = null;
+  };
+  scene.waitTimeoutId = setTimeout(scene.waitTimeoutCb, ms) as any;
   return true;
 };
 
@@ -803,7 +805,7 @@ export const offsetCharacter = (
     console.error('Could not offset character, the offsetX is NaN', x, y, z);
     return;
   }
-  if (isNaN((z ?? 0))) {
+  if (isNaN(z ?? 0)) {
     console.error('Could not offset character, the offsetZ is NaN', x, y, z);
     return;
   }
@@ -1412,7 +1414,7 @@ export const spawnCharacterAtMarker = (
   roomAddCharacter(room, spawnCh);
 };
 
-export const spawnPartyMembers = () => {
+export const spawnPartyMembers = (skipWait?: boolean) => {
   const player = getCurrentPlayer();
   const partyWithoutLeader = player.partyStorage.filter(
     ch => ch !== player.leader
@@ -1445,10 +1447,14 @@ export const spawnPartyMembers = () => {
     }
   });
 
+  if (skipWait) {
+    return;
+  }
+
   return waitMS(1000);
 };
 
-export const despawnPartyMembers = () => {
+export const despawnPartyMembers = (skipWait?: boolean) => {
   const player = getCurrentPlayer();
   const leader = player.leader;
   const room = getCurrentRoom();
@@ -1465,6 +1471,10 @@ export const despawnPartyMembers = () => {
       });
     }
   });
+
+  if (skipWait) {
+    return;
+  }
 
   return waitMS(1000);
 };
@@ -1533,6 +1543,11 @@ export const despawnCharacter = (chName: string) => {
  * before executing the next one.
  */
 export const fadeOut = (ms?: number, skipWait?: boolean) => {
+  const scene = getCurrentScene();
+  if (scene.skip) {
+    return;
+  }
+
   const localMs = ms ?? 750;
   const canvasContainer = document.getElementById('fade');
   if (canvasContainer) {
@@ -1550,6 +1565,11 @@ export const fadeOut = (ms?: number, skipWait?: boolean) => {
  * before executing the next one.
  */
 export const fadeIn = (ms?: number, skipWait?: boolean) => {
+  const scene = getCurrentScene();
+  if (scene.skip) {
+    return;
+  }
+
   const localMs = ms ?? 1000;
   const canvasContainer = document.getElementById('fade');
   if (canvasContainer) {
@@ -1628,7 +1648,10 @@ export const changeRoom = async (
     return;
   }
 
-  await stopCurrentMusic();
+  const initialOverworld = getCurrentOverworld();
+  if (initialOverworld.music !== overworldTemplate.music) {
+    stopCurrentMusic(1000);
+  }
 
   const overworld = initiateOverworld(
     player,
@@ -2332,7 +2355,6 @@ const startQuest = (questName: string) => {
   none();
 
   beginQuestFromManagement(scene, questName);
-  console.log('SHOW QUEST SECTION', questName);
   scene.inputDisabled = true;
   playSoundName('quest_started');
   playSoundName('menu_choice_open');

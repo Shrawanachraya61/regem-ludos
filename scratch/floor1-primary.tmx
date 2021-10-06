@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="111">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="112">
  <editorsettings>
   <export target="../src/map/floor1-primary.json" format="json"/>
  </editorsettings>
@@ -95,14 +95,15 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="101" name="MarkerFromAtrium" gid="199" x="453" y="225" width="32" height="32"/>
-  <object id="102" name="#floor1-openDoorsToAtriumFromPrimary" x="458.5" y="200" width="37" height="41"/>
+  <object id="101" name="MarkerFromAtrium" gid="199" x="447" y="225" width="32" height="32"/>
+  <object id="102" name="#floor1-openDoorsToAtriumFromPrimary" x="464.5" y="200" width="31" height="41"/>
   <object id="103" name="MarkerDoorToAtrium1" gid="194" x="491" y="231" width="32" height="32"/>
   <object id="104" name="MarkerDoorToAtrium2" gid="194" x="490.5" y="213.5" width="32" height="32"/>
   <object id="105" name="#floor1-transitionToAtriumFromPrimary" x="493.5" y="200.5" width="22.5" height="41"/>
   <object id="107" name="Floor1PrimaryGuy1" gid="193" x="375" y="231" width="32" height="32"/>
-  <object id="108" name="Floor1PrimaryGuy2" gid="193" x="378" y="138" width="32" height="32"/>
-  <object id="109" name="Floor1PrimaryGirl1" gid="193" x="376" y="100" width="32" height="32"/>
+  <object id="108" name="Floor1PrimaryGuy2" gid="193" x="380" y="138" width="32" height="32"/>
+  <object id="109" name="Floor1PrimaryGirl1" gid="193" x="379.5" y="104.5" width="32" height="32"/>
   <object id="110" name="MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo" gid="194" x="425" y="179" width="32" height="32"/>
+  <object id="111" name="MarkerPlayer" gid="194" x="415" y="207" width="32" height="32"/>
  </objectgroup>
 </map>

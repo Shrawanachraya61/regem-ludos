@@ -428,7 +428,7 @@ export const init = () => {
     'MarkerWalkC',
   ]);
 
-  // overly complex ai for changing animations of ping pong dudes in floor 1
+  // overly-complex ai for changing animations of ping pong dudes in floor 1
   exp.PING_PONG = (function () {
     const pingPongState = {
       ballWaiting: false,

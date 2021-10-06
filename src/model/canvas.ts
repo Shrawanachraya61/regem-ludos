@@ -58,8 +58,16 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
       fadeDiv.style.top = '0';
       fadeDiv.id = 'fade';
 
+      const fadeDiv2 = document.createElement('div');
+      fadeDiv2.style.position = 'absolute';
+      fadeDiv2.style.width = '100%';
+      fadeDiv2.style.height = '100%';
+      fadeDiv2.style.top = '0';
+      fadeDiv2.id = 'fade2';
+
       div.appendChild(canvas);
       div.appendChild(fadeDiv);
+      div.appendChild(fadeDiv2);
       div.appendChild(canvasOuter);
     } else {
       console.warn('Failed to acquire parent div for primary canvas.');

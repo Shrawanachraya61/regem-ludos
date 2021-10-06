@@ -11,7 +11,7 @@ import { getUiInterface } from 'view/ui';
 import { playSoundName } from 'model/sound';
 import MenuBox from 'view/elements/MenuBox';
 
-const SettingsSection = () => {
+const SettingsSection = (props: { onClose?: () => void }) => {
   useEffect(() => {
     return () => {
       const currentSettings = getCurrentSettings();
@@ -20,8 +20,10 @@ const SettingsSection = () => {
   }, []);
 
   const handleCloseClick = () => {
-    const onClose = getUiInterface().appState.settings.onClose;
-    playSoundName('menu_choice_close');
+    const onClose = props.onClose ?? getUiInterface().appState.settings.onClose;
+    if (!props.onClose) {
+      playSoundName('menu_choice_close');
+    }
     onClose();
   };
   return (
@@ -31,6 +33,7 @@ const SettingsSection = () => {
         onClose={() => {
           handleCloseClick();
         }}
+        disableCloseSound={Boolean(props.onClose)}
         dark={true}
         // maxWidth={'600px'}
         closeButtonLabel={'Back ' + getCancelKeyLabel()}

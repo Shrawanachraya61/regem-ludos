@@ -40,7 +40,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":453,
+                 "x":447,
                  "y":225
                 }, 
                 {
@@ -50,8 +50,8 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":37,
-                 "x":458.5,
+                 "width":31,
+                 "x":464.5,
                  "y":200
                 }, 
                 {
@@ -110,7 +110,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":378,
+                 "x":380,
                  "y":138
                 }, 
                 {
@@ -122,8 +122,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":376,
-                 "y":100
+                 "x":379.5,
+                 "y":104.5
                 }, 
                 {
                  "gid":194,
@@ -136,6 +136,18 @@
                  "width":32,
                  "x":425,
                  "y":179
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":111,
+                 "name":"MarkerPlayer",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":415,
+                 "y":207
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -144,7 +156,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":111,
+ "nextobjectid":112,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

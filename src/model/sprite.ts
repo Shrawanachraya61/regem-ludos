@@ -263,7 +263,7 @@ const flippedVariants = [
   /^ch_*/,
   /^tut_*/,
   /^employee-*/,
-  /^effects/
+  /^effects/,
 ];
 
 const hasFlippedVariant = (baseSpriteName: string) => {

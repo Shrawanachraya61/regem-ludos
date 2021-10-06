@@ -1,7 +1,16 @@
 import { setMousePos, setKeyDown, setKeyUp } from 'model/generics';
 import { CANVAS_ID } from 'model/canvas';
 
+let eventsInitialized = false;
+
 export const initEvents = (): void => {
+  if (eventsInitialized) {
+    console.error('Events have already been initialized.');
+    console.trace('events');
+    return;
+  }
+  eventsInitialized = true;
+
   const canvasElem = document.getElementById(CANVAS_ID);
   const { left, top, width, height } = canvasElem?.getBoundingClientRect() || {
     left: 0,
@@ -123,26 +132,43 @@ export const getPauseKeyLabel = () => '(Space)';
 export const isPauseKey = (key: string) => [' '].includes(key);
 export const getAuxKeyLabel = () => '(C)';
 
+export const isSkipKey = (key: string) => {
+  return ['Backspace', 'Escape'].includes(key);
+};
+export const getSkipKeyLabel = () => '(Backspace)';
+
 export const getBattleActionKey = (ind: number) => {
   switch (ind) {
-    case 0: return 'KeyX';
-    case 1: return 'KeyZ';
-    case 2: return 'KeyS';
-    case 3: return 'KeyA';
-    case 4: return 'KeyW';
-    case 5: return 'keyQ';
+    case 0:
+      return 'KeyX';
+    case 1:
+      return 'KeyZ';
+    case 2:
+      return 'KeyS';
+    case 3:
+      return 'KeyA';
+    case 4:
+      return 'KeyW';
+    case 5:
+      return 'keyQ';
   }
   return '';
-}
+};
 
 export const getBattleActionLabel = (ind: number) => {
   switch (ind) {
-    case 0: return '(X)';
-    case 1: return '(Z)';
-    case 2: return '(S)';
-    case 3: return '(A)';
-    case 4: return '(W)';
-    case 5: return '(Q)';
+    case 0:
+      return '(X)';
+    case 1:
+      return '(Z)';
+    case 2:
+      return '(S)';
+    case 3:
+      return '(A)';
+    case 4:
+      return '(W)';
+    case 5:
+      return '(Q)';
   }
   return '';
-}
+};

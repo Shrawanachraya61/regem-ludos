@@ -150,11 +150,6 @@ export const init = (exp: Record<string, BattleTemplate>) => {
         position: BattlePosition.MIDDLE,
         ai: BATTLE_AI_ATTACK,
       },
-      {
-        chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
-        position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
-      },
     ],
     events: {
       onBattleStart: async (battle: Battle) => {

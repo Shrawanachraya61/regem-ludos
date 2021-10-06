@@ -38,7 +38,7 @@ registerArcadeGameMeta(ArcadeGamePath.VORTEX, {
         type="text"
         {...buttonHandlers(SDLKeyID.Space)}
       >
-        FIRE
+        SHOOT
       </CabinetControlButton>
       <CabinetControlButton
         width="48px"

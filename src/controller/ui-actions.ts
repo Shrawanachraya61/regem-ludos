@@ -27,7 +27,7 @@ import {
   setOverworldUpdateKeysDisabled,
 } from 'model/generics';
 import { overworldHide, overworldShow } from 'model/overworld';
-import { playSoundName } from 'model/sound';
+import { playMusic, playSoundName, stopCurrentMusic } from 'model/sound';
 import { BattleCharacter } from 'model/battle-character';
 import { popKeyHandler, pushEmptyKeyHandler } from './events';
 import { Character, characterGetPortraitSpriteName } from 'model/character';
@@ -233,7 +233,7 @@ export const showConversation = () => {
 
 export const startConversation = (portrait: string, showBars: boolean) => {
   setOverworldUpdateKeysDisabled(true);
-  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
+  showSection(AppSection.Cutscene, false, [AppSection.Debug, AppSection.Menu]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -261,7 +261,7 @@ export const startConversation2 = (
   portraitRight: string
 ) => {
   setOverworldUpdateKeysDisabled(true);
-  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
+  showSection(AppSection.Cutscene, false, [AppSection.Debug, AppSection.Menu]);
   getUiInterface().dispatch({
     action: 'setCutsceneState',
     payload: {
@@ -291,7 +291,7 @@ export const startConversationActors = (
   showBars: boolean
 ) => {
   setOverworldUpdateKeysDisabled(true);
-  showSection(AppSection.Cutscene, false, [AppSection.Debug]);
+  showSection(AppSection.Cutscene, false, [AppSection.Debug, AppSection.Menu]);
 
   const actorsWithPortraits = actors.filter(
     ch => !!characterGetPortraitSpriteName(ch)
@@ -366,6 +366,10 @@ export const showArcadeGame = (path: ArcadeGamePath) => {
   });
   const meta = getArcadeGamePathMeta(path);
   setOverworldUpdateKeysDisabled(true);
+  if (!meta?.cabinet?.music) {
+    stopCurrentMusic(250);
+  }
+
   if (meta?.cabinet?.disabled) {
     setInterfaceStateDisabled(true);
     showSection(AppSection.ArcadeCabinet, false);
@@ -413,6 +417,10 @@ export const hideArcadeGame = () => {
   setOverworldUpdateKeysDisabled(false);
   const overworld = getCurrentOverworld();
   overworldShow(overworld);
+
+  if (overworld.music) {
+    playMusic(overworld.music, true, 250);
+  }
 };
 
 export const showChoices = (choices: string[]) => {

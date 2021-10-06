@@ -28,7 +28,7 @@ import { BattleCharacter } from 'model/battle-character';
 import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
 import { createAnimation } from 'model/animation';
 
-const COOLDOWN_MOD = 1;
+const COOLDOWN_MOD = 1.5;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
@@ -305,6 +305,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 25,
+      POW: 5,
       STAGGER: 5,
     },
     facing: Facing.LEFT,
@@ -320,6 +321,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 20,
+      POW: 3,
       STAGGER: 3,
     },
     facing: Facing.LEFT,
@@ -336,6 +338,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 28,
+      POW: 6,
       STAGGER: 12,
     },
     facing: Facing.LEFT,
@@ -351,6 +354,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 20,
+      POW: 3,
       STAGGER: 5,
     },
     facing: Facing.LEFT,
@@ -366,6 +370,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 18,
+      POW: 6,
       STAGGER: 5,
     },
     facing: Facing.LEFT,

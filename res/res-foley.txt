@@ -41,7 +41,7 @@ Sound,battle_evasion,foley/evasion3.mp3,1,fl studio
 Sound,battle_ready,foley/battle_ready2.mp3,0.7,zzfx
 Sound,battle_staggered1,foley/battle_staggered1_2.mp3,0.9,zzfx
 Sound,dead,foley/dead3.mp3,1,jsfxr
-Sound,phone_ring,foley/phone_ring.mp3,0.9,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
+Sound,phone_ring,foley/phone_ring.mp3,0.7,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
 Sound,phone_beep,foley/phone_beep.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
 Sound,phone_beep_off,foley/phone_beep_off.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
 Sound,vr_portal_activate,foley/vr_portal_activate.mp3,0.7,zzfx
@@ -77,6 +77,7 @@ Sound,sliding_door_close,foley/sliding_door_close.mp3,1.0,Creative Commons Non C
 Sound,red_door_open,foley/red_door_open.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut
 Sound,red_door_close,foley/red_door_close.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut pitch down
 
+Music,music_menu,music/menu.mp3
 Music,music_battle1,music/battle1.mp3
 Music,music_battle_victory,music/battle_victory.mp3
 Music,music_atrium,music/atrium3.mp3

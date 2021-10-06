@@ -210,7 +210,7 @@ export const init = () => {
     name: 'Floor1PrimaryGuy2',
     nameLabel: 'Guy',
     spriteBase: 'guy7',
-    talkTrigger: 'Floor1PrimaryGuy2+Floor1PrimaryGirl1-convo',
+    talkTrigger: 'Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo',
     facing: Facing.RIGHT_UP,
     animationState: AnimationState.IDLE,
   };
@@ -218,7 +218,7 @@ export const init = () => {
     name: 'Floor1PrimaryGirl1',
     nameLabel: 'Girl',
     spriteBase: 'girl6',
-    talkTrigger: 'Floor1PrimaryGuy2+Floor1PrimaryGirl1-convo',
+    talkTrigger: 'Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo',
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
   };

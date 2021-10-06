@@ -18,6 +18,11 @@
         image-rendering: -webkit-crisp-edges;
         image-rendering: pixelated;
       }
+      img {
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-crisp-edges;
+        image-rendering: pixelated;
+      }
       .centered-vrt {
         display: flex;
         justify-content: center;
@@ -56,23 +61,13 @@
     <div>
       <canvas id="controls" width="1000" height="1000"></canvas>
       <div class="touch"></div>
-      <div id="page-loading">
-        <div>Loading...</div>
-        <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
-        <div id="page-loading-progress"></div>
-      </div>
-      <div id="page-press-any-key" style="display: none">
-        <div>Press Any Key</div>
-      </div>
     </div>
   </body>
   <footer>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script> -->
     <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
     <script src="almond.js"></script>
     <script src="main.js"></script>
     <script>
-      window.DEVELOPMENT = true;
       requirejs.config({
         map: {
           '*': {
@@ -82,11 +77,7 @@
           },
         },
       });
-      requirejs(['main'], a => {
-        const loading = document.getElementById('page-loading');
-        if (loading) {
-          loading.style.color = '#42CAFD';
-        }
+      requirejs(['menu'], a => {
         a.main();
       });
     </script>

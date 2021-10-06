@@ -9,6 +9,7 @@ registerArcadeGameMeta(ArcadeGamePath.BOWLING, {
   title: 'Regem Ludos Bowling',
   tokensRequired: 0,
   cabinet: {
+    music: true,
     disabled: true,
     backgroundColor:
       'radial-gradient(circle, rgba(17,17,17,0) 81%, rgba(17,17,17,0.8239670868347339) 93%);',

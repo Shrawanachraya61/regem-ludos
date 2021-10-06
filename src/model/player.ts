@@ -168,7 +168,7 @@ export const playerRemoveFromActiveParty = (
     player.party.splice(ind, 1);
   }
   const indBattle = player.battlePositions.indexOf(chInStorage as any);
-  if (chInStorage && indBattle > -1) { 
+  if (chInStorage && indBattle > -1) {
     player.battlePositions.splice(indBattle, 1);
   }
 };

@@ -6,13 +6,26 @@ import AnimDiv from 'view/elements/StaticAnimDiv';
 import { getUiInterface } from 'view/ui';
 import { AppSection, CutsceneSpeaker, ICutsceneAppState } from 'model/store';
 import { getDrawScale } from 'model/canvas';
-import { getCurrentKeyHandler, isAuxKey, isCancelKey } from 'controller/events';
+import {
+  getCurrentKeyHandler,
+  isAuxKey,
+  isCancelKey,
+  isSkipKey,
+  popKeyHandler,
+  pushEmptyKeyHandler,
+} from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
 import TopBar, { TopBarButtons } from '../TopBar';
 import { hideSection, showSection, showSettings } from 'controller/ui-actions';
 import { useKeyboardEventListener } from 'view/hooks';
-import { getCurrentRoom, getCurrentScene } from 'model/generics';
+import {
+  getCurrentBattle,
+  getCurrentRoom,
+  getCurrentScene,
+} from 'model/generics';
 import CharacterFollower from 'view/elements/CharacterFollower';
+import { skipCurrentScript } from 'controller/scene-management';
+import { panCameraBackToPlayer } from 'controller/scene-commands';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -304,6 +317,7 @@ enum PhraseCommandName {
   SHAKE = 'shake',
   SCALE = 'scale',
   CASCADE = 'cascade',
+  CASCADE_SHORTHAND = '/',
   ITALIC = 'italic',
   CASCADE_LETTERS = 'cascade-letters',
 }
@@ -390,6 +404,7 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
     phrase.delay = delayAgg;
     phrase.commands.forEach(command => {
       switch (command.name) {
+        case PhraseCommandName.CASCADE_SHORTHAND:
         case PhraseCommandName.CASCADE: {
           const delayInc = parseInt(command.arg) || 20;
           const words = phrase.innerHTML.split(/\s+/);
@@ -450,7 +465,7 @@ const renderTextboxHtml = async (
     talkIcon.style.display = 'none';
   }
   getCurrentScene().inputDisabled = true;
-  const promises: Promise<void>[] = [];
+  const promises: Promise<void>[] = []; // holds all the delays
 
   const setTimeoutPromise = (cb: () => void, ms: number) => {
     let timeoutId = -1;
@@ -556,6 +571,7 @@ const renderTextboxHtml = async (
     }, 25);
   }
 
+  // this waits for all text to become visible.  TODO make this interruptable
   await Promise.all(promises);
   // const talkIcon = document.getElementById('talk-icon');
   if (talkIcon) {
@@ -567,14 +583,17 @@ const renderTextboxHtml = async (
 
 const CutsceneSection = () => {
   const [barsVisible, setBarsVisible] = useState(false);
+  const [isSkipping, setIsSkipping] = useState(false);
   const textBoxRef = useRef<null | HTMLDivElement>(null);
   const cutscene = getUiInterface().appState.cutscene;
 
   // This hook executes on first render.  If a cutscene is not currently being rendered,
   // then this will pull the cutscene bars towards the center of the screen.
   useEffect(() => {
-    setBarsVisible(true);
-  }, []);
+    if (!barsVisible) {
+      setBarsVisible(true);
+    }
+  }, [barsVisible]);
 
   // this hook executes on each render.  Preact renders the text as opacity '0',
   // then this sets the opacity to '1' with a transition so that it fades in.
@@ -587,18 +606,94 @@ const CutsceneSection = () => {
     }
   });
 
-  const handleSettingsClose = () => {
-    hideSection(AppSection.Settings);
+  const skipCutscene = async () => {
+    const handler = pushEmptyKeyHandler();
+    // setBarsVisible(false);
+    const ui = document.getElementById('ui');
+    if (ui) {
+      ui.style.transition = 'opacity 500ms linear';
+      ui.style.opacity = '0';
+    }
+    const canvOuter = document.getElementById('canv-outer');
+    if (canvOuter) {
+      canvOuter.style.transition = 'opacity 500ms linear';
+      canvOuter.style.opacity = '0';
+    }
+
+    const skippingDiv = document.createElement('div');
+    Object.assign(skippingDiv.style, {
+      position: 'fixed',
+      left: '0px',
+      top: '0px',
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      'font-size': '24px',
+      'justify-content': 'center',
+      'align-items': 'center',
+    });
+    skippingDiv.innerHTML = 'Skipping...';
+    document.body.appendChild(skippingDiv);
+
+    setIsSkipping(true);
+    const fade2 = document.getElementById('fade2');
+    if (fade2) {
+      fade2.style.transition = `background-color ${500}ms`;
+      fade2.style['background-color'] = 'rgba(0, 0, 0, 255)';
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsSkipping(false);
+    skipCurrentScript(getCurrentScene());
+    popKeyHandler(handler);
+    setTimeout(() => {
+      const handler = getCurrentKeyHandler();
+      if (handler) {
+        handler({
+          key: 'x',
+        } as any);
+      }
+      getCurrentScene().isWaitingForInput = false;
+    }, 1);
+    skippingDiv.remove();
+    panCameraBackToPlayer(50, true);
+    setTimeout(() => {
+      const fade2 = document.getElementById('fade2');
+      hideSection(AppSection.Cutscene);
+      if (fade2) {
+        fade2.style.transition = `background-color ${500}ms`;
+        fade2.style['background-color'] = 'rgba(0, 0, 0, 0)';
+      }
+      if (ui) {
+        ui.style.transition = 'opacity 500ms linear';
+        ui.style.opacity = '1';
+      }
+      if (canvOuter) {
+        canvOuter.style.transition = 'opacity 500ms linear';
+        canvOuter.style.opacity = '1';
+      }
+    }, 500);
   };
 
-  useKeyboardEventListener(ev => {
-    if (
-      isAuxKey(ev.key) &&
-      !getUiInterface().appState.sections.includes(AppSection.Settings)
-    ) {
-      showSettings(handleSettingsClose);
-    }
-  });
+  useKeyboardEventListener(
+    ev => {
+      if (
+        isAuxKey(ev.key) &&
+        !getUiInterface().appState.sections.includes(AppSection.Settings)
+      ) {
+        showSettings(handleSettingsClose);
+      }
+
+      if (isSkipKey(ev.key) && !isSkipping && !getCurrentBattle()) {
+        skipCutscene();
+      }
+    },
+    [isSkipping]
+  );
+
+  const handleSettingsClose = () => {
+    console.log('HANDLE SETTINGS CLOSE?');
+    hideSection(AppSection.Settings);
+  };
 
   let textBoxAlign: TextBoxAlign = 'center';
   if ([CutsceneSpeaker.Left].includes(cutscene.speaker)) {
@@ -611,12 +706,16 @@ const CutsceneSection = () => {
     textBoxAlign = 'center-low';
   }
 
+  const isNoneSpeaker =
+    isSkipping || [CutsceneSpeaker.None].includes(cutscene.speaker);
+  const isNarration =
+    (!cutscene.speakerName && !isNoneSpeaker) ||
+    cutscene.actorName?.toLowerCase() === 'narrator';
+
   // HACK, this is stupid, but I'm feeling lazy
-  if (cutscene.showBars === false) {
+  if (cutscene.showBars === false || isNarration) {
     textBoxAlign = 'center-high';
   }
-
-  const isNoneSpeaker = [CutsceneSpeaker.None].includes(cutscene.speaker);
 
   const handleMouseClick = () => {
     // when mouse is clicked, simulate a keypress so user can click to advance dialogue
@@ -731,10 +830,7 @@ const CutsceneSection = () => {
         <TextBox
           id="cutscene-textbox"
           align={textBoxAlign}
-          isNarration={
-            (!cutscene.speakerName && !isNoneSpeaker) ||
-            cutscene.actorName?.toLowerCase() === 'narrator'
-          }
+          isNarration={isNarration}
         >
           <div
             id="cutscene-textbox-content"

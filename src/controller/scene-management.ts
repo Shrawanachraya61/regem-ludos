@@ -12,26 +12,10 @@ import {
   getTrigger,
 } from 'lib/rpgscript';
 import { Scene, sceneIsWaiting, sceneGetCommands } from 'model/scene';
-import {
-  getCurrentOverworld,
-  getCurrentPlayer,
-  getCurrentRoom,
-} from 'model/generics';
-import { getUiInterface } from 'view/ui';
-import {
-  setCutsceneText,
-  showSection,
-  startConversation2,
-  startConversation,
-  hideSections,
-  hideConversation,
-  showConversation,
-} from 'controller/ui-actions';
-import { AppSection, CutsceneSpeaker } from 'model/store';
-import { popKeyHandler, pushKeyHandler } from 'controller/events';
-import { characterSetFacing, Facing } from 'model/character';
+import { getCurrentPlayer, getCurrentRoom } from 'model/generics';
 import { roomGetCharacterByName } from 'model/room';
 import sceneCommands, { setStorage } from './scene-commands';
+import sceneCommandsSkip from './scene-commands-skip';
 import { playerHasItem } from 'model/player';
 import { getIfExists as getCharacterTemplate } from 'db/characters';
 import { getIfExists as getQuest } from 'db/quests';
@@ -41,6 +25,8 @@ import {
   questIsCompleted,
   questIsNotStarted,
 } from './quest';
+import { getUiInterface } from 'view/ui';
+import { AppSection } from 'model/store';
 
 // if you increase this, you have to change the arg matcher to check for the length
 // of the integer string (number of decimal places) rather than just assuming it's 1
@@ -50,10 +36,16 @@ export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
     let cmd: Command | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
-      const conditionResult = evalCondition(scene, cmd.conditional);
+      const conditionResult = evalCondition(
+        scene,
+        cmd.conditional,
+        undefined,
+        undefined,
+        cmd.i
+      );
       // console.log('EVAL', cmd.conditional, conditionResult);
       if (conditionResult) {
-        const commands = sceneGetCommands(scene);
+        const commands = getSceneCommands(scene);
         const commandFunction = commands[cmd.type];
         if (!commandFunction) {
           throw new Error(
@@ -71,7 +63,7 @@ export const updateScene = (scene: Scene): void => {
                 scene.storage[argKey] +
                 arg.slice(match.index + 6);
             }
-            // HACK replace -- with + so negative negative numbers parse as positive
+            // HACK replace '--' with '+' so negative negative numbers parse as positive
             return arg.replace(/--/g, '+');
           } else {
             return arg;
@@ -112,12 +104,13 @@ export const updateScene = (scene: Scene): void => {
         scene.postSceneCallbacks.forEach(cb => {
           cb();
         });
+        scene.skip = false;
         scene.postSceneCallbacks = [];
         scene.currentScript = null;
         scene.currentTrigger = null;
+        scene.currentTriggerType = null;
       }
     }
-    // scene.gameInterface.render();
   }
 };
 
@@ -125,7 +118,8 @@ export const evalCondition = (
   scene: Scene,
   conditional?: Conditional | boolean,
   dontTriggerOnce?: boolean,
-  triggerType?: TriggerType
+  triggerType?: TriggerType,
+  scriptCallIndex?: number
 ) => {
   if (conditional === true) {
     return true;
@@ -164,11 +158,16 @@ export const evalCondition = (
       }
 
       // if the arg
-
       return !!scene.storage[args[0]];
     } else if (type === 'isnot') {
       if (typeof args[0] == 'object') {
-        return !evalCondition(scene, args[0]);
+        return !evalCondition(
+          scene,
+          args[0],
+          dontTriggerOnce,
+          triggerType,
+          scriptCallIndex
+        );
       } else {
         // if the arg is a character name
         if (getCharacterTemplate(args[0])) {
@@ -201,7 +200,15 @@ export const evalCondition = (
     } else if (type === 'any') {
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        if (evalCondition(scene, arg)) {
+        if (
+          evalCondition(
+            scene,
+            arg,
+            dontTriggerOnce,
+            triggerType,
+            scriptCallIndex
+          )
+        ) {
           return true;
         }
       }
@@ -209,7 +216,15 @@ export const evalCondition = (
     } else if (type === 'all') {
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        if (!evalCondition(scene, arg)) {
+        if (
+          !evalCondition(
+            scene,
+            arg,
+            dontTriggerOnce,
+            triggerType,
+            scriptCallIndex
+          )
+        ) {
           return false;
         }
       }
@@ -218,15 +233,21 @@ export const evalCondition = (
       console.error('conditional "as" is not defined for this scene.');
       return false;
     } else if (type === 'once') {
-      let arg =
-        args[0] ??
-        (scene.currentScript || scene.currentTrigger)?.name + '-once';
+      let arg = args[0];
+      args[0] ?? (scene.currentScript || scene.currentTrigger)?.name + '-once';
+
+      if (scene.currentScript) {
+        arg = scene.currentScript.name + scriptCallIndex + '-once';
+      } else if (scene.currentTrigger) {
+        arg = scene.currentTrigger.name + scriptCallIndex + '-once';
+      }
       if (triggerType) {
         arg =
           args[0] ??
           (scene.currentScript || scene.currentTrigger)?.name +
             '-' +
             triggerType +
+            scriptCallIndex +
             '-once';
       }
       if (scene.storageOnceKeys[arg]) {
@@ -300,7 +321,7 @@ export const evalCondition = (
         return funcName === 'questStepGT'
           ? (step?.i ?? Infinity) > parseInt(funcArg2)
           : (step?.i ?? Infinity) < parseInt(funcArg2);
-      } else if (funcName === 'isInParty') {
+      } else if (funcName === 'inParty') {
         const player = getCurrentPlayer();
         const chName = funcArg.toLowerCase();
         return Boolean(
@@ -309,7 +330,7 @@ export const evalCondition = (
       }
 
       console.error(
-        'Error in conditional.  Func condition is not registered: ' + funcName,
+        'Error in conditional.  func condition is not registered: ' + funcName,
         args
       );
       return false;
@@ -333,11 +354,13 @@ export const invokeTrigger = (
       const scriptCall = trigger.scriptCalls[i];
       if (scriptCall.type === type) {
         scene.currentTrigger = trigger;
+        scene.currentTriggerType = type;
         const c = evalCondition(
           scene,
           scriptCall.condition,
           dontTriggerOnce,
-          type
+          type,
+          i
         );
         // type !== 'step' &&
         //   type !== 'step-first' &&
@@ -346,9 +369,12 @@ export const invokeTrigger = (
           return async () => {
             await callScript(scene, scriptCall.scriptName);
             scene.storage[trigger.name] = true;
+            scene.currentTrigger = null;
+            scene.currentTriggerType = null;
           };
         } else {
           scene.currentTrigger = null;
+          scene.currentTriggerType = null;
         }
       }
     }
@@ -418,5 +444,23 @@ export const sceneIsPlaying = (scene: Scene) => {
 };
 
 export const getSceneCommands = (scene: Scene): Record<string, any> => {
-  return sceneCommands;
+  if (scene.skip) {
+    return sceneCommandsSkip;
+  } else {
+    return sceneCommands;
+  }
+};
+
+export const skipCurrentScript = (scene: Scene) => {
+  const isCutsceneVisible = getUiInterface().appState.sections.includes(
+    AppSection.Cutscene
+  );
+
+  if (!scene.skip && isCutsceneVisible) {
+    clearTimeout(scene.waitTimeoutId);
+    scene.skip = true;
+    if (scene.waitTimeoutCb) {
+      scene.waitTimeoutCb();
+    }
+  }
 };

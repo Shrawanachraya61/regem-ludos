@@ -139,7 +139,6 @@ const MenuSection = () => {
   const [closeButtonActive, setCloseButtonActive] = useState(false);
 
   const handleCloseClick = () => {
-    console.trace('close click');
     setCloseButtonActive(true);
     setTimeout(() => {
       setCloseButtonActive(false);

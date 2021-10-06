@@ -44,6 +44,7 @@ export interface IArcadeCabinetConfig {
   cabinetImagePath?: string;
   cabinetBorderImagePath?: string;
   backgroundColor?: string;
+  music?: boolean;
 }
 
 export interface IArcadeGameMeta {

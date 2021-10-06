@@ -1,3 +1,4 @@
+// this exists because of the number of times I've accidentally written +:none()
 @none
 +none();
 
@@ -393,6 +394,14 @@ step,this
 +none()
 +playSound(emotion);
 +spawnEmotionParticleAtCharacter([ARG0], yawn);
++waitMS(1000);
+@serious
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], serious);
++waitMS(1000);
+@minorPause
++none();
 +waitMS(1000);
 @nervous
 +setConversationSpeaker(none);

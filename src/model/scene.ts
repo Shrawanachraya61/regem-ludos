@@ -1,4 +1,4 @@
-import { Script, Trigger } from 'lib/rpgscript';
+import { Script, Trigger, TriggerType } from 'lib/rpgscript';
 import { getSceneCommands } from 'controller/scene-management';
 import { setCurrentScene } from 'model/generics';
 
@@ -17,6 +17,7 @@ export interface Scene {
   commands: Record<string, any>;
   currentScript: Script | null;
   currentTrigger: Trigger | null;
+  currentTriggerType: TriggerType | null;
   scriptStack: IScriptStackItem[];
   onScriptCompleted?: () => void;
   isWaitingForInput: boolean;
@@ -24,6 +25,8 @@ export interface Scene {
   isWaitingForAnimation: boolean;
   inputDisabled: boolean; // used only for dialog input
   waitTimeoutId: number;
+  waitTimeoutCb: any;
+  skip: boolean;
   postSceneCallbacks: (() => void)[];
 }
 
@@ -39,12 +42,15 @@ export const sceneCreate = (): Scene => {
     commands: {} as Record<string, any>,
     currentScript: null,
     currentTrigger: null,
+    currentTriggerType: null,
     scriptStack: [] as IScriptStackItem[],
     isWaitingForInput: false,
     isWaitingForTime: false,
     isWaitingForAnimation: false,
     inputDisabled: false,
     waitTimeoutId: -1,
+    waitTimeoutCb: null,
+    skip: false,
     postSceneCallbacks: [],
   };
   Object.assign(scene.commands, getSceneCommands(scene));

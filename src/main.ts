@@ -95,25 +95,8 @@ export const main = async (): Promise<void> => {
   // for the rest of the app to load.  This is probably fine, but is not definitive.
   mountUi();
 
-  console.log('load rpgscript');
-  console.time('rpgscript');
   initScene();
   const scene = getCurrentScene();
-  await Promise.all([
-    loadRPGScript('test2', scene),
-    loadRPGScript('test', scene),
-    loadRPGScript('example', scene),
-    loadRPGScript('utils', scene),
-    loadRPGScript('floor1', scene),
-    loadRPGScript('floor1/floor1-tut', scene),
-    loadRPGScript('floor2/floor2-throne-room', scene),
-    loadRPGScript('floor2/jesse-cafeteria', scene),
-    loadRPGScript('intro', scene),
-    loadRPGScript('bowling', scene),
-  ]);
-
-  console.timeEnd('rpgscript');
-  loadingTick();
 
   console.log('load res');
 
@@ -128,7 +111,7 @@ export const main = async (): Promise<void> => {
 
   console.log('init db');
   console.time('db');
-  await initDb();
+  await initDb(scene);
 
   loadingTick();
 
@@ -149,11 +132,19 @@ export const main = async (): Promise<void> => {
     console.log('Settings have NOT been loaded from localStorage.');
   }
 
+  console.timeEnd('load');
+  setTimeLoaded(+new Date());
+
   console.log('create canvas');
   getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
   setDrawScale(4);
   initEvents();
   initHooks();
+
+  const loading = document.getElementById('page-loading');
+  if (loading) {
+    loading.style.display = 'none';
+  }
 
   const adaTemplate = getCharacter('Ada');
   const player = playerCreate(adaTemplate);
@@ -173,14 +164,6 @@ export const main = async (): Promise<void> => {
   // player.leader.hp = 0;
 
   characterEquipItem(conscience, player.backpack[1]);
-
-  const loading = document.getElementById('page-loading');
-  if (loading) {
-    loading.style.display = 'none';
-  }
-
-  console.timeEnd('load');
-  setTimeLoaded(+new Date());
 
   await new Promise<void>(resolve => {
     const touchSomething = () => {

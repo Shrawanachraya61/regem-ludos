@@ -153,6 +153,11 @@ export const init = async () => {
     backgroundColor: colors.BLACK,
     music: 'music_atrium',
   });
+  Object.assign(exp.floor1Primary ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_atrium',
+  });
+
   Object.assign(exp.floor1Bowling ?? {}, {
     // backgroundColor: colors.BLACK,
     music: 'music_bowling',

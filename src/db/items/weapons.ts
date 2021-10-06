@@ -21,7 +21,7 @@ import { ItemTemplate, ItemType, WeaponType } from '.';
 import SwordIcon from 'view/icons/Sword';
 import BowIcon from 'view/icons/RangedNormal';
 
-const COOLDOWN_MOD = 0.25;
+const COOLDOWN_MOD = 1;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
@@ -72,6 +72,29 @@ export const initBattleActions = (): Record<string, BattleAction> => {
         }
       },
     },
+    TrainingSwordSwingPlus: {
+      name: 'Swing Sword',
+      description: 'Jump to target and swing your weapon.',
+      cooldown: 5000 * COOLDOWN_MOD,
+      type: BattleActionType.SWING,
+      meta: {
+        swings: [SwingType.NORMAL, SwingType.NORMAL],
+        icon: SwordIcon,
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 4;
+        const baseStagger = 6;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doSwing(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            swingType:
+              this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
     TrainingBowShoot: {
       name: 'Shoot Bow',
       description: 'Fire at the ranged target.',
@@ -81,7 +104,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
         ranges: [RangeType.NORMAL, RangeType.NORMAL],
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
-        const baseDamage = 1;
+        const baseDamage = 2;
         const baseStagger = 1;
         const target = getTarget(battle, bCh);
         if (target) {
@@ -144,7 +167,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     description: 'A standard issue training sword.',
     type: ItemType.WEAPON,
     weaponType: WeaponType.SWORD,
-    skills: [battleActions.TrainingSwordSwing],
+    skills: [battleActions.TrainingSwordSwingPlus],
     icon: SwordIcon,
   };
   exp.TrainingBow = {
@@ -154,5 +177,14 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     weaponType: WeaponType.BOW,
     skills: [battleActions.TrainingBowShoot],
     icon: BowIcon,
+  };
+  exp.TrainingSwordPlus = {
+    label: 'Training Sword +',
+    description:
+      'A slightly more rare version of the standard issue training sword.',
+    type: ItemType.WEAPON,
+    weaponType: WeaponType.SWORD,
+    skills: [battleActions.TrainingSwordSwing],
+    icon: SwordIcon,
   };
 };

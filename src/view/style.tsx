@@ -11,6 +11,7 @@ export const colors = {
   DARKGREY_ALT: '#5A5353',
   BGGREY: '#333',
   RED: '#BE2633',
+  LIGHTRED: '#E1534A',
   DARKRED: '#5E3643',
   PINK: '#FFAEB6',
   LIGHTGREEN: '#B6D53C',
@@ -23,6 +24,7 @@ export const colors = {
   LIGHTBLUE: '#42CAFD',
   BLUE: '#31A2F2',
   DARKBLUE: '#243F72',
+  DARKBLUE_ALT: '#3978A8',
   YELLOW: '#F4B41B',
   DARKYELLOW: '#A05B53',
 };

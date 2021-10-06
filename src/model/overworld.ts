@@ -96,15 +96,9 @@ export const overworldCharacterCreate = (
 export const overworldShow = (overworld: Overworld) => {
   overworld.visible = true;
   roomShow(overworld.room);
-  if (overworld.music) {
-    playMusic(overworld.music, true);
-  }
 };
 
 export const overworldHide = (overworld: Overworld) => {
   overworld.visible = false;
   roomHide(overworld.room);
-  if (overworld.music) {
-    stopMusic(overworld.music, 1000);
-  }
 };

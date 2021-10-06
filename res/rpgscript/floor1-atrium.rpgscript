@@ -292,6 +292,11 @@
   +setConversation('Ada');
   Atrium Employee Jason: "Are you enjoying the tutorial?"
   +endConversation();
+@floor1-atrium-employee-jason-default
+  +lookAtCharacter('Atrium Employee Jason', 'Ada');
+  +setConversation('Ada');
+  Atrium Employee Jason: "Welcome to the <color=BLUE>Regem Ludos Arcade</>!"
+  +endConversation();
 
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest

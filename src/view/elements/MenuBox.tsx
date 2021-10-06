@@ -2,7 +2,7 @@
 import { h } from 'preact';
 import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
-import { useInputEventStack } from 'view/hooks';
+import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
 import { useEffect, useState } from 'preact/hooks';
@@ -18,7 +18,7 @@ const MenuWrapper = style('div', (props: { dark?: boolean }) => {
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: '2',
-    pointerEvents: 'all',
+    pointerEvents: 'none',
     background: props.dark ? 'rgba(0, 0, 0, 0.5)' : 'unset',
   };
 });
@@ -36,6 +36,7 @@ const MenuContainer = style('div', (props: { maxWidth?: string }) => {
     color: colors.WHITE,
     transform: 'scale(0)',
     transition: 'opacity 100ms, transform 100ms',
+    pointerEvents: 'all',
   };
 });
 const MenuBackground = style('div', () => {
@@ -90,10 +91,11 @@ interface IMenuProps {
   hideTitle?: boolean;
   dark?: boolean;
   children?: any;
+  disableCloseSound?: boolean;
 }
 const MenuBox = (props: IMenuProps) => {
   const [closeButtonActive, setCloseButtonActive] = useState(false);
-  useInputEventStack(ev => {
+  useKeyboardEventListener(ev => {
     if (
       isCancelKey(ev.key) &&
       !props.hideClose &&
@@ -101,7 +103,9 @@ const MenuBox = (props: IMenuProps) => {
     ) {
       setCloseButtonActive(true);
       setTimeout(() => {
-        playSoundName('menu_choice_close');
+        if (!props.disableCloseSound) {
+          playSoundName('menu_choice_close');
+        }
         setCloseButtonActive(false);
         props.onClose();
       }, 100);

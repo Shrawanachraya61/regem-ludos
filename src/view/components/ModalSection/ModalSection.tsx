@@ -186,14 +186,14 @@ const TutorialMagic = (props: ICustomModalProps) => {
         To use a <b>Magic</b> action, however, a character must prepare the
         action first by entering into a CASTING state. During this state, a
         character cannot act until the CASTING is complete, or that character is
-        interrupted. When a character is interrupted, the spell is stopped and the
-        character's action timer is reset.
+        interrupted. When a character is interrupted, the spell is stopped and
+        the character's action timer is reset.
       </p>
       <p>
         While a character is CASTING, they can be interrupted by taking damage
-        from a character with a <b> Swing </b> action. However, a <b>Ranged</b> action
-        does not interrupt a cast unless it otherwise states on the action
-        description.
+        from a character with a <b> Swing </b> action. However, a <b>Ranged</b>{' '}
+        action does not interrupt a cast unless it otherwise states on the
+        action description.
       </p>
     </DialogBox>
   );
@@ -225,7 +225,7 @@ const TutorialArmor = (props: ICustomModalProps) => {
   );
 };
 
-const InfoModal = (props: ICustomModalProps) => {
+export const InfoModal = (props: ICustomModalProps) => {
   const body =
     typeof props.body === 'string' ? <p>{props.body}</p> : props.body;
   return (
@@ -235,7 +235,7 @@ const InfoModal = (props: ICustomModalProps) => {
   );
 };
 
-const ConfirmModal = (props: ICustomModalProps) => {
+export const ConfirmModal = (props: ICustomModalProps) => {
   const body =
     typeof props.body === 'string' ? <p>{props.body}</p> : props.body;
   return (

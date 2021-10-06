@@ -287,7 +287,7 @@ export const playMusic = async (
     for (let i = 0; i < fadeMs; i += fadeStep) {
       const maxVolume = getVolume(SoundType.MUSIC);
       sound.volume = normalizeClamp(i, 0, fadeMs, 0, maxVolume);
-      await timeoutPromise(fadeStep);
+      await new Promise(resolve => setTimeout(resolve, fadeStep));
     }
     sound.volume = getVolume(SoundType.MUSIC);
   }
@@ -307,7 +307,7 @@ export const stopMusic = async (musicName: string, fadeMs?: number) => {
       for (let i = 0; i < fadeMs; i += fadeStep) {
         const maxVolume = getVolume(SoundType.MUSIC);
         sound.volume = maxVolume - normalizeClamp(i, 0, fadeMs, 0, maxVolume);
-        await timeoutPromise(fadeStep);
+        await new Promise(resolve => setTimeout(resolve, fadeStep));
       }
       sound.pause();
       sound.volume = getVolume(SoundType.MUSIC);
@@ -327,6 +327,7 @@ export const stopCurrentMusic = async (fadeMs?: number) => {
       stopMusic(i, fadeMs);
     }
   }
+  return new Promise(resolve => setTimeout(resolve, fadeMs ?? 0));
 };
 
 export const playSoundName = ((window as any).playSoundName = (

@@ -39,6 +39,7 @@ export const init = () => {
     staggerSoundName: 'battle_staggered1',
     stats: {
       ...battleStatsCreate(),
+      STAGGER: 15,
       HP: 50,
     },
     facing: Facing.DOWN,
@@ -60,7 +61,8 @@ export const init = () => {
     weaponEquipTypes: [WeaponType.BOW, WeaponType.WAND],
     stats: {
       ...battleStatsCreate(),
-      HP: 45,
+      STAGGER: 12,
+      HP: 35,
     },
     speed: 1.5,
   };

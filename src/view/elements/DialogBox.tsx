@@ -2,7 +2,7 @@
 import { h, Fragment } from 'preact';
 import { colors, style } from 'view/style';
 import Button, { ButtonType } from 'view/elements/Button';
-import { useInputEventStack } from 'view/hooks';
+import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { isCancelKey, isConfirmKey } from 'controller/events';
 import { useEffect, useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
@@ -103,7 +103,7 @@ const DialogBox = (props: IDialogProps) => {
     }, 100);
   };
 
-  useInputEventStack(
+  useKeyboardEventListener(
     ev => {
       if (isClosing || confirmActive || cancelActive) {
         return;

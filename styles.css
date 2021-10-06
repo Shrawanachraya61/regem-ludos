@@ -57,6 +57,18 @@ body {
   }
 }
 
+@keyframes bob {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
 #page-loading {
   display: flex;
   position: fixed;
@@ -94,4 +106,12 @@ body {
   align-items: center;
   flex-direction: column;
   color: #ffce00;
+}
+
+.bob-load {
+  animation: bob 3s ease-out infinite;
+}
+
+.spin-load-fast {
+  animation: spin 1.5s linear infinite;
 }

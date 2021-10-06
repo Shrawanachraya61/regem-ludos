@@ -67,7 +67,7 @@ import {
   sceneIsPlaying,
 } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
-import { TriggerType } from 'lib/rpgscript';
+import { scriptExists, TriggerType } from 'lib/rpgscript';
 import {
   hideSection,
   hideSections,
@@ -98,8 +98,10 @@ import { RenderObject } from 'model/render-object';
 import { Timer } from 'model/utility';
 import { createEmotionBubbleParticle } from 'model/particle';
 import { EmotionBubble } from 'db/particles';
-import { getUiInterface } from 'view/ui';
-import { playSoundName } from 'model/sound';
+import { getUiInterface, uiInterface } from 'view/ui';
+import { playMusic, playSoundName } from 'model/sound';
+
+let overworldKeysDisabledOnLoadVal = false;
 
 export const initiateOverworld = (
   player: Player,
@@ -159,30 +161,33 @@ export const initiateOverworld = (
     if (overworld.loadTriggerName) {
       try {
         console.log('Invoke overworld trigger');
-
-        callScript(getCurrentScene(), overworld.loadTriggerName);
-
-        // const scriptCaller = invokeTrigger(
-        //   getCurrentScene(),
-        //   overworld.loadTriggerName,
-        //   TriggerType.ACTION
-        // );
-        // if (scriptCaller !== null) {
-        //   console.log('calling script caller');
-        //   callTriggerScriptCaller(scriptCaller);
-        // } else {
-        //   console.log(
-        //     'no overworld script caller found for trigger:',
-        //     overworld.loadTriggerName,
-        //     'action'
-        //   );
-        // }
+        if (scriptExists(overworld.loadTriggerName)) {
+          callScriptDuringOverworld(overworld.loadTriggerName as string, {
+            disableKeys: true,
+            hideUi: false,
+            setPlayerIdle: true,
+            pause: false,
+          });
+        } else {
+          console.log(
+            'WARNING overworld load trigger script does not exist:',
+            overworld.loadTriggerName
+          );
+        }
       } catch (e) {
         console.error(e);
       }
     }
 
     overworld.playerIsCollidingWithInteractable = true;
+    if (overworld.music) {
+      playMusic(overworld.music, true, 500);
+    }
+
+    overworldKeysDisabledOnLoadVal = true;
+    setTimeout(() => {
+      overworldKeysDisabledOnLoadVal = false;
+    }, 500);
 
     return overworld;
   }
@@ -405,7 +410,7 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
             );
           }
         }
-        playSoundName('dialog_start');
+        // playSoundName('dialog_start');
         await callTriggerScriptCaller(scriptCaller, {
           hideUi: true,
           disableKeys: true,
@@ -456,18 +461,23 @@ const checkAndCallTreasure = async (): Promise<boolean> => {
 
 export const overworldKeyHandler = async (ev: KeyboardEvent) => {
   const overworld = getCurrentOverworld();
-  const scene = getCurrentScene();
   const isPaused = getIsPaused();
-  if (isOverworldUpdateKeysDisabled()) {
+
+  if (
+    isOverworldUpdateKeysDisabled() ||
+    !getUiInterface().appState.sections.includes(AppSection.Debug) ||
+    getUiInterface().appState.sections.includes(AppSection.Menu) ||
+    overworldKeysDisabledOnLoadVal
+  ) {
     return;
   }
 
   if (isCancelKey(ev.key)) {
-    if (!isPaused && !sceneIsPlaying(scene)) {
+    if (!isPaused) {
       pause();
       showMenu(() => {
         unpause();
-        showSection(AppSection.Debug, true);
+        hideSection(AppSection.Menu);
       });
     }
     return;
@@ -496,7 +506,10 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     if (!isPaused) {
       pause();
       showSettings(() => {
-        showSection(AppSection.Debug, true);
+        const isCutsceneRunning = sceneIsPlaying(getCurrentScene());
+        if (!isCutsceneRunning) {
+          showSection(AppSection.Debug, true);
+        }
         unpause();
       });
     }
