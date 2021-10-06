@@ -1,4 +1,7 @@
+<<<<<<< Updated upstream
 // this exists because of the number of times I've accidentally written +:none()
+=======
+>>>>>>> Stashed changes
 @none
 +none();
 
@@ -395,6 +398,7 @@ step,this
 +playSound(emotion);
 +spawnEmotionParticleAtCharacter([ARG0], yawn);
 +waitMS(1000);
+<<<<<<< Updated upstream
 @serious
 +none()
 +playSound(emotion);
@@ -403,6 +407,8 @@ step,this
 @minorPause
 +none();
 +waitMS(1000);
+=======
+>>>>>>> Stashed changes
 @nervous
 +setConversationSpeaker(none);
 +playSound('jump_cutscene');

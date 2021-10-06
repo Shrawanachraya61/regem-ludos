@@ -1,0 +1,74 @@
+
+#Floor1PrimaryGuy1
+action,?once():Floor1PrimaryGuy1-1
+action,Floor1PrimaryGuy1-2
+@Floor1PrimaryGuy1-1
++setConversation(Ada);
+Floor1PrimaryGuy1: "It's nice to come hang out at an arcade on a day like this."
+Floor1PrimaryGuy1: "High schooleres like yourself have such a good place available to you here."
+Floor1PrimaryGuy1: "If I had this kind of facility in my younger years, I'd have been here <shake> every day </>!"
++:wink(Floor1PrimaryGuy1);
+Floor1PrimaryGuy1: "And with that kind of practice, you could bet I'd beat every <color=BLUE>high score</> in here."
+Floor1PrimaryGuy1: "<cascade-letters italic>Mark. My. Words.. <cascade>I'd easily trump that <color=ORANGE>Carl-Arnold<casdcade> fella I keep hearing about."
++endConversation();
+@Floor1PrimaryGuy1-1
++setConversation(Ada);
+Floor1PrimaryGuy1: "This place is pretty cool, huh?"
++endConversation();
+
+#Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo
+action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
+action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
++setConversation(Ada);
+Floor1PrimaryGuy2: "Did I tell you? My neice is going to be attending the nearby high school coming this next year!"
+Floor1PrimaryGirl1: "The nearby one? <color=ORANGE>Erran Valley<cascade>? Isn't that a prep school that's really hard to get into?"
++:happy(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "That's right!  She worked hard to pass the entrance exams.  I'm really proud of her."
++:exclaim(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "That's awesome!  Although, I heard that some... <color=LIGHTBLUE>weird stuff<cascade> goes on there sometimes."
++:question(Floor1PrimaryGuy2)
+Floor1PrimaryGuy2: "Weird? <delay=300 cascade-letters> How?"
+Floor1PrimaryGirl1: "Well, some of the state's richest kids go there, so they have a huge budget for extracirriculars."
+Floor1PrimaryGirl1: "Apparantly they've got this whole league set up for some virtual esport and the whole school attends the championships every year."
++:exclaim(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "That's not weird; that's awesome!"
+Floor1PrimaryGuy2: "I wish my high school did that!"
++:nervous(Floor1PrimaryGirl1):
+Floor1PrimaryGirl1: "It's a little weird!  Most schools don't do that!"
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
++setConversation(Ada);
+Floor1PrimaryGuy2: "Did you hear anything else weird about <color=ORANGE>Erran Valley</>?"
++:nervous(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "<cascade-letters>Well...  <delay=200 cascade>There's the rumor that the father of one of the students there is a higher up in that <color=PURPLE> shady science company, Tyzon Corp</>."
+Floor1PrimaryGirl1: "Apparantly the student has been <color=BLUE>genetically modified</> to be, like, smarter than everybody else or something."
++:flat(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "You're not serious, are you?"
+Floor1PrimaryGirl1: "What?  I told it you was a <italic> rumor</>!"
++endConversation();
++?func('isInParty', Conscience): {
+  +walkToMarker(Ada, MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo-convo);
+  +:utils-start-Conscience-dialogue();
+  Conscience: "She wasn't talking about <color=ORANGE>Father</>, was she?"
+  +:bored(Ada);
+  Ada: "I do not know, Conscience.  Frankly, I do not care."
+  Ada: "You know full well that I dislike such idle heresay."
+  +:happy(Conscience);
+  Conscience: "Yeah!  That's true."
+  Conscience: "I'm just surprised by how wrong that rumor is, if she was indeed talking about <color=ORANGE>Father</>."
+  +:utils-stop-Conscience-dialogue();
+}
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-3
++setConversation(Ada);
+Floor1PrimaryGirl1: "I didn't realize your brother was well-off enough to send his daughter to <color=ORANGE>Erran Valley</>."
++:teardrop(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "He's not, really."
+Floor1PrimaryGuy2: "You don't actually have to be rich to attend.  Just smart."
+Floor1PrimaryGuy2: "They make you take this really difficult test that weeds out most kids."
++:wink(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "Well, judging by the number of rich kids there, it seems like you can pay for smarts."
++teardrop(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "Heh.  Heh.  Heh."
++endConversation();
