@@ -782,9 +782,9 @@ Conscience: "Hey, what's that?"
 Ada: "Some kind of pyramid?"
 Conscience: "It seems like one of those places where you can <color=BLUE cascade> save the game</>."
 +:question(Ada);
-Ada: "What what? <delay=250 cascade> What game? <delay=250 cascade> What are you talking about?"
+Ada: "What what? <delay=500 cascade> It does? <delay=500 cascade> How do you know that?"
 +lookAtEachOther(Ada, Conscience);
-+:wink(Conscience);
++:flat(Conscience);
 Conscience: "Just trust me.  I know these sorts of things."
 +:happy(Conscience);
 Conscience: "C'mon.  Try it out!"

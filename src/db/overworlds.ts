@@ -13,6 +13,8 @@ import * as floor1Outside from 'map/floor1-outside.json';
 import * as floor1Atrium from 'map/floor1-atrium.json';
 import * as floor1Bowling from 'map/floor1-bowlingalley.json';
 import * as floor1Primary from 'map/floor1-primary.json';
+import * as floor1West1 from 'map/floor1-west1.json';
+import * as floor1West2 from 'map/floor1-west2.json';
 import * as floor1TutEntrance from 'map/floor1-tut-entrance.json';
 import * as floor1TutVR1 from 'map/floor1-tut-vr1.json';
 import * as floor1TutVR2 from 'map/floor1-tut-vr2.json';
@@ -36,6 +38,8 @@ const overworldToRoom = {
   floor1Atrium,
   floor1Bowling,
   floor1Primary,
+  floor1West1,
+  floor1West2,
   floor1TutEntrance,
   floor1TutVR1,
   floor1TutVR2,
@@ -157,6 +161,14 @@ export const init = async () => {
     backgroundColor: colors.BLACK,
     music: 'music_atrium',
   });
+  Object.assign(exp.floor1West1 ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_atrium',
+  });
+  Object.assign(exp.floor1West2 ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_atrium',
+  });
 
   Object.assign(exp.floor1Bowling ?? {}, {
     // backgroundColor: colors.BLACK,
@@ -189,6 +201,11 @@ export const init = async () => {
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
   });
   Object.assign(exp.floor1TutVR3West2 ?? {}, {
+    backgroundColor: colors.DARKBLUE,
+    backgroundImage: 'bg-clouds',
+    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  });
+  Object.assign(exp.battleTut1 ?? {}, {
     backgroundColor: colors.DARKBLUE,
     backgroundImage: 'bg-clouds',
     backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,

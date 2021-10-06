@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="112">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="117">
  <editorsettings>
   <export target="../src/map/floor1-primary.json" format="json"/>
  </editorsettings>
@@ -105,5 +105,10 @@
   <object id="109" name="Floor1PrimaryGirl1" gid="193" x="379.5" y="104.5" width="32" height="32"/>
   <object id="110" name="MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo" gid="194" x="425" y="179" width="32" height="32"/>
   <object id="111" name="MarkerPlayer" gid="194" x="415" y="207" width="32" height="32"/>
+  <object id="112" name="MarkerFromWest1" gid="194" x="397" y="67" width="32" height="32"/>
+  <object id="113" name="#floor1-OpenRedDoorsBCK" x="422" y="34" width="48" height="28"/>
+  <object id="114" name="MarkerRedDoorBCK1" gid="194" x="441" y="43" width="32" height="32"/>
+  <object id="115" name="MarkerRedDoorBCK2" gid="194" x="457.5" y="42.5" width="32" height="32"/>
+  <object id="116" name="#floor1-transitionToFloor1West1FromFloor1Primary" x="429.5" y="14.5" width="32.5" height="19.5"/>
  </objectgroup>
 </map>

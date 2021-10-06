@@ -148,6 +148,64 @@
                  "width":32,
                  "x":415,
                  "y":207
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":112,
+                 "name":"MarkerFromWest1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":397,
+                 "y":67
+                }, 
+                {
+                 "height":28,
+                 "id":113,
+                 "name":"#floor1-OpenRedDoorsBCK",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":422,
+                 "y":34
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":114,
+                 "name":"MarkerRedDoorBCK1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":441,
+                 "y":43
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":115,
+                 "name":"MarkerRedDoorBCK2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":457.5,
+                 "y":42.5
+                }, 
+                {
+                 "height":19.5,
+                 "id":116,
+                 "name":"#floor1-transitionToFloor1West1FromFloor1Primary",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32.5,
+                 "x":429.5,
+                 "y":14.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -156,7 +214,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":112,
+ "nextobjectid":117,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

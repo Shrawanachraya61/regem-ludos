@@ -18,6 +18,26 @@ step,this
 @this
 +:utils-change-room(floor1Atrium, MarkerFromPrimary);
 
+#floor1-transitionToFloor1PrimaryFromFloor1West1
+step,this
+@this
++:utils-change-room(floorPrimary, MarkerFromWest1);
+
+#floor1-transitionToFloor1West1FromFloor1Primary
+step,this
+@this
++:utils-change-room(floor1West1, MarkerFromPrimary);
+
+#floor1-transitionToFloor1West2FromFloor1West1
+step,this
+@this
++:utils-change(floor1West2, MarkerFromFloor1West1);
+
+#floor1-transitionToFloor1West1FromFloor1West2
+step,this
+@this
++:utils-change(floor1West1, MarkerFromFloor1West2);
+
 #floor1-atriumOpenBowlingDoor
 step-first,floor1-atriumOpenBowlingDoorOpen
 step-off,floor1-atriumOpenBowlingDoorClose
@@ -563,9 +583,12 @@ Floor1AtriumNPC2: "I'm sure something just held him up."
 +setFacing(Floor1AtriumNPC2, leftdown);
 Floor1AtriumNPC1: "If he's not here in the next three minutes, I'm going to that <color=BLUE>Vortex</> machine and not leaving until I have the high score."
 +lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
++:angry(Floor1AtriumNPC1)
 Floor1AtriumNPC1: "I mean it.  I'm sick of waiting around for you guys."
++:teardrop(Floor1AtriumNPC2);
 Floor1AtriumNPC2: "Isn't this supposed to be a date or something?"
 Floor1AtriumNPC2: "I'm supposed to introduce him and then go somewhere else."
++:grumpy(Floor1AtriumNPC1);
 Floor1AtriumNPC1: "Well this <italic>date</> sucks."
 Floor1AtriumNPC1: "He's got three minutes, then <delay=300>I am outta here<cascade> and you guys can go on the date together."
 +endConversation();
@@ -577,3 +600,27 @@ action,this
 +lookAtEachOther(Ada, FloorAtriumWalkingNPC);
 FloorAtriumWalkingNPC: "Sometimes I just like to come in here and walk around."
 +endConversation();
+
+#floor1-OpenRedDoorsFWD
+step-first,floor1-OpenRedDoorsFWDOpen
+step-off,floor1-OpenRedDoorsFWDClose
+@floor1-OpenRedDoorsFWDOpen
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:openDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+@floor1-OpenRedDoorsFWDClose
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:closeDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+
+#floor1-OpenRedDoorsBCK
+step-first,floor1-OpenRedDoorsFWDOpen
+step-off,floor1-OpenRedDoorsBCKClose
+@floor1-OpenRedDoorsBCDOpen
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorBCK1, RED_DOOR_BCKL);
++:openDoor(MarkerRedDoorBCK2, RED_DOOR_BCKR);
+@floor1-OpenRedDoorsBCKClose
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorBCK1, RED_DOOR_BCKL);
++:closeDoor(MarkerRedDoorBCK2, RED_DOOR_BCKR);
