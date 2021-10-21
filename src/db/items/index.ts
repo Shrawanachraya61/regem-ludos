@@ -1,24 +1,25 @@
-import { h } from 'preact';
 import { init as initWeapons } from './weapons';
 import { init as initQuestItems } from './quest';
 import { init as initAccessories } from './accessories';
 import { init as initConsumables } from './consumables';
+import { init as initArmor } from './armor';
 
-import DefaultIcon from 'view/icons/Help';
 import { BattleAction } from 'controller/battle-actions';
 import { BattleStats } from 'model/battle';
 
 export interface ItemTemplate {
   name?: string;
   label: string;
+  sortName?: string;
   description: string;
   effectDescription?: string;
   type?: ItemType;
   weaponType?: WeaponType;
-  icon?: (...args: any[]) => h.JSX.Element;
+  icon?: string;
   modifiers?: Partial<BattleStats & { armor: number }>;
   skills?: BattleAction[];
-  onUse?: (item: Item, isBattle?: boolean) => Promise<void>;
+  onUse?: (item: Item, isBattle?: boolean) => Promise<boolean>;
+  onAcquire?: (item: Item) => Promise<void>;
 }
 
 export type Item = ItemTemplate;
@@ -28,6 +29,8 @@ export enum ItemType {
   QUEST = 'quest',
   JUNK = 'junk',
   USABLE = 'usable',
+  USABLE_BATTLE = 'usable-battle',
+  USABLE_OVERWORLD = 'usable-overworld',
   WEAPON = 'weapon',
   ARMOR = 'armor',
   ACCESSORY = 'accessory',
@@ -68,10 +71,13 @@ export const init = () => {
   initQuestItems(exp);
   initAccessories(exp);
   initConsumables(exp);
+  initArmor(exp);
 
   for (const i in exp) {
     const item = exp[i];
-    item.name = i;
+    if (!item.name) {
+      item.name = i;
+    }
 
     if (!item.type) {
       item.type = ItemType.NONE;
@@ -80,7 +86,7 @@ export const init = () => {
     if (!item.icon) {
       switch (item.type) {
       }
-      item.icon = DefaultIcon;
+      item.icon = 'help';
     }
   }
 };

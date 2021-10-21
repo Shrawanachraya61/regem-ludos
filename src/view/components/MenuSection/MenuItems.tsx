@@ -2,10 +2,10 @@
 import { h } from 'preact';
 import { colors, keyframes, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
-import { Player } from 'model/player';
+import { Player, playerGetItemCount } from 'model/player';
 import { useState } from 'preact/hooks';
 import ItemDescription from '../ItemDescription';
-import { getAuxKeyLabel, isAuxKey } from 'controller/events';
+import { getAuxKeyLabel, isAuxKey, isCancelKey } from 'controller/events';
 
 import PurseIcon from 'view/icons/Purse';
 import FlowerIcon from 'view/icons/Flower';
@@ -13,9 +13,10 @@ import SwordIcon from 'view/icons/Sword';
 import PotionIcon from 'view/icons/Potion';
 import ArrowIcon from 'view/icons/Arrow';
 import { playSound, playSoundName } from 'model/sound';
-import { ItemType } from 'db/items';
+import { ItemTemplate, ItemType } from 'db/items';
 import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { sortItems } from 'utils';
+import { itemIsCurrentlyUsable } from 'model/item';
 
 const MAX_HEIGHT = '628px';
 
@@ -63,12 +64,12 @@ const FilterItemsWrapper = style('div', {
 
 const FilterItem = style('div', (props: { highlighted: boolean }) => {
   return {
-    margin: '1px',
+    margin: '2px',
     boxSizing: 'border-box',
     border: '1px solid ' + colors.WHITE,
     background: props.highlighted ? colors.DARKBLUE : colors.DARKGREY,
     padding: '4px',
-    width: '96px',
+    width: '99px',
     cursor: 'pointer',
     '&:hover': {
       borderColor: colors.YELLOW,
@@ -104,15 +105,19 @@ interface IMenuItemsProps {
 }
 
 const MenuItems = (props: IMenuItemsProps) => {
-  const [filterIndex, setFilterIndex] = useState(0);
+  const [filterIndex, setFilterIndex] = useState(1);
   const [menuOpen, setMenuOpen] = useState(true);
 
   const backpack = props.player.backpack;
-  const filteredBackpack = backpack
+  const filteredBackpackA = backpack
     .filter(item => {
       switch (filterIndex) {
         case 1: {
-          return item.type === ItemType.USABLE;
+          return (
+            item.type === ItemType.USABLE ||
+            item.type === ItemType.USABLE_BATTLE ||
+            item.type === ItemType.USABLE_OVERWORLD
+          );
         }
         case 2: {
           return [ItemType.WEAPON, ItemType.ARMOR, ItemType.ACCESSORY].includes(
@@ -129,6 +134,14 @@ const MenuItems = (props: IMenuItemsProps) => {
     })
     .sort(sortItems);
 
+  const filteredBackpack: ItemTemplate[] = [];
+  for (let i = 0; i < filteredBackpackA.length; i++) {
+    const item = filteredBackpackA[i];
+    if (!filteredBackpack.find(item2 => item2.name === item.name)) {
+      filteredBackpack.push(item);
+    }
+  }
+
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const selectedItem = filteredBackpack[selectedItemIndex];
 
@@ -143,8 +156,8 @@ const MenuItems = (props: IMenuItemsProps) => {
     }, 20);
   };
 
-  const handleAuxClick = async () => {
-    if (selectedItem?.onUse) {
+  const handleItemClick = async () => {
+    if (itemIsCurrentlyUsable(selectedItem) && selectedItem.onUse) {
       setMenuOpen(false);
       // playSoundName('menu_select');
       await selectedItem.onUse(selectedItem);
@@ -152,6 +165,7 @@ const MenuItems = (props: IMenuItemsProps) => {
     }
   };
 
+  let descScrollToggle = true;
   useKeyboardEventListener(
     ev => {
       if (menuOpen) {
@@ -159,6 +173,18 @@ const MenuItems = (props: IMenuItemsProps) => {
           setFilter((filterIndex - 1 + 4) % 4);
         } else if (ev.key === 'ArrowRight') {
           setFilter((filterIndex + 1) % 4);
+        } else if (isAuxKey(ev.key)) {
+          // HACK: Toggle scroll of description when pressing AUX button.
+          // This doesn't even work properly, somebody should fix this.
+          const descDiv = document.getElementById('item-description-container');
+          if (descDiv) {
+            if (descScrollToggle) {
+              descDiv.scrollTop = 9999;
+            } else {
+              descDiv.scrollTop = 0;
+            }
+            descScrollToggle = !descScrollToggle;
+          }
         }
       }
     },
@@ -185,7 +211,7 @@ const MenuItems = (props: IMenuItemsProps) => {
       icon: PurseIcon,
     },
     {
-      label: 'Usable',
+      label: 'Consumable',
       icon: PotionIcon,
     },
     {
@@ -265,7 +291,8 @@ const MenuItems = (props: IMenuItemsProps) => {
                       i === selectedItemIndex ? colors.DARKGREEN : 'unset',
                   }}
                 >
-                  {item.label}
+                  {item.label} (
+                  {playerGetItemCount(props.player, item.name as string)})
                 </div>
               ),
               value: i,
@@ -273,12 +300,11 @@ const MenuItems = (props: IMenuItemsProps) => {
           })}
           onItemClickSound="menu_select"
           onItemClick={() => {
-            handleAuxClick();
+            handleItemClick();
           }}
           onItemHover={(val: number) => {
             setSelectedItemIndex(val);
           }}
-          onAuxClick={handleAuxClick}
         />
       </LeftDiv>
       <RightDiv>
@@ -288,7 +314,7 @@ const MenuItems = (props: IMenuItemsProps) => {
             showName={true}
             onUse={() => {
               playSoundName('menu_select');
-              handleAuxClick();
+              handleItemClick();
             }}
           />
         </DescriptionWrapper>

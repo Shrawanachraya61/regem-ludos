@@ -5,6 +5,7 @@ import { TransformEase, Transform, Timer } from 'model/utility';
 
 import * as battle1Json from 'map/battle1.json';
 import * as battleTut1 from 'map/battle-tut1.json';
+import * as battleTutBoss from 'map/battle-tutBoss.json';
 
 import * as testJson from 'map/test.json';
 import * as test2Json from 'map/test2.json';
@@ -21,6 +22,9 @@ import * as floor1TutVR2 from 'map/floor1-tut-vr2.json';
 import * as floor1TutVR3 from 'map/floor1-tut-vr3.json';
 import * as floor1TutVR3West from 'map/floor1-tut-vr3-west.json';
 import * as floor1TutVR3West2 from 'map/floor1-tut-vr3-west2.json';
+import * as floor1TutVR3East from 'map/floor1-tut-vr3-east.json';
+import * as floor1TutVRPreBoss from 'map/floor1-tut-vr-pre-boss.json';
+import * as floor1TutVRBoss from 'map/floor1-tut-vr-boss.json';
 import * as floor2South from 'map/floor2-south.json';
 import * as floor2GuestroomHallway from 'map/floor2-guestroom-hallway.json';
 import * as floor2Cafeteria from 'map/floor2-cafeteria.json';
@@ -46,6 +50,9 @@ const overworldToRoom = {
   floor1TutVR3,
   floor1TutVR3West,
   floor1TutVR3West2,
+  floor1TutVR3East,
+  floor1TutVRPreBoss,
+  floor1TutVRBoss,
 
   floor2South,
   floor2GuestroomHallway,
@@ -58,6 +65,7 @@ const overworldToRoom = {
 
   battle1: battle1Json,
   battleTut1,
+  battleTutBoss,
 
   bowlingAlleyStandalone,
 };
@@ -180,34 +188,26 @@ export const init = async () => {
     // music: 'music_atrium',
   });
 
-  Object.assign(exp.floor1TutVR1 ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-  });
-  Object.assign(exp.floor1TutVR2 ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-  });
-  Object.assign(exp.floor1TutVR3 ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-  });
-  Object.assign(exp.floor1TutVR3West ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-  });
-  Object.assign(exp.floor1TutVR3West2 ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-  });
-  Object.assign(exp.battleTut1 ?? {}, {
-    backgroundColor: colors.DARKBLUE,
-    backgroundImage: 'bg-clouds',
-    backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+  [
+    'floor1TutVR1',
+    'floor1TutVR2',
+    'floor1TutVR3',
+    'floor1TutVR3West',
+    'floor1TutVR3West2',
+    'floor1TutVR3East',
+    'floor1TutVRPreBoss',
+    'floor1TutVRBoss',
+    'battleTut1',
+    'battleTutBoss',
+  ].forEach((name, i) => {
+    Object.assign(exp[name] ?? {}, {
+      backgroundColor: colors.DARKBLUE,
+      backgroundImage: 'bg-clouds',
+      backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
+      music: i <= 1 ? 'music_tutorial' : 'music_tutorial_dungeon',
+    });
+    if (name.includes('battle')) {
+      exp[name].music = undefined;
+    }
   });
 };

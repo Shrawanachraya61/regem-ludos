@@ -94,7 +94,7 @@ Conscience: "There's bound to be somebody around here who can help."
 
 @floor1-Skye_reject
 +setConversation2('Ada', 'Skye');
-Skye: "I am not leaving this spot until this supid machine gives me a drink!"
+Skye: "I am not leaving this spot until this stupid machine gives me a drink!"
 // Skye kicks the vending machine
 Skye: "Grr.."
 +endConversation();
@@ -378,3 +378,4 @@ Shopkeep: "<cascade-letters>......"
 +panCameraBackToPlayer(500,false)
 Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
 Shopkeep: "I have <shake>no idea</> what she wants!</>"
++endConversation();

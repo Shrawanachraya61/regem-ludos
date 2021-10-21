@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="161">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="170">
  <editorsettings>
   <export target="../src/map/floor1-tut-vr3-west2.json" format="json"/>
  </editorsettings>
@@ -83,9 +83,9 @@
 0,0,0,0,0,0,0,0,0,0,143,143,143,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,148,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,153,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,148,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,153,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -100,5 +100,12 @@
   <object id="158" name="MarkerPlayer" gid="194" x="172" y="344" width="32" height="32"/>
   <object id="159" name="MarkerDoorFromVR3West" gid="200" x="140" y="476" width="32" height="32"/>
   <object id="160" name="#floor1-tut-vr3-west2-to-vr3-west" x="128" y="484" width="20" height="28"/>
+  <object id="161" name="#floor1-tut-West2Pool" x="128.5" y="342.5" width="32.5" height="27"/>
+  <object id="164" name="MarkerAda" gid="194" x="148" y="328" width="32" height="32"/>
+  <object id="165" name="MarkerConscience" gid="194" x="146.5" y="299.5" width="32" height="32"/>
+  <object id="166" name="#utils-heal-pool" x="159" y="287" width="48" height="48"/>
+  <object id="167" x="309" y="349"/>
+  <object id="168" name="MarkerHealPool" gid="194" x="183" y="311" width="32" height="32"/>
+  <object id="169" name="ItemZoeBracelet" gid="201" x="231" y="359" width="32" height="32"/>
  </objectgroup>
 </map>

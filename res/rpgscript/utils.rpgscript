@@ -1,37 +1,45 @@
-<<<<<<< Updated upstream
 // this exists because of the number of times I've accidentally written +:none()
-=======
->>>>>>> Stashed changes
 @none
 +none();
 
 // ARG0 = name of map to transition to
 // ARG1 = name of marker to place player at
 @utils-change-room
++setConversationWithoutBars(Ada);
 +setAnimationState('Ada', 'idle');
 +fadeOut(1000, true);
 +waitMS(100);
 +playSound('change_room');
 +waitMS(900);
 +changeRoom([ARG0], [ARG1]);
-+fadeIn(1000, true);
++fadeIn(900, true);
++endConversation(100);
 @changeRoom
 +callScript(utils-change-room,[ARG0],[ARG1]);
 
+// ARG0 = boolean: skip the walkOffset
 @utils-start-Conscience-dialogue
 +setFacing('Ada', down);
-+waitMS(250);
 +spawnCharacterAtCharacter('Conscience', 'Ada');
-+walkToOffset('Conscience', 16, 16);
-+lookAtEachOther('Ada', 'Conscience');
-+endConversation();
-+setConversation2('Ada', 'Conscience');
++?isnot([ARG0]):{
+  +waitMS(250);
+  +walkToOffset('Conscience', 16, 16);
+  +lookAtEachOther('Ada', 'Conscience');
+  +endConversation();
+  +setConversation2('Ada', 'Conscience');
+}
++?is([ARG0]):{
+  +setConversation2('Ada', 'Conscience', 0);
+}
 
+// ARG0 = boolean: skip the walkOffset
 @utils-start-Conscience-dialogue-single
 +setFacing('Ada', down);
 +waitMS(250);
 +spawnCharacterAtCharacter('Conscience', 'Ada');
-+walkToOffset('Conscience', 16, 16);
++?isnot([ARG0]):{
+  +walkToOffset('Conscience', 16, 16);
+}
 +lookAtEachOther('Ada', 'Conscience');
 
 @utils-stop-Conscience-dialogue
@@ -69,6 +77,18 @@ action,utils-save-point-activate-action
 step,this
 @this
 +changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+
+#utils-heal-pool
+step-first,this
+action,utils-heal-pool-action
+@this
++setCharacterText('Press (X) to imbibe the liquid in the pool.');
+@utils-heal-pool-action
++playSound(rez);
+// +changeTileAtMarker(MarkerHealPool, HEAL_POOL_INACTIVE);
++modifyPartyHP(99999);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_BUFF, Ada, normal);
++waitMS(1000);
 
 @utils-vr-step
 +playSound(beep);
@@ -172,6 +192,27 @@ step,this
 @lookAround
 +callScript(utils-character-look-around,[ARG0]);
 
+// ARG0 = name of character to look around
+@lookAroundFast
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+
 // ARG0 = name of character to spin
 @utils-character-spin
 +setConversationSpeaker(none);
@@ -207,10 +248,6 @@ step,this
 +waitMS(33);
 +offsetCharacter([ARG0], 0, 0, -2);
 +waitMS(33);
-+offsetCharacter([ARG0], 0, 0, 2);
-+waitMS(33);
-+offsetCharacter([ARG0], 0, 0, -2);
-+waitMS(33);
 +offsetCharacter([ARG0], 0, 0, 0);
 +waitMS(300);
 @shakeZ
@@ -218,10 +255,6 @@ step,this
 
 @utils-character-shake-x
 +setConversationSpeaker(none);
-+offsetCharacter([ARG0], 2, 0, 0);
-+waitMS(33);
-+offsetCharacter([ARG0], -2, 0, 0);
-+waitMS(33);
 +offsetCharacter([ARG0], 2, 0, 0);
 +waitMS(33);
 +offsetCharacter([ARG0], -2, 0, 0);
@@ -398,7 +431,6 @@ step,this
 +playSound(emotion);
 +spawnEmotionParticleAtCharacter([ARG0], yawn);
 +waitMS(1000);
-<<<<<<< Updated upstream
 @serious
 +none()
 +playSound(emotion);
@@ -407,8 +439,8 @@ step,this
 @minorPause
 +none();
 +waitMS(1000);
-=======
->>>>>>> Stashed changes
+@smallPause
++:minorPause();
 @nervous
 +setConversationSpeaker(none);
 +playSound('jump_cutscene');

@@ -155,6 +155,7 @@ interface TiledObject {
     value: string;
   }[];
   gid?: number;
+  id?: number;
 }
 
 interface TiledTileset {
@@ -299,6 +300,22 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     room.height
   );
 
+  const applyTileTemplate = (tile: Tile) => {
+    const tileTemplate = getReplacementTemplate(tile.sprite);
+    if (tileTemplate && tile.ro) {
+      tile.ro.sprite = tileTemplate.baseSprite;
+      tile.isWall = tileTemplate.isWall ?? tile.isWall;
+      if (tileTemplate?.animName) {
+        tile.animName = tileTemplate.animName;
+        tile.ro.anim = createAnimation(tileTemplate.animName);
+        tile.ro.anim.start();
+      }
+      if (tileTemplate.onAfterCreation) {
+        tileTemplate.onAfterCreation(tile);
+      }
+    }
+  };
+
   const addTile = (tiledTileId: number, i: number) => {
     // Tiled sets id to 0 when no tile exists
     if (tiledTileId === 0) {
@@ -365,6 +382,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         const roFloor = createTileRenderObject(floorTile);
         floorTile.ro = roFloor;
         floorTile.ro.sortY -= 1;
+        applyTileTemplate(floorTile);
         tile.floorTileBeneath = floorTile;
         room.renderObjects.push(roFloor);
       }
@@ -390,6 +408,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
         floorTile.ro = roFloor;
+        applyTileTemplate(floorTile);
         tile.floorTileBeneath = floorTile;
         room.renderObjects.push(roFloor);
       } else {
@@ -405,6 +424,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         } as Tile;
         const roFloor = createTileRenderObject(floorTile);
         floorTile.ro = roFloor;
+        applyTileTemplate(floorTile);
         tile.floorTileBeneath = floorTile;
         room.renderObjects.push(roFloor);
       }
@@ -412,16 +432,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     }
 
     tile.ro = ro;
-    const tileTemplate = getReplacementTemplate(tile.sprite);
-    if (tileTemplate) {
-      tile.ro.sprite = tileTemplate.baseSprite;
-      tile.isWall = tileTemplate.isWall ?? tile.isWall;
-      if (tileTemplate?.animName) {
-        tile.animName = tileTemplate.animName;
-        tile.ro.anim = createAnimation(tileTemplate.animName);
-        tile.ro.anim.start();
-      }
-    }
+    applyTileTemplate(tile);
   };
 
   const addProp = (tiledProp: any) => {
@@ -540,7 +551,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       p => p.name === 'encounterName'
     );
     if (customEncounterName) {
-      const roamerName = chTemplate.name + x + '+' + y;
+      const roamerName = chTemplate.name + ',' + tiledObject.id;
       const scene = getCurrentScene();
 
       if (sceneIsEncounterDefeated(scene, roamerName, room.name)) {
@@ -570,7 +581,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     const [newX, newY] = pixelToIsoCoords(xPx, yPy - 16);
     if (room.markers[tiledObject.name]) {
       throw new Error(
-        `Could not load marker '${tiledObject.name}' in room definition '${name}', a marker with that name already exists.)`
+        `Could not load marker '${tiledObject.name}' in room definition '${name}', a marker with that name already exists.`
       );
     }
     const marker = {

@@ -13,7 +13,7 @@ import CharacterInfoCard from './CharacterInfoCard';
 import EnemyInfoCard from './EnemyInfoCard';
 import { getUiInterface, renderUi } from 'view/ui';
 
-import CharacterFollower from 'view/elements/CharacterFollower';
+import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { getDrawScale } from 'model/canvas';
 import { Character } from 'model/character';
 import {
@@ -287,6 +287,7 @@ const BattleSection = (props: IBattleSectionProps) => {
         );
         return (
           <BattleCharacterFollower
+            key={bCh.ch.name}
             bCh={bCh}
             battleIndex={battle.alliesStorage.indexOf(bCh)}
             isEnemy={false}
@@ -301,6 +302,7 @@ const BattleSection = (props: IBattleSectionProps) => {
       {battle.enemies.map(bCh => {
         return (
           <BattleCharacterFollower
+            key={bCh.ch.name}
             bCh={bCh}
             battleIndex={battle.enemiesStorage.indexOf(bCh)}
             isEnemy={true}

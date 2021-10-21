@@ -4,9 +4,15 @@ import { colors, keyframes, style } from 'view/style';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import AnimDiv from 'view/elements/StaticAnimDiv';
 import { getUiInterface } from 'view/ui';
-import { AppSection, CutsceneSpeaker, ICutsceneAppState } from 'model/store';
+import {
+  AppSection,
+  CutsceneSpeaker,
+  ICutsceneAppState,
+  ModalSection,
+} from 'model/store';
 import { getDrawScale } from 'model/canvas';
 import {
+  getConfirmKey,
   getCurrentKeyHandler,
   isAuxKey,
   isCancelKey,
@@ -16,14 +22,20 @@ import {
 } from 'controller/events';
 import TalkIcon from 'view/icons/Talk';
 import TopBar, { TopBarButtons } from '../TopBar';
-import { hideSection, showSection, showSettings } from 'controller/ui-actions';
-import { useKeyboardEventListener } from 'view/hooks';
+import {
+  hideSection,
+  showModal,
+  showSection,
+  showSettings,
+} from 'controller/ui-actions';
+import { useConfirmModal, useKeyboardEventListener } from 'view/hooks';
 import {
   getCurrentBattle,
   getCurrentRoom,
   getCurrentScene,
+  isKeyDown,
 } from 'model/generics';
-import CharacterFollower from 'view/elements/CharacterFollower';
+import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { skipCurrentScript } from 'controller/scene-management';
 import { panCameraBackToPlayer } from 'controller/scene-commands';
 
@@ -247,7 +259,7 @@ const NameLabelWrapper = style(
   'div',
   (props: { visible: boolean; align: string }) => {
     return {
-      width: props.visible ? '100%' : '0px',
+      width: props.visible ? 'calc(100% + 2px)' : '0px',
       display: 'flex',
       marginBottom: '16px',
       opacity: props.visible ? '100%' : '0%',
@@ -538,8 +550,6 @@ const renderTextboxHtml = async (
   const phrases = parseDialogTextToPhrases(cutscene.text);
 
   if (cutscene.id === lastRenderedCutsceneId) {
-    // const phrases = parseDialogTextToPhrases(cutscene.text);
-
     let innerHTML = '';
     phrases.forEach(phrase => {
       innerHTML += renderSpan(phrase);
@@ -549,8 +559,6 @@ const renderTextboxHtml = async (
     await preSizeTextbox();
     textBox.style.transition = '';
     textBox.style.opacity = '0';
-    // textBox.innerHTML = isNoneSpeaker ? '' : cutscene.text;
-    // const phrases = parseDialogTextToPhrases(cutscene.text);
 
     let innerHTML = '';
     phrases.forEach(phrase => {
@@ -573,12 +581,20 @@ const renderTextboxHtml = async (
 
   // this waits for all text to become visible.  TODO make this interruptable
   await Promise.all(promises);
-  // const talkIcon = document.getElementById('talk-icon');
   if (talkIcon) {
     await setTimeoutPromise(() => {}, 150);
     talkIcon.style.display = 'block';
   }
   getCurrentScene().inputDisabled = false;
+
+  if (isKeyDown(getConfirmKey())) {
+    const handler = getCurrentKeyHandler();
+    if (handler) {
+      handler({
+        key: 'x',
+      } as any);
+    }
+  }
 };
 
 const CutsceneSection = () => {
@@ -586,6 +602,16 @@ const CutsceneSection = () => {
   const [isSkipping, setIsSkipping] = useState(false);
   const textBoxRef = useRef<null | HTMLDivElement>(null);
   const cutscene = getUiInterface().appState.cutscene;
+  const [
+    skipConfirmVisible,
+    showSkipConfirmModal,
+    // hideModal,
+  ] = useConfirmModal({
+    onConfirm: () => {
+      skipCutscene();
+    },
+    body: 'Are you sure you want to skip this cutscene?',
+  });
 
   // This hook executes on first render.  If a cutscene is not currently being rendered,
   // then this will pull the cutscene bars towards the center of the screen.
@@ -678,20 +704,26 @@ const CutsceneSection = () => {
     ev => {
       if (
         isAuxKey(ev.key) &&
-        !getUiInterface().appState.sections.includes(AppSection.Settings)
+        !getUiInterface().appState.sections.includes(AppSection.Settings) &&
+        !skipConfirmVisible
       ) {
         showSettings(handleSettingsClose);
       }
 
-      if (isSkipKey(ev.key) && !isSkipping && !getCurrentBattle()) {
-        skipCutscene();
+      if (
+        isSkipKey(ev.key) &&
+        !isSkipping &&
+        !skipConfirmVisible &&
+        !getCurrentBattle() &&
+        cutscene.showBars !== false
+      ) {
+        showSkipConfirmModal();
       }
     },
-    [isSkipping]
+    [isSkipping, skipConfirmVisible]
   );
 
   const handleSettingsClose = () => {
-    console.log('HANDLE SETTINGS CLOSE?');
     hideSection(AppSection.Settings);
   };
 
@@ -728,7 +760,11 @@ const CutsceneSection = () => {
   };
 
   const actors = getCurrentRoom()?.characters ?? [];
-  console.log('RENDER CUTSCENE', getUiInterface().appState.cutscene);
+  console.log(
+    'RENDER CUTSCENE',
+    getUiInterface().appState.cutscene,
+    skipConfirmVisible
+  );
 
   return (
     <Root
@@ -880,7 +916,9 @@ const CutsceneSection = () => {
                   <TalkIcon color={colors.WHITE} />
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <div></div>
+            )}
           </CharacterFollower>
         );
       })}

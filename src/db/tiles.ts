@@ -1,4 +1,5 @@
-import { Point } from 'utils';
+import { Tile } from 'model/room';
+import { Point, timeoutPromise } from 'utils';
 
 interface TileTemplate {
   baseSprite: string;
@@ -9,6 +10,7 @@ interface TileTemplate {
   size?: Point;
   hasFloorTile?: boolean;
   floorTile?: string;
+  onAfterCreation?: (tile: Tile) => void;
 }
 
 const exp = {} as Record<string, TileTemplate>;
@@ -280,10 +282,19 @@ export const init = () => {
     size: [32, 64],
   };
   replacementTemplates.props_29 = 'HEAL_POOL';
+  exp.HEAL_POOL_INACTIVE = {
+    baseSprite: 'props_29',
+    animName: 'tile_heal_pool_inactive',
+    isWall: true,
+    isProp: true,
+    // floorTile: 'TUT_GATE_FLOOR',
+    hasFloorTile: true,
+    floorTile: 'TUT_GATE_FLOOR',
+    size: [32, 64],
+  };
 
   exp.PROPS_BOWLING_DISPENSER = {
     baseSprite: 'props_32',
-    // animName: 'tile_heal_pool_anim',
     isWall: true,
     isProp: true,
     // floorTile: 'TUT_GATE_FLOOR',
@@ -301,9 +312,27 @@ export const init = () => {
   };
   exp.TIC_TAC_TOE_NORMAL = {
     baseSprite: 'props_12',
-    // animName: 'props-anims-tic-tac-toe-machine-excited',
+    animName: 'props-anims-tic-tac-toe-machine-excited',
     isWall: true,
     isProp: true,
     size: [32, 64],
   };
+
+  exp.BRIDGE_FLOOR_FLICKER = {
+    baseSprite: 'floors_59',
+    animName: 'tile_floor_flicker',
+    size: [32, 32],
+    onAfterCreation: (tile: Tile) => {
+      const anim = tile?.ro?.anim;
+      if (anim) {
+        // HACK: prevents the zap from firing immediately when loading
+        anim.disableSounds();
+        anim.timestampStart -= Math.round(Math.random() * anim.getDurationMs());
+        timeoutPromise(500).then(() => {
+          anim.enableSounds();
+        });
+      }
+    },
+  };
+  replacementTemplates.floors_61 = 'BRIDGE_FLOOR_FLICKER';
 };

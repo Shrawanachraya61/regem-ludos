@@ -2,12 +2,12 @@
 import { h } from 'preact';
 import { colors, style } from 'view/style';
 import VerticalMenu from 'view/elements/VerticalMenu';
-import { Player } from 'model/player';
+import { Player, playerGetItemCount } from 'model/player';
 import { useState } from 'preact/hooks';
 import ItemDescription from '../ItemDescription';
 
 import { playSoundName } from 'model/sound';
-import { ItemType } from 'db/items';
+import { ItemTemplate, ItemType } from 'db/items';
 import { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import MenuBox from 'view/elements/MenuBox';
 import { getCancelKeyLabel } from 'controller/events';
@@ -50,11 +50,21 @@ const BattleItems = (props: IBattleItemsProps) => {
   const [menuOpen, setMenuOpen] = useState(true);
 
   const backpack = props.player.backpack.sort();
-  const filteredBackpack = backpack
+  const filteredBackpackA = backpack
     .filter(item => {
-      return item.type === ItemType.USABLE;
+      return (
+        item.type === ItemType.USABLE || item.type === ItemType.USABLE_BATTLE
+      );
     })
     .sort(sortItems);
+
+  const filteredBackpack: ItemTemplate[] = [];
+  for (let i = 0; i < filteredBackpackA.length; i++) {
+    const item = filteredBackpackA[i];
+    if (!filteredBackpack.find(item2 => item2.name === item.name)) {
+      filteredBackpack.push(item);
+    }
+  }
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const selectedItem = filteredBackpack[selectedItemIndex];
@@ -62,11 +72,13 @@ const BattleItems = (props: IBattleItemsProps) => {
   const handleAuxClick = async () => {
     if (selectedItem?.onUse) {
       setMenuOpen(false);
-      // playSoundName('menu_select');
-      await selectedItem.onUse(selectedItem, true);
-      battleResetItemTimer(getCurrentBattle());
-      // renderUi();
-      props.onClose();
+      const wasUsed = await selectedItem.onUse(selectedItem, true);
+      if (wasUsed) {
+        battleResetItemTimer(getCurrentBattle());
+        props.onClose();
+      } else {
+        setMenuOpen(true);
+      }
     }
   };
 
@@ -93,6 +105,7 @@ const BattleItems = (props: IBattleItemsProps) => {
       maxWidth={cardSizes[CardSize.XLARGE].width}
       closeButtonLabel={'Back ' + getCancelKeyLabel()}
       dark={true}
+      disableKeyboardShortcut={!menuOpen}
     >
       <InnerRoot>
         <LeftDiv>
@@ -110,12 +123,11 @@ const BattleItems = (props: IBattleItemsProps) => {
                   <div
                     style={{
                       background:
-                        i === selectedItemIndex
-                          ? colors.DARKGREEN
-                          : colors.BLACK,
+                        i === selectedItemIndex ? colors.DARKGREEN : 'unset',
                     }}
                   >
-                    {item.label}
+                    {item.label} (
+                    {playerGetItemCount(props.player, item.name as string)})
                   </div>
                 ),
                 value: i,

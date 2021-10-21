@@ -1,8 +1,8 @@
 /* @jsx h */
 import { Particle, ParticleTemplate } from 'model/particle';
-import { colors, keyframes, style } from 'view/style';
+import { colors, keyframes } from 'view/style';
 import { h } from 'preact';
-import CharacterFollower from 'view/elements/CharacterFollower';
+import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { Character } from 'model/character';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { useEffect, useRef } from 'preact/hooks';
@@ -125,7 +125,7 @@ export const init = () => {
     // aligns the sprite to the bottom of feet for 32x32 px sprites
     offset: [3, -12.5],
     opacity: 1,
-    duration: 2320,
+    duration: 2320 / 2,
   };
 
   const EFFECT_TEMPLATE_RING: ParticleTemplate = {
@@ -192,6 +192,12 @@ export const init = () => {
     // offset: [0, -32],
   };
 
+  const EFFECT_TEMPLATE_BUFF: ParticleTemplate = {
+    animName: 'effect_buff_anim',
+    duration: 1360,
+    // offset: [0, -32],
+  };
+
   const EFFECT_TEMPLATE_PING_PONG_LTR: ParticleTemplate = {
     animName: 'effect_pingpong_ltr',
   };
@@ -205,8 +211,10 @@ export const init = () => {
     uiComponent: (props: { particle: Particle }) => {
       const ch: Character = props.particle.meta.ch;
       const emotion: EmotionBubble = props.particle.meta.emotion;
+      /* eslint-disable-next-line react-hooks/rules-of-hooks */
       const ref: any = useRef();
       const transitionDuration = 100;
+      /* eslint-disable-next-line react-hooks/rules-of-hooks */
       useEffect(() => {
         timeoutPromise(750 - transitionDuration).then(() => {
           ref.current.style.animation = `${dialogBubbleClose} ${transitionDuration}ms linear`;
@@ -253,6 +261,7 @@ export const init = () => {
     EFFECT_TEMPLATE_VR_PORTAL,
     EFFECT_TEMPLATE_PORTAL_SPAWN,
     EFFECT_TEMPLATE_SPAWN,
+    EFFECT_TEMPLATE_BUFF,
     EFFECT_TEMPLATE_PING_PONG_LTR,
     EFFECT_TEMPLATE_PING_PONG_RTL,
     EFFECT_TEMPLATE_EMOTION_BUBBLE,

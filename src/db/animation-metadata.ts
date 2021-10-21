@@ -186,4 +186,13 @@ export const init = () => {
       },
     ],
   };
+
+  exp.tile_floor_flicker = {
+    sounds: [
+      {
+        soundName: 'zap_quiet',
+        frame: 0,
+      },
+    ],
+  };
 };

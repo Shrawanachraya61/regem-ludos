@@ -17,6 +17,9 @@ import {
   characterGetCollisionCircle,
   characterSetAnimationState,
   characterOverrideAnimation,
+  characterRemoveItemStatus,
+  ItemStatus,
+  characterRemoveNonPersistentItemStatuses,
 } from 'model/character';
 import { Overworld, overworldHide, overworldShow } from 'model/overworld';
 import { Timer } from 'model/utility';
@@ -287,13 +290,6 @@ export const init = () => {
       } else {
         const despawnFunc = async () => {
           if (ch.encounterStuckRetries > 3) {
-            const leader = getCurrentPlayer().leader;
-            console.log(
-              'DESPAWN ENCOUNTER',
-              roomGetTileBelow(room, [ch.x, ch.y]),
-              roomGetTileBelow(room, [leader.x, leader.y]),
-              pfPath
-            );
             playSoundName('spawn_enemy');
             spawnParticleAtCharacter(
               'EFFECT_TEMPLATE_SPAWN',
@@ -403,6 +399,16 @@ export const init = () => {
           characterClearTimers(ch);
           characterStopWalking(ch);
           characterSetOverworldAi(ch, exp.ROAM_SEEK_PLAYER);
+        }
+        if (
+          !ch.aiState.encountered &&
+          characterCollidesWithOther(ch, getCurrentPlayer().leader)
+        ) {
+          ch.aiState.halted = true;
+          ch.aiState.encountered = true;
+          roomRemoveCharacter(getCurrentRoom(), ch);
+          characterRemoveNonPersistentItemStatuses(getCurrentPlayer().leader);
+          startEncounterFromRoamer(ch);
         }
       },
     };

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn watch",
-    "start:dist": "http-server --mimmetypes ./scripts/mime.types ./dist -o index.html -g -p 8081",
+    "start:dist": "http-server --mimetypes ./scripts/mime.types ./dist -o index.html -g -p 8081",
     "build": "cross-env NODE_ENV=production yarn clean && yarn zip && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript",
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --sourceMap false && node scripts/build src",
@@ -34,7 +34,7 @@
     "html-minifier": "^4.0.0",
     "http-server": "^0.12.3",
     "hud-gamepad": "^0.5.9",
-    "jszip": "^3.6.0",
+    "jszip": "3.1.5",
     "prettier": "^2.2.1",
     "terser": "^4.6.11",
     "typedoc": "^0.20.16",

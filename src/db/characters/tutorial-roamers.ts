@@ -16,6 +16,7 @@ export const init = () => {
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     overworldAi: 'ROAM_WALK_RIGHT_LEFT',
+    visionRange: 22 * 2,
     // canGetStuckWhileWalking: true,
   };
 
@@ -25,6 +26,17 @@ export const init = () => {
     facing: Facing.LEFT,
     animationState: AnimationState.IDLE,
     overworldAi: 'ROAM_WALK_RIGHT_LEFT',
+    visionRange: 22 * 2,
+    // canGetStuckWhileWalking: true,
+  };
+
+  exp.TutRobotRoamerBoss = {
+    name: 'TutRobotRoamerBoss',
+    spriteBase: 'tut_robot_boss',
+    facing: Facing.RIGHT,
+    animationState: AnimationState.IDLE,
+    visionRange: 1,
+    spriteSize: [96, 96],
     // canGetStuckWhileWalking: true,
   };
 

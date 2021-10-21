@@ -18,7 +18,6 @@ import {
   saveGame,
   loadSaveListFromLS,
   ISave,
-  loadGame,
 } from 'controller/save-management';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import { useKeyboardEventListener } from 'view/hooks';

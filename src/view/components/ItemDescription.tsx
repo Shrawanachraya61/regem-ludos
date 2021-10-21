@@ -1,15 +1,20 @@
 /* @jsx h */
 import { h } from 'preact';
 import { colors, style } from 'view/style';
-import { Item } from 'db/items';
+import { Item, ItemType } from 'db/items';
 import Button, { ButtonType } from 'view/elements/Button';
 import { playSoundName } from 'model/sound';
 import { getConfirmKeyLabel } from 'controller/events';
+import { getIcon } from 'view/icons';
+import { getCurrentBattle } from 'model/generics';
+import { itemIsCurrentlyUsable } from 'model/item';
 
 const Root = style('div', () => {
   return {
     height: '100%',
     width: '100%',
+    display: 'flex',
+    flexFlow: 'column',
   };
 });
 
@@ -73,51 +78,113 @@ const ItemDescription = (props: IItemDescriptionProps) => {
     skillStrings.push(str);
   }
 
+  const isCurrentlyUsable = itemIsCurrentlyUsable(props.item);
+
+  const Icon = props?.item?.icon
+    ? getIcon(props?.item?.icon)
+    : () => <div></div>;
+
   return (
     <Root>
-      <EquipmentDescriptionTitle>DESCRIPTION</EquipmentDescriptionTitle>
-      {props.showName ? (
-        <EquipmentTitleText>
-          <b>{props.item?.label}</b>
-        </EquipmentTitleText>
-      ) : null}
-      {props.onUse && props.item?.onUse ? (
-        <Button
-          type={ButtonType.SECONDARY}
-          style={{ width: '100px', marginLeft: '8px' }}
-          onClick={async () => {
-            if (props?.item?.onUse && props.onUse) {
-              props.onUse(props.item);
-            }
-          }}
-        >
-          Use {getConfirmKeyLabel()}
-        </Button>
-      ) : null}
-      <EquipmentDescriptionText>
-        {props.item?.description ?? (
-          <div
+      <div>
+        <EquipmentDescriptionTitle>DESCRIPTION</EquipmentDescriptionTitle>
+        {props.showName ? (
+          <EquipmentTitleText
             style={{
-              color: colors.LIGHTGREY,
-              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            Hover over an item to see a description.
-          </div>
-        )}
-      </EquipmentDescriptionText>
-      {modStrings.length > 0 ? (
-        <EquipmentDescriptionText>
-          {modStrings.join(', ')}
+            <div
+              style={{
+                width: '32px',
+                marginRight: '12px',
+                marginBottom: '8px',
+                marginTop: '8px',
+              }}
+            >
+              <Icon color={colors.WHITE} />
+            </div>
+            <b>{props.item?.label}</b>
+          </EquipmentTitleText>
+        ) : null}
+        {isCurrentlyUsable ? (
+          <Button
+            type={ButtonType.SECONDARY}
+            style={{ width: '100px', marginLeft: '8px', marginBottom: '16px' }}
+            onClick={async () => {
+              if (props?.item?.onUse && props.onUse) {
+                props.onUse(props.item);
+              }
+            }}
+          >
+            Use {getConfirmKeyLabel()}
+          </Button>
+        ) : null}
+      </div>
+      <div
+        // This is used by the parent to scroll bottom/top, don't change
+        id="item-description-container"
+        style={{
+          overflowY: 'auto',
+          borderTop: '1px solid ' + colors.WHITE,
+          flex: '1',
+          background: colors.DARKGREY,
+        }}
+      >
+        {props.item?.effectDescription ? (
+          <EquipmentDescriptionText
+            style={{
+              color: colors.LIGHTGREY,
+            }}
+          >
+            {props.item?.effectDescription}
+          </EquipmentDescriptionText>
+        ) : null}
+        {modStrings.length > 0 ? (
+          <EquipmentDescriptionText
+            style={{
+              color: colors.BLUE,
+            }}
+          >
+            {modStrings.join(', ')}
+          </EquipmentDescriptionText>
+        ) : null}
+        {skillStrings.length > 0 ? (
+          <EquipmentDescriptionText>
+            {skillStrings.map(str => {
+              return (
+                <div
+                  style={{
+                    color: colors.ORANGE,
+                  }}
+                  key={str}
+                >
+                  {'Skill: ' + str}
+                </div>
+              );
+            })}
+          </EquipmentDescriptionText>
+        ) : null}
+        <EquipmentDescriptionText
+          dangerouslySetInnerHTML={{
+            __html: props.item?.description,
+          }}
+        >
+          {props.item?.description ? (
+            ''
+          ) : (
+            <div
+              style={{
+                color: colors.LIGHTGREY,
+                textAlign: 'center',
+              }}
+            >
+              Hover over an item to see a description.
+            </div>
+          )}
         </EquipmentDescriptionText>
-      ) : null}
-      {skillStrings.length > 0 ? (
-        <EquipmentDescriptionText>
-          {skillStrings.map(str => {
-            return <div key={str}>{'Skill: ' + str}</div>;
-          })}
-        </EquipmentDescriptionText>
-      ) : null}
+      </div>
     </Root>
   );
 };

@@ -22,7 +22,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT1 = {
     roomName: 'battleTut1',
     baseExperience: 1,
-    baseTokens: 1,
+    baseTokens: 0,
+    disableFlee: true,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_EASY'),
@@ -47,7 +48,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT1_5 = {
     roomName: 'battleTut1',
     baseExperience: 1,
-    baseTokens: 1,
+    baseTokens: 0,
+    disableFlee: true,
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_STAGGERABLE'),
@@ -75,7 +77,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT2 = {
     roomName: 'battleTut1',
     baseExperience: 2,
-    baseTokens: 1,
+    baseTokens: 0,
+    disableFlee: true,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
@@ -105,7 +108,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT3 = {
     roomName: 'battleTut1',
     baseExperience: 2,
-    baseTokens: 1,
+    baseTokens: 0,
+    disableFlee: true,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
@@ -138,7 +142,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT4 = {
     roomName: 'battleTut1',
     baseExperience: 2,
-    baseTokens: 1,
+    baseTokens: 0,
+    disableFlee: true,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
@@ -171,7 +176,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT_DUNGEON1 = {
     roomName: 'battleTut1',
     baseExperience: 2,
-    baseTokens: 1,
+    baseTokens: 2,
     enemies: [
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
@@ -189,9 +194,16 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT_DUNGEON2 = {
     roomName: 'battleTut1',
     baseExperience: 2,
-    baseTokens: 1,
+    baseTokens: 2,
     getDrops: () => {
-      return [getItem('FeeblePotion'), getItem('RezGem')];
+      if (Math.random() > 0.9) {
+        return [getItem('FeeblePotion'), getItem('RezGem')];
+      } else if (Math.random() > 0.5) {
+        return [
+          Math.random() > 0.5 ? getItem('FeeblePotion') : getItem('RezGem'),
+        ];
+      }
+      return [];
     },
     enemies: [
       {
@@ -210,9 +222,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT_DUNGEON3 = {
     roomName: 'battleTut1',
     baseExperience: 5,
-    baseTokens: 1,
+    baseTokens: 3,
     getDrops: () => {
-      return [getItem('FeeblePotion')];
+      if (Math.random() > 0.5) {
+        return [getItem('FeeblePotion')];
+      }
+      return [];
     },
     enemies: [
       {
@@ -236,9 +251,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT_DUNGEON4 = {
     roomName: 'battleTut1',
     baseExperience: 5,
-    baseTokens: 1,
+    baseTokens: 2,
     getDrops: () => {
-      return [getItem('RezGem')];
+      if (Math.random() > 0.5) {
+        return [getItem('RezGem')];
+      }
+      return [];
     },
     enemies: [
       {
@@ -265,9 +283,11 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   };
 
   exp.ENCOUNTER_TUT_BOSS = {
-    roomName: 'battleTut1',
+    roomName: 'battleTutBoss',
     baseExperience: 10,
-    baseTokens: 1,
+    baseTokens: 25,
+    disableFlee: true,
+    // music: 'music_tense_battle',
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),

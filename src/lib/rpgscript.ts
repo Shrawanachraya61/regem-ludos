@@ -116,9 +116,12 @@ export interface Command {
   )[];
 }
 
+export type CommandWithBlock = Command & { block: CommandBlock };
+
 export interface CommandBlock {
   conditional: Conditional | boolean;
   commands: Command[];
+  conditionalResult?: boolean;
 }
 
 export class Trigger {
@@ -171,6 +174,9 @@ export class Script {
   reset() {
     this.currentBlockIndex = 0;
     this.currentCommandIndex = 0;
+    this.blocks.forEach(block => {
+      block.conditionalResult = undefined;
+    });
   }
 
   isValid(scene: Scene | null) {
@@ -194,7 +200,7 @@ export class Script {
     return true;
   }
 
-  getNextCommand(): Command | null {
+  getNextCommand(): CommandWithBlock | null {
     const block = this.blocks[this.currentBlockIndex];
     if (block) {
       const cmd = block.commands[this.currentCommandIndex];
@@ -205,6 +211,7 @@ export class Script {
           args: cmd.args,
           type: cmd.type,
           conditional: block.conditional,
+          block,
         };
         return ret;
       } else {

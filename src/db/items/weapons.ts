@@ -18,9 +18,6 @@ import {
 import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
 import { ItemTemplate, ItemType, WeaponType } from '.';
 
-import SwordIcon from 'view/icons/Sword';
-import BowIcon from 'view/icons/RangedNormal';
-
 const COOLDOWN_MOD = 1;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
@@ -33,7 +30,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL],
-        icon: SwordIcon,
+        icon: 'sword',
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 1;
@@ -52,11 +49,11 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     TrainingSwordSwing: {
       name: 'Swing Sword',
       description: 'Jump to target and swing your weapon.',
-      cooldown: 5000 * COOLDOWN_MOD,
+      cooldown: 4500 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
         swings: [SwingType.NORMAL, SwingType.NORMAL],
-        icon: SwordIcon,
+        icon: 'sword',
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 3;
@@ -75,11 +72,11 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     TrainingSwordSwingPlus: {
       name: 'Swing Sword',
       description: 'Jump to target and swing your weapon.',
-      cooldown: 5000 * COOLDOWN_MOD,
+      cooldown: 4000 * COOLDOWN_MOD,
       type: BattleActionType.SWING,
       meta: {
-        swings: [SwingType.NORMAL, SwingType.NORMAL],
-        icon: SwordIcon,
+        swings: [SwingType.NORMAL, SwingType.PIERCE],
+        icon: 'sword',
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 4;
@@ -98,7 +95,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     TrainingBowShoot: {
       name: 'Shoot Bow',
       description: 'Fire at the ranged target.',
-      cooldown: 3000 * COOLDOWN_MOD,
+      cooldown: 3500 * COOLDOWN_MOD,
       type: BattleActionType.RANGED,
       meta: {
         ranges: [RangeType.NORMAL, RangeType.NORMAL],
@@ -124,7 +121,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       type: BattleActionType.CAST,
       meta: {
         castTime: 3000,
-        icon: SwordIcon,
+        icon: 'sword',
       },
       cb: async (battle: Battle, bCh: BattleCharacter) => {
         await beginAction(bCh);
@@ -167,8 +164,8 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     description: 'A standard issue training sword.',
     type: ItemType.WEAPON,
     weaponType: WeaponType.SWORD,
-    skills: [battleActions.TrainingSwordSwingPlus],
-    icon: SwordIcon,
+    skills: [battleActions.TrainingSwordSwing],
+    icon: 'sword',
   };
   exp.TrainingBow = {
     label: 'Training Bow',
@@ -176,15 +173,15 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     type: ItemType.WEAPON,
     weaponType: WeaponType.BOW,
     skills: [battleActions.TrainingBowShoot],
-    icon: BowIcon,
+    icon: 'bow',
   };
-  exp.TrainingSwordPlus = {
-    label: 'Training Sword +',
+  exp.PierceSword = {
+    label: 'Pierce Sword',
     description:
-      'A slightly more rare version of the standard issue training sword.',
+      'A slightly more refined version of the standard issue Training Sword.  The hilt is balanced slightly differently to allow for more force on the followup swing.',
     type: ItemType.WEAPON,
     weaponType: WeaponType.SWORD,
-    skills: [battleActions.TrainingSwordSwing],
-    icon: SwordIcon,
+    skills: [battleActions.TrainingSwordSwingPlus],
+    icon: 'sword',
   };
 };

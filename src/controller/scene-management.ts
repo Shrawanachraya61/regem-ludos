@@ -1,18 +1,18 @@
 import {
-  Script,
-  Trigger,
-  CommandBlock,
-  Command,
   Conditional,
-  ScriptCall,
   parseSingleScript,
   TriggerType,
   formatArgs,
   getScript,
   getTrigger,
+  CommandWithBlock,
 } from 'lib/rpgscript';
-import { Scene, sceneIsWaiting, sceneGetCommands } from 'model/scene';
-import { getCurrentPlayer, getCurrentRoom } from 'model/generics';
+import { Scene, sceneIsWaiting } from 'model/scene';
+import {
+  getCurrentPlayer,
+  getCurrentRoom,
+  getCurrentScene,
+} from 'model/generics';
 import { roomGetCharacterByName } from 'model/room';
 import sceneCommands, { setStorage } from './scene-commands';
 import sceneCommandsSkip from './scene-commands-skip';
@@ -31,20 +31,58 @@ import { AppSection } from 'model/store';
 // if you increase this, you have to change the arg matcher to check for the length
 // of the integer string (number of decimal places) rather than just assuming it's 1
 const MAX_ARGS = 10;
+const argRegex = /\[ARG\d\]/;
+const mapGetSceneArgs = (arg: string | number | object) => {
+  const scene = getCurrentScene();
+  if (typeof arg === 'string') {
+    let match: any;
+    while ((match = arg.match(argRegex))) {
+      const argKey = arg.slice(match.index + 1, match.index + 5);
+      arg =
+        arg.slice(0, match.index) +
+        scene.storage[argKey] +
+        arg.slice(match.index + 6);
+    }
+    // HACK replace '--' with '+' so negative negative numbers parse as positive
+    let argRet: boolean | string = arg.replace(/--/g, '+');
+    if (argRet === 'true') {
+      argRet = true;
+    } else if (argRet === 'false') {
+      argRet = false;
+    }
+    return argRet;
+  } else {
+    return arg;
+  }
+};
 
 export const updateScene = (scene: Scene): void => {
   if (scene.currentScript && !sceneIsWaiting(scene)) {
-    let cmd: Command | null = null;
+    let cmd: CommandWithBlock | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
-      const conditionResult = evalCondition(
-        scene,
-        cmd.conditional,
-        undefined,
-        undefined,
-        cmd.i
-      );
-      // console.log('EVAL', cmd.conditional, conditionResult);
-      if (conditionResult) {
+      if (cmd.block.conditionalResult === undefined) {
+        cmd.block.conditionalResult = evalCondition(
+          scene,
+          cmd.conditional,
+          undefined,
+          undefined,
+          cmd.i
+        );
+        // console.log(
+        //   'EVAL',
+        //   cmd.i,
+        //   cmd.type,
+        //   cmd.conditional,
+        //   cmd.block.conditionalResult
+        // );
+      } else {
+        // console.log(
+        //   'command is part of the same block, continuing',
+        //   cmd.type,
+        //   cmd.i
+        // );
+      }
+      if (cmd.block.conditionalResult) {
         const commands = getSceneCommands(scene);
         const commandFunction = commands[cmd.type];
         if (!commandFunction) {
@@ -53,22 +91,7 @@ export const updateScene = (scene: Scene): void => {
           );
         }
         // console.log('MAP COMMAND ARGS', cmd);
-        const commandArgs: any[] = cmd?.args.map(arg => {
-          if (typeof arg === 'string') {
-            let match: any;
-            while ((match = arg.match(/\[ARG\d\]/))) {
-              const argKey = arg.slice(match.index + 1, match.index + 5);
-              arg =
-                arg.slice(0, match.index) +
-                scene.storage[argKey] +
-                arg.slice(match.index + 6);
-            }
-            // HACK replace '--' with '+' so negative negative numbers parse as positive
-            return arg.replace(/--/g, '+');
-          } else {
-            return arg;
-          }
-        });
+        const commandArgs: any[] = cmd?.args.map(mapGetSceneArgs);
 
         // console.log('next cmd', cmd.type, cmd.args, commandArgs);
         if (commandFunction(...commandArgs)) {
@@ -125,27 +148,29 @@ export const evalCondition = (
     return true;
   } else if (typeof conditional === 'object') {
     const { type, args: originalArgs } = conditional;
-    const args = formatArgs(originalArgs).map(arg => {
-      if (typeof arg === 'object') {
-        return arg;
-      }
-      const a = arg;
-      if (a === 'scene' && scene.currentTrigger) {
-        return scene.storage[scene.currentTrigger.name];
-      } else if (typeof a === 'string' && a.indexOf('.') > -1) {
-        const [a, b] = (arg as string).split('.');
-        if (a === 'storage') {
-          return scene.storage[b];
+    const args = formatArgs(originalArgs)
+      .map(mapGetSceneArgs)
+      .map(arg => {
+        if (typeof arg === 'object') {
+          return arg;
         }
-        if (!scene.storage[a]) {
-          console.error('No storage in scene called:', a);
-          return false;
+        const a = arg;
+        if (a === 'scene' && scene.currentTrigger) {
+          return scene.storage[scene.currentTrigger.name];
+        } else if (typeof a === 'string' && a.indexOf('.') > -1) {
+          const [a, b] = (arg as string).split('.');
+          if (a === 'storage') {
+            return scene.storage[b];
+          }
+          if (!scene.storage[a]) {
+            console.error('No storage in scene called:', a);
+            return false;
+          }
+          return scene.storage[a][b];
+        } else {
+          return arg;
         }
-        return scene.storage[a][b];
-      } else {
-        return arg;
-      }
-    });
+      });
     if (type === 'is') {
       // if the arg is a character name
       if (getCharacterTemplate(args[0])) {
@@ -155,6 +180,8 @@ export const evalCondition = (
         } else {
           return false;
         }
+      } else if (typeof args[0] === 'boolean') {
+        return args[0];
       }
 
       // if the arg
@@ -168,6 +195,8 @@ export const evalCondition = (
           triggerType,
           scriptCallIndex
         );
+      } else if (typeof args[0] === 'boolean') {
+        return !args[0];
       } else {
         // if the arg is a character name
         if (getCharacterTemplate(args[0])) {
@@ -233,13 +262,16 @@ export const evalCondition = (
       console.error('conditional "as" is not defined for this scene.');
       return false;
     } else if (type === 'once') {
-      let arg = args[0];
-      args[0] ?? (scene.currentScript || scene.currentTrigger)?.name + '-once';
+      let arg =
+        args[0] ??
+        (scene.currentScript || scene.currentTrigger)?.name + '-once';
 
-      if (scene.currentScript) {
-        arg = scene.currentScript.name + scriptCallIndex + '-once';
-      } else if (scene.currentTrigger) {
-        arg = scene.currentTrigger.name + scriptCallIndex + '-once';
+      if (!arg[0]) {
+        if (scene.currentScript) {
+          arg = scene.currentScript.name + scriptCallIndex + '-once';
+        } else if (scene.currentTrigger) {
+          arg = scene.currentTrigger.name + scriptCallIndex + '-once';
+        }
       }
       if (triggerType) {
         arg =
@@ -256,6 +288,7 @@ export const evalCondition = (
       if (!dontTriggerOnce) {
         scene.storageOnceKeys[arg] = true;
       }
+
       return true;
     } else if (type === 'with') {
       const itemName = args[0] ?? '';
@@ -398,6 +431,7 @@ export const callScript = ((window as any).callScript = async (
           currentArgs.push(arg);
         }
       }
+
       scene.scriptStack.unshift({
         script: scene.currentScript,
         onScriptCompleted: scene.onScriptCompleted,

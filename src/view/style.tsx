@@ -52,6 +52,8 @@ export interface IntrinsicProps {
   onTouchStart?: (ev: any) => void;
   onTouchEnd?: (ev: any) => void;
   ref?: Object;
+  dangerouslySetInnerHTML?: any;
+  // key?: string;
 }
 
 export const style = function <T>(

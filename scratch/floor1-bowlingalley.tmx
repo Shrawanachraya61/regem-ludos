@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="24" height="24" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="191">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="24" height="24" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="195">
  <editorsettings>
   <export target="../src/map/floor1-bowlingalley.json" format="json"/>
  </editorsettings>
@@ -21,12 +21,12 @@
  <tileset firstgid="593" source="../res/props-dynamic.tiled-sheet.tsx"/>
  <layer id="1" name="Tiles" width="24" height="24">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,37,37,37,37,37,37,37,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,37,37,37,37,37,37,33,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,139,139,139,139,139,139,37,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,139,139,139,139,139,139,37,
 0,0,0,0,0,148,148,148,148,149,149,149,130,0,0,0,37,139,139,139,139,139,139,37,
 0,130,150,150,150,150,150,150,150,149,149,149,130,130,130,0,37,139,139,139,139,139,139,37,
-37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,38,38,38,38,38,38,37,
+33,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,38,38,38,38,38,38,37,
 37,38,151,151,151,151,151,151,151,149,149,149,149,149,149,149,140,140,140,140,140,140,140,37,
 37,148,148,148,148,148,148,148,148,149,149,149,149,149,149,149,140,140,140,140,140,140,140,37,
 37,38,150,150,150,150,150,150,150,149,149,38,149,149,149,149,38,140,140,140,140,140,140,37,
@@ -41,10 +41,10 @@
 37,38,150,150,150,150,150,150,150,149,149,38,149,149,149,149,38,140,140,140,140,140,140,37,
 37,38,148,148,148,148,148,148,148,149,149,149,149,149,149,149,38,140,140,140,140,140,140,37,
 37,130,130,130,130,130,130,130,130,149,149,149,149,149,149,149,38,140,140,140,140,140,140,37,
-37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,140,140,37,37,37,37,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,140,140,37,0,0,37,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,140,140,37,0,0,37,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37
+33,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,140,140,37,37,37,33,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,140,140,33,0,0,33,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,140,140,33,0,0,33,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33
 </data>
  </layer>
  <layer id="6" name="Tiles2" width="24" height="24">
@@ -77,7 +77,7 @@
  </layer>
  <objectgroup id="2" name="Objects">
   <object id="19" name="MarkerPlayer" gid="194" x="311" y="173" width="32" height="32"/>
-  <object id="43" name="MarkerFromAtrium" gid="200" x="310.5" y="317.5" width="32" height="32"/>
+  <object id="43" name="MarkerFromAtrium" gid="200" x="309.5" y="308.5" width="32" height="32"/>
   <object id="115" gid="337" x="253.5" y="254.5" width="32" height="32"/>
   <object id="118" gid="337" x="252" y="220" width="32" height="32"/>
   <object id="119" gid="337" x="252.5" y="187.5" width="32" height="32"/>
@@ -106,7 +106,7 @@
   <object id="157" gid="343" x="271" y="73" width="32" height="32"/>
   <object id="158" gid="337" x="254" y="286" width="32" height="32"/>
   <object id="159" name="MarkerPreventBowling" gid="194" x="269.457" y="109.696" width="32" height="32"/>
-  <object id="160" name="#floor1-transitionToAtriumFromBowling" x="286.5" y="320.5" width="33" height="29"/>
+  <object id="160" name="#floor1-transitionToAtriumFromBowling" x="284" y="350" width="33" height="29"/>
   <object id="162" type="-10" gid="346" x="18.5" y="123.5" width="32" height="32"/>
   <object id="163" type="-10" gid="346" x="18.5" y="171.5" width="32" height="32"/>
   <object id="164" type="-10" gid="346" x="17.5" y="218.5" width="32" height="32"/>
@@ -123,5 +123,8 @@
   <object id="186" gid="352" x="295" y="51" width="32" height="32"/>
   <object id="189" gid="347" x="251" y="29" width="32" height="32"/>
   <object id="190" type="front" gid="598" x="309" y="9" width="75" height="55"/>
+  <object id="191" name="#floor1-OpenRedDoorsBCK" x="276" y="312.5" width="48" height="41.5"/>
+  <object id="192" name="MarkerRedDoorBCK1" gid="194" x="293.5" y="347.5" width="32" height="32"/>
+  <object id="193" name="MarkerRedDoorBCK2" gid="194" x="311.5" y="347.5" width="32" height="32"/>
  </objectgroup>
 </map>

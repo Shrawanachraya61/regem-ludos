@@ -28,6 +28,7 @@ import {
   battleSetEnemyTargetIndex,
   battleCycleMeleeTarget,
   battleCycleRangeTarget,
+  BattleStatus,
 } from 'model/battle';
 import {
   battleCharacterCreateEnemy,
@@ -44,6 +45,7 @@ import {
   battleCharacterSetAnimationIdle,
   battleCharacterIsChanneling,
   battleCharacterGetEvasion,
+  battleCharacterHasStatus,
 } from 'model/battle-character';
 import {
   Character,
@@ -81,6 +83,7 @@ import {
   setGlobalParticleSystem,
   getCurrentPlayer,
   getCurrentOverworld,
+  setCameraTransform,
 } from 'model/generics';
 import { Player, playerGetBattlePosition } from 'model/player';
 import {
@@ -115,7 +118,12 @@ import { getUiInterface, renderUi } from 'view/ui';
 import { colors } from 'view/style';
 import { createBattleTransitionParticleSystem } from 'model/particle-system';
 import { getImageDataScreenshot } from 'view/draw';
-import { fadeIn, fadeOut } from './scene-commands';
+import {
+  fadeIn,
+  fadeOut,
+  panCameraBackToPlayer,
+  panCameraRelativeToPlayer,
+} from './scene-commands';
 import {
   Timer,
   Transform,
@@ -125,6 +133,9 @@ import {
   transformOffsetJumpShort,
 } from 'model/utility';
 import {
+  getCurrentMusic,
+  musicGetCurrentPlaybackPosition,
+  musicSetPlaybackPosition,
   playMusic,
   playSound,
   playSoundName,
@@ -132,6 +143,7 @@ import {
 } from 'model/sound';
 import { overworldShow } from 'model/overworld';
 import { sceneSetEncounterDefeated } from 'model/scene';
+import { getScreenSize } from 'model/canvas';
 
 export const transitionToBattle = async (
   player: Player,
@@ -139,7 +151,17 @@ export const transitionToBattle = async (
   onCompletion?: () => void,
   skipIntro?: boolean
 ) => {
+  hideSection(AppSection.Debug);
   stopCurrentMusic(500);
+
+  const [screenW, screenH] = getScreenSize();
+  const t = new Transform(
+    [0, 0, 0],
+    [screenW / 2 - 32 / 2, screenH / 4 - 13, 0],
+    1,
+    TransformEase.EASE_OUT
+  );
+  setCameraTransform(t);
 
   if (skipIntro) {
     const battle = initiateBattle(player, template);
@@ -167,7 +189,7 @@ export const transitionToBattle = async (
   const handler = pushEmptyKeyHandler();
   setTimeout(() => {
     fadeOut(100, true);
-    playMusic('music_battle1', true);
+    playMusic(template.music ?? 'music_battle1', true);
   }, 1250);
   setTimeout(() => {
     setGlobalParticleSystem(null);
@@ -797,6 +819,7 @@ export const applySwingDamage = (
     damage *= 2;
     particleColor = colors.ORANGE;
     particlePostfix = '!';
+    // TODO make this configurable
     soundName = 'robot_staggered_damaged';
   } else if (victim.armor > 0) {
     const { nextDamageAmount } = applyArmorDamage(
@@ -814,8 +837,6 @@ export const applySwingDamage = (
     interruptCast(victim);
     interruptChannel(victim);
   }
-
-  // TODO Evasion
 
   // TODO Knocked Down
 
@@ -868,6 +889,7 @@ export const applyRangeDamage = (
   }
   applyStaggerDamage(victim, staggerDamage);
   if (victim.armor <= 0) {
+    interruptCast(victim);
     interruptChannel(victim);
   }
 
@@ -945,7 +967,12 @@ export const resetCooldownTimer = (bCh: BattleCharacter) => {
     // https://www.reddit.com/r/leagueoflegends/comments/i5m8m6/i_made_a_chart_to_convert_cdr_to_ability_haste/
     const cdr = 1 - 1 / (1 + speed / 100);
     // all skills must have a cooldown of at least 1 second
-    const newTime = Math.max(skill.cooldown - skill.cooldown * cdr, 1000);
+    let newTime = Math.max(skill.cooldown - skill.cooldown * cdr, 1000);
+
+    if (battleCharacterHasStatus(bCh, BattleStatus.HASTE)) {
+      console.log('CH IS HASTED');
+      newTime = newTime / 2;
+    }
 
     console.log('RESET COOLDOWN TIMER', bCh.ch.name, newTime, cdr, speed);
     bCh.actionTimer.start(newTime);
@@ -1002,6 +1029,7 @@ export const interruptCast = (bCh: BattleCharacter) => {
     bCh.onCastInterrupted();
     const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
     bCh.actionTimer.unpause();
+    resetCooldownTimer(bCh);
 
     playSoundName('battle_interrupt_channel');
     roomAddParticle(
@@ -1167,10 +1195,18 @@ export const getReturnToOverworldBattleCompletionCB = (
   template: BattleTemplate,
   roamer?: Character
 ) => {
+  let musicPlaybackPosition = 0;
+  const currentMusic = getCurrentMusic();
+  if (currentMusic) {
+    musicPlaybackPosition = musicGetCurrentPlaybackPosition(currentMusic);
+  }
+  stopCurrentMusic();
+
   return () => {
     console.log('BATTLE COMPLETED!');
     fadeOut(500, true);
     timeoutPromise(500).then(() => {
+      setCameraTransform(null);
       fadeIn(500, true);
       setCurrentBattle(null);
       setCurrentRoom(oldRoom);
@@ -1183,6 +1219,11 @@ export const getReturnToOverworldBattleCompletionCB = (
         const roamerName = roamer.name;
         const scene = getCurrentScene();
         sceneSetEncounterDefeated(scene, roamerName, oldRoom.name);
+      }
+
+      if (currentMusic) {
+        playMusic(currentMusic.soundName, true);
+        musicSetPlaybackPosition(currentMusic, musicPlaybackPosition);
       }
 
       if (template.events?.onAfterBattleEnded) {
@@ -1208,6 +1249,8 @@ const checkBattleCompletion = async (battle: Battle) => {
     playSoundName('fanfare');
     hideSections();
     timeoutPromise(2800).then(() => {
+      panCameraRelativeToPlayer(70, 20, 500, true);
+
       playMusic('music_battle_victory', true);
       showSection(AppSection.BattleVictory, true);
     });
@@ -1223,7 +1266,7 @@ const checkBattleCompletion = async (battle: Battle) => {
     battle.isCompleted = true;
     popKeyHandler(battleKeyHandler);
     battlePauseActionTimers(battle);
-    await timeoutPromise(2000);
+    await timeoutPromise(100);
     console.log('DEFEAT!');
     showSection(AppSection.BattleDefeated, true);
   }

@@ -214,7 +214,7 @@ const moveSquaresToField = (map: MenuSquare[]) => {
     if (div) {
       const x = Math.round(Math.random() * (widthPx * 2)) - widthPx / 2;
       const y = Math.round(Math.random() * (heightPx * 2)) - heightPx / 2;
-      const duration = 8000 + Math.random() * 8000;
+      const duration = 5000 + Math.random() * 5000;
 
       div.style.transition = `transform ${duration}ms ease-out`;
       div.style.transform = `translate(${x}px, ${y}px)`;
@@ -237,8 +237,8 @@ const moveSquaresToField = (map: MenuSquare[]) => {
 
 const moveSquaresToPlus = (
   map: MenuSquare[],
-  crossX: number,
-  crossY: number,
+  crossX: () => number,
+  crossY: () => number,
   start?: boolean
 ) => {
   clearRotateInterval();
@@ -250,7 +250,7 @@ const moveSquaresToPlus = (
     if (div) {
       const x = Math.round(Math.random() * (widthPx * 2)) - widthPx / 2;
       div.style.transition = `transform ${duration}ms ease-out`;
-      div.style.transform = `translate(${x}px, ${crossY + variance}px)`;
+      div.style.transform = `translate(${x}px, ${crossY() + variance}px)`;
 
       square.timeoutId = setTimeout(() => {
         moveSquareToRow(square);
@@ -265,7 +265,7 @@ const moveSquaresToPlus = (
     if (div) {
       const y = Math.round(Math.random() * (heightPx * 2)) - heightPx / 2;
       div.style.transition = `transform ${duration}ms ease-out`;
-      div.style.transform = `translate(${crossX + variance}px, ${y}px)`;
+      div.style.transform = `translate(${crossX() + variance}px, ${y}px)`;
 
       square.timeoutId = setTimeout(() => {
         moveSquareToCol(square);
@@ -315,25 +315,25 @@ const moveSquaresUp = (map: MenuSquare[]) => {
 
 const mountMenu = (
   div: HTMLDivElement,
-  hide: () => Promise<void>,
+  hide: (isNewGame: boolean) => Promise<void>,
   map: MenuSquare[]
 ) => {
   render(
     <MainMenu
       squareCommands={{
         plus: () => {
-          const crossX = window.innerWidth / 2 + 50;
-          const crossY = window.innerHeight / 2 + 50;
+          const crossX = () => window.innerWidth / 2 + 50;
+          const crossY = () => window.innerHeight / 2 + 50;
           moveSquaresToPlus(map, crossX, crossY);
         },
         plus2: () => {
-          const crossX = window.innerWidth / 2 - 50;
-          const crossY = window.innerHeight / 2 - 50;
+          const crossX = () => window.innerWidth / 2 - 50;
+          const crossY = () => window.innerHeight / 2 - 50;
           moveSquaresToPlus(map, crossX, crossY);
         },
         plus3: () => {
-          const crossX = 10;
-          const crossY = 10;
+          const crossX = () => 10;
+          const crossY = () => 10;
           moveSquaresToPlus(map, crossX, crossY);
         },
         logo: () => {
@@ -377,8 +377,8 @@ export const main = async (): Promise<void> => {
 
   const map = convertCsvToSquares(csv);
   const squareParent = addSquares(map);
-  const crossX = window.innerWidth / 2 + 50;
-  const crossY = window.innerHeight / 2 + 50;
+  const crossX = () => window.innerWidth / 2 + 50;
+  const crossY = () => window.innerHeight / 2 + 50;
   moveSquaresToPlus(map, crossX, crossY, true);
 
   const pressAnyKey = document.createElement('div');
@@ -468,29 +468,42 @@ export const main = async (): Promise<void> => {
   });
   pressAnyKey.remove();
 
-  const hideMenu = async () => {
-    stopCurrentMusic(800);
-    squareParent.style.transition = 'background-color 1000ms linear';
-    squareParent.style['background-color'] = colors.BLACK;
-    menuPrimary.style.transition = 'opacity 800ms linear';
-    menuPrimary.style.opacity = '0';
-    clearRotateInterval();
-    await new Promise<void>(resolve => {
-      setTimeout(resolve, 2500);
-    });
+  const hideMenu = async (isNewGame: boolean) => {
+    if (isNewGame) {
+      stopCurrentMusic(800);
+      squareParent.style.transition = 'background-color 1000ms linear';
+      squareParent.style['background-color'] = colors.BLACK;
+      menuPrimary.style.transition = 'opacity 800ms linear';
+      menuPrimary.style.opacity = '0';
+      clearRotateInterval();
+      await new Promise<void>(resolve => {
+        setTimeout(resolve, 2500);
+      });
 
-    playSoundName('menu_sparkle');
-    moveSquaresUp(map);
+      playSoundName('menu_sparkle');
+      moveSquaresUp(map);
 
-    await new Promise<void>(resolve => {
-      setTimeout(resolve, 2000);
-    });
+      await new Promise<void>(resolve => {
+        setTimeout(resolve, 2000);
+      });
 
-    squareParent.remove();
-    menuPrimary.remove();
-    // await new Promise<void>(resolve => {
-    //   setTimeout(resolve, 1000);
-    // });
+      squareParent.remove();
+      menuPrimary.remove();
+    } else {
+      stopCurrentMusic(800);
+      squareParent.style.transition =
+        'background-color 1000ms linear, opacity 1000ms linear';
+      squareParent.style['background-color'] = colors.BLACK;
+      squareParent.style.opacity = '0';
+      menuPrimary.style.transition = 'opacity 800ms linear';
+      menuPrimary.style.opacity = '0';
+      clearRotateInterval();
+      await new Promise<void>(resolve => {
+        setTimeout(resolve, 1500);
+      });
+      squareParent.remove();
+      menuPrimary.remove();
+    }
   };
 
   const menuPrimary = document.createElement('div');

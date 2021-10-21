@@ -18,6 +18,7 @@ import {
   battleCharacterSetAnimationIdle,
 } from 'model/battle-character';
 import AnimDiv from 'view/elements/AnimDiv';
+import { getBattleActionLabel } from 'controller/events';
 
 const InnerRoot = style('div', {
   width: '800px',
@@ -95,8 +96,16 @@ const renderBattlePosition = (
   row: 0 | 1
 ) => {
   const labels = ['Front', 'Middle', 'Back'];
-  const keys0 = ['D', 'S', 'A'];
-  const keys1 = ['C', 'X', 'Z'];
+  const keys0 = [
+    getBattleActionLabel(0),
+    getBattleActionLabel(2),
+    getBattleActionLabel(4),
+  ];
+  const keys1 = [
+    getBattleActionLabel(1),
+    getBattleActionLabel(3),
+    getBattleActionLabel(5),
+  ];
 
   return (
     <PartyPreviewPosition key={bCh ? bCh.ch.name : i}>

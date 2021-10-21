@@ -27,7 +27,9 @@ const Root = style('div', () => {
 const canvasContainer = document.getElementById('canvas-container');
 let rect = canvasContainer?.getBoundingClientRect();
 
-const CharacterFollower = (props: ICharacterFollowerProps): h.JSX.Element => {
+export const CharacterFollower = (
+  props: ICharacterFollowerProps
+): h.JSX.Element => {
   const { renderKey, ch, style, ...rest } = props;
   useRenderLoop(renderKey);
 

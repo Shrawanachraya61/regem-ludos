@@ -140,6 +140,7 @@ export interface BattleTemplate {
   baseTokens: number;
   getDrops?: () => Item[];
   disableFlee?: boolean;
+  music?: string;
   events?: {
     onBattleStart?: (battle: Battle) => Promise<void>;
     onBattleEnd?: (battle: Battle) => Promise<void>;
@@ -167,8 +168,9 @@ export enum BattleAllegiance {
   NONE = 'none',
 }
 
-export enum Status {
+export enum BattleStatus {
   DEFEND = 'defend',
+  HASTE = 'haste',
 }
 
 export enum BattleDamageType {
@@ -601,6 +603,9 @@ export const battlePauseTimers = (
       if (bCh.ch.transform) {
         bCh.ch.transform.timer.pauseOverride();
       }
+      bCh.statuses.forEach(obj => {
+        obj.timer.pauseOverride();
+      });
     }
   );
 };
@@ -623,6 +628,9 @@ export const battleUnpauseTimers = (
       if (bCh.ch.transform) {
         bCh.ch.transform.timer.unpauseOverride();
       }
+      bCh.statuses.forEach(obj => {
+        obj.timer.unpauseOverride();
+      });
     }
   );
 };

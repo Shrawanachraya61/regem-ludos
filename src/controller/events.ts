@@ -32,6 +32,11 @@ export const initEvents = (): void => {
   });
 
   window.addEventListener('keydown', (ev: KeyboardEvent) => {
+    if (ev.repeat) {
+      return;
+    }
+
+    setKeyDown(ev.code);
     setKeyDown(ev.key);
 
     const handler = getCurrentKeyHandler();
@@ -42,6 +47,7 @@ export const initEvents = (): void => {
 
   window.addEventListener('keyup', (ev: KeyboardEvent) => {
     setKeyUp(ev.key);
+    setKeyUp(ev.code);
   });
 
   pushKeyHandler(async (ev: KeyboardEvent) => {

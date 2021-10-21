@@ -87,6 +87,7 @@ export enum ModalSection {
   TUTORIAL_BACK_ROW = 'TUTORIAL_BACK_ROW',
   TUTORIAL_MAGIC = 'TUTORIAL_MAGIC',
   TUTORIAL_ARMOR = 'TUTORIAL_ARMOR',
+  ITEM = 'ITEM',
   INFO = 'INFO',
   CONFIRM = 'CONFIRM',
   SELECT_PARTY_MEMBER = 'SELECT_PARTY_MEMBER',
@@ -95,10 +96,11 @@ export enum ModalSection {
 export interface IModalState {
   section: ModalSection;
   onClose: () => void;
-  onConfirm?: (v?: any) => void;
-  body?: string;
+  onConfirm?: (v?: any) => void | Promise<void>;
+  body?: any;
   danger: boolean;
   filter: (a: any) => boolean;
+  meta?: any;
 }
 
 export interface ISettingsState {

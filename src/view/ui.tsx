@@ -77,6 +77,8 @@ const App = () => {
     };
   });
 
+  console.log('UI RENDER');
+
   const renderSection = (section: AppSection, key: number) => {
     switch (section) {
       case AppSection.BattleVictory: {

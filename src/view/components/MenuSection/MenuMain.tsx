@@ -27,6 +27,7 @@ import MenuEquipment from './MenuEquipment';
 import MenuParty from './MenuPositions';
 import CharacterStatus from '../CharacterStatus';
 import MenuLoad from './MenuLoad';
+import MenuStatus from './MenuStatus';
 
 const Root = style('div', {
   position: 'absolute',
@@ -167,6 +168,7 @@ const MenuSection = () => {
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
             closeButtonLabel={'Back ' + getCancelKeyLabel()}
+            // disableKeyboardShortcut={true}
           >
             <MenuItems
               player={player}
@@ -232,9 +234,17 @@ const MenuSection = () => {
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
             closeButtonLabel={'Back ' + getCancelKeyLabel()}
-            disableKeyboardShortcut={true}
+            // disableKeyboardShortcut={true}
           >
-            <CharacterStatus ch={getCurrentPlayer().leader} />
+            <MenuStatus
+              player={getCurrentPlayer()}
+              isInactive={false}
+              onClose={() => {
+                playSoundName('menu_choice_close');
+                setOuterMenuActive(true);
+              }}
+            />
+            {/* <CharacterStatus ch={getCurrentPlayer().leader} /> */}
           </MenuBox>
         );
       }
@@ -334,6 +344,7 @@ const MenuSection = () => {
                       <CharacterStatus
                         ch={ch}
                         usePortrait={true}
+                        hideStats={true}
                         style={{
                           filter:
                             ch.hp <= 0

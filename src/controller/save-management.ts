@@ -9,6 +9,8 @@ import {
   isArcadeGameMuted,
   setArcadeGameMuted,
   setArcadeGameVolume,
+  setCameraTransform,
+  setCurrentPlayer,
   setDebugModeEnabled,
   setDurationPlayed,
   setTimeLoaded,
@@ -25,10 +27,19 @@ import {
   characterEquipItem,
   characterGetPos,
   characterSetFacing,
+  CharacterTemplate,
   Facing,
 } from 'model/character';
 import { BattleStats } from 'model/battle';
-import { initiateOverworld } from './overworld-management';
+import {
+  enableOverworldControl,
+  initiateOverworld,
+} from './overworld-management';
+import { playerCreateNew } from 'model/player';
+import { runMainLoop, unpause } from './loop';
+import { renderUi } from 'view/ui';
+import { showSection } from './ui-actions';
+import { AppSection } from 'model/store';
 
 const APP_LS_PREFIX = 'regem_ludos_';
 const APP_SETTINGS_KEY = 'settings';
@@ -233,6 +244,21 @@ export const saveSaveListToLS = (saves: ISave[]) => {
   }
 };
 
+export const getMostRecentSave = (): ISave | null => {
+  const saveList = loadSaveListFromLS();
+
+  let retSave = saveList[0];
+
+  for (let i = 1; i < saveList.length; i++) {
+    const save = saveList[i];
+    if (save.timestampSaved > retSave?.timestampSaved) {
+      retSave = save;
+    }
+  }
+
+  return retSave;
+};
+
 export const createSave = (params: {
   saveId: string;
   durationPlayed: number;
@@ -326,7 +352,8 @@ export const saveGame = (saveIndex: number) => {
   saveSaveListToLS(saveList);
 };
 
-export const loadGame = (save: ISave) => {
+const loadGame = (save: ISave) => {
+  console.log('LOAD GAME', save);
   const scene = getCurrentScene();
   const player = getCurrentPlayer();
   scene.storage = {
@@ -389,6 +416,26 @@ export const loadGame = (save: ISave) => {
   setTimeLoaded(+new Date());
   setDurationPlayed(save.durationPlayed);
   setDebugModeEnabled(save.debug ?? true);
+};
+
+export const loadSavedGame = async (save: ISave) => {
+  const adaTemplate = getCharacter('Ada');
+  const player = playerCreateNew(adaTemplate as CharacterTemplate);
+  setCurrentPlayer(player);
+
+  loadGame(save);
+
+  enableOverworldControl();
+
+  // wont run again if its already running
+  runMainLoop();
+
+  setCameraTransform(null);
+
+  (document.getElementById('controls') as any).style.display = 'none';
+  showSection(AppSection.Debug, true);
+
+  unpause();
 };
 
 const characterToICharacterSave = (

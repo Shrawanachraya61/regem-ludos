@@ -11,8 +11,17 @@ import ProgressBar from 'view/elements/ProgressBar';
 import { characterGetExperiencePct, characterGetLevel } from 'model/character';
 import { timeoutPromise } from 'utils';
 import { playSoundName } from 'model/sound';
-import { playSound } from 'controller/scene-commands';
+import { fadeIn, fadeOut, playSound } from 'controller/scene-commands';
 import { playerAddItem } from 'model/player';
+import MenuBox from 'view/elements/MenuBox';
+import { CardSize, sizes as cardSizes } from 'view/elements/Card';
+import {
+  getMostRecentSave,
+  ISave,
+  loadSavedGame,
+} from 'controller/save-management';
+import MenuLoad from './MenuSection/MenuLoad';
+import { getCancelKeyLabel } from 'controller/events';
 
 interface IBattleConclusionProps {
   isVictory: boolean;
@@ -100,6 +109,8 @@ const LevelUpText = style('div', (props: { offset?: boolean }) => {
 
 const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
   const [onwardClicked, setOnwardClicked] = useState(false);
+  const [loadVisible, setLoadVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const player = getCurrentPlayer();
   const party = player.party;
 
@@ -219,7 +230,7 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
             {party.map(ch => {
               const s = state[ch.name];
               return (
-                <ChItem>
+                <ChItem key={ch.name}>
                   <div
                     style={{
                       overflow: 'hidden',
@@ -270,43 +281,131 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
       )}
       <VerticalMenu
         title=""
-        width="50%"
-        open={true}
+        width={'50%'}
+        open={!loadVisible && !loading}
         hideTitle
         style={{
           transition: 'transform 0.15s',
-          transform: 'scaleX(1)',
-          width: '128px',
+          transform: loading ? 'scale(0)' : 'scaleX(1)',
+          width: !props.isVictory ? '256px' : '128px',
         }}
-        items={[
-          {
-            label: (
-              <div>
-                {state.ind === 0 ? <span>Next</span> : null}
-                {state.ind === 1 ? (
-                  <span
-                    style={{ color: state.working ? colors.GREY : colors.BLUE }}
-                  >
-                    Onward!
-                  </span>
-                ) : null}
-              </div>
-            ),
-            value: 0,
-          },
-        ]}
+        items={
+          [
+            props.isVictory
+              ? {
+                  label: (
+                    <div>
+                      {state.ind === 0 ? <span>Next</span> : null}
+                      {state.ind === 1 ? (
+                        <span
+                          style={{
+                            color: state.working ? colors.GREY : colors.BLUE,
+                          }}
+                        >
+                          Onward!
+                        </span>
+                      ) : null}
+                    </div>
+                  ),
+                  value: 0,
+                }
+              : null,
+            !props.isVictory
+              ? {
+                  label: (
+                    <div>
+                      <span>Load Last Save</span>
+                    </div>
+                  ),
+                  value: 1,
+                }
+              : null,
+            !props.isVictory
+              ? {
+                  label: (
+                    <div>
+                      <span>Load Another Save</span>
+                    </div>
+                  ),
+                  value: 2,
+                }
+              : null,
+            !props.isVictory
+              ? {
+                  label: (
+                    <div>
+                      <span>Quit To Menu</span>
+                    </div>
+                  ),
+                  value: 3,
+                }
+              : null,
+          ].filter(v => Boolean(v)) as { label: any; value: number }[]
+        }
         onItemClickSound="menu_select"
-        onItemClick={() => {
-          if (state.working || onwardClicked) {
-            return;
+        onItemClick={v => {
+          // victory
+          if (v === 0) {
+            if (state.working || onwardClicked) {
+              return;
+            }
+            if (state.ind === 1) {
+              handleContinueClick();
+            } else {
+              applyRewards();
+            }
           }
-          if (state.ind === 1) {
-            handleContinueClick();
-          } else {
-            applyRewards();
+
+          // defeat load last save
+          if (v === 1) {
+            const save = getMostRecentSave();
+            if (save) {
+              setLoading(true);
+              fadeOut(500, true);
+              setTimeout(() => {
+                loadSavedGame(save);
+                fadeIn(500, true);
+              }, 500);
+            } else {
+              playSoundName('terminal_cancel');
+            }
+          }
+
+          // load another save
+          if (v === 2) {
+            setLoadVisible(true);
+          }
+
+          // quit to menu
+          if (v === 3) {
+            (window as any).location = '/menu.html';
           }
         }}
       />
+      {loadVisible && !loading ? (
+        <MenuBox
+          title="Load"
+          onClose={() => {}}
+          maxWidth={cardSizes[CardSize.XLARGE].width}
+          closeButtonLabel={'Back ' + getCancelKeyLabel()}
+          disableKeyboardShortcut={true}
+        >
+          <MenuLoad
+            onClose={() => {
+              setLoadVisible(false);
+              playSoundName('menu_choice_close');
+            }}
+            onSaveClicked={(save: ISave) => {
+              setLoading(true);
+              fadeOut(500, true);
+              setTimeout(() => {
+                loadSavedGame(save);
+                fadeIn(500, true);
+              }, 500);
+            }}
+          />
+        </MenuBox>
+      ) : null}
     </Root>
   );
 };

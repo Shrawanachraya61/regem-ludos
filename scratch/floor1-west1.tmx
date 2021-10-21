@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="123">
  <editorsettings>
-  <export target="../src/map/floor1-west1.tmx" format="tmx"/>
+  <export target="../src/map/floor1-west1.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="walls" tilewidth="32" tileheight="64" tilecount="128" columns="16">
   <image source="../res/walls.png" width="512" height="512"/>
@@ -49,7 +49,7 @@
 129,129,129,129,129,129,129,16,140,140,140,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,16,140,140,140,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,16,140,140,140,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
-129,129,129,129,129,129,129,16,140,140,0,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
+129,129,129,129,129,129,129,16,140,140,140,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,16,140,140,140,140,140,140,140,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,16,16,16,140,140,16,16,16,16,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,129,129,129,140,140,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
@@ -96,14 +96,14 @@
  </layer>
  <objectgroup id="2" name="Objects">
   <object id="111" name="MarkerPlayer" gid="194" x="168" y="342" width="32" height="32"/>
-  <object id="112" name="#floor1-OpenRedDoorsFWD" x="383" y="147" width="31" height="52"/>
+  <object id="112" name="#floor1-OpenRedDoorsFWD" x="387.5" y="148.5" width="31" height="52"/>
   <object id="113" name="MarkerRedDoorFWD1" gid="194" x="409.5" y="182" width="32" height="32"/>
   <object id="114" name="MarkerRedDoorFWD2" gid="194" x="409" y="164.5" width="32" height="32"/>
-  <object id="115" name="#floor1-transitionToFloor1West2FromFloor1West1" x="412" y="152" width="22.5" height="41"/>
+  <object id="115" name="#floor1-transitionToFloor1West2FromFloor1West1" x="411" y="153" width="22.5" height="41"/>
   <object id="116" name="#floor1-OpenRedDoorsBCK" x="150.5" y="416" width="48" height="28"/>
   <object id="117" name="MarkerRedDoorBCK1" gid="194" x="168" y="442" width="32" height="32"/>
   <object id="118" name="MarkerRedDoorBCK2" gid="194" x="186" y="442" width="32" height="32"/>
-  <object id="120" name="#floor1-transitionToFloor1PrimaryFromFloor1West1" x="159" y="443" width="32.5" height="19.5"/>
+  <object id="120" name="#floor1-transitionToFloor1PrimaryFromFloor1West1" x="158" y="440" width="32.5" height="23"/>
   <object id="121" name="MarkerFromPrimary" gid="194" x="174.5" y="407.5" width="32" height="32"/>
   <object id="122" name="MarkerFromFloor1West2" gid="194" x="375.5" y="174.5" width="32" height="32"/>
  </objectgroup>

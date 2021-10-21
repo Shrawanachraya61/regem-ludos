@@ -24,10 +24,13 @@ import {
   getCurrentKeyHandler,
   pushEmptyKeyHandler,
 } from 'controller/events';
-import CharacterFollower from 'view/elements/CharacterFollower';
+import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { getUiInterface } from 'view/ui';
 import TopBar, { TopBarButtons } from './TopBar';
 import { hexToRGBA } from 'utils';
+import { ItemStatus } from 'model/character';
+import { getIcon } from 'view/icons';
+import { keyframes } from 'lib/picostyle';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -36,6 +39,17 @@ const TopBarWrapper = style('div', {
   display: 'flex',
   '& > div': {
     marginRight: '4px',
+  },
+});
+
+const ItemStatusWrapper = style('div', {
+  position: 'absolute',
+  top: '0px',
+  right: '0px',
+  display: 'flex',
+  flexDirection: 'column',
+  '& > div': {
+    marginBottom: '4px',
   },
 });
 
@@ -131,6 +145,24 @@ const NotificationWrapper = style('div', (props: { visible: boolean }) => {
   };
 });
 
+const slowBlink = keyframes({
+  '0%': {
+    opacity: '1',
+  },
+  '50%': {
+    opacity: '0',
+  },
+  '100%': {
+    opacity: '1',
+  },
+});
+const StatusIconContainer = style('div', (props: { blink: boolean }) => {
+  return {
+    animation: props.blink ? `${slowBlink} 1000ms linear infinite` : 'unset',
+    width: '64px',
+  };
+});
+
 export const buttonHandlers = (cb: (ev: Event, isDown: boolean) => void) => {
   return {
     onMouseDown: (ev: Event) => {
@@ -146,6 +178,36 @@ export const buttonHandlers = (cb: (ev: Event, isDown: boolean) => void) => {
       cb(ev, false);
     },
   };
+};
+
+const renderItemStatus = (
+  statusObj: { status: ItemStatus; state: string },
+  i: number
+) => {
+  const itemStatusToIconName = {
+    [ItemStatus.CLOAKED]: {
+      itemName: 'cloakConsume',
+      color: colors.BLUE,
+    },
+  };
+  const obj = itemStatusToIconName[statusObj.status] ?? {
+    itemName: 'help',
+    color: colors.WHITE,
+  };
+
+  const Icon = getIcon(obj.itemName);
+
+  console.log('RENDER ITEM STATUS', statusObj.state, statusObj.status);
+
+  return (
+    <StatusIconContainer
+      id={statusObj.status + i + statusObj.state}
+      key={statusObj.status + i + statusObj.state}
+      blink={statusObj.state === 'expiring'}
+    >
+      <Icon color={obj.color} />
+    </StatusIconContainer>
+  );
 };
 
 const OverworldSection = () => {
@@ -172,6 +234,8 @@ const OverworldSection = () => {
       handler({ key } as any);
     }
   };
+
+  const player = getCurrentPlayer();
 
   return (
     <>
@@ -209,6 +273,9 @@ const OverworldSection = () => {
           })}
         </NotificationWrapper>
       </TopBarWrapper>
+      <ItemStatusWrapper>
+        {player?.leader.itemStatuses.map(renderItemStatus)}
+      </ItemStatusWrapper>
       {shouldShowOnScreenControls() && !overworldState.interfaceDisabled ? (
         <>
           <ActionButtonsArea>

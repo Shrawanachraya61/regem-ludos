@@ -97,6 +97,8 @@ export const init = () => {
     animationState: AnimationState.IDLE,
     speed: 1,
   };
+  exp.Floor1AtriumEmployeeJason2 = { ...exp.Floor1AtriumEmployeeJason };
+  exp.Floor1AtriumEmployeeJason2.name = 'Jason';
 
   exp.Floor1PingPongGuyA = {
     name: 'Floor1PingPongGuyA',

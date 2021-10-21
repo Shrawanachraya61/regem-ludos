@@ -42,7 +42,7 @@ import { BattleActions } from 'controller/battle-actions';
 import { get as getCharacter } from 'db/characters';
 import { createPFPath, pfPathToRoomPath } from 'controller/pathfinding';
 import {
-  loadGame,
+  loadSavedGame,
   loadSettingsFromLS,
   setCurrentSettings,
 } from 'controller/save-management';
@@ -161,6 +161,9 @@ export const main = async (): Promise<void> => {
   // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
+  player.leader.hp = 30;
+  conscience.hp = 30;
+
   // player.leader.hp = 0;
 
   characterEquipItem(conscience, player.backpack[1]);
@@ -205,22 +208,11 @@ export const main = async (): Promise<void> => {
       }
       return;
     }
-    loadGame(save);
+    loadSavedGame(save);
   } else {
     initiateOverworld(player, getOverworld('test2'));
   }
   enableOverworldControl();
-
-  let debounceResizeId: any;
-  window.addEventListener('resize', () => {
-    if (debounceResizeId !== false) {
-      clearTimeout(debounceResizeId);
-    }
-    debounceResizeId = setTimeout(() => {
-      getUiInterface().render();
-      debounceResizeId = false;
-    }, 50);
-  });
 
   console.log('run loop');
   runMainLoop();

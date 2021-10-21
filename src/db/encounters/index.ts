@@ -39,6 +39,19 @@ export const getIfExists = (key: string): BattleTemplate | null => {
 };
 
 export const init = () => {
+  exp.ENCOUNTER_IMPOSSIBLE = {
+    roomName: 'battle1',
+    baseExperience: 1,
+    baseTokens: 1,
+    enemies: [
+      {
+        chTemplate: getEnemy('ENEMY_GUY_IMPOSSIBLE'),
+        position: BattlePosition.FRONT,
+        ai: BATTLE_AI_ATTACK,
+      },
+    ],
+  };
+
   exp.ENCOUNTER_ONE_VS_ONE = {
     roomName: 'battle1',
     baseExperience: 1,

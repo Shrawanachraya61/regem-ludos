@@ -43,6 +43,7 @@ import {
   OverworldTemplate,
   createOverworldFromTemplate,
   overworldShow,
+  overworldHide,
 } from 'model/overworld';
 import { Point3d, tileToWorldCoords, timeoutPromise } from 'utils';
 import {
@@ -67,7 +68,12 @@ import {
   sceneIsPlaying,
 } from 'controller/scene-management';
 import { setCharacterAtMarker } from 'controller/scene-commands';
-import { scriptExists, TriggerType } from 'lib/rpgscript';
+import {
+  getTrigger,
+  scriptExists,
+  triggerExists,
+  TriggerType,
+} from 'lib/rpgscript';
 import {
   hideSection,
   hideSections,
@@ -100,6 +106,8 @@ import { createEmotionBubbleParticle } from 'model/particle';
 import { EmotionBubble } from 'db/particles';
 import { getUiInterface, uiInterface } from 'view/ui';
 import { playMusic, playSoundName } from 'model/sound';
+import { transitionToBattle } from './battle-management';
+import { get as getEncounter } from 'db/encounters';
 
 let overworldKeysDisabledOnLoadVal = false;
 
@@ -162,11 +170,17 @@ export const initiateOverworld = (
       try {
         console.log('Invoke overworld trigger');
         if (scriptExists(overworld.loadTriggerName)) {
-          callScriptDuringOverworld(overworld.loadTriggerName as string, {
-            disableKeys: true,
-            hideUi: false,
-            setPlayerIdle: true,
-            pause: false,
+          console.log(
+            'INVOKE SCRIPT AFTER A SLIGHT PAUSE',
+            overworld.loadTriggerName
+          );
+          timeoutPromise(10).then(() => {
+            callScriptDuringOverworld(overworld.loadTriggerName as string, {
+              disableKeys: true,
+              hideUi: false,
+              setPlayerIdle: true,
+              pause: false,
+            });
           });
         } else {
           console.log(
@@ -177,6 +191,8 @@ export const initiateOverworld = (
       } catch (e) {
         console.error(e);
       }
+    } else {
+      console.log('No overworld trigger was specified');
     }
 
     overworld.playerIsCollidingWithInteractable = true;
@@ -253,6 +269,8 @@ export const callScriptDuringOverworld = async (
   if (params.pause) {
     pause();
   }
+
+  console.log('Call script during overworld', scriptName, args);
   await callScript(getCurrentScene(), scriptName, args);
   const possiblyDifferentOverworld = getCurrentOverworld();
   overworldEnableTriggers(possiblyDifferentOverworld);
@@ -467,7 +485,8 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     isOverworldUpdateKeysDisabled() ||
     !getUiInterface().appState.sections.includes(AppSection.Debug) ||
     getUiInterface().appState.sections.includes(AppSection.Menu) ||
-    overworldKeysDisabledOnLoadVal
+    overworldKeysDisabledOnLoadVal ||
+    getUiInterface().appState.sections.includes(AppSection.Modal)
   ) {
     return;
   }
@@ -526,13 +545,15 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     //   break;
     // }
     case 'm': {
-      const room = getCurrentRoom();
-      const player = getCurrentPlayer();
-      const particle = createEmotionBubbleParticle(
-        player.leader,
-        EmotionBubble.BLUSH
+      overworldHide(getCurrentOverworld());
+      transitionToBattle(
+        getCurrentPlayer(),
+        getEncounter('ENCOUNTER_IMPOSSIBLE'),
+        () => {
+          console.log('COMPLETED!');
+        },
+        true
       );
-      roomAddParticle(room, particle);
       break;
     }
     case 'b': {
@@ -632,6 +653,7 @@ export const callStepTriggers = async (overworld: Overworld) => {
       if (shouldShowOverworldUi()) {
         showSection(AppSection.Debug, true);
       }
+      overworld.stepTimer.start();
     } else {
       await checkAndCallTriggerOfType([
         TriggerType.STEP_FIRST,
@@ -640,6 +662,7 @@ export const callStepTriggers = async (overworld: Overworld) => {
       if (shouldShowOverworldUi()) {
         showSection(AppSection.Debug, true);
       }
+      overworld.stepTimer.start();
     }
   }
 

@@ -262,6 +262,25 @@ export const playSound = (soundObj: ISound, volume?: number) => {
   }
 };
 
+export const getCurrentMusic = () => {
+  for (const i in musicSoundObjects) {
+    const soundObject = musicSoundObjects[i];
+    const sound = soundObject.nodes[0];
+    if (!sound.paused) {
+      return soundObject;
+    }
+  }
+  return null;
+};
+
+export const musicGetCurrentPlaybackPosition = (soundObject: ISound) => {
+  return soundObject.nodes[0].currentTime;
+};
+
+export const musicSetPlaybackPosition = (soundObject: ISound, pos: number) => {
+  soundObject.nodes[0].currentTime = pos;
+};
+
 export const playMusic = async (
   musicName: string,
   loop: boolean,

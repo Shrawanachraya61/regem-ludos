@@ -30,6 +30,7 @@ action,Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-5
 +lookAtCharacter(Ada, Floor1PrimaryGuy2);
 +panCameraToFitCharacters(500, false, Floor1PrimaryGuy2, Floor1PrimaryGirl1);
 Floor1PrimaryGuy2: "Did I tell you? My niece is gonna be attending the nearby high school coming this next year!"
++:shakeZ(Floor1PrimaryGirl1);
 Floor1PrimaryGirl1: "The nearby one? <color=ORANGE>Erran Valley<cascade>? Isn't that a prep school that's really hard to get into?"
 +:happy(Floor1PrimaryGuy2);
 Floor1PrimaryGuy2: "That's right!  She worked hard to pass the entrance exams.  I'm really proud of her."
@@ -57,26 +58,34 @@ Floor1PrimaryGuy2: "That sounds awesome!  I hope I get the chance to see it."
 +:smirk(Floor1PrimaryGuy2);
 Floor1PrimaryGuy2: "Did you hear anything else weird about <color=ORANGE>Erran Valley</>?"
 +:nervous(Floor1PrimaryGirl1);
-Floor1PrimaryGirl1: "<cascade-letters>Well...  <delay=200 cascade>There's the rumor that the father of one of the students there is a higher up in that <color=PURPLE> shady science company, Tyzon Corp</>."
++:shakeZ(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "<cascade-letters>Well...  <delay=200 cascade>There's the rumor that the father of one of the students there is none other than <color=ORANGE>Dalton Eldridge</>!"
++:exclaim(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "You mean that higher-up in that <color=PURPLE> shady science company, Tyzon Corp</>?"
 +lookAtCharacter(Floor1PrimaryGirl1, Floor1PrimaryGuy2);
-Floor1PrimaryGirl1: "Apparantly the student has this, like, <color=BLUE>computer chip or something</> in her head."
-Floor1PrimaryGirl1: "Supposedly <italic>that student</> is the smartest in the whole school."
++:shakeZ(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "Yeah! I had no idea he lived around here!"
+Floor1PrimaryGirl1: "Apparantly he put some kind of <color=BLUE>computer chip or something</> in his kid's head."
+Floor1PrimaryGirl1: "And because of it, supposedly <italic>that student</> is the smartest in the whole school."
 +:flat(Floor1PrimaryGuy2);
 Floor1PrimaryGuy2: "You're not serious, are you?"
 +:exclaim(Floor1PrimaryGirl1);
 Floor1PrimaryGirl1: "I am!"
 Floor1PrimaryGirl1: "I told it you was a <italic> rumor</>!"
-+endConversation();
++none();
 +?func(inParty, Conscience):{
   +walkToMarker(Ada, MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo);
   +:utils-start-Conscience-dialogue();
-  Conscience: "She wasn't talking about <color=ORANGE>Father</>, was she?"
+  Conscience: "She was talking about <color=ORANGE>Father</>, wasn't she?"
   +:bored(Ada);
   Ada: "Probably.  It appears he has created some infamy for himself."
   +:smirk(Conscience);
   Conscience: "You mean he has created <italic>infamy</> for <color=LIGHTBLUE>you</>."
+  Conscience: "Although <italic>smartest in the school</> is a pointed exaggeration."
+  +:blush(Ada);
+  Ada: "That remains to be seen."
   +:teardrop(Conscience);
-  Conscience: "He would be so dissappointed by this gossip, though."
+  Conscience: "<color=ORANGE>Father</> would be so dissappointed by this gossip, though."
   Conscience: "It doesn't have nearly enough <color=LIGHTBLUE>truth</> to it."
   +:utils-stop-Conscience-dialogue();
 }

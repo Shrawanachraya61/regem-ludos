@@ -7,7 +7,6 @@ import {
 } from 'controller/battle-actions';
 import { Battle } from 'model/battle';
 import { BattleCharacter } from 'model/battle-character';
-import SwordIcon from 'view/icons/Sword';
 
 const exp: Record<string, BattleAction> = {};
 
@@ -30,7 +29,7 @@ export const init = () => {
     type: BattleActionType.SWING,
     meta: {
       swings: [SwingType.NORMAL],
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
       const baseDamage = 1;

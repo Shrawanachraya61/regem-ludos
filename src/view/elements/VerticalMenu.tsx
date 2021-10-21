@@ -352,7 +352,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
           playSoundName('menu_move');
           dispatch({ type: 'Decrement' });
         } else if (
-          isConfirmKey(ev.code) ||
+          (!ev.repeat && isConfirmKey(ev.code)) ||
           (props.useSpaceBarConfirm && ev.key === ' ')
         ) {
           dispatch({ type: 'Select' });

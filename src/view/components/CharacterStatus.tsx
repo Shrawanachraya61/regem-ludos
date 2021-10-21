@@ -234,9 +234,9 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
         </PortraitContainer>
         {!props.hideWeapons ? (
           <ChWeaponsContainer>
-            {ch.weaponEquipTypes.map(wType => {
+            {ch.weaponEquipTypes.map((wType, i) => {
               const Icon: any = weaponEquipTypeToIcon(wType);
-              return <Icon color="white" />;
+              return <Icon color="white" key={i} />;
             })}
           </ChWeaponsContainer>
         ) : null}
@@ -281,7 +281,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
             <ChStatsContainer>
               {leftStats.map(({ label, value }) => {
                 return (
-                  <Stat>
+                  <Stat key={label}>
                     <label>{label}</label>{' '}
                     {value ? characterGetStat(ch, value) : ''}
                   </Stat>
@@ -291,7 +291,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
             <ChStatsContainer>
               {rightStats.map(({ label, value }) => {
                 return (
-                  <Stat>
+                  <Stat key={label}>
                     <label>{label}</label>{' '}
                     {value ? characterGetStat(ch, value) : ''}
                   </Stat>

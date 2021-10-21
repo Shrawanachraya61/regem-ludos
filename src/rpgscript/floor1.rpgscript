@@ -1,5 +1,5 @@
 #floor1-transitionToAtriumFromBowling
-step-first,this
+step,this
 @this
 +:utils-change-room(floor1Atrium, MarkerFromBowling);
 
@@ -21,7 +21,7 @@ step,this
 #floor1-transitionToFloor1PrimaryFromFloor1West1
 step,this
 @this
-+:utils-change-room(floorPrimary, MarkerFromWest1);
++:utils-change-room(floor1Primary, MarkerFromWest1);
 
 #floor1-transitionToFloor1West1FromFloor1Primary
 step,this
@@ -31,12 +31,12 @@ step,this
 #floor1-transitionToFloor1West2FromFloor1West1
 step,this
 @this
-+:utils-change(floor1West2, MarkerFromFloor1West1);
++:utils-change-room(floor1West2, MarkerFromFloor1West1);
 
 #floor1-transitionToFloor1West1FromFloor1West2
 step,this
 @this
-+:utils-change(floor1West1, MarkerFromFloor1West2);
++:utils-change-room(floor1West1, MarkerFromFloor1West2);
 
 #floor1-atriumOpenBowlingDoor
 step-first,floor1-atriumOpenBowlingDoorOpen
@@ -78,8 +78,9 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   action,?once():this
   action,floor1-atrium-desk-employee2
 @this
-  +lookAtEachOther('Ada','Atrium Desk Employee');
   +setConversation('Ada');
+  +walkToMarker(Ada, MarkerDeskEmployeeWalk2);
+  +lookAtEachOther('Ada','Atrium Desk Employee');
   Atrium Desk Employee: "Hello and welcome to the <color=ORANGE>Regem Ludos Arcade</>!"
   +:question(Atrium Desk Employee);
   Atrium Desk Employee: "Have you been here before?"
@@ -89,29 +90,40 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +waitMS(500);
   Ada: "I have not."
   +:exclaim(Atrium Desk Employee);
-  Atrium Desk Employee: "A newcomer? <delay=500 scale=1.25> Wonderful! <delay=500 cascade> Let's get you signed in."
+  Atrium Desk Employee: "A newcomer? <delay=300 scale=1.25> Wonderful! <delay=300 cascade> Let's get you signed in."
   Atrium Desk Employee: "I'll need your <scale=1.25 color=BLUE>Full Name</scale>, you know, like how it would appear on a drivers license."
   +:question(Ada);
   Ada: "My full name...?"
-  Ada: "It is <color=YELLOW cascade=100>Adalais Eldridge</>."
-  +:exclaim(Ada);
-  Ada: "<cascade=100>However I <scale=1.25 cascade-letters=200>MUCH <cascade-letters=100>prefer <color=YELLOW>Ada</>."
-  +:teardrop(Atrium Desk Employee);
-  Atrium Desk Employee: "I'll have to put in the full name for you, honey; compliancy reasons and all that."
+  Ada: "It is <color=YELLOW cascade-letters>Adalais Eldridge</>."
+  +:shakeZ(Ada);
+  Ada: "<cascade>However I <scale=1.25 cascade-letters>MUCH <cascade-letters>prefer <color=YELLOW>Ada</>."
+  +:exclaim(Atrium Desk Employee);
+  Atrium Desk Employee: "Eldridge?  You mean like that <color=ORANGE>famous computer scientist</>?"
+  Atrium Desk Employee: "What an interesting character!  I heard that his entire house is just one, big computer."
+  +:heart(Atrium Desk Employee);
+  Atrium Desk Employee: "What a nice coincidence to have a name the same as that guy!"
+  +:teardrop(Ada);
+  Ada: "<cascade=200>Umm. Yes. A <italic cascade-letters>coincidence<cascade-letters> indeed."
+  +:shakeZ(Atrium Desk Employee);
+  Atrium Desk Employee: "Anyway, I'll have to put in the <italic>full name</> for you, honey; compliancy reasons and all that."
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_gesture_rightup);
   +playSound('blip');
   +waitMS(1000);
   Atrium Desk Employee: "Excellent, <delay=500 cascade> I've set up a profile for you."
+  +:wink(Atrium Desk Employee);
+  +:spin(Atrium Desk Employee);
   Atrium Desk Employee: "Please allow me to give you a rundown of our facility."
-  Ada: "<cascade=75>Actually, I am only here... to see a <scale=0.75 cascade-letters=50>friend<cascade-letters=50> of mine."
+  +:shakeZ(Ada);
+  Ada: "<cascade=75>Actually, I am only here... to see a <scale=0.75 cascade-letters=50>'friend'<cascade-letters=50> of mine."
+  +lookAtCharacter(Atrium Desk Employee, Ada);
   +:happy(Atrium Desk Employee);
   Atrium Desk Employee: "It'll be quick, I promise!"
   +:bored(Ada);
-  Ada: "<scale=0.75 cascade-letters=150>Fine."
+  Ada: "<scale=0.75>Fiiine."
   Atrium Desk Employee: "<cascade>We have a wide variety of arcade games for you to enjoy.  However in order to play, each of these machines requires some number of <color=BLUE>Regem Ludos Tokens</>."
   Atrium Desk Employee: "You can acquire these from all sorts of places around the arcade, we encourage you to do some exploring!"
-  Atrium Desk Employee: "<cascade>But since you are new, I am happily able to provide you with a courtesy <color=YELLOW>starter pack of 10 Tokens</>."
+  Atrium Desk Employee: "<cascade>But since you are new, I am happily able to provide you with a courtesy <color=GREEN>starter pack of 10 Tokens</>."
   +setConversationSpeaker(none);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_gesture_rightup);
   +modifyTokens(10);
@@ -123,8 +135,11 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Atrium Desk Employee: "<cascade>The second floor?  Before you can access further floors you'll need to go through our extra-special VR <color=BLUE>tutorial</>."
   +:exclaim(Ada);
   Ada: "<scale=1.25>Tutorial!"
-  Ada: "<cascade=150>No no no<cascade>! I just need to meet a friend of mine!"
-  Atrium Desk Employee: "There's a good reason for the tutorial."
+  Ada: "<cascade=150>No no no<cascade>! I just need to meet somebody, not play any sort of games!"
+  +:teardrop(Atrium Desk Employee);
+  Atrium Desk Employee: "This is an arcade, honey.  What did you expect?"
+  +:shakeZ(Atrium Desk Employee);
+  Atrium Desk Employee: "But also, there's a good reason for the tutorial."
   Atrium Desk Employee: "The <color=BLUE>Regem Ludos Arcade</> is a very large facility and features several particularly <scale=1.25>SPECIAL</> floors."
   Atrium Desk Employee: "These are the primary reason why people come to this arcade. These are the VR floors."
   +:bored(Ada);
@@ -136,7 +151,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Atrium Desk Employee: "Yes! On these special floors we are able to create a truly astounding variety of different places and things - all in <color=BLUE>virtual space</>!"
   Atrium Desk Employee: "However, to get access you'll need a wearable called a <color=BLUE>Haptic Bracer</>."
   +:teardrop(Ada);
-  Ada: "Look I am sure these <color=BLUE>VR floors</> are quite interesting to the average customer."
+  Ada: "Look, I am sure these <color=BLUE>VR floors</> are quite interesting to the average customer."
   Ada: "However at the moment I am not particularly <italic>enthralled</> with them."
   Ada: "Can I not just go to the second floor and skip all this nonsense?"
   +:teardrop(Atrium Desk Employee);
@@ -146,21 +161,26 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Atrium Desk Employee: "Go and speak with <color=ORANGE>Instructor Jason</> over in the area adjacent to this room.  He is standing outside of our VR Practice area."
   Atrium Desk Employee: "He can teach you some helpful tips on how to battle some of the monsters in VR."
   +:surprised(Ada);
-  Ada: "Wait...<cascade=150> What did you say?"
+  Ada: "Wait...<cascade=100> What did you say?"
   +setConversationSpeaker(none);
-  +waitMS(500);
   +callScript('utils-character-shake-z', 'Ada');
-  +waitMS(500);
-  Ada: "<cascade-letters=150>Battle <cascade-letters=100 scale=1.25 color=RED>MONSTERS</>?"
+  Ada: "<cascade-letters=75>Battle <cascade-letters=50 scale=1.25 color=RED>MONSTERS</>?"
   Ada: "<cascade scale=1.25>I just need to go to the second floor!"
   +setConversationSpeaker(none);
   +waitMS(500);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
   +waitMS(500);
-  Atrium Desk Employee: "Yep!  Our VR features an exciting <color=BLUE>battle system</>!  You'll have to fight your way through the floors of this arcade to reach the top!"
-  Atrium Desk Employee: "Alrighty! That's about it for the rundown.  If you have further questions, don't hesitate to ask!"
+  Atrium Desk Employee: "Yep!  Our VR features an exciting <color=BLUE>battle system</>!"
+  Atrium Desk Employee: "You'll have to fight your way through the floors of this arcade to reach the top!"
+  +:wink(Atrium Desk Employee);
+  +:spin(Atrium Desk Employee);
+  Atrium Desk Employee: "<cascade=100>And that about <cascade-letters scale=1.5>does it."
+  +lookAtCharacter(Atrium Desk Employee, Ada);
+  +:lightbulb(Atrium Desk Employee);
+  Atrium Desk Employee: "If you have further questions, don't hesitate to ask!"
   +:exclaim(Ada);
   Ada: "But <scale=0.75>what <scale=0.5>if I do not <scale=0.25> want to------?</>"
+  +:happy(Atrium Desk Employee);
   Atrium Desk Employee: "Have a wonderful time here at the <color=ORANGE>Regem Ludos Arcade</>!"
   +setConversationSpeaker(none);
   +waitMS(1000);
@@ -194,7 +214,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +:exclaim(Conscience);
   Conscience: "<cascade=100>No, no, no!"
   Conscience: "We are <shake>DEFINITELY</> going to the VR.  I want to see it!"
-  Ada: "I did not come here to defeat <color=RED scale=1.25>MONSTERS</>.<delay=750 cascade=33> I just want to find Carl-Arnold and then get out with as little problems as possible."
+  Ada: "I did not come here to defeat <color=RED scale=1.25>MONSTERS</>.<delay=500 cascade=33> I just want to find <color=ORANGE>Carl-Arnold</> and then get out with as little problems as possible."
   +:exclaim(Conscience);
   Conscience: "C'mon, it totally sounds fun!"
   +setConversationSpeaker(none);
@@ -238,6 +258,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +callScript(floor1-enter-elevator);
   +endConversation();
 @floor1-atrium-elevator-employee-no-bracer
+  +stopAi('Atrium Elevator Employee');
   +lookAtEachOther('Ada', Atrium Elevator Employee);
   +setConversation('Ada');
   Atrium Elevator Employee: "Here to ride the elevator?  Can you show me your <color=BLUE>Haptic Bracer</>?"
@@ -302,12 +323,16 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setConversationSpeaker(none);
   +walkToMarker(Atrium Employee Jason, MarkerJasonB);
   +lookAtCharacter('Ada', 'Atrium Employee Jason');
+  +setFacing(Atrium Employee Jason, rightup);
   +waitMS(1000);
   +walkToMarker(Atrium Employee Jason, MarkerJasonA);
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
-  Atrium Employee Jason: "Here you are!"
+  Atrium Employee Jason: "Here you are!  It goes right over your wrist."
   +:utils-get-treasure-cutscene('HapticBracer');
-  Atrium Employee Jason: "Let us start the tutorial, shall we?"
+  Atrium Employee Jason: "Ready to start the tutorial and learn how to use it?"
+  +:bored(Ada);
+  Ada: "<cascade-letters>I suppose..."
+  Atrium Employee Jason: "Then let's start the tutorial!"
   +callScript('floor1-atrium-employee-jason-start-tutorial');
 @floor1-atrium-employee-jason-start-tutorial
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -319,9 +344,11 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, OPEN);
   +playSound(red_door_open);
   +waitMS(500);
+  +walkToMarker(Atrium Employee Jason, MarkerDoorTut2);
   +despawnCharacter(Atrium Employee Jason);
   +waitMS(500);
   +walkToMarker(Ada, MarkerDoorTut);
+  +walkToMarker(Ada, MarkerDoorTut2);
   +callScript('utils-change-room', 'floor1TutEntrance', 'MarkerDoor');
   //pass control to the script in the next room
   +callScript('floor1-tut-entrance-begin-tut');
@@ -362,9 +389,8 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Tic Tac Toe Girl: "Honestly, I feel kinda bad for it.  I wonder if it feels sad to lose all the time."
   Tic Tac Toe Girl: "Maybe somebody should let it win a few games, you know, to help its self-esteem."
   +setFacing('Tic Tac Toe Girl', rightdown);
-  +endConversation();
-  +endConversation();
   +startQuest(TicTacToe);
+  +endConversation();
 @floor1-atrium-TicTacToeGirl-rest
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
@@ -468,7 +494,7 @@ action,floor1-atrium-TicTacToeMachine-action
   +lookAtEachOther(Ada, AtriumGreeterEmployee);
   +setConversation(Ada);
   +:question(Ada);
-  Ada: "I am looking for a <italic>friend</> of mine."
+  Ada: "I am looking for a <italic>'friend'</> of mine."
   Ada: "He told me he is on the second floor."
   Ada: "Do you know where I need to go to get up there?"
   +:teardrop(AtriumGreeterEmployee);
@@ -614,13 +640,13 @@ step-off,floor1-OpenRedDoorsFWDClose
 +:closeDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
 
 #floor1-OpenRedDoorsBCK
-step-first,floor1-OpenRedDoorsFWDOpen
+step-first,floor1-OpenRedDoorsBCKOpen
 step-off,floor1-OpenRedDoorsBCKClose
-@floor1-OpenRedDoorsBCDOpen
+@floor1-OpenRedDoorsBCKOpen
 +playSound(sliding_door_open);
-+:openDoor(MarkerRedDoorBCK1, RED_DOOR_BCKL);
-+:openDoor(MarkerRedDoorBCK2, RED_DOOR_BCKR);
++:openDoor(MarkerRedDoorBCK2, RED_DOOR_BCKL);
++:openDoor(MarkerRedDoorBCK1, RED_DOOR_BCKR);
 @floor1-OpenRedDoorsBCKClose
 +playSound(sliding_door_close);
-+:closeDoor(MarkerRedDoorBCK1, RED_DOOR_BCKL);
-+:closeDoor(MarkerRedDoorBCK2, RED_DOOR_BCKR);
++:closeDoor(MarkerRedDoorBCK2, RED_DOOR_BCKL);
++:closeDoor(MarkerRedDoorBCK1, RED_DOOR_BCKR);

@@ -275,7 +275,7 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     stats: {
       ...battleStatsCreate(),
       HP: 15,
-      STAGGER: 5,
+      STAGGER: 15,
     },
     facing: Facing.LEFT,
     animationState: AnimationState.BATTLE_IDLE,

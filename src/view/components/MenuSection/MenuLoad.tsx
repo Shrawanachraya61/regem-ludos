@@ -1,8 +1,8 @@
 /* @jsx h */
 import { h, Fragment } from 'preact';
 import { style } from 'view/style';
-import { showModal } from 'controller/ui-actions';
-import { ModalSection } from 'model/store';
+import { hideSection, showModal } from 'controller/ui-actions';
+import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize } from 'view/elements/Card';
 import { pause, unpause } from 'controller/loop';
 import { isCancelKey, getCancelKeyLabel } from 'controller/events';
@@ -12,7 +12,7 @@ import {
   saveGame,
   loadSaveListFromLS,
   ISave,
-  loadGame,
+  loadSavedGame,
 } from 'controller/save-management';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import Button, { ButtonType } from 'view/elements/Button';
@@ -47,6 +47,7 @@ const ConfirmButtonArea = style('div', {
 
 interface ILoadSectionProps {
   onClose: () => void;
+  onSaveClicked?: (save: ISave) => void;
 }
 
 const LoadSection = (props: ILoadSectionProps) => {
@@ -58,13 +59,19 @@ const LoadSection = (props: ILoadSectionProps) => {
 
   const handleLoadClick = (saveIndex: number) => {
     console.log('LOAD GAME', saveIndex);
-    handleCloseClick();
-    playSoundName('menu_choice_open');
-    fadeOut(500, true);
-    setTimeout(() => {
-      loadGame(saves[saveIndex]);
-      fadeIn(500, true);
-    }, 500);
+    if (props.onSaveClicked) {
+      props.onSaveClicked(saves[saveIndex]);
+    } else {
+      hideSection(AppSection.Menu);
+      handleCloseClick();
+      playSoundName('menu_choice_open');
+      fadeOut(500, true);
+      setTimeout(() => {
+        loadSavedGame(saves[saveIndex]);
+        // loadGame(saves[saveIndex]);
+        fadeIn(500, true);
+      }, 500);
+    }
   };
   const handleCloseClick = () => {
     // const onClose = getUiInterface().appState.save.onClose;

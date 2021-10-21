@@ -48,6 +48,7 @@ import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
 import { Item, get as getItem, ItemType, WeaponType } from 'db/items';
 import { getSprite } from './sprite';
+import { renderUi } from 'view/ui';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -124,6 +125,11 @@ export enum AnimationState {
   BATTLE_REVIVE = 'battle_revive',
 }
 
+export enum ItemStatus {
+  CLOAKED = 'cloaked',
+  SPEEDY = 'speedy',
+}
+
 export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
 
 export interface Character {
@@ -185,6 +191,10 @@ export interface Character {
   encounterStuckRetries: number;
   sortOffset?: number;
   ro?: RenderObject;
+  itemStatuses: {
+    status: ItemStatus;
+    state: 'normal' | 'expiring';
+  }[];
 }
 
 export interface CharacterTemplate {
@@ -210,6 +220,7 @@ export interface CharacterTemplate {
   weaponEquipTypes?: WeaponType[];
   collisionSize?: number;
   collisionOffset?: Point;
+  visionRange?: number;
   equipment?: {
     weapon: Item;
     accessory1?: Item;
@@ -268,6 +279,10 @@ export const characterCreate = (name: string): Character => {
     collisionSize: [16, 16],
     collisionOffset: [0, 0],
     encounterStuckRetries: 0,
+    itemStatuses: [] as {
+      status: ItemStatus;
+      state: 'normal' | 'expiring';
+    }[],
     sortOffset: undefined,
     template: null,
   };
@@ -350,6 +365,9 @@ export const characterCreateFromTemplate = (
   }
   if (template.collisionOffset !== undefined) {
     ch.collisionOffset = template.collisionOffset.slice() as Point;
+  }
+  if (template.visionRange) {
+    ch.visionRange = template.visionRange;
   }
   if (template.overrideAnimationName) {
     const animName = template.overrideAnimationName;
@@ -774,7 +792,7 @@ export const characterHasAnimationState = (
 export const characterGetVisionPoint = (ch: Character): Point => {
   const [x, y] = characterGetPos(ch);
   const [incX, incY] = facingToIncrements(pxFacingToWorldFacing(ch.facing));
-  return [x + (ch.visionRange * incX) / 2, y + (ch.visionRange * incY) / 2];
+  return [x + ch.visionRange * incX * 0.75, y + ch.visionRange * incY * 0.75];
 };
 
 export const characterCanSeeOther = (
@@ -784,7 +802,10 @@ export const characterCanSeeOther = (
   const [x, y] = characterGetPos(other);
   const [visX, visY] = characterGetVisionPoint(ch);
   const r = ch.visionRange;
-  return circleCircleCollision([x, y, 1], [visX, visY, r]);
+  return (
+    circleCircleCollision([x, y, 1], [visX, visY, r]) &&
+    !characterHasItemStatus(other, ItemStatus.CLOAKED)
+  );
 };
 
 export const characterCollidesWithOther = (ch: Character, other: Character) => {
@@ -951,11 +972,64 @@ export const characterGetExperiencePct = (ch: Character) => {
 
 export const characterGetPortraitSpriteName = (ch: Character): string => {
   const spriteName = ch.spriteBase + '_portrait';
-  console.log('GET PORT SPRITE', spriteName);
   if (!hasAnimation(spriteName)) {
     return '';
   }
   return spriteName;
+};
+
+export const characterHasItemStatus = (ch: Character, status: ItemStatus) => {
+  return Boolean(ch.itemStatuses.find(obj => obj.status === status));
+};
+
+export const characterAddItemStatus = (ch: Character, status: ItemStatus) => {
+  ch.itemStatuses.push({
+    status,
+    state: 'normal',
+  });
+
+  // TODO ideally, there should be a PubSub action for this, but the overworld does not
+  // implement this pattern
+  setTimeout(() => {
+    renderUi();
+  }, 100);
+};
+
+export const characterRemoveItemStatus = (
+  ch: Character,
+  status: ItemStatus
+) => {
+  const ind = ch.itemStatuses.findIndex(obj => obj.status === status);
+  if (ind > -1) {
+    ch.itemStatuses.splice(ind, 1);
+  }
+
+  // TODO ideally, there should be a PubSub action for this, but the overworld does not
+  // implement this pattern
+  setTimeout(() => {
+    renderUi();
+  }, 100);
+};
+
+export const characterSetItemStatusState = (
+  ch: Character,
+  status: ItemStatus,
+  state: 'normal' | 'expiring'
+) => {
+  const obj = ch.itemStatuses.find(obj => obj.status === status);
+  if (obj) {
+    obj.state = state;
+  }
+
+  // TODO ideally, there should be a PubSub action for this, but the overworld does not
+  // implement this pattern
+  setTimeout(() => {
+    renderUi();
+  }, 100);
+};
+
+export const characterRemoveNonPersistentItemStatuses = (ch: Character) => {
+  characterRemoveItemStatus(ch, ItemStatus.CLOAKED);
 };
 
 export const characterUpdate = (ch: Character): void => {
@@ -1023,20 +1097,40 @@ export const characterUpdate = (ch: Character): void => {
     characterSetFacingFromAngle(ch, angle);
     if (isLeaderCharacter(ch)) {
       if (isChObstructedByWall(ch, room)) {
-        ch.x = prevX;
-        ch.y = prevY;
-        if (isChObstructedByWall(ch, room)) {
-          console.log(
-            'Leader is standing in a wall, warping to nearest adj tile.'
-          );
-          const tile = roomGetTileBelow(room, [ch.x, ch.y]);
-          const adjTile = roomGetEmptyAdjacentTile(room, ch);
-          if (tile && adjTile) {
-            characterSetPos(ch, [
-              ...tileToWorldCoords(adjTile.x, adjTile.y),
-              ch.z,
-            ]);
-            return;
+        const lastX = ch.x;
+        const lastY = ch.y;
+
+        const checkY = () => {
+          ch.y = prevY;
+          ch.x = lastX;
+          return isChObstructedByWall(ch, room);
+        };
+
+        const checkX = () => {
+          ch.y = lastY;
+          ch.x = prevX;
+          return isChObstructedByWall(ch, room);
+        };
+
+        // HACK: makes Ada slide smoothly off of corners instead of getting stuck
+        if (!checkY()) {
+        } else if (!checkX()) {
+        } else {
+          ch.x = prevX;
+          ch.y = prevY;
+          if (isChObstructedByWall(ch, room)) {
+            console.log(
+              'Leader is standing in a wall, warping to nearest adj tile.'
+            );
+            const tile = roomGetTileBelow(room, [ch.x, ch.y]);
+            const adjTile = roomGetEmptyAdjacentTile(room, ch);
+            if (tile && adjTile) {
+              characterSetPos(ch, [
+                ...tileToWorldCoords(adjTile.x, adjTile.y),
+                ch.z,
+              ]);
+              return;
+            }
           }
         }
       }

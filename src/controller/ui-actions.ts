@@ -166,6 +166,17 @@ export const showSection = (
   hideRest: boolean,
   sectionsToHide?: AppSection[]
 ) => {
+  // console.trace('SHOW SECTION');
+  const sections = getUiInterface().appState.sections;
+  if (hideRest) {
+    if (sections.length === 1 && sections[0] === section) {
+      console.log(
+        'Show section skipped because it would result in a redundant render.'
+      );
+      return;
+    }
+  }
+
   if (hideRest) {
     hideSections();
   }
@@ -479,10 +490,11 @@ export const showModal = (
   section: ModalSection,
   modalParams: {
     onClose: () => void;
-    onConfirm?: (v?: any) => void;
+    onConfirm?: (v?: any) => void | Promise<void>;
     body?: any;
     danger?: boolean;
     filter?: (a: any) => boolean;
+    meta?: any;
   }
 ) => {
   const payload = {
@@ -492,6 +504,7 @@ export const showModal = (
     body: modalParams.body,
     danger: modalParams.danger ?? false,
     filter: modalParams.filter ?? (() => true),
+    meta: modalParams.meta ?? {},
   };
   getUiInterface().dispatch({
     action: 'setModalState',
@@ -506,13 +519,21 @@ export const hideModal = () => {
 
 export const showPartyMemberSelectModal = (props: {
   onClose: () => void;
-  onCharacterSelected: (ch: Character) => void;
+  onCharacterSelected: (ch: Character) => Promise<void>;
   filter?: (a: any) => boolean;
+  showDelayInfo?: boolean;
+  itemNameForDescription?: string;
+  body?: any;
 }) => {
   showModal(ModalSection.SELECT_PARTY_MEMBER, {
     onClose: props.onClose,
     onConfirm: props.onCharacterSelected,
     filter: props.filter,
+    body: props.body,
+    meta: {
+      showDelayInfo: props.showDelayInfo,
+      itemNameForDescription: props.itemNameForDescription,
+    },
   });
 };
 

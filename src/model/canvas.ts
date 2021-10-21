@@ -78,10 +78,18 @@ export const getCanvas = (type?: string): HTMLCanvasElement => {
 };
 
 // get a reference to the current rendering context
+const memoizedCtxObj: Record<string, any> = {};
 export const getCtx = (type?: string): CanvasRenderingContext2D => {
+  let memoizedCtx = memoizedCtxObj[type ?? 'def'];
+  if (memoizedCtx) {
+    return memoizedCtx;
+  }
   const canvas = getCanvas(type);
-  return (canvas.getContext('2d') ??
+  memoizedCtx = (canvas.getContext('2d') ??
     canvas.getContext('webgl-2d')) as CanvasRenderingContext2D;
+
+  memoizedCtxObj[type ?? 'def'] = memoizedCtx;
+  return memoizedCtx;
 };
 
 const setDrawScaleCanvas = (canvas: HTMLCanvasElement, s: number) => {

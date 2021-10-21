@@ -7,11 +7,34 @@ import {
   battleUnsubscribeEvent,
 } from 'model/battle';
 import { BattleCharacter } from 'model/battle-character';
+import { getUiInterface } from './ui';
+import { ModalSection } from 'model/store';
+import { hideModal, showModal } from 'controller/ui-actions';
+import { popKeyHandler, pushEmptyKeyHandler } from 'controller/events';
+
+let hooksInitialized = false;
 
 export const initHooks = () => {
+  if (hooksInitialized) {
+    console.log('Hooks have already been initialized.');
+    return;
+  }
+  hooksInitialized = true;
+
+  let debounceResizeId: any;
+  window.addEventListener('resize', () => {
+    if (debounceResizeId !== false) {
+      clearTimeout(debounceResizeId);
+    }
+    debounceResizeId = setTimeout(() => {
+      getUiInterface().render();
+      debounceResizeId = false;
+    }, 50);
+  });
+
   window.addEventListener('keydown', (ev: KeyboardEvent) => {
     const cb = inputEventStack[inputEventStack.length - 1];
-    if (cb) {
+    if (cb && !ev.repeat) {
       cb(ev);
     }
   });
@@ -64,7 +87,9 @@ export const useKeyboardEventListener = (
 ) => {
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
-      cb(ev);
+      if (!ev.repeat) {
+        cb(ev);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -170,4 +195,41 @@ export const useBattleSubscriptionWithBattleCharacter = (
       battleUnsubscribeEvent(battle, event, _cb);
     };
   }, [battle, event, cb]);
+};
+
+export interface IUseConfirmModalArgs {
+  onClose?: () => void;
+  onConfirm?: () => void;
+  body?: string;
+  danger?: boolean;
+}
+
+export const useConfirmModal = (
+  args: IUseConfirmModalArgs
+): [boolean, () => void, () => void] => {
+  const [confirmVisible, setConfirmVisible] = useState(false);
+
+  const showConfirmModal = () => {
+    const emptyStackCb = pushEmptyKeyHandler();
+    setConfirmVisible(true);
+    showModal(ModalSection.CONFIRM, {
+      onClose: () => {
+        popKeyHandler(emptyStackCb);
+        setConfirmVisible(false);
+        if (args.onClose) {
+          args.onClose();
+        }
+      },
+      onConfirm: () => {
+        popKeyHandler(emptyStackCb);
+        if (args.onConfirm) {
+          args.onConfirm();
+        }
+      },
+      body: args.body,
+      danger: args.danger,
+    });
+  };
+
+  return [confirmVisible, showConfirmModal, hideModal];
 };

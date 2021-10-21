@@ -22,7 +22,7 @@ import {
   battleSetEnemyRangeTargetIndex,
   battleSetEnemyTargetIndex,
 } from 'model/battle';
-import CharacterFollower from 'view/elements/CharacterFollower';
+import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { renderUi } from 'view/ui';
 import { useState } from 'lib/preact-hooks';
 import MeleeTargetIcon from 'view/icons/TargetMelee';
@@ -164,10 +164,10 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
   };
 
   const armorIcons: any[] = [];
-  for (let i = 0; i < props.bCh.armor; i++) {
+  if (props.bCh.armor > 0) {
     armorIcons.push(
       <div>
-        <ArmorIcon key={i} color={colors.LIGHTGREY} />
+        <ArmorIcon key={0} color={colors.GREY} />
       </div>
     );
   }
@@ -223,6 +223,18 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
       ) : null}
       <ArmorIconsContainer align={props.isEnemy ? 'right' : 'left'}>
         {armorIcons}
+        {armorIcons.length > 0 ? (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              right: '-3px',
+              fontSize: '20px',
+            }}
+          >
+            {props.bCh.armor}
+          </div>
+        ) : null}
       </ArmorIconsContainer>
     </CharacterFollower>
   );

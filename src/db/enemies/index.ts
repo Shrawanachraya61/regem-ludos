@@ -24,13 +24,27 @@ export const init = () => {
     spriteBase: 'guy-battle',
     stats: {
       ...battleStatsCreate(),
-      HP: 15,
-      STAGGER: 25,
+      HP: 100,
+      STAGGER: 10,
     },
     facing: Facing.LEFT,
     animationState: AnimationState.BATTLE_IDLE,
-    skills: [BattleActions.SwingSlow],
+    skills: [BattleActions.Swing, BattleActions.Swing],
     armor: 1,
+  };
+
+  exp.ENEMY_GUY_IMPOSSIBLE = {
+    name: 'guy',
+    spriteBase: 'guy-battle',
+    stats: {
+      ...battleStatsCreate(),
+      HP: 1000,
+      STAGGER: 100,
+    },
+    facing: Facing.LEFT,
+    animationState: AnimationState.BATTLE_IDLE,
+    skills: [BattleActions.SwingKO],
+    armor: 99,
   };
 
   initTutorial(exp);

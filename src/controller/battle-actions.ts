@@ -2,7 +2,7 @@ import {
   Battle,
   BattleAllegiance,
   battleGetAllegiance,
-  Status,
+  BattleStatus,
   battleGetNearestAttackable,
   battleGetTargetedEnemy,
   BattleEvent,
@@ -92,7 +92,7 @@ interface BattleActionMeta {
   swings?: SwingType[];
   ranges?: RangeType[];
   castTime?: number;
-  icon?: (props: any) => h.JSX.Element;
+  icon?: string;
 }
 
 export enum BattleActionType {
@@ -578,7 +578,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
     type: BattleActionType.SWING,
     meta: {
       swings: [SwingType.NORMAL, SwingType.NORMAL],
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
       const baseDamage = 1;
@@ -601,7 +601,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
     type: BattleActionType.SWING,
     meta: {
       swings: [SwingType.NORMAL, SwingType.PIERCE, SwingType.NORMAL],
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async (battle: Battle, bCh: BattleCharacter): Promise<void> => {
       const baseDamage = 1;
@@ -625,10 +625,34 @@ export const BattleActions: { [key: string]: BattleAction } = {
     type: BattleActionType.SWING,
     meta: {
       swings: [SwingType.NORMAL, SwingType.NORMAL, SwingType.NORMAL],
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async (battle: Battle, bCh: BattleCharacter) => {
       return BattleActions.Swing.cb(battle, bCh);
+    },
+  },
+  SwingKO: {
+    name: 'SwingSlow',
+    description: 'Instant KO.',
+    cooldown: 500,
+    type: BattleActionType.SWING,
+    meta: {
+      swings: [SwingType.NORMAL],
+      icon: 'sword',
+    },
+    cb: async (battle: Battle, bCh: BattleCharacter) => {
+      const baseDamage = 99999;
+      const baseStagger = 99999;
+      const target = getTarget(battle, bCh);
+      if (target) {
+        await doSwing(battle, BattleActions.SwingKO, bCh, target, {
+          baseDamage,
+          baseStagger,
+          swingType:
+            BattleActions.Swing?.meta?.swings?.[bCh.actionStateIndex] ??
+            SwingType.NORMAL,
+        });
+      }
     },
   },
   SwingWithLongDescription: {
@@ -639,7 +663,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
     type: BattleActionType.SWING,
     meta: {
       swings: [SwingType.NORMAL, SwingType.NORMAL, SwingType.NORMAL],
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async (battle: Battle, bCh: BattleCharacter) => {
       return BattleActions.Swing.cb(battle, bCh);
@@ -653,7 +677,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
     type: BattleActionType.CAST,
     meta: {
       castTime: 5000,
-      icon: SwordIcon,
+      icon: 'sword',
     },
     cb: async (battle: Battle, bCh: BattleCharacter) => {
       beginAction(bCh);
@@ -664,7 +688,7 @@ export const BattleActions: { [key: string]: BattleAction } = {
       characterSetAnimationState(ch, AnimationState.BATTLE_ITEM);
       const anim = characterGetAnimation(ch);
       await anim.onCompletion();
-      battleCharacterAddStatus(bCh, Status.DEFEND);
+      battleCharacterAddStatus(bCh, BattleStatus.DEFEND);
 
       const inverseTransform = transform.createInverse();
       characterSetTransform(ch, inverseTransform);
@@ -678,11 +702,11 @@ export const BattleActions: { [key: string]: BattleAction } = {
         castTime: 5000,
         onCast: async () => {
           console.log('Defense completed');
-          battleCharacterRemoveStatus(bCh, Status.DEFEND);
+          battleCharacterRemoveStatus(bCh, BattleStatus.DEFEND);
         },
         onInterrupt: async () => {
           console.log('Defense interrupted');
-          battleCharacterRemoveStatus(bCh, Status.DEFEND);
+          battleCharacterRemoveStatus(bCh, BattleStatus.DEFEND);
         },
       });
 

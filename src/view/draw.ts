@@ -27,6 +27,8 @@ import {
   characterGetPosTopLeft,
   characterGetSize,
   characterGetVisionPoint,
+  characterHasItemStatus,
+  ItemStatus,
 } from 'model/character';
 import { Particle, particleGetPos } from 'model/particle';
 import { colors } from './style';
@@ -323,14 +325,14 @@ export const drawCharacter = (
       );
     }
     drawSprite(sprite, px, py, scale, ctx);
-    if (ch.highlighted) {
+    if (ch.highlighted || characterHasItemStatus(ch, ItemStatus.CLOAKED)) {
       ctx.globalCompositeOperation = 'multiply';
       drawSprite(sprite, px, py, scale, ctx);
       ctx.globalCompositeOperation = 'source-over';
     }
   } else {
     drawAnimation(anim, px, py, scale, ctx);
-    if (ch.highlighted) {
+    if (ch.highlighted || characterHasItemStatus(ch, ItemStatus.CLOAKED)) {
       ctx.globalCompositeOperation = 'multiply';
       drawAnimation(anim, px, py, scale, ctx);
       ctx.globalCompositeOperation = 'source-over';
@@ -351,13 +353,11 @@ export const drawCharacter = (
     //   visionPolygon.push(
     //     pxToCanvasCoords4by3(...isoToPixelCoords(pointX, pointY))
     //   );
-    //   // visionPolygon.push([pointX, pointY]);
+    //   visionPolygon.push([pointX, pointY]);
     // }
 
-    // // drawPolygon(visionPolygon, 'white', 1, getCtx('outer'));
-
-    // // top left of a character
-    // drawCircle(px, py, 5, 'red');
+    // // // top left of a character
+    // // drawCircle(px, py, 5, 'red');
 
     // // where the game thinks the character is
     // const [x, y] = characterGetPos(ch);

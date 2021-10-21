@@ -22,7 +22,7 @@ import { Timer, Gauge } from 'model/utility';
 import {
   Battle,
   BattlePosition,
-  Status,
+  BattleStatus,
   BattleTemplateEnemy,
   BattleAllegiance,
   battleGetCharactersOfAllegiance,
@@ -62,7 +62,10 @@ export interface BattleCharacter {
   position: BattlePosition;
   actionState: BattleActionState;
   actionStateIndex: number;
-  statuses: Status[];
+  statuses: {
+    status: BattleStatus;
+    timer: Timer;
+  }[];
   canActSignaled: boolean;
   onCanActCb: () => Promise<void>;
   onCast: () => Promise<void>;
@@ -92,7 +95,10 @@ const battleCharacterCreate = (
     position,
     actionState: BattleActionState.IDLE,
     actionStateIndex: 0,
-    statuses: [] as Status[],
+    statuses: [] as {
+      status: BattleStatus;
+      timer: Timer;
+    }[],
     canActSignaled: false,
     onCanActCb: async function () {},
     onCast: async function () {},
@@ -219,21 +225,35 @@ export const battleCharacterRemoveCanActCb = (bCh: BattleCharacter): void => {
 
 export const battleCharacterAddStatus = (
   bCh: BattleCharacter,
-  status: Status
+  status: BattleStatus,
+  ms?: number
 ) => {
-  if (!bCh.statuses.includes(status)) {
-    bCh.statuses.push(status);
+  if (!bCh.statuses.find(s => s.status === status)) {
+    const timer = new Timer(ms ?? 10000);
+    timer.start();
+    bCh.statuses.push({
+      status,
+      timer,
+    });
   }
 };
 
 export const battleCharacterRemoveStatus = (
   bCh: BattleCharacter,
-  status: Status
+  status: BattleStatus
 ) => {
-  const ind = bCh.statuses.indexOf(status);
+  const ind = bCh.statuses.findIndex(s => status === s.status);
   if (ind > -1) {
     bCh.statuses.splice(ind, 1);
   }
+};
+
+export const battleCharacterHasStatus = (
+  bCh: BattleCharacter,
+  status: BattleStatus
+) => {
+  const ind = bCh.statuses.findIndex(s => status === s.status);
+  return ind > -1;
 };
 
 export const battleCharacterGetSelectedSkill = (
@@ -383,6 +403,13 @@ export const updateBattleCharacter = (
           removeCharacter
         );
 
+        // HACK: it's possible to use an item to revive a character as they are dying
+        // before the turn is over, so it is important to short-circuit this cb
+        // if that is the case
+        if (!bCh.isDefeated) {
+          return;
+        }
+
         let ind = battle.enemies.indexOf(bCh);
         // if ch is an enemy, remove from room
         if (ind > -1) {
@@ -423,6 +450,15 @@ export const updateBattleCharacter = (
   if (battleCharacterIsActingReady(bCh) && bCh.actionReadyTimer.isComplete()) {
     bCh.actionStateIndex = 0;
     endAction(bCh);
+  }
+
+  for (let i = 0; i < bCh.statuses.length; i++) {
+    const obj = bCh.statuses[i];
+    obj.timer.update();
+    if (obj.timer.isComplete()) {
+      bCh.statuses.splice(i, 1);
+      i--;
+    }
   }
 
   bCh.staggerGauge.update();

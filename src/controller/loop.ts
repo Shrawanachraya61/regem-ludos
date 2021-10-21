@@ -72,6 +72,15 @@ export const pause = () => {
 
   const room = getCurrentRoom();
   if (room) {
+    const bgTransform = room.bgTransform;
+    bgTransform.timer.pause();
+
+    for (let i = 0; i < room.renderObjects.length; i++) {
+      const ro = room.renderObjects[i];
+      if (ro.anim) {
+        ro.anim.pause();
+      }
+    }
     room.characters.forEach((ch: Character) => {
       if (ch.transform) {
         ch.transform.timer.pauseOverride();
@@ -113,6 +122,15 @@ export const unpause = () => {
 
   const room = getCurrentRoom();
   if (room) {
+    const bgTransform = room.bgTransform;
+    bgTransform.timer.unpause();
+
+    for (let i = 0; i < room.renderObjects.length; i++) {
+      const ro = room.renderObjects[i];
+      if (ro.anim) {
+        ro.anim.unpause();
+      }
+    }
     room.characters.forEach((ch: Character) => {
       if (ch.transform) {
         ch.transform.timer.unpauseOverride();
@@ -140,7 +158,16 @@ export const unpause = () => {
   renderUi();
 };
 
+let mainLoopRunning = false;
+
 export const runMainLoop = async (): Promise<void> => {
+  if (mainLoopRunning) {
+    console.log('Main loop is already running.');
+    return;
+  }
+
+  mainLoopRunning = true;
+
   const startTime = performance.now();
   let prevNow = startTime;
   const sixtyFpsMs = 16;
@@ -150,7 +177,7 @@ export const runMainLoop = async (): Promise<void> => {
 
   // for debugging
   // const reLoop = () =>
-  //   (window as any).running && setTimeout(() => loop(performance.now()), 100);
+  //   (window as any).running && setTimeout(() => loop(performance.now()), 33);
   const reLoop = () => (window as any).running && requestAnimationFrame(loop);
 
   const loop = (now: number) => {
@@ -259,34 +286,34 @@ export const runMainLoop = async (): Promise<void> => {
         particleUpdate(room.particles[i]);
         if (room.particles[i].shouldRemove) {
           roomRemoveParticle(room, room.particles[i]);
-          // room.particles.splice(i, 1);
           i--;
         }
       }
 
       // position the camera in the right spot
-      if (battle) {
-        roomXOffset = screenW / 2 - 32 / 2;
-        roomYOffset = screenH / 4 - 13;
-      } else {
-        const player = getCurrentPlayer();
-        if (player) {
-          const transform = getCameraTransform();
-          if (transform) {
-            const [x, y] = transform.current();
-            roomXOffset = x;
-            roomYOffset = y;
-            transform.update();
-            // if (transform.shouldRemove) {
-            //   setCameraTransform(null);
-            // }
-          } else {
-            const [oX, oY] = playerGetCameraOffset(player);
-            roomXOffset = oX;
-            roomYOffset = oY;
-          }
+      // const transform = getCameraTransform();
+      // if (battle && !transform) {
+      //   roomXOffset = screenW / 2 - 32 / 2;
+      //   roomYOffset = screenH / 4 - 13;
+      // } else {
+      const player = getCurrentPlayer();
+      if (player) {
+        const transform = getCameraTransform();
+        if (transform) {
+          const [x, y] = transform.current();
+          roomXOffset = x;
+          roomYOffset = y;
+          transform.update();
+          // if (transform.shouldRemove) {
+          //   setCameraTransform(null);
+          // }
+        } else {
+          const [oX, oY] = playerGetCameraOffset(player);
+          roomXOffset = oX;
+          roomYOffset = oY;
         }
       }
+      // }
       setCameraDrawOffset([roomXOffset, roomYOffset]);
 
       // const [mouseX, mouseY] = getMousePos();

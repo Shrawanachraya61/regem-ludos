@@ -6,6 +6,8 @@ import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { isCancelKey } from 'controller/events';
 import { playSoundName } from 'model/sound';
 import { useEffect, useState } from 'preact/hooks';
+import { getUiInterface } from 'view/ui';
+import { AppSection } from 'model/store';
 
 const MenuWrapper = style('div', (props: { dark?: boolean }) => {
   return {
@@ -91,6 +93,7 @@ interface IMenuProps {
   hideTitle?: boolean;
   dark?: boolean;
   children?: any;
+  isModal?: boolean;
   disableCloseSound?: boolean;
 }
 const MenuBox = (props: IMenuProps) => {
@@ -101,6 +104,13 @@ const MenuBox = (props: IMenuProps) => {
       !props.hideClose &&
       !props.disableKeyboardShortcut
     ) {
+      if (
+        !props.isModal &&
+        getUiInterface().appState.sections.includes(AppSection.Modal)
+      ) {
+        return;
+      }
+
       setCloseButtonActive(true);
       setTimeout(() => {
         if (!props.disableCloseSound) {

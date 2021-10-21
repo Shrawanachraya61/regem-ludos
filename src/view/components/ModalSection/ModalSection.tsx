@@ -1,6 +1,6 @@
 /* @jsx h */
 import { h } from 'preact';
-import { hideSection } from 'controller/ui-actions';
+import { hideModal, hideSection } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import DialogBox from 'view/elements/DialogBox';
 import MenuBox from 'view/elements/MenuBox';
@@ -22,18 +22,20 @@ import ProgressBar from 'view/elements/ProgressBar';
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import CharacterStatus from '../CharacterStatus';
 import { useState } from 'lib/preact-hooks';
+import UseItemDescription from '../UseItemDescription';
 
 export const MAX_WIDTH = '570px';
 const TUTORIAL_MAX_WIDTH = '500px';
-const INFO_MAX_WIDTH = '256px';
+const INFO_MAX_WIDTH = '500px';
 
 export interface ICustomModalProps {
   onClose: () => void;
-  onConfirm?: (v?: any) => void;
+  onConfirm?: (v?: any) => Promise<void> | void;
   active?: boolean;
   body?: any;
   danger?: boolean;
   filter?: (a: any) => boolean;
+  meta?: any;
 }
 
 const CenterAligned = style('div', () => {
@@ -269,17 +271,24 @@ const PartyMember = style(
 );
 
 const SelectPartyMemberModal = (props: ICustomModalProps) => {
+  const [selectedMember, setSelectedMember] = useState(null);
+
   const player = getCurrentPlayer();
   const party = player.party;
+
   return (
     <MenuBox
       title="Select Party Member"
       onClose={props.onClose}
       // maxWidth={INFO_MAX_WIDTH}
       closeButtonLabel={'Back ' + getCancelKeyLabel()}
+      isModal={true}
       dark={true}
     >
       <div style={{ width: '600px' }}>
+        {props.meta.itemNameForDescription ? (
+          <UseItemDescription itemName={props.meta.itemNameForDescription} />
+        ) : null}
         <VerticalMenu
           title="Party"
           open={true}
@@ -326,12 +335,18 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
             };
           })}
           onItemClickSound="menu_select"
-          onItemClick={val => {
+          onItemClick={async val => {
             if (
               props.onConfirm &&
               party.filter(props.filter || (() => true)).includes(val)
             ) {
-              props.onConfirm(val);
+              if (props.meta?.showDelayInfo) {
+                setSelectedMember(val);
+              }
+              await props.onConfirm(val);
+              if (props.meta?.showDelayInfo) {
+                setSelectedMember(null);
+              }
             } else {
               playSound('terminal_cancel');
             }
@@ -417,21 +432,24 @@ const Modal = () => {
       break;
     }
     case ModalSection.SELECT_PARTY_MEMBER: {
+      console.log('RENDER BODY PARTY MEMBER', modalState);
       elem = (
         <SelectPartyMemberModal
+          body={modalState.body}
           active={active}
           onClose={handleClose}
-          onConfirm={(ch: Character) => {
+          onConfirm={async (ch: Character) => {
             if (active) {
-              setActive(false);
+              // setActive(false);
               if (onConfirm) {
-                onConfirm(ch);
+                await onConfirm(ch);
               } else {
                 hideSection(AppSection.Modal);
               }
             }
           }}
           filter={modalState.filter}
+          meta={modalState.meta}
         />
       );
       break;

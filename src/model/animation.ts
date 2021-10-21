@@ -34,6 +34,7 @@ export class Animation {
   meta: AnimationMetadata | null;
   subLoopAnim: Animation | null;
   useSubLoopAnim: boolean;
+  static globalSoundsEnabled = true;
 
   constructor(loop: boolean) {
     this.loop = loop || false;
@@ -96,6 +97,7 @@ export class Animation {
       this.timestampStart += getNow() - this.timestampPause;
       this.currentSpriteIndex = 0;
       this.update();
+
       if (this.subLoopAnim) {
         this.subLoopAnim.unpause();
       }
@@ -108,6 +110,14 @@ export class Animation {
 
   enableSounds() {
     this.soundsEnabled = true;
+  }
+
+  static enableSoundsGlobally() {
+    Animation.globalSoundsEnabled = true;
+  }
+
+  static disableSoundsGlobally() {
+    Animation.globalSoundsEnabled = false;
   }
 
   getDurationMs(): number {
@@ -225,8 +235,7 @@ export class Animation {
             this.currentSpriteIndex >= sound.frame &&
             !sprite.hasPlayedSound
           ) {
-            if (this.soundsEnabled) {
-              console.log('ANIMATION PLAY SOUND', sound.soundName);
+            if (this.soundsEnabled && Animation.globalSoundsEnabled) {
               playSoundName(sound.soundName);
             }
             sprite.hasPlayedSound = true;

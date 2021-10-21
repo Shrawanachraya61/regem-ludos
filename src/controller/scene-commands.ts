@@ -17,9 +17,14 @@ import {
   showQuestSection,
   hideQuestSection,
   hideSection,
+  hideSections,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
-import { popKeyHandler, pushKeyHandler } from 'controller/events';
+import {
+  getConfirmKey,
+  popKeyHandler,
+  pushKeyHandler,
+} from 'controller/events';
 import {
   characterCreate,
   characterCreateFromTemplate,
@@ -39,6 +44,7 @@ import {
   characterEquipItem,
   Character,
   characterStopAi,
+  characterModifyHp,
 } from 'model/character';
 import {
   getAllTagMarkers,
@@ -61,6 +67,7 @@ import {
   getCurrentBattle,
   addCharacterWithSuspendedAi,
   setOverworldUpdateKeysDisabled,
+  isKeyDown,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -72,7 +79,7 @@ import {
   Rect,
   timeoutPromise,
 } from 'utils';
-import { createAnimation, hasAnimation } from 'model/animation';
+import { Animation, createAnimation, hasAnimation } from 'model/animation';
 import { initiateOverworld } from 'controller/overworld-management';
 import { getIfExists as getTileTemplateIfExists } from 'db/tiles';
 import { getIfExists as getCharacterTemplateIfExists } from 'db/characters';
@@ -235,7 +242,8 @@ export const playDialogue = (
  */
 export const setConversation2 = (
   actorNameLeft: string,
-  actorNameRight: string
+  actorNameRight: string,
+  ms?: number
 ) => {
   if (!actorNameLeft) {
     console.error('No left actor specified.');
@@ -252,7 +260,7 @@ export const setConversation2 = (
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
   );
-  return waitMS(500);
+  return waitMS(ms ?? 500);
 };
 
 /**
@@ -323,11 +331,11 @@ export const setConversationWithoutBars = (actorName: string) => {
  * hide the cutscene section, otherwise it will stay on due to the nature of a step
  * trigger.
  */
-export const endConversation = (ms?: number, hideCutscene?: boolean) => {
+export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
   return waitMS(ms ?? 500, () => {
-    if (hideCutscene) {
+    if (dontHideCutscene === undefined || dontHideCutscene === false) {
       showSection(AppSection.Debug, true);
     }
   });
@@ -506,30 +514,43 @@ const waitUntil = () => {
  */
 const waitForUserInput = (cb?: () => void) => {
   const scene = getCurrentScene();
+  if (scene.isWaitingForInput) {
+    console.error('Scene is already waiting for input!');
+    return;
+  }
+
   scene.isWaitingForInput = true;
+  let inputDisabled = false;
 
   const keyHandler = (ev: KeyboardEvent) => {
+    const scene = getCurrentScene();
+    if (scene.inputDisabled || inputDisabled) {
+      return;
+    }
+
     switch (ev.key) {
       case 'Return':
       case 'Enter':
       case 'x':
       case 'X':
       case ' ': {
+        inputDisabled = true;
         clearTimeout(scene.waitTimeoutId);
-        popKeyHandler(keyHandler);
         _cb();
-        break;
+        return true;
       }
     }
+
+    return false;
   };
 
   pushKeyHandler(keyHandler);
   const _cb = () => {
     scene.isWaitingForInput = false;
+    popKeyHandler(keyHandler);
     if (cb) {
       cb();
     }
-    popKeyHandler(keyHandler);
   };
 
   return _cb;
@@ -540,10 +561,18 @@ const waitForUserInput = (cb?: () => void) => {
  */
 const waitForUserInputDialog = (cb?: () => void) => {
   const scene = getCurrentScene();
+  if (scene.isWaitingForInput) {
+    console.error('Scene is already waiting for input!');
+    return;
+  }
+
   scene.isWaitingForInput = true;
 
+  let inputDisabled = false;
+
   const keyHandler = (ev: KeyboardEvent) => {
-    if (scene.inputDisabled) {
+    const scene = getCurrentScene();
+    if (scene.inputDisabled || inputDisabled) {
       return;
     }
 
@@ -553,10 +582,10 @@ const waitForUserInputDialog = (cb?: () => void) => {
       case 'x':
       case 'X':
       case ' ': {
+        inputDisabled = true;
         playSoundName('dialog_select');
         setTimeout(() => {
           clearTimeout(scene.waitTimeoutId);
-          popKeyHandler(keyHandler);
           _cb();
         }, 100);
         break;
@@ -566,10 +595,11 @@ const waitForUserInputDialog = (cb?: () => void) => {
   pushKeyHandler(keyHandler);
   const _cb = () => {
     scene.isWaitingForInput = false;
+    console.log('SCENE INPUT INVOKED');
+    popKeyHandler(keyHandler);
     if (cb) {
       cb();
     }
-    popKeyHandler(keyHandler);
   };
 
   return _cb;
@@ -1133,6 +1163,7 @@ export const changeTileAtMarker = (
 
     tile.isWall = tileTemplate.isWall ?? tile.isWall;
     tile.isProp = tileTemplate.isProp ?? tile.isProp;
+
     if (tile.ro) {
       tile.sprite = tileTemplate.baseSprite;
       tile.ro.sprite = tileTemplate.baseSprite;
@@ -1210,8 +1241,13 @@ export const changeTileAtMarker = (
       const ind = room.renderObjects.indexOf(tile.ro as any);
       if (ind > -1) {
         const anim = tile.ro.anim;
+        const sortY = tile.ro.sortY;
         tile.ro = createTileRenderObject(tile);
         tile.ro.anim = anim;
+        tile.ro.sortY = sortY;
+        if (tileTemplate.onAfterCreation) {
+          tileTemplate.onAfterCreation(tile);
+        }
         room.renderObjects.splice(ind, 1, tile.ro);
       }
     }
@@ -1680,7 +1716,11 @@ export const acquireItem = (itemName: string, itemText?: string) => {
   }
 
   if (playerAddItem(player, itemName)) {
-    return playDialogue('Narrator', itemText ?? `Acquired: ${item.label}`);
+    if (item.onAcquire) {
+      return item.onAcquire(item);
+    } else {
+      return playDialogue('Narrator', itemText ?? `Acquired: ${item.label}`);
+    }
   }
 };
 
@@ -1713,8 +1753,10 @@ export const modifyTokens = (amount: number) => {
   const player = getCurrentPlayer();
   playerModifyTokens(player, amount);
   if (amount >= 0) {
+    playSoundName('token_get');
     return playDialogue('Narrator', `Gained ${amount} Regem Ludos Tokens.`);
   } else {
+    playSoundName('lose_token');
     return playDialogue('Narrator', `Removed ${-amount} Regem Ludos Tokens.`);
   }
 };
@@ -1972,6 +2014,8 @@ export const enterCombat = (encounterName: string) => {
     return;
   }
 
+  hideSection(AppSection.Debug);
+
   overworldHide(getCurrentOverworld());
   playSoundName('battle_encountered');
   const player = getCurrentPlayer();
@@ -2066,7 +2110,6 @@ export const panCameraToFitCharacters = (
     return;
   }
 
-  console.log('PAN TO FIT', ms, skipWait, characterNames);
   none();
   const room = getCurrentRoom();
   const characters: Character[] = characterNames
@@ -2107,8 +2150,9 @@ export const panCameraToFitCharacters = (
   const yAvg =
     cameraCenterPositions.reduce((sum, [, y]) => {
       return sum + y;
-    }, 0) / cameraCenterPositions.length;
-
+    }, 0) /
+      cameraCenterPositions.length -
+    32;
   const duration = ms ?? 1000;
   const player = getCurrentPlayer();
   const transform = getCameraTransform();
@@ -2138,6 +2182,10 @@ export const playSound = (soundName: string) => {
 export const playMusic = async (musicName: string) => {
   await stopCurrentMusic();
   playMusicName(musicName, true);
+};
+
+export const stopMusic = async (ms?: number) => {
+  await stopCurrentMusic(ms ?? 1000);
 };
 
 export const spawnParticleAtTarget = (
@@ -2213,7 +2261,9 @@ export const spawnEmotionParticleAtCharacter = (
 export const spawnParticleAtMarker = (
   particleName: string,
   markerName: string,
-  particleMethod: 'normal' | 'weighted' | 'rise'
+  particleMethod: 'normal' | 'weighted' | 'rise',
+  offsetX?: number,
+  offsetY?: number
 ) => {
   const room = getCurrentRoom();
   const template = getParticle(particleName);
@@ -2230,7 +2280,10 @@ export const spawnParticleAtMarker = (
     return;
   }
 
-  let [x, y]: Point = isoToPixelCoords(marker.x, marker.y);
+  let [x, y]: Point = isoToPixelCoords(
+    marker.x + (offsetX ?? 0),
+    marker.y + (offsetY ?? 0)
+  );
   // this appears to work for any sized particles
   x += 16;
   y += 16;
@@ -2410,6 +2463,21 @@ const showNotification = (
   });
 };
 
+const modifyPartyHP = (v: number) => {
+  const player = getCurrentPlayer();
+  player.party.forEach(ch => {
+    characterModifyHp(ch, v);
+  });
+};
+
+const disableAnimationSounds = () => {
+  Animation.disableSoundsGlobally();
+};
+
+const enableAnimationSounds = () => {
+  Animation.enableSoundsGlobally();
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -2507,6 +2575,7 @@ const commands = {
   panCameraToFitCharacters,
   playSound,
   playMusic,
+  stopMusic,
   spawnParticleAtCharacter,
   spawnEmotionParticleAtCharacter,
   spawnParticleAtMarker,
@@ -2520,6 +2589,9 @@ const commands = {
   startQuest,
   completeQuestStep,
   showNotification,
+  modifyPartyHP,
+  disableAnimationSounds,
+  enableAnimationSounds,
 
   // custom scripts
   floor1TutToggleColorDoors,

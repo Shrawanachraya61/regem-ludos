@@ -57,9 +57,7 @@ export const setConversationWithoutBars = (actorName: string) => {
 export const endConversation = (ms?: number, hideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
-  if (hideCutscene) {
-    showSection(AppSection.Debug, true);
-  }
+  showSection(AppSection.Debug, true);
 };
 
 export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
@@ -547,6 +545,10 @@ export const playMusic = async (musicName: string) => {
   SC.playMusic(musicName);
 };
 
+export const stopMusic = async () => {
+  SC.stopMusic();
+};
+
 export const spawnParticleAtTarget = (
   template: ParticleTemplate,
   target: Point,
@@ -595,7 +597,7 @@ export const unpauseOverworld = () => {
 };
 
 export const equipWeaponOrArmor = (itemName: string, chName: string) => {
-  SC.equipWeaponOrArmor(itemName, chName);
+  return SC.equipWeaponOrArmor(itemName, chName);
 };
 
 export const setBattlePaused = (isPaused: string) => {
@@ -623,6 +625,18 @@ const showNotification = (
   type?: 'info' | 'success' | 'warning' | 'danger'
 ) => {
   SC.showNotification(text, type);
+};
+
+const modifyPartyHP = (v: number) => {
+  SC.modifyPartyHP(v);
+};
+
+const disableAnimationSounds = () => {
+  SC.disableAnimationSounds();
+};
+
+const enableAnimationSounds = () => {
+  SC.enableAnimationSounds();
 };
 
 // CUSTOM --------------------------------------------------------------------------------
@@ -700,6 +714,7 @@ const commands = {
   panCameraToFitCharacters,
   playSound,
   playMusic,
+  stopMusic,
   spawnParticleAtCharacter,
   spawnEmotionParticleAtCharacter,
   spawnParticleAtMarker,
@@ -713,6 +728,9 @@ const commands = {
   startQuest,
   completeQuestStep,
   showNotification,
+  modifyPartyHP,
+  disableAnimationSounds,
+  enableAnimationSounds,
 
   // custom scripts
   floor1TutToggleColorDoors,

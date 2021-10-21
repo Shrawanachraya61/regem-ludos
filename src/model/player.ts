@@ -40,9 +40,26 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
       getItemStrict('FeeblePotion'),
       getItemStrict('FeeblePotion'),
       getItemStrict('RezGem'),
+      getItemStrict('DeVisibleCloak'),
       getItemStrict('ShieldRing'),
       getItemStrict('ZoeBracelet'),
+      getItemStrict('HasteFlavoring'),
     ],
+    // backpack: [],
+    party: [leader],
+    battlePositions: [leader],
+    partyStorage: [leader],
+  };
+  return player;
+};
+
+export const playerCreateNew = (leaderTemplate: CharacterTemplate): Player => {
+  const leader = characterCreateFromTemplate(leaderTemplate);
+  const player: Player = {
+    leader,
+    tokens: 0,
+    tickets: 0,
+    backpack: [],
     // backpack: [],
     party: [leader],
     battlePositions: [leader],
@@ -111,6 +128,20 @@ export const playerHasItem = (player: Player, itemName: string): boolean => {
     return true;
   }
   return false;
+};
+
+export const playerGetItemCount = (
+  player: Player,
+  itemName: string
+): number => {
+  let ct = 0;
+  for (let i = 0; i < player.backpack.length; i++) {
+    const item = player.backpack[i];
+    if (item.name === itemName) {
+      ct++;
+    }
+  }
+  return ct;
 };
 
 export const playerModifyTokens = (player: Player, amount: number) => {

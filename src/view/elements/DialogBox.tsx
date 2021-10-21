@@ -30,7 +30,7 @@ const DialogContainer = style(
     return {
       margin: '4px',
       padding: '4px',
-      minWidth: '50%',
+      minWidth: props.maxWidth ?? 'unset',
       maxWidth: props.maxWidth ?? '90%',
       border: `2px solid ${props.danger ? colors.RED : colors.BLUE}`,
       background: colors.BGGREY,

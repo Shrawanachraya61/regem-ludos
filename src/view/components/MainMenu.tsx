@@ -9,22 +9,22 @@ import MenuLoad from './MenuSection/MenuLoad';
 import { getCancelKeyLabel } from 'controller/events';
 import { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import { playSoundName } from 'model/sound';
-import { setTimeLoaded } from 'model/generics';
+import { setCurrentPlayer, setTimeLoaded } from 'model/generics';
 import { getCanvas, setDrawScale } from 'model/canvas';
 import { initHooks } from 'view/hooks';
 import { get as getCharacter } from 'db/characters';
 import { get as getOverworld } from 'db/overworlds';
-import { playerCreate } from 'model/player';
+import { playerCreateNew } from 'model/player';
 import { characterCreateFromTemplate } from 'model/character';
 import {
   enableOverworldControl,
   initiateOverworld,
 } from 'controller/overworld-management';
-import { getUiInterface, renderUi } from 'view/ui';
+import { renderUi } from 'view/ui';
 import { runMainLoop } from 'controller/loop';
+import { ISave, loadSavedGame } from 'controller/save-management';
 
 const setupGame = async () => {
-  // mountUi();
   setTimeLoaded(+new Date());
 
   getCanvas(); // loads the canvas before the events so getBoundingClientRect works correctly
@@ -41,7 +41,7 @@ const createNewGame = async () => {
   await setupGame();
 
   const adaTemplate = getCharacter('Ada');
-  const player = playerCreate(adaTemplate);
+  const player = playerCreateNew(adaTemplate);
 
   const conscience = characterCreateFromTemplate(getCharacter('Conscience'));
   player.party.push(conscience);
@@ -52,18 +52,6 @@ const createNewGame = async () => {
   initiateOverworld(player, overworldTemplate);
   enableOverworldControl();
 
-  let debounceResizeId: any;
-  window.addEventListener('resize', () => {
-    if (debounceResizeId !== false) {
-      clearTimeout(debounceResizeId);
-    }
-    debounceResizeId = setTimeout(() => {
-      getUiInterface().render();
-      debounceResizeId = false;
-    }, 50);
-  });
-
-  console.log('run loop');
   runMainLoop();
 
   (document.getElementById('controls') as any).style.display = 'none';
@@ -74,6 +62,7 @@ const MenuContent = (props: {
   activeSection: string | null;
   hideActiveSection: () => void;
   startGame: () => void;
+  loadGame: (save: ISave) => void;
 }) => {
   let cmpt = <div></div>;
 
@@ -116,6 +105,9 @@ const MenuContent = (props: {
             // playSoundName('menu_choice_close');
             props.hideActiveSection();
           }}
+          onSaveClicked={(save: ISave) => {
+            props.loadGame(save);
+          }}
         />
       </MenuBox>
     );
@@ -131,7 +123,7 @@ interface IMainMenuProps {
     plus3: () => void;
     logo: () => void;
     field: () => void;
-    hide: () => Promise<void>;
+    hide: (isNewGame: boolean) => Promise<void>;
   };
 }
 
@@ -153,8 +145,15 @@ const MainMenu = (props: IMainMenuProps) => {
 
   const handleNewGame = async () => {
     setActiveSection('loading');
-    await props.squareCommands.hide();
+    await props.squareCommands.hide(true);
     createNewGame();
+  };
+
+  const handleLoadGame = async (save: ISave) => {
+    setActiveSection('loading');
+    await props.squareCommands.hide(false);
+    await setupGame();
+    loadSavedGame(save);
   };
 
   return (
@@ -177,6 +176,7 @@ const MainMenu = (props: IMainMenuProps) => {
         activeSection={activeSection}
         hideActiveSection={hideActiveSection}
         startGame={handleNewGame}
+        loadGame={handleLoadGame}
       />
       <VerticalMenu
         title="MAKE YOUR SELECTION"

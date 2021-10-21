@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="125">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="129">
  <editorsettings>
-  <export target="../src/map/floor1-west2..tmx" format="tmx"/>
+  <export target="../src/map/floor1-west2.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="walls" tilewidth="32" tileheight="64" tilecount="128" columns="16">
   <image source="../res/walls.png" width="512" height="512"/>
@@ -36,8 +36,8 @@
 129,129,129,129,129,129,129,129,129,33,33,33,33,33,33,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,129,129,33,149,149,149,149,33,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
 129,129,129,129,129,129,129,129,129,33,149,149,149,149,33,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
-129,129,129,129,129,129,129,129,129,33,149,149,149,149,33,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
-129,129,129,16,2,2,2,2,2,33,149,149,149,149,33,2,2,2,2,2,2,2,2,16,129,129,129,129,129,129,129,129,
+129,129,129,129,129,129,129,129,129,33,149,149,149,149,33,129,129,129,16,129,129,129,129,129,129,129,129,129,129,129,129,129,
+129,129,129,16,2,2,2,2,2,33,149,149,149,149,33,2,2,16,210,16,2,2,2,16,129,129,129,129,129,129,129,129,
 129,129,129,16,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,16,129,0,129,129,129,129,129,129,
 129,129,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,129,129,129,129,129,129,129,
 129,129,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,129,129,129,129,129,129,129,
@@ -74,7 +74,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,2,2,25,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,216,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,216,0,0,0,0,0,0,0,0,0,
 0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,
 0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -100,12 +100,13 @@
   <object id="114" gid="376" x="166.5" y="205.5" width="32" height="32"/>
   <object id="115" type="10" gid="377" x="169.5" y="288.5" width="32" height="32"/>
   <object id="116" name="MarkerPlayer" gid="194" x="151.5" y="244.5" width="32" height="32"/>
-  <object id="117" name="#floor1-OpenRedDoorsFWD" x="48.5" y="233.5" width="32" height="41"/>
-  <object id="118" name="MarkerRedDoorFWD1" gid="194" x="60" y="266" width="32" height="32"/>
-  <object id="119" name="MarkerRedDoorFWD2" gid="194" x="57" y="246.5" width="32" height="32"/>
-  <object id="120" name="#floor1-transitionToFloor1West1FromFloor1West2" x="28.5" y="233.5" width="22.5" height="41"/>
-  <object id="121" name="#floor1-OpenRedDoorsFWD" x="351.5" y="236.5" width="32" height="41"/>
-  <object id="122" name="MarkerRedDoorFWD1" gid="194" x="382" y="266" width="32" height="32"/>
-  <object id="123" name="MarkerRedDoorFWD2" gid="194" x="379" y="246.5" width="32" height="32"/>
+  <object id="117" name="#floor1-OpenRedDoorsFWD" x="49" y="233" width="32" height="41"/>
+  <object id="118" name="MarkerRedDoorFWD1" gid="194" x="60.5" y="265.5" width="32" height="32"/>
+  <object id="119" name="MarkerRedDoorFWD2" gid="194" x="57.5" y="246" width="32" height="32"/>
+  <object id="120" name="#floor1-transitionToFloor1West1FromFloor1West2" x="29.5" y="232.5" width="22.5" height="41"/>
+  <object id="125" gid="370" x="79.5" y="198.5" width="32" height="32"/>
+  <object id="126" gid="370" x="240.5" y="199.5" width="32" height="32"/>
+  <object id="127" gid="370" x="304.5" y="199.5" width="32" height="32"/>
+  <object id="128" name="MarkerFromFloor1West1" gid="194" x="91" y="253" width="32" height="32"/>
  </objectgroup>
 </map>

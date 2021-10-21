@@ -103,7 +103,7 @@
                  "y":35.75
                 }, 
                 {
-                 "height":57.3333333333333,
+                 "height":57.3333,
                  "id":20,
                  "name":"#test2-openDoorA",
                  "rotation":0,
@@ -111,10 +111,10 @@
                  "visible":true,
                  "width":32,
                  "x":428,
-                 "y":286.666666666667
+                 "y":286.667
                 }, 
                 {
-                 "height":55.3333333333333,
+                 "height":55.3333,
                  "id":21,
                  "name":"#test2-openDoorB",
                  "rotation":0,
@@ -492,8 +492,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":460.75,
-                 "y":390.583
+                 "x":372,
+                 "y":456
                 }, 
                 {
                  "height":69.125,
