@@ -8,7 +8,7 @@ Sound,menu_choice_open,foley/menu_choice_open2.mp3, Attribution https://freesoun
 Sound,menu_choice_close,foley/menu_choice_close.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
 Sound,menu_sparkle,foley/menu_sparkle2.mp3,0.8,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
 Sound,menu_close,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
-Sound,gain_token,foley/gain_token.mp3
+Sound,lose_token,foley/gain_token.mp3
 Sound,insert_token,foley/insert_token.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
 Sound,eject_tokens,foley/eject_tokens.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
 Sound,start_arcade_game,foley/arcade_game_triggered.mp3,Non-Commercial https://freesound.org/people/pumodi/sounds/150222/
@@ -52,7 +52,7 @@ Sound,vr_portal_landed,foley/vr_portal_landed.mp3,0.45,zzfx
 Sound,vr_portal_zoom,foley/vr_portal_zoom.mp3,0.5,zzfx
 Sound,vr_portal_focus,foley/vr_portal_focus.mp3,0.7,zzfx
 Sound,vr_portal_start,foley/vr_portal_start.mp3,0.7,zzfx
-Sound,despawn_tut_wall,foley/despawn_tut_wall.mp3,0.7,zzfx
+Sound,despawn_tut_wall,foley/despawn_tut_wall.mp3,0.5,zzfx
 Sound,terminal_beep,foley/blip.mp3,0.7,zzfx
 Sound,beep,foley/blip.mp3,0.7,zzfx
 Sound,terminal_cancel,foley/terminal_cancel.mp3,0.7,zzfx
@@ -76,6 +76,9 @@ Sound,sliding_door_open,foley/sliding_door_open.mp3,1.0,Creative Commons Non Com
 Sound,sliding_door_close,foley/sliding_door_close.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ cut and sped up
 Sound,red_door_open,foley/red_door_open.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut
 Sound,red_door_close,foley/red_door_close.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut pitch down
+Sound,token_get,foley/token_get.mp3,Blades of Exile SND15 https://github.com/calref/cboe/tree/master/rsrc/sounds
+Sound,zap_quiet,foley/zap.mp3,0.5,Creative Commons 0 https://freesound.org/people/michael_grinnell/sounds/512471/
+Sound,deep_siren,foley/deep_siren.mp3,1.0,Attribution https://freesound.org/people/InspectorJ/sounds/455602/
 
 Music,music_menu,music/menu.mp3
 Music,music_battle1,music/battle1.mp3
@@ -83,3 +86,7 @@ Music,music_battle_victory,music/battle_victory.mp3
 Music,music_atrium,music/atrium3.mp3
 Music,music_outside_arcade,music/outside_arcade2.mp3
 Music,music_bowling,music/regem_ludos_bowling.mp3
+Music,music_tense,music/tense.mp3
+Music,music_tutorial,music/tutorial.mp3
+Music,music_tutorial_dungeon,music/tutorial_dungeon.mp3
+Music,music_pre_tense_battle,music/pre_tense_battle.mp3

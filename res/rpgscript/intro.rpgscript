@@ -5,7 +5,7 @@
 +fadeOut(0);
 +setAtMarker(ada, MarkerAdaStart);
 +setConversation('Ada');
-// +playSound('phone_ring');
++playSound('phone_ring');
 +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
 +waitMS(200);
 +spawnParticleAtCharacter('EFFECT_TEMPLATE_RING', 'Ada', 'weighted');
@@ -119,8 +119,10 @@ Ada: "It does not particularly look like I imagined an arcade would look."
 +lookAtEachOther('Ada', 'Conscience');
 +setConversationSpeaker('none');
 +waitMS(750);
++:question(Conscience);
+Conscience: "Yeah.  You'd think it would have more flashy lights or something."
 +:grumpy(Ada);
-Ada: "Fine.  Let us get this over with."
+Ada: "Come on.  Let us get this over with."
 +setConversationSpeaker('none');
 +callScript('utils-stop-Conscience-dialogue');
 +endConversation();
