@@ -1,5 +1,8 @@
 const { exec } = require('child_process');
 
+// This script goes through all the directories given to it and runs the 'yarn build'
+// command in each directory.  It will then copy the 'dist' folder from each directory
+// into the upper level 'dist' folder.
 // use `node build-iframes.js ?dev <iframe1> <iframe2> ... <iframeN>'
 
 const execAsync = async command => {
@@ -25,7 +28,7 @@ async function main() {
   if (folderNames.length) {
     for (let i = 0; i < folderNames.length; i++) {
       const folderName = folderNames[i];
-      console.log('[BUILD IFRAME]', folderName, '------');
+      console.log('[BUILD IFRAME]', '------', folderName, '------');
       await execAsync(
         `yarn --cwd ${__dirname}/../iframes/${folderName} build${
           isDev ? ':dev' : ''

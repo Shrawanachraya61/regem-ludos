@@ -54,10 +54,12 @@ export const setConversationWithoutBars = (actorName: string) => {
   return;
 };
 
-export const endConversation = (ms?: number, hideCutscene?: boolean) => {
+export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
-  showSection(AppSection.Debug, true);
+  if (dontHideCutscene === undefined || dontHideCutscene === false) {
+    showSection(AppSection.Debug, true);
+  }
 };
 
 export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
@@ -542,11 +544,11 @@ export const playSound = (soundName: string) => {
 };
 
 export const playMusic = async (musicName: string) => {
-  SC.playMusic(musicName);
+  return SC.playMusic(musicName);
 };
 
 export const stopMusic = async () => {
-  SC.stopMusic();
+  return SC.stopMusic(1);
 };
 
 export const spawnParticleAtTarget = (
@@ -624,19 +626,19 @@ const showNotification = (
   text: string,
   type?: 'info' | 'success' | 'warning' | 'danger'
 ) => {
-  SC.showNotification(text, type);
+  return SC.showNotification(text, type);
 };
 
 const modifyPartyHP = (v: number) => {
-  SC.modifyPartyHP(v);
+  return SC.modifyPartyHP(v);
 };
 
 const disableAnimationSounds = () => {
-  SC.disableAnimationSounds();
+  return SC.disableAnimationSounds();
 };
 
 const enableAnimationSounds = () => {
-  SC.enableAnimationSounds();
+  return SC.enableAnimationSounds();
 };
 
 // CUSTOM --------------------------------------------------------------------------------

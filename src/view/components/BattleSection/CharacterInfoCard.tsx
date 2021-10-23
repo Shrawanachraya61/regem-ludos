@@ -10,6 +10,7 @@ import {
   battleCharacterIsCasting,
   battleCharacterGetEvasion,
   battleCharacterGetSelectedSkill,
+  battleCharacterIsKnockedDown,
 } from 'model/battle-character';
 import { colors, keyframes, style } from 'view/style';
 import AnimDiv from 'view/elements/StaticAnimDiv';
@@ -251,6 +252,23 @@ const BottomRowActionMenuWrapper = style(
   }
 );
 
+const PortraitOverlay = style('div', () => {
+  return {
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    color: colors.YELLOW,
+    fontSize: 12,
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: '100%',
+    height: '100%',
+  };
+});
+
 interface ICharacterInfoCardProps {
   id?: string;
   bCh: BattleCharacter;
@@ -312,6 +330,42 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
       render();
     }
   );
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterStaggered,
+    () => {
+      console.log(props.bCh.ch.name, 'Staggered');
+      render();
+    }
+  );
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterKnockedDown,
+    () => {
+      console.log(props.bCh.ch.name, 'Knocked Down');
+      render();
+    }
+  );
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterRecovered,
+    () => {
+      console.log(props.bCh.ch.name, 'Recovered');
+      render();
+    }
+  );
+  useBattleSubscriptionWithBattleCharacter(
+    getCurrentBattle(),
+    props.bCh,
+    BattleEvent.onCharacterDefeated,
+    () => {
+      console.log(props.bCh.ch.name, 'Defeated');
+      render();
+    }
+  );
 
   const [cursorIndex, setCursorIndex] = useCursorIndexStateWithKeypress(
     props.isSelected,
@@ -347,6 +401,35 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
   const cursorSkill =
     props.bCh.ch.skills[cursorIndex] ?? getBattleAction('NoWeapon');
 
+  let portraitOverlay: any = null;
+  if (props.bCh.isDefeated) {
+    portraitOverlay = (
+      <PortraitOverlay>
+        <div
+          style={{
+            width: '80px',
+          }}
+        >
+          Defeated
+        </div>
+      </PortraitOverlay>
+    );
+  } else if (battleCharacterIsKnockedDown(props.bCh)) {
+    portraitOverlay = (
+      <PortraitOverlay>
+        <div
+          style={{
+            width: '80px',
+          }}
+        >
+          Knocked Down!
+        </div>
+      </PortraitOverlay>
+    );
+  } else if (battleCharacterIsStaggered(props.bCh)) {
+    portraitOverlay = <PortraitOverlay>Staggered!</PortraitOverlay>;
+  }
+
   return (
     <>
       <ActionInfoCardContainer visible={actionMenuOpen}>
@@ -369,10 +452,17 @@ const CharacterInfoCard = (props: ICharacterInfoCardProps) => {
             ready={battleCharacterCanAct(battle, props.bCh)}
           >
             <PortraitContainer id={`portrait-${portraitName}`}>
-              <AnimDiv
-                style={{ width: PORTRAIT_WIDTH }}
-                animName={portraitName}
-              ></AnimDiv>
+              <div
+                style={{
+                  position: 'relative',
+                }}
+              >
+                <AnimDiv
+                  style={{ width: PORTRAIT_WIDTH }}
+                  animName={portraitName}
+                ></AnimDiv>
+                {portraitOverlay}
+              </div>
             </PortraitContainer>
             <PrimaryContainer id={'primary-' + props.bCh.ch.name}>
               {actingWeaponVisible ? (

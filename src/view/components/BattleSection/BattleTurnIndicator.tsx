@@ -15,13 +15,16 @@ interface IBattleTurnIndicatorProps {
 const Root = style('div', () => {
   return {
     position: 'absolute',
-    width: '32px',
-    left: 'calc(50% - 16px)',
+    left: 'calc(50% - 45px)',
     top: '178px',
+    width: '180px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     whiteSpace: 'pre',
+    background: 'rgba(0, 0, 0, 0.25)',
+    boxShadow: '0px 0px 12px 8px rgb(0 0 0 / 25%)',
+    borderRadius: '16px',
   };
 });
 
@@ -46,7 +49,13 @@ const BattleTurnIndicator = (props: IBattleTurnIndicatorProps) => {
 
   return (
     <Root id={'battle-turn-indicator'}>
-      <Icon color={color} />
+      <div
+        style={{
+          width: '32px',
+        }}
+      >
+        <Icon color={color} />
+      </div>
       <div>{text}</div>
     </Root>
   );

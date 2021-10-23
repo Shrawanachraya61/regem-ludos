@@ -77,8 +77,36 @@ export const init = () => {
     strikeFrame: 10,
     sounds: [
       {
+        soundName: 'robot_staggered_damaged',
+        frame: 0,
+      },
+      {
+        soundName: 'robot_clank3',
+        frame: 1,
+      },
+      {
+        soundName: 'robot_clank4',
+        frame: 1,
+      },
+      {
+        soundName: 'robot_clank2',
+        frame: 4,
+      },
+      {
+        soundName: 'woosh_reverse',
+        frame: 9,
+      },
+      {
         soundName: 'battle_swing4',
         frame: 10,
+      },
+      {
+        soundName: 'robot_clank2',
+        frame: 12,
+      },
+      {
+        soundName: 'robot_clank4',
+        frame: 14,
       },
     ],
   };
@@ -86,8 +114,28 @@ export const init = () => {
     strikeFrame: 6,
     sounds: [
       {
+        soundName: 'robot_staggered_damaged',
+        frame: 0,
+      },
+      {
+        soundName: 'robot_clank3',
+        frame: 1,
+      },
+      {
+        soundName: 'robot_clank2',
+        frame: 4,
+      },
+      {
         soundName: 'battle_swing3',
         frame: 6,
+      },
+      {
+        soundName: 'robot_clank2',
+        frame: 8,
+      },
+      {
+        soundName: 'robot_clank3',
+        frame: 10,
       },
     ],
   };
@@ -95,8 +143,24 @@ export const init = () => {
     strikeFrame: 6,
     sounds: [
       {
+        soundName: 'robot_staggered_damaged',
+        frame: 1,
+      },
+      {
+        soundName: 'robot_clank',
+        frame: 2,
+      },
+      {
         soundName: 'battle_swing2',
         frame: 6,
+      },
+      {
+        soundName: 'robot_clank3',
+        frame: 8,
+      },
+      {
+        soundName: 'robot_clank2',
+        frame: 10,
       },
     ],
   };

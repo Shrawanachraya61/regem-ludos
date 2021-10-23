@@ -14,7 +14,7 @@ action,this
 +setDoorStateAtMarker(MarkerDoorTutTile, RED_DOOR, BCK, CLOSED);
 +lookAtEachOther('Ada', 'Atrium Employee Jason');
 Atrium Employee Jason: "<cascade>The <color=ORANGE cascade>Regem Ludos Arcade<cascade> features a brand new, state-of-the-art VR System."
-Atrium Employee Jason: "<cascade>With this system, a player can be transported into the <color=BLUE> Regem Ludos VR Realm ®</>; a place where <scale=1.25 cascade-letters italic>anything</> is possible."
+Atrium Employee Jason: "<cascade>With this system, a player can be transported into the <color=BLUE> Regem Ludos VR Realm®</> a place where <scale=1.25 italic>anything</> is possible."
 Atrium Employee Jason: "<cascade>All a player needs is a <color=BLUE>Haptic Bracer</>."
 +:jump(Atrium Employee Jason);
 Atrium Employee Jason: "This bracer is the key to all the incredible features of this arcade, so be sure not to lose it!"
@@ -117,7 +117,7 @@ action,floor1-tut-entrance-vr-portal-action
 @floor1-tut-entrance-vr-portal-action
 +setConversation(Ada);
 +callScript('utils-transition-to-vr', 'floor1TutVR1', 'MarkerVRLanding', true);
-+?once():{
++?once('3a9d39af'):{
   +callScript('floor1-tut-vr1-emerge-from-portal');
 }
 +endConversation();
@@ -154,7 +154,7 @@ Ada: "I should probably not leave the VR tutorial area while the tutorial is act
 step,this
 @this
 +callScript('utils-change-room', 'floor1TutVR2', 'MarkerFromVR1');
-+?once():{
++?once('4cfcf83e'):{
   +callScript(floor1-tut-vr2-emerge-from-vr1);
 }
 
@@ -256,7 +256,7 @@ step,?is(quest_tutorial_active):floor1-tut-vr2-to-vr1-during-tut
 step,this
 @this
 +callScript('utils-change-room', 'floor1TutVR1', 'MarkerFromVR2');
-+?once():{
++?once('c15337a9'):{
   +callScript("floor1-tut-vr1-emerge-from-vr1");
 }
 @floor1-tut-vr2-to-vr1-during-tut
@@ -448,12 +448,12 @@ Conscience: "Good! I wonder if he'll let me try out on the next part."
 +endConversation();
 
 #floor1-tut-vr2-facedown-jason
-step,?once():this
+step,?once('2e9f4659'):this
 @this
 +setFacing(Atrium Employee Jason, down);
 
 #floor1-tut-vr2-battle2-area
-step,?once():this
+step,?once('df922503'):this
 @this
 +?isnot(Atrium Employee Jason):{
   +spawnCharacterAtMarker('Floor1AtriumEmployeeJason', 'MarkerJason4');
@@ -605,7 +605,7 @@ Atrium Employee Jason: "Go ahead an take a drink now before heading to the next 
 +endConversation();
 
 #floor1-tut-vr2-battle3-area
-step,?once():this
+step,?once('0de999eb'):this
 @this
 +?isnot(Atrium Employee Jason):{
   +spawnCharacterAtMarker('Floor1AtriumEmployeeJason', 'MarkerJason7');
@@ -1053,7 +1053,7 @@ Conscience: "Once you use that <color=BLUE>DeVisibleCloak</> we should be able t
 +endConversation();
 
 #floor1-tut-West2Pool
-step-first,?once():this
+step-first,?once('93a07282'):this
 @this
 +setConversation(Ada);
 +walkToMarker(Ada, MarkerAda);
@@ -1083,7 +1083,7 @@ Conscience: "Since you're such a shut-in nerd, whatever gets you out of the hous
 +endConversation();
 
 #floor1-tut-rdy-to-lvl-up
-step-first,?once():this
+step-first,?once('2c096f23'):this
 @this
 +:utils-start-Conscience-dialogue();
 +walkToMarker(Conscience, MarkerLevelConscience, 0, 0, false);
@@ -1120,7 +1120,7 @@ step,this
 +:utils-change-room('floor1TutVR3', 'MarkerFromPreBoss');
 
 #floor1-tut-VRPreBoss-spot-exit-portal
-step-first,?once():this
+step-first,?once('feb40767'):this
 @this
 +:utils-start-Conscience-dialogue(true);
 +disableAnimationSounds();
@@ -1159,7 +1159,7 @@ Conscience: "We need to cross the platform that Jason opened up for us!"
 }
 
 #floor1-tut-VRBoss-spotted-Jason
-step-first,?once():this
+step-first,?once('0238addd'):this
 @this
 +spawnCharacterAtMarker(Floor1AtriumEmployeeJason2, MarkerJasonSpawn);
 +setFacing(Jason, rightup);
@@ -1185,8 +1185,8 @@ Jason: "You spooked me!"
 +:shakeZ(Ada);
 Ada: "<cascade-letters italic>I spooked you?"
 +:angry(Ada);
-Ada: "Why did you run away from us?"
-Ada: "You are supposed to be leading us through this place!"
+Ada: "<scale=1.25 cascade>Why did you run away from us?"
+Ada: "<scale=1.5 cascade>You are supposed to be leading us through this place!"
 +:teardrop(Jason);
 Jason: "Uh... You see..."
 +:shakeZ(Jason);
@@ -1207,8 +1207,8 @@ Jason: "That's not important right now!"
 Jason: "We should be really just focus on how to get you to the exit portal."
 +none();
 +walkToMarker(Jason, MarkerJason0);
-+setFacing(Jason, up);
 +:smallPause();
++setFacing(Jason, up);
 Jason: "Let me take care of that barrier over there for you!"
 +none();
 +waitMS(400);
@@ -1255,7 +1255,7 @@ Conscience: "Geez.  Stop pouting already.  Even you can get on my nerves sometim
 +endConversation();
 
 #floor1-tut-VRBoss-walk-across-bridge
-step-first,?once():this
+step-first,?once('c04bb68c'):this
 @this
 +spawnCharacterAtMarker(Floor1AtriumEmployeeJason2, MarkerJason2);
 +setFacing(Jason, leftup);
@@ -1362,8 +1362,8 @@ Conscience: "I don't think we can run away!"
 +none();
 +stopMusic();
 +enterCombat(ENCOUNTER_TUT_BOSS);
-+endConversation();
++endConversation(500, true);
 +despawnCharacter(TutRobotRoamerBoss);
 
 @test-tut-battle
-+enterCombat(ENCOUNTER_TEST_MULTI_DEATH);
++enterCombat(ENCOUNTER_TUT_BOSS);

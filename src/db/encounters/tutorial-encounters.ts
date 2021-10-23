@@ -8,7 +8,6 @@ import {
   BattleEvent,
   battleSubscribeEvent,
 } from 'model/battle';
-import { BATTLE_AI_ATTACK } from 'controller/battle-ai';
 import { get as getEnemy } from 'db/enemies';
 import { CharacterTemplate } from 'model/character';
 import { callScriptDuringBattle } from 'controller/battle-management';
@@ -28,7 +27,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_EASY'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -54,7 +53,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_STAGGERABLE'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -83,12 +82,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
         position: BattlePosition.BACK,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -114,12 +113,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -148,12 +147,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -181,12 +180,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -209,12 +208,12 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -233,17 +232,17 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_RANGED')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -262,7 +261,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_ARMORED')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       // {
       //   chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
@@ -272,7 +271,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       // {
       //   chTemplate: varyStats(getEnemy('TUT_ROBOT_CHANNELER')),
@@ -292,7 +291,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };

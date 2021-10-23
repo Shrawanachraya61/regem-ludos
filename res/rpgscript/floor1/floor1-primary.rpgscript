@@ -1,6 +1,6 @@
 
 #Floor1PrimaryGuy1
-action,?once():Floor1PrimaryGuy1-1
+action,?once('11028f4f'):Floor1PrimaryGuy1-1
 action,Floor1PrimaryGuy1-2
 @Floor1PrimaryGuy1-1
 +setConversation(Ada);
@@ -20,10 +20,10 @@ Floor1PrimaryGuy1: "This place is pretty cool, huh?"
 +endConversation();
 
 #Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo
-action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
-action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
-action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-3
-action,?once():Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-4
+action,?once('4cefa402'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
+action,?once('3f6c1a28'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
+action,?once('1a50b78f'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-3
+action,?once('5c67238f'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-4
 action,Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-5
 @Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
 +setConversation(Ada);

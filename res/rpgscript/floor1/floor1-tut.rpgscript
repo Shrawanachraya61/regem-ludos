@@ -117,7 +117,7 @@ action,floor1-tut-entrance-vr-portal-action
 @floor1-tut-entrance-vr-portal-action
 +setConversation(Ada);
 +callScript('utils-transition-to-vr', 'floor1TutVR1', 'MarkerVRLanding', true);
-+?once():{
++?once('3a9d39af'):{
   +callScript('floor1-tut-vr1-emerge-from-portal');
 }
 +endConversation();
@@ -154,7 +154,7 @@ Ada: "I should probably not leave the VR tutorial area while the tutorial is act
 step,this
 @this
 +callScript('utils-change-room', 'floor1TutVR2', 'MarkerFromVR1');
-+?once():{
++?once('4cfcf83e'):{
   +callScript(floor1-tut-vr2-emerge-from-vr1);
 }
 
@@ -256,7 +256,7 @@ step,?is(quest_tutorial_active):floor1-tut-vr2-to-vr1-during-tut
 step,this
 @this
 +callScript('utils-change-room', 'floor1TutVR1', 'MarkerFromVR2');
-+?once():{
++?once('c15337a9'):{
   +callScript("floor1-tut-vr1-emerge-from-vr1");
 }
 @floor1-tut-vr2-to-vr1-during-tut
@@ -448,12 +448,12 @@ Conscience: "Good! I wonder if he'll let me try out on the next part."
 +endConversation();
 
 #floor1-tut-vr2-facedown-jason
-step,?once():this
+step,?once('2e9f4659'):this
 @this
 +setFacing(Atrium Employee Jason, down);
 
 #floor1-tut-vr2-battle2-area
-step,?once():this
+step,?once('df922503'):this
 @this
 +?isnot(Atrium Employee Jason):{
   +spawnCharacterAtMarker('Floor1AtriumEmployeeJason', 'MarkerJason4');
@@ -605,7 +605,7 @@ Atrium Employee Jason: "Go ahead an take a drink now before heading to the next 
 +endConversation();
 
 #floor1-tut-vr2-battle3-area
-step,?once():this
+step,?once('0de999eb'):this
 @this
 +?isnot(Atrium Employee Jason):{
   +spawnCharacterAtMarker('Floor1AtriumEmployeeJason', 'MarkerJason7');
@@ -1053,7 +1053,7 @@ Conscience: "Once you use that <color=BLUE>DeVisibleCloak</> we should be able t
 +endConversation();
 
 #floor1-tut-West2Pool
-step-first,?once():this
+step-first,?once('93a07282'):this
 @this
 +setConversation(Ada);
 +walkToMarker(Ada, MarkerAda);
@@ -1083,7 +1083,7 @@ Conscience: "Since you're such a shut-in nerd, whatever gets you out of the hous
 +endConversation();
 
 #floor1-tut-rdy-to-lvl-up
-step-first,?once():this
+step-first,?once('2c096f23'):this
 @this
 +:utils-start-Conscience-dialogue();
 +walkToMarker(Conscience, MarkerLevelConscience, 0, 0, false);
@@ -1120,7 +1120,7 @@ step,this
 +:utils-change-room('floor1TutVR3', 'MarkerFromPreBoss');
 
 #floor1-tut-VRPreBoss-spot-exit-portal
-step-first,?once():this
+step-first,?once('feb40767'):this
 @this
 +:utils-start-Conscience-dialogue(true);
 +disableAnimationSounds();
@@ -1159,7 +1159,7 @@ Conscience: "We need to cross the platform that Jason opened up for us!"
 }
 
 #floor1-tut-VRBoss-spotted-Jason
-step-first,?once():this
+step-first,?once('0238addd'):this
 @this
 +spawnCharacterAtMarker(Floor1AtriumEmployeeJason2, MarkerJasonSpawn);
 +setFacing(Jason, rightup);
@@ -1242,7 +1242,7 @@ Conscience: "Well, he said everything is fine now."
 Ada: "I do not trust that he knows what that means."
 Ada: "For all we know that platform is going to fall out from under us and send us cascading to our deaths."
 +:flat(Conscience);
-Conscience: "<cascade-letters>Soooo, what?<delay=200 cascade>  Are you just gonna sit right here until you magically teleport out of here?"
+Conscience: "<cascade-letters>Soooo, what?<delay=200 cascade>  Are you just gonna sit right here until you magically teleport out of the VR?"
 +:shakeZ(Ada);
 Ada: "I am certainly considering it..."
 +:jump(Conscience);
@@ -1255,13 +1255,14 @@ Conscience: "Geez.  Stop pouting already.  Even you can get on my nerves sometim
 +endConversation();
 
 #floor1-tut-VRBoss-walk-across-bridge
-step-first,?once():this
+step-first,?once('c04bb68c'):this
 @this
 +spawnCharacterAtMarker(Floor1AtriumEmployeeJason2, MarkerJason2);
 +setFacing(Jason, leftup);
 +:utils-start-Conscience-dialogue(true);
 +walkToMarker(Conscience, MarkerWalk2, 16, 0, true);
-+walkToMarker(Ada, MarkerWalk2, 16, 0);
++walkToMarker(Ada, MarkerWalk2, 0, 0);
++waitMS(33);
 +lookAtCharacter(Conscience, Jason);
 +lookAtCharacter(Ada, Jason);
 +setConversation(Ada);
@@ -1287,8 +1288,8 @@ Jason: "Give me a quick second, and I'll have that barrier down."
 Ada: "What are you doing?  Just get rid of the barrier like you have been doing this whole time."
 +:teardrop(Jason);
 Jason: "It's harder than it looks, miss."
-+waitMS(400);
 +none();
++waitMS(400);
 +:bumpX(Jason, -2);
 +playSound('terminal_beep');
 +waitMS(100);
@@ -1297,9 +1298,9 @@ Jason: "It's harder than it looks, miss."
 +waitMS(500);
 +:lightbulb(Jason);
 Jason: "There we go.  And just one more thing oughta do it..."
++none();
 +stopMusic();
 +waitMS(400);
-+none();
 +:bumpX(Jason, -2);
 +playSound('terminal_beep');
 +waitMS(300);
@@ -1307,10 +1308,9 @@ Jason: "There we go.  And just one more thing oughta do it..."
 +setFacing(Conscience, left);
 +playSound('deep_siren');
 +waitMS(300);
-+playSound('deep_siren');
-+waitMS(300);
 +setFacing(Ada, left);
 +setFacing(Conscience, rightdown);
++playSound('deep_siren');
 +waitMS(300);
 +setFacing(Ada, down);
 +setFacing(Conscience, left);
@@ -1322,44 +1322,48 @@ Jason: "There we go.  And just one more thing oughta do it..."
 Jason: "<cascade-letters>......"
 +:surprised(Ada);
 Ada: "<color=ORANGE cascade-letters> Jason.<delay=300 cascade>  What did you do?"
-+shakeZ(Jason);
++:shakeZ(Jason);
 Jason: "<cascade-letters>Whoops."
 +none();
 +panCameraBackToPlayer();
++setFacing(Ada, left);
++setFacing(Conscience, left);
 +playSound('spawn_enemy');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 0, 0);
-+waitMS(25);
++waitMS(100);
 +playSound('spawn_enemy');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 7, 0);
-+waitMS(25);
++waitMS(100);
 +playSound('spawn_enemy');
-+spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 3, 1);
-+waitMS(25);
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 13, 11);
++waitMS(100);
 +playSound('spawn_enemy');
-+spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 0, 7);
-+waitMS(25);
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 6, 17);
++waitMS(100);
++playSound('spawn_enemy');
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 11, 3);
++waitMS(300);
++playMusic(music_pre_tense_battle);
++playSound(robot_staggered_damaged);
 +spawnCharacterAtMarker(TutRobotRoamerBoss, MarkerBossSpawn);
-+playSound('spawn_enemy');
-+spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBossSpawn, 'normal', 1, 3);
-+waitMS(25);
 +setConversation(Conscience);
 +:exclaim(Conscience);
 Conscience: "Whoah, that's a <scale=1.5>BIG</> one!"
 +none();
 +waitMS(500);
-Big Robot: "<cascade-letters=25>*bzzt* YOU HAVE DESTROYED MANY OF MY KIND."
-Big Robot: "<cascade-letters=25>*bzzt* THIS THREAT CANNOT BE IGNORED."
-Big Robot: "<cascade-letters=25>*bzzt* PREPARE FOR ANNIHILATION."
++playSound(robot_staggered_damaged);
+Big Robot: "<cascade-letters=25 color=YELLOW>*bzzt* YOU HAVE DESTROYED MANY OF MY KIND."
++playSound(robot_staggered_damaged);
+Big Robot: "<cascade-letters=25 color=YELLOW>*bzzt* THIS THREAT CANNOT BE IGNORED."
++playSound(robot_staggered_damaged);
+Big Robot: "<cascade-letters=25 color=YELLOW>*bzzt* PREPARE FOR ANNIHILATION."
 +:exclaim(Conscience);
-Conscience: "Here we go!"
+Conscience: "I don't think we can run away!"
 +none();
++stopMusic();
 +enterCombat(ENCOUNTER_TUT_BOSS);
-
-
-
-
-
-
++endConversation(500, true);
++despawnCharacter(TutRobotRoamerBoss);
 
 @test-tut-battle
-+enterCombat(ENCOUNTER_TEST_MULTI_DEATH);
++enterCombat(ENCOUNTER_TUT_BOSS);

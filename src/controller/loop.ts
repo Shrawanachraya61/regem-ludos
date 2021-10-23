@@ -181,6 +181,29 @@ export const runMainLoop = async (): Promise<void> => {
   const reLoop = () => (window as any).running && requestAnimationFrame(loop);
 
   const loop = (now: number) => {
+    // Debugging for GC collection issues
+    // if (getIsPaused()) {
+    //   const [screenW, screenH] = getScreenSize();
+    //   // drawRect(0, 0, screenW, screenH, getRenderBackgroundColor());
+    //   const room = getCurrentRoom();
+    //   // position the camera in the right spot
+    //   let roomXOffset = 0;
+    //   let roomYOffset = 0;
+    //   const player = getCurrentPlayer();
+    //   if (player) {
+    //     const [oX, oY] = playerGetCameraOffset(player);
+    //     roomXOffset = oX;
+    //     roomYOffset = oY;
+    //   }
+    //   setCameraDrawOffset([roomXOffset, roomYOffset]);
+    //   const roomVisible = room.visible;
+    //   if (roomVisible) {
+    //     drawRoom(room, roomXOffset, roomYOffset, undefined, true);
+    //   }
+    //   reLoop();
+    //   return;
+    // }
+
     const dt = now - prevNow;
     const fm = dt / sixtyFpsMs;
     setFrameMultiplier(fm > 4 ? 4 : fm);
@@ -227,7 +250,8 @@ export const runMainLoop = async (): Promise<void> => {
       if (roomVisible) {
         drawRoom(
           room,
-          [roomXOffset, roomYOffset],
+          roomXOffset,
+          roomYOffset,
           undefined,
           !isPauseRenderingEnabled()
         );
@@ -356,7 +380,7 @@ export const runMainLoop = async (): Promise<void> => {
     }
     // drawSprite('bg-fog', 171, 128);
     if (roomVisible) {
-      drawRoom(room, [roomXOffset, roomYOffset]);
+      drawRoom(room, roomXOffset, roomYOffset);
     }
     const renderables = getRenderables();
     for (const i in renderables) {

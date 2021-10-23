@@ -46,6 +46,7 @@ import {
   battleCharacterIsChanneling,
   battleCharacterGetEvasion,
   battleCharacterHasStatus,
+  battleCharacterIsKnockedDown,
 } from 'model/battle-character';
 import {
   Character,
@@ -351,6 +352,22 @@ export const initiateBattle = (
         battleUnpauseActionTimers(battle, battle.allies);
       } else {
         battleUnpauseActionTimers(battle, battle.enemies);
+      }
+    }
+  );
+
+  battleSubscribeEvent(
+    battle,
+    BattleEvent.onCharacterRecovered,
+    (bCh: BattleCharacter) => {
+      const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+      roomAddParticle(
+        getCurrentRoom(),
+        createStatusParticle('Recovery', centerPx, centerPy, colors.BLUE)
+      );
+      battleCharacterSetAnimationIdle(bCh);
+      if (battleGetAllegiance(battle, bCh.ch) === BattleAllegiance.ALLY) {
+        playSoundName('battle_recovery');
       }
     }
   );
@@ -743,12 +760,12 @@ export const applyStaggerDamage = (
       bCh.actionTimer.start();
       bCh.actionTimer.pause();
 
-      // This particle makes a lot of visual noise, disabling it for now
-      // const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
-      // roomAddParticle(
-      //   getCurrentRoom(),
-      //   createStatusParticle('Staggered', centerPx, centerPy, 'orange')
-      // );
+      // This particle makes a lot of visual noise...
+      const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
+      roomAddParticle(
+        getCurrentRoom(),
+        createStatusParticle('Staggered', centerPx, centerPy, 'orange')
+      );
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED);
     }
   }
@@ -796,6 +813,26 @@ export const applyArmorDamage = (
   };
 };
 
+export const applyKnockDown = (victim: BattleCharacter) => {
+  battleInvokeEvent(
+    getCurrentBattle(),
+    BattleEvent.onCharacterKnockedDown,
+    victim
+  );
+  battleCharacterSetActonState(victim, BattleActionState.KNOCKED_DOWN);
+  victim.koTimer.start();
+  victim.staggerTimer.start();
+  victim.staggerGauge.empty();
+  victim.actionTimer.start();
+  victim.actionTimer.pause();
+  characterSetAnimationState(victim.ch, AnimationState.BATTLE_KNOCKED_DOWN);
+  const [centerPx, centerPy] = characterGetPosCenterPx(victim.ch);
+  roomAddParticle(
+    getCurrentRoom(),
+    createStatusParticle('Knockdown!', centerPx, centerPy, 'red')
+  );
+};
+
 export const applySwingDamage = (
   battle: Battle,
   attacker: BattleCharacter,
@@ -817,10 +854,17 @@ export const applySwingDamage = (
 
   if (battleCharacterIsStaggered(victim)) {
     damage *= 2;
-    particleColor = colors.ORANGE;
+    particleColor = colors.BLUE;
     particlePostfix = '!';
     // TODO make this configurable
     soundName = 'robot_staggered_damaged';
+
+    if (
+      args.attackType === SwingType.KNOCK_DOWN &&
+      !battleCharacterIsKnockedDown(victim)
+    ) {
+      applyKnockDown(victim);
+    }
   } else if (victim.armor > 0) {
     const { nextDamageAmount } = applyArmorDamage(
       battle,
@@ -838,7 +882,7 @@ export const applySwingDamage = (
     interruptChannel(victim);
   }
 
-  // TODO Knocked Down
+  // TODO Finishers
 
   // TODO Damage Reduction
 
@@ -1132,12 +1176,12 @@ export const applyDamage = (
       battle.room,
       createWeightedParticle(EFFECT_TEMPLATE_GEM, centerPx, centerPy, 1000)
     );
+    battleInvokeEvent(battle, BattleEvent.onCharacterDefeated, bCh);
   } else if (bCh.ch.hp > 0 && soundName) {
     playSoundName(soundName);
   }
 
   battleCharacterSetAnimationStateAfterTakingDamage(bCh);
-  battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterDamaged, bCh);
 };
 
 export const getDamageAfterDamageEffects = (
@@ -1263,6 +1307,7 @@ const checkBattleCompletion = async (battle: Battle) => {
     }
   } else if (battleIsLoss(battle)) {
     hideSections();
+    playSoundName('battle_loss');
     battle.isCompleted = true;
     popKeyHandler(battleKeyHandler);
     battlePauseActionTimers(battle);

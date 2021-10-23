@@ -38,6 +38,7 @@ import {
   getCurrentPlayer,
   getPlayerWallGlowEnabled,
 } from 'model/generics';
+import { RenderObject } from 'model/render-object';
 
 export interface DrawTextParams {
   font?: string;
@@ -432,25 +433,51 @@ export const drawParticle = (
   ctx.globalAlpha = 1;
 };
 
+const sortRenders = (a: RenderObject, b: RenderObject) => {
+  return a.sortY < b.sortY ? -1 : 1;
+};
+
+const bubbleSortRenderObjectsInPlace = (arr: RenderObject[]) => {
+  if (arr.length < 2) {
+    return;
+  }
+
+  let swapOccurred = false;
+  do {
+    swapOccurred = false;
+    for (let i = 0; i < arr.length - 1; i++) {
+      const elemA = arr[i];
+      const elemB = arr[i + 1];
+
+      if (elemA.sortY > elemB.sortY) {
+        swapOccurred = true;
+        arr[i] = elemB;
+        arr[i + 1] = elemA;
+      }
+    }
+  } while (swapOccurred);
+};
+
 export const drawRoom = (
   room: Room,
-  offset: Point,
+  offsetX: number,
+  offsetY: number,
   ctx?: CanvasRenderingContext2D,
   isPaused?: boolean
 ): void => {
   const { particles } = room;
-  const [offsetX, offsetY] = offset;
 
   ctx = ctx || getCtx();
   ctx.save();
   ctx.translate(Math.floor(offsetX), Math.floor(offsetY));
-  room.renderObjects = room.renderObjects.sort((a, b) => {
-    return a.sortY < b.sortY ? -1 : 1;
-  });
+  // room.renderObjects = room.renderObjects.sort(sortRenders);
+  bubbleSortRenderObjectsInPlace(room.renderObjects);
 
   const outerCtx = getCtx('outer');
   const player = getCurrentPlayer();
   const leader = player.leader;
+
+  // return;
 
   // DEBUG highlight stuff that sees Ada
   // for (let i = 0; i < room.characters.length; i++) {

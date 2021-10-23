@@ -2014,8 +2014,6 @@ export const enterCombat = (encounterName: string) => {
     return;
   }
 
-  hideSection(AppSection.Debug);
-
   overworldHide(getCurrentOverworld());
   playSoundName('battle_encountered');
   const player = getCurrentPlayer();
@@ -2180,12 +2178,14 @@ export const playSound = (soundName: string) => {
 };
 
 export const playMusic = async (musicName: string) => {
-  await stopCurrentMusic();
+  stopCurrentMusic(100);
   playMusicName(musicName, true);
 };
 
-export const stopMusic = async (ms?: number) => {
-  await stopCurrentMusic(ms ?? 1000);
+export const stopMusic = (ms?: number) => {
+  const duration = ms ?? 1000;
+  stopCurrentMusic(duration);
+  return waitMS(duration);
 };
 
 export const spawnParticleAtTarget = (

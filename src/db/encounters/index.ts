@@ -8,7 +8,6 @@ import {
   BattleEvent,
   battleSubscribeEvent,
 } from 'model/battle';
-import { BATTLE_AI_ATTACK } from 'controller/battle-ai';
 import { get as getEnemy } from 'db/enemies';
 import { CharacterTemplate } from 'model/character';
 import { callScriptDuringBattle } from 'controller/battle-management';
@@ -47,7 +46,7 @@ export const init = () => {
       {
         chTemplate: getEnemy('ENEMY_GUY_IMPOSSIBLE'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -60,7 +59,7 @@ export const init = () => {
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -73,12 +72,12 @@ export const init = () => {
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -91,17 +90,17 @@ export const init = () => {
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: varyStats(getEnemy('ENEMY_GUY')),
         position: BattlePosition.MIDDLE,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };
@@ -114,7 +113,7 @@ export const init = () => {
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
     events: {
@@ -137,12 +136,12 @@ export const init = () => {
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_REALLY_EASY'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
       {
         chTemplate: getEnemy('TUT_ROBOT_MELEE_REALLY_EASY'),
         position: BattlePosition.FRONT,
-        ai: BATTLE_AI_ATTACK,
+        ai: 'BATTLE_AI_ATTACK',
       },
     ],
   };

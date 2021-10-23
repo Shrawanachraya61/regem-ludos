@@ -41,6 +41,14 @@ export const CharacterFollower = (
   const [spriteWidth, spriteHeight] = characterGetSize(ch);
   let [resultX, resultY] = worldToCanvasCoords4by3(x, y, z);
 
+  let followerWidth = spriteWidth;
+  let followerHeight = spriteHeight;
+
+  if (ch.template?.followerSize) {
+    followerWidth = ch.template?.followerSize[0];
+    followerHeight = ch.template?.followerSize[0];
+  }
+
   const canvasHeight = 512 * 2;
   // const canvasWidth = 1366;
   if (window.innerHeight < canvasHeight) {
@@ -51,10 +59,14 @@ export const CharacterFollower = (
   return (
     <Root
       style={{
-        left: resultX + 'px',
-        top: resultY + 'px',
-        width: spriteWidth * getDrawScale() + 'px',
-        height: spriteHeight * getDrawScale() + 'px',
+        left:
+          resultX + ((spriteWidth - followerWidth) * getDrawScale()) / 2 + 'px',
+        top:
+          resultY +
+          ((spriteHeight - followerHeight) * getDrawScale()) / 2 +
+          'px',
+        width: followerWidth * getDrawScale() + 'px',
+        height: followerHeight * getDrawScale() + 'px',
         ...(style as Record<string, string>),
       }}
       {...rest}

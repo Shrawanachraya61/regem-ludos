@@ -47,7 +47,11 @@ import {
   getCurrentPlayer,
   getIsPaused,
 } from 'model/generics';
-import { createDamageParticle, EFFECT_TEMPLATE_DEAD32 } from 'model/particle';
+import {
+  createDamageParticle,
+  createStatusParticle,
+  EFFECT_TEMPLATE_DEAD32,
+} from 'model/particle';
 import { playerGetItemCount, playerRemoveItem } from 'model/player';
 import { roomAddParticle, roomRemoveParticle } from 'model/room';
 import { playSoundName } from 'model/sound';
@@ -84,7 +88,7 @@ const showBattleParticles = async (
       let textParticle: any = null;
       if (text) {
         const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
-        const particle = createDamageParticle(
+        const particle = createStatusParticle(
           `${text}`,
           centerPx,
           centerPy,
@@ -102,12 +106,16 @@ const showBattleParticles = async (
         // I don't really care to find out
         bCh.actionTimer.timestampPause = bCh.actionTimer.timestampStart;
         characterGetAnimation(bCh.ch).pause();
-        disablePauseRendering();
         hideBattleEffect();
         if (textParticle) {
           roomRemoveParticle(battle.room, textParticle);
         }
-        resolve(true);
+
+        // HACK at least one render has to remove the particles...
+        setTimeout(() => {
+          disablePauseRendering();
+          resolve(true);
+        }, 100);
       }, 1500);
     }
   });

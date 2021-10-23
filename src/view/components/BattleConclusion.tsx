@@ -36,8 +36,9 @@ const Root = style('div', () => {
     height: '100%',
     fontSize: '4rem',
     color: colors.WHITE,
-    transition: 'transform 200ms',
+    transition: 'background-color 2000ms',
     transform: 'scale(1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.0)',
   };
 });
 
@@ -210,6 +211,13 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
       }
     }
   }, [onwardClicked]);
+
+  useEffect(() => {
+    const elem = document.getElementById('battle-conclusion-root');
+    if (elem && !props.isVictory) {
+      elem.style['background-color'] = 'rgba(0, 0, 0, 0.8)';
+    }
+  }, [props.isVictory]);
 
   return (
     <Root id="battle-conclusion-root">

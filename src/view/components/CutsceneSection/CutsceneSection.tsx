@@ -426,7 +426,13 @@ const parseDialogTextToPhrases = ((window as any).parseDialogTextToPhrases = (
             const newPhrase: IPhrase = {
               ...phrase,
               delay: phrase.delay + j * delayInc,
-              innerHTML: word + (j < words.length - 1 ? ' ' : ''),
+              innerHTML:
+                word +
+                (j < words.length - 1
+                  ? phrase.scale !== 1
+                    ? '&nbsp;'
+                    : ' '
+                  : ''),
             };
             newPhrases.push(newPhrase);
           }

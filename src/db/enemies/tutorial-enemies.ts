@@ -28,7 +28,9 @@ import { BattleCharacter } from 'model/battle-character';
 import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
 import { createAnimation } from 'model/animation';
 
-const COOLDOWN_MOD = 1.5;
+// const COOLDOWN_MOD = 1.5;
+
+const COOLDOWN_MOD = 0.25;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
@@ -111,7 +113,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 3;
-        const baseStagger = 6;
+        const baseStagger = 1116;
         const target = getTarget(battle, bCh);
         if (target) {
           await doSwing(battle, this, bCh, target, {
@@ -396,9 +398,10 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
   };
 
   exp.TUT_ROBOT_BOSS = {
-    name: 'Giga Robot',
+    name: 'Big Robot',
     spriteBase: 'tut_robot_boss',
     spriteSize: [96, 96],
+    followerSize: [64, 64],
     stats: {
       ...battleStatsCreate(),
       HP: 100,

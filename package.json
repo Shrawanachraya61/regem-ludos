@@ -6,11 +6,12 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server --mimetypes ./scripts/mime.types ./dist -o index.html -g -p 8081",
-    "build": "cross-env NODE_ENV=production yarn clean && yarn zip && yarn build:setup && yarn build:iframes && yarn docs && yarn build:main && yarn build:rpgscript",
+    "build": "yarn clean && yarn zip && yarn build:rpgscript && yarn build:setup && yarn build:iframes && yarn docs && cross-env NODE_ENV=production yarn build:main",
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
-    "build:rpgscript": "cp -r src/rpgscript/* res/rpgscript/",
+    "build:rpgscript": "yarn once-keys && cp --verbose -r src/rpgscript/* res/rpgscript/",
+    "once-keys": "node scripts/once-keys",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
     "tsc": "tsc -v",
     "zip": "yarn zip:foley && yarn zip:images",
@@ -39,7 +40,8 @@
     "terser": "^4.6.11",
     "typedoc": "^0.20.16",
     "typescript": "^4.1.3",
-    "uglifycss": "0.0.29"
+    "uglifycss": "0.0.29",
+    "uuid": "^8.3.2"
   },
   "browserslist": "> 0.25%, not dead",
   "dependencies": {

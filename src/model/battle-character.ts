@@ -10,8 +10,8 @@ import {
   characterHasAnimationState,
   WeaponEquipState,
 } from 'model/character';
-import { Point, randomId } from 'utils';
-import { BattleAI } from 'controller/battle-ai';
+import { Point, randomId, timeoutPromise } from 'utils';
+import { BattleAI, get as getBattleAi } from 'db/battle-ai';
 import {
   BattleAction,
   BattleActionType,
@@ -57,6 +57,7 @@ export interface BattleCharacter {
   actionReadyTimer: Timer; // timer for how long to wait while in the actionReady state
   staggerTimer: Timer;
   staggerGauge: Gauge;
+  koTimer: Timer;
   castTimer: Timer;
   armorTimer: Timer; // timer for tracking simultaneous hits that break armor
   position: BattlePosition;
@@ -73,6 +74,7 @@ export interface BattleCharacter {
   onChannelInterrupted: () => Promise<void>;
   staggerSoundName?: string;
   ai?: BattleAI;
+  isReviving: boolean;
 }
 
 const battleCharacterCreate = (
@@ -88,8 +90,9 @@ const battleCharacterCreate = (
     shouldRemove: false,
     actionTimer: new Timer(skill?.cooldown ?? 2000),
     actionReadyTimer: new Timer(1500),
-    staggerTimer: new Timer(2000),
+    staggerTimer: new Timer(4000),
     staggerGauge: new Gauge(staggerDmg, 0.002),
+    koTimer: new Timer(4000),
     castTimer: new Timer(1000),
     armorTimer: new Timer(250),
     position,
@@ -105,6 +108,7 @@ const battleCharacterCreate = (
     onCastInterrupted: async function () {},
     onChannelInterrupted: async function () {},
     ai: undefined,
+    isReviving: false,
   };
   return bCh;
 };
@@ -119,9 +123,15 @@ export const battleCharacterCreateEnemy = (
 
   const bCh = battleCharacterCreate(ch, template.position);
 
-  bCh.ai = template.ai;
+  bCh.ai = getBattleAi(template.ai ?? 'BATTLE_AI_ATTACK');
   bCh.armor = template.armor ?? ch.template?.armor ?? 0;
   bCh.staggerSoundName = template.chTemplate.staggerSoundName;
+
+  console.log(
+    'ENEMY CREATED',
+    bCh,
+    getBattleAi(template.ai ?? 'BATTLE_AI_ATTACK')
+  );
 
   return bCh;
 };
@@ -197,7 +207,7 @@ export const battleCharacterCanAct = (
   if (battleCharacterIsActing(bCh)) {
     return false;
   }
-  if (battleCharacterIsStaggered(bCh)) {
+  if (battleCharacterIsStaggered(bCh) || battleCharacterIsKnockedDown(bCh)) {
     return false;
   }
   const ch = bCh.ch;
@@ -270,7 +280,13 @@ export const battleCharacterGetEvasion = (bCh: BattleCharacter) => {
 export const battleCharacterSetAnimationStateAfterTakingDamage = (
   bCh: BattleCharacter
 ) => {
-  if (battleCharacterIsStaggered(bCh)) {
+  if (battleCharacterIsKnockedDown(bCh)) {
+    characterSetAnimationState(
+      bCh.ch,
+      AnimationState.BATTLE_KNOCKED_DOWN_DMG,
+      true
+    );
+  } else if (battleCharacterIsStaggered(bCh)) {
     characterSetAnimationState(bCh.ch, AnimationState.BATTLE_STAGGERED, true);
   } else {
     characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DAMAGED, true);
@@ -392,11 +408,19 @@ export const updateBattleCharacter = (
 
     if (!bCh.isDefeated) {
       bCh.isDefeated = true;
-      playSoundName('dead');
       characterSetAnimationState(bCh.ch, AnimationState.BATTLE_DEFEATED);
+      playSoundName('dead');
+
+      bCh.staggerGauge.empty();
+      bCh.staggerTimer.start();
+      bCh.staggerTimer.pause();
+      bCh.koTimer.start();
+      bCh.koTimer.pause();
+      bCh.actionState = BattleActionState.IDLE;
 
       // HACK: assumes that a character can only die at the end of a turn
       const removeCharacter = () => {
+        battleInvokeEvent(battle, BattleEvent.onCharacterDamaged, bCh);
         battleUnsubscribeEvent(
           battle,
           BattleEvent.onTurnEnded,
@@ -433,7 +457,27 @@ export const updateBattleCharacter = (
     return;
   }
 
-  if (battleCharacterIsStaggered(bCh)) {
+  if (battleCharacterIsKnockedDown(bCh) && !bCh.isReviving) {
+    if (bCh.koTimer.isComplete()) {
+      bCh.isReviving = true;
+      if (characterHasAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE)) {
+        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE);
+        characterOnAnimationCompletion(bCh.ch, () => {
+          bCh.isReviving = false;
+          bCh.actionTimer.unpause();
+          battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+          battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+        });
+      } else {
+        timeoutPromise(500).then(() => {
+          bCh.isReviving = false;
+          bCh.actionTimer.unpause();
+          battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+          battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+        });
+      }
+    }
+  } else if (battleCharacterIsStaggered(bCh) && !bCh.isReviving) {
     if (bCh.staggerTimer.isComplete()) {
       battleCharacterSetAnimationIdle(bCh);
       bCh.actionTimer.unpause();

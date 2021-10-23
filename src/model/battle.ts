@@ -1,5 +1,5 @@
 import { Room, roomAddParticle, roomRemoveParticle } from 'model/room';
-import { BattleAI } from 'controller/battle-ai';
+import { BattleAI } from 'db/battle-ai';
 import {
   BattleCharacter,
   battleCharacterIsActing,
@@ -14,7 +14,7 @@ import {
 } from './character';
 import { setAtMarker } from 'controller/scene-commands';
 import { getCurrentPlayer, getNow } from './generics';
-import { BattleActionType } from 'controller/battle-actions';
+import { BattleActionType, SwingType } from 'controller/battle-actions';
 import { Animation } from 'model/animation';
 import { Particle, particleCreateFromTemplate } from 'model/particle';
 import { renderUi } from 'view/ui';
@@ -85,6 +85,7 @@ export enum BattleEvent {
   onCharacterActionButtonPressed = 'onCharacterActionButtonPressed',
   onCharacterActionEnded = 'onCharacterActionEnded',
   onCharacterStaggered = 'onCharacterStaggered',
+  onCharacterKnockedDown = 'onCharacterKnockedDown',
   onCharacterPinned = 'onCharacterPinned',
   onCharacterRecovered = 'onCharacterRecovered',
   onCharacterCasting = 'onCharacterCasting',
@@ -110,6 +111,7 @@ export interface IBattleSubscriptionHub {
   ) => void)[];
   [BattleEvent.onCharacterActionEnded]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterStaggered]: ((bCh: BattleCharacter) => void)[];
+  [BattleEvent.onCharacterKnockedDown]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterPinned]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterRecovered]: ((bCh: BattleCharacter) => void)[];
   [BattleEvent.onCharacterSpell]: ((bCh: BattleCharacter) => void)[];
@@ -129,7 +131,7 @@ export interface IBattleSubscriptionHub {
 export interface BattleTemplateEnemy {
   chTemplate: CharacterTemplate;
   position: BattlePosition;
-  ai?: BattleAI;
+  ai?: string;
   armor?: number;
 }
 
@@ -206,6 +208,7 @@ export const battleCreate = (
     onCharacterActionButtonPressed: [],
     onCharacterActionEnded: [],
     onCharacterStaggered: [],
+    onCharacterKnockedDown: [],
     onCharacterRecovered: [],
     onCharacterPinned: [],
     onCharacterSpell: [],
@@ -341,6 +344,40 @@ export const battleGetCharactersOfAllegiance = (
       return battle.allies;
     }
   }
+};
+
+export const battleGetTargetableCharacters = (
+  battle: Battle,
+  allegiance: BattleAllegiance,
+  actionType: BattleActionType
+) => {
+  const arr = battleGetCharactersOfAllegiance(
+    battle,
+    battleGetOppositeAllegiance(allegiance)
+  );
+  let target: BattleCharacter[];
+  target = arr.filter((bCh: BattleCharacter) => {
+    return bCh.position === BattlePosition.FRONT;
+  });
+  if (
+    (actionType === BattleActionType.SWING && !target.length) ||
+    actionType !== BattleActionType.SWING
+  ) {
+    target = target.concat(
+      arr.filter((bCh: BattleCharacter) => {
+        return bCh.position === BattlePosition.MIDDLE;
+      })
+    );
+  }
+  if (
+    (actionType === BattleActionType.SWING && !target.length) ||
+    actionType !== BattleActionType.SWING
+  ) {
+    target = arr.filter((bCh: BattleCharacter) => {
+      return bCh.position === BattlePosition.BACK;
+    });
+  }
+  return target ?? null;
 };
 
 export const battleGetNearestAttackable = (
@@ -598,6 +635,7 @@ export const battlePauseTimers = (
     (bCh: BattleCharacter) => {
       bCh.actionTimer.pauseOverride();
       bCh.staggerTimer.pauseOverride();
+      bCh.koTimer.pauseOverride();
       bCh.castTimer.pauseOverride();
       bCh.actionReadyTimer.pauseOverride();
       if (bCh.ch.transform) {
@@ -624,6 +662,7 @@ export const battleUnpauseTimers = (
       bCh.actionTimer.unpauseOverride();
       bCh.staggerTimer.unpauseOverride();
       bCh.castTimer.unpauseOverride();
+      bCh.koTimer.unpauseOverride();
       bCh.actionReadyTimer.unpauseOverride();
       if (bCh.ch.transform) {
         bCh.ch.transform.timer.unpauseOverride();

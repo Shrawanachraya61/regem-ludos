@@ -166,7 +166,7 @@ export const showSection = (
   hideRest: boolean,
   sectionsToHide?: AppSection[]
 ) => {
-  // console.trace('SHOW SECTION');
+  // console.trace('SHOW SECTION ' + section);
   const sections = getUiInterface().appState.sections;
   if (hideRest) {
     if (sections.length === 1 && sections[0] === section) {

@@ -1,5 +1,5 @@
 #floor2-jesse-cafeteria-spotted
-step-first,?once():this
+step-first,?once('40837fef'):this
 @this
 +lookAtCharacter(Ada, Jesse);
 +setConversation(Ada);
@@ -14,8 +14,8 @@ Ada: "We were supposed to study later tonight, but she told me she had something
 
 // EPHELY
 #floor2-jesse-talk
-action,?once():floor2-jesse-cafeteria-ada1
-action,?once():floor2-jesse-cafeteria-ada2
+action,?once('87479c77'):floor2-jesse-cafeteria-ada1
+action,?once('d6da2ea1'):floor2-jesse-cafeteria-ada2
 @floor2-jesse-cafeteria-ada1
 +lookAtEachOther(Ada, Jesse);
 +setConversation2(Ada, Jesse);

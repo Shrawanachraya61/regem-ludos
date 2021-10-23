@@ -122,6 +122,8 @@ export enum AnimationState {
   BATTLE_FLOURISH = 'battle_flourish',
   BATTLE_DEFEATED = 'battle_defeated',
   BATTLE_DEAD = 'battle_dead',
+  BATTLE_KNOCKED_DOWN = 'battle_knocked_down',
+  BATTLE_KNOCKED_DOWN_DMG = 'battle_knocked_down_damaged',
   BATTLE_REVIVE = 'battle_revive',
 }
 
@@ -228,6 +230,7 @@ export interface CharacterTemplate {
     armor?: Item;
   };
   sortOffset?: number;
+  followerSize?: Point;
 }
 
 export const characterCreate = (name: string): Character => {

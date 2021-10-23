@@ -2,6 +2,14 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const minifyHtml = require('html-minifier').minify;
 
+// This script is the primary build script for the repo.  It creates a dist folder, copies
+// a bunch of stuff into it, minifies the output of the main typescript compilation,
+// and minifies the html files+css in the parent folder.
+
+// The output should be a dist folder with an html file, favicon, styles.css, res folder,
+// and minified main.js+amd loader js (almond).
+// Other things like iframes and docs are generated elsewhere.
+
 const outputDirName = process.argv[2];
 
 const CLIENT_FILES = ['../main.js'];
@@ -66,7 +74,7 @@ const build = async () => {
     'hoist_funs',
     'toplevel',
     // 'drop_console',
-    'pure_funcs=[console.info,console.log,console.debug,console.warn]',
+    // 'pure_funcs=[console.info,console.log,console.debug,console.warn]',
     'ecma=9',
   ];
 
@@ -111,16 +119,15 @@ const build = async () => {
 
   console.log('\nZip (command line)...');
   await execAsync(
-    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip index.html main.js res/* res/snd/* res/fonts/* res/snd/foley/* res/snd/music/* res/img/* res/bg/* res/rpgscript/*`
+    `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip main.js`
   );
-  console.log(
-    await execAsync(`stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`)
-  );
-  await execAsync(`mv src.zip dist/Main.zip`);
+  await execAsync(`mv src.zip dist/main.zip`);
   const result = await execAsync(`stat -c '%n %s' dist/main.js`);
+  const resultZip = await execAsync(`stat -c '%n %s' dist/main.zip`);
   const bytes = parseInt(result.split(' ')[1]);
-  const kb13 = 13312;
-  console.log(`${bytes}b of ${kb13}b (${((bytes * 100) / kb13).toFixed(2)}%)`);
+  const bytesZip = parseInt(resultZip.split(' ')[1]);
+
+  console.log('\nmain.js: ' + bytes + 'b | zipped: ' + bytesZip + 'b');
 };
 
 build();

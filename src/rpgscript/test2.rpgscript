@@ -10,7 +10,7 @@ action,this
 action,floor1-Skye_intro
 
 #floor1-vendingPanel
-// step,?once():floor1-Skye_pressSecretSwitchWithoutTool
+// step,?once('64ab946d'):floor1-Skye_pressSecretSwitchWithoutTool
 action,floor1-Skye_pressSecretSwitchWithoutTool
 
 @floor1-intro

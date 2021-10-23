@@ -40,6 +40,8 @@ Sound,battle_fire_explosion1,foley/battle_fire_explosion1_1.mp3,1,zzfx
 Sound,battle_evasion,foley/evasion3.mp3,1,fl studio
 Sound,battle_ready,foley/battle_ready2.mp3,0.7,zzfx
 Sound,battle_staggered1,foley/battle_staggered1_2.mp3,0.9,zzfx
+Sound,battle_recovery,foley/battle_recovery.mp3,0.6,zzfx
+Sound,battle_lost,foley/battle_lost.mp3,0.6,zzfx
 Sound,dead,foley/dead3.mp3,1,jsfxr
 Sound,phone_ring,foley/phone_ring.mp3,0.7,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
 Sound,phone_beep,foley/phone_beep.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
@@ -63,6 +65,10 @@ Sound,bass_kicks,foley/bass_kicks2.mp3,1,fl studio
 Sound,robot_channel_start,foley/robot_channel_start.mp3,0.7,zzfx
 Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
 Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
+Sound,robot_clank,foley/robot_clank.mp3,0.8,https://freesound.org/people/yottasounds/sounds/175180/ Attribution
+Sound,robot_clank2,foley/robot_clank2.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
+Sound,robot_clank3,foley/robot_clank3.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
+Sound,robot_clank4,foley/robot_clank4.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
 Sound,use_item,foley/use_item.mp3,0.7,zzfx
 Sound,rez,foley/rez.mp3,1.0,fl studio
 Sound,level_up,foley/level_up.mp3,0.8,zzfx
