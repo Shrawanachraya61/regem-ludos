@@ -75,7 +75,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 +:closeDoor(MarkerDoorToAtrium2, RED_DOOR_FWDR);
 
 #floor1-atrium-desk-employee
-  action,?once():this
+  action,?once('01632453'):this
   action,floor1-atrium-desk-employee2
 @this
   +setConversation('Ada');
@@ -165,7 +165,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setConversationSpeaker(none);
   +callScript('utils-character-shake-z', 'Ada');
   Ada: "<cascade-letters=75>Battle <cascade-letters=50 scale=1.25 color=RED>MONSTERS</>?"
-  Ada: "<cascade scale=1.25>I just need to go to the second floor!"
+  Ada: "<cascade-letters=25 scale=1.15>Ijustneedtogotothesecondfloor!"
   +setConversationSpeaker(none);
   +waitMS(500);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
@@ -248,7 +248,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 
 #floor1-atrium-elevator-employee
   action,?isnot(with('Haptic Bracer')):floor1-atrium-elevator-employee-no-bracer
-  action,?all(with('Haptic Bracer'), once()):floor1-atrium-elevator-employee-with-bracer
+  action,?all(with('Haptic Bracer'), once('9019ab71')):floor1-atrium-elevator-employee-with-bracer
   action,floor1-atrium-elevator-employee-default
 @floor1-atrium-elevator-employee-default
   +lookAtEachOther('Ada', Atrium Elevator Employee);
@@ -311,7 +311,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   // haven't spoken to front desk yet
   action,?isnot(quest_floor1-atrium_acquire-haptic-bracer):floor1-atrium-employee-jason-quest-not-started
   // don't have Haptic Bracer yet
-  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once()):floor1-atrium-employee-jason-haptic-bracer
+  action,?all(isnot(quest_floor1-atrium_acquire-haptic-bracer-complete),once('a567dae3')):floor1-atrium-employee-jason-haptic-bracer
   action,floor1-atrium-employee-jason-default
 @floor1-atrium-employee-jason-haptic-bracer
   +lookAtEachOther('Ada', 'Atrium Employee Jason');
@@ -372,7 +372,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest
   action,?func(questNotStarted, TicTacToe):floor1-atrium-TicTacToeGirl-first
-  action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-rest
+  action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-not-completed-yet
   // default
   action,this
 @this
@@ -391,7 +391,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setFacing('Tic Tac Toe Girl', rightdown);
   +startQuest(TicTacToe);
   +endConversation();
-@floor1-atrium-TicTacToeGirl-rest
+@floor1-atrium-TicTacToeGirl-not-completed-yet
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
   Tic Tac Toe Girl: "<cascade>Maybe somebody should let the AI win a few games of <color=BLUE cascade>Tic-Tac-Toe<cascade>. You know, to help its self-esteem."
@@ -451,7 +451,7 @@ action,floor1-atrium-TicTacToeMachine-action
 +setAtMarker(Ada, MarkerTTTMachine);
 
 #floor1-Floor1PingPongGuyA
-  action,?once():this
+  action,?once('29678c13'):this
   action,floor1-Floor1PingPongGuyA2
 @this
   +setAiState(Floor1PingPongGuyA, pingpong_interrupted, true);
@@ -487,8 +487,8 @@ action,floor1-atrium-TicTacToeMachine-action
   +setAiState(Floor1PingPongGuyB, pingpong_reset, true);
 
 #floor1-atrium-greeter-employee
-  step-first,?once():floor1-atrium-greeter-employee-step
-  action,?once():this
+  step-first,?once('e4f5209f'):floor1-atrium-greeter-employee-step
+  action,?once('707117f7'):this
   action,floor1-atrium-greeter-employee2
 @this
   +lookAtEachOther(Ada, AtriumGreeterEmployee);
