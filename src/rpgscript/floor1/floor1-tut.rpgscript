@@ -1366,7 +1366,7 @@ Conscience: "I don't think we can run away!"
 +despawnCharacter(TutRobotRoamerBoss);
 
 #floor1-tut-VRBoss-on-victory
-step-first,?once():this
+step-first,?once('bb85db5e'):this
 @this
 // Robot explodes?
 +spawnCharacterAtMarker(Floor1AtriumEmployeeJason2, MarkerJason2);
@@ -1383,11 +1383,11 @@ Jason: "Remind me to avoid challenging you to a duel in the future."
 +lookAtCharacter(Conscience, Ada);
 +:angry(Ada);
 Ada: "<cascade-letters>Will you, <scale=1.25 cascade-letters>PLEASE<cascade-letters> just remove this barrier?"
-+smallPause();
++:smallPause();
 +lookAtCharacter(Conscience, Jason);
 +:surprised(Conscience);
 Conscience: "I think you better do what she says.  She actually seems kinda angry."
-+shakeZ(Jason);
++:shakeZ(Jason);
 +:teardrop(Jason);
 Jason: "Um yes.<delay=200> Of course.<delay=200> Right away."
 +none();
@@ -1427,7 +1427,7 @@ Conscience: "<scale=0.75 cascade>I wasn't gonna..."
 +:utils-stop-Conscience-dialogue();
 +endConversation();
 
-#floor1-tut-BartoloAppearance
+@floor1-tut-BartoloAppearance
 +setConversation(Bartolo);
 +waitMS(750);
 +playSound('spawn_enemy');
@@ -1436,7 +1436,7 @@ Conscience: "<scale=0.75 cascade>I wasn't gonna..."
 Bartolo: "<cascade-letters>How very intriguing..."
 +none();
 +jump(Bartolo);
-+lookAroundFast(Bartolo);
++:lookAroundFast(Bartolo);
 +walkToMarker(Bartolo, MarkerBartolo1);
 +:bumpX(Bartolo, -2);
 +playSound('terminal_beep');
@@ -1446,7 +1446,7 @@ Bartolo: "<cascade-letters>How very intriguing..."
 +walkToMarker(Bartolo, MarkerBartolo4);
 +walkToMarker(Bartolo, MarkerBartolo5);
 +walkToMarker(Bartolo, MarkerBartolo6);
-+lookAroundFast(Bartolo);
++:lookAroundFast(Bartolo);
 +:bumpZ(Bartolo, -2);
 +playSound('terminal_beep');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBartoloTerminal, normal);

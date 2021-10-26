@@ -165,7 +165,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setConversationSpeaker(none);
   +callScript('utils-character-shake-z', 'Ada');
   Ada: "<cascade-letters=75>Battle <cascade-letters=50 scale=1.25 color=RED>MONSTERS</>?"
-  Ada: "<cascade scale=1.25>I just need to go to the second floor!"
+  Ada: "<cascade-letters=25 scale=1.15>Ijustneedtogotothesecondfloor!"
   +setConversationSpeaker(none);
   +waitMS(500);
   +setAnimationAndWait('Atrium Desk Employee', employee-girl_ovr_nod_rightup);
@@ -372,7 +372,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 #floor1-atrium-TicTacToeGirl
   // if you haven't beat the tic-tac-toe quest
   action,?func(questNotStarted, TicTacToe):floor1-atrium-TicTacToeGirl-first
-  action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-rest
+  action,?func(questStepEQ, TicTacToe, 0):floor1-atrium-TicTacToeGirl-not-completed-yet
   // default
   action,this
 @this
@@ -391,7 +391,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +setFacing('Tic Tac Toe Girl', rightdown);
   +startQuest(TicTacToe);
   +endConversation();
-@floor1-atrium-TicTacToeGirl-rest
+@floor1-atrium-TicTacToeGirl-not-completed-yet
   +lookAtEachOther('Ada', 'Tic Tac Toe Girl');
   +setConversation('Ada');
   Tic Tac Toe Girl: "<cascade>Maybe somebody should let the AI win a few games of <color=BLUE cascade>Tic-Tac-Toe<cascade>. You know, to help its self-esteem."
