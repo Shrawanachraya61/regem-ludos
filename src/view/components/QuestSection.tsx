@@ -12,7 +12,7 @@ import {
   getConfirmKey,
   getConfirmKeyLabel,
 } from 'controller/events';
-import { useState } from 'lib/preact-hooks';
+import { useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 import {
   saveGame,

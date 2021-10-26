@@ -12,7 +12,7 @@ import {
   getCancelKeyLabel,
   getAuxKeyLabel,
 } from 'controller/events';
-import { useEffect, useState, useCallback } from 'lib/preact-hooks';
+import { useEffect, useState, useCallback } from 'preact/hooks';
 import { getUiInterface } from 'view/ui';
 import { playSoundName } from 'model/sound';
 import {

@@ -28,5 +28,5 @@ export default async (scene: Scene) => {
   initBattleActions();
   initSaves();
   await initScripts(scene);
-  await initOverworlds();
+  initOverworlds();
 };

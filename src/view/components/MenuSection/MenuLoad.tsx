@@ -6,7 +6,7 @@ import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize } from 'view/elements/Card';
 import { pause, unpause } from 'controller/loop';
 import { isCancelKey, getCancelKeyLabel } from 'controller/events';
-import { useState } from 'lib/preact-hooks';
+import { useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 import {
   saveGame,

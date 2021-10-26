@@ -10,7 +10,7 @@ import {
   SwingType,
 } from 'controller/battle-actions';
 import { BattleCharacter } from 'model/battle-character';
-import { useEffect, useRef, useState } from 'lib/preact-hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import {
   useBattleSubscriptionWithBattleCharacter,
   useReRender,

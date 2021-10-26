@@ -24,7 +24,7 @@ import {
 } from 'model/battle';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { renderUi } from 'view/ui';
-import { useState } from 'lib/preact-hooks';
+import { useState } from 'preact/hooks';
 import MeleeTargetIcon from 'view/icons/TargetMelee';
 import RangeTargetIcon from 'view/icons/Target';
 import ArmorIcon from 'view/icons/Armor';
@@ -123,9 +123,10 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
   const bCh = props.bCh;
   const battle = getCurrentBattle();
 
-  const [currentlyActingAllegiance, setCurrentlyActingAllegiance] = useState(
-    null
-  );
+  const [
+    currentlyActingAllegiance,
+    setCurrentlyActingAllegiance,
+  ] = useState<BattleAllegiance | null>(null);
   useBattleSubscription(
     getCurrentBattle(),
     BattleEvent.onTurnStarted,

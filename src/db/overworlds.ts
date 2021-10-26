@@ -70,26 +70,27 @@ const overworldToRoom = {
   bowlingAlleyStandalone,
 };
 
-const loadRoom = async (roomName: string, json: any) => {
-  rooms[roomName] = await createRoom(roomName, json);
+const loadRoom = (roomName: string, json: any) => {
+  rooms[roomName] = createRoom(roomName, json);
 };
 
 export const loadRooms = async (): Promise<void> => {
   console.log('loading rooms');
 
-  await loadRoom('test', testJson);
-  await loadRoom('test2', test2Json);
+  loadRoom('test', testJson);
+  loadRoom('test2', test2Json);
 
   for (const roomName in overworldToRoom) {
-    await loadRoom(roomName, overworldToRoom[roomName]);
+    loadRoom(roomName, overworldToRoom[roomName]);
   }
 
-  console.log('rooms loaded', rooms);
+  console.log('rooms loaded');
 };
 
 export const getRoom = (mapName: string): Room => {
   const room = rooms[mapName];
   if (!room) {
+    console.log(Object.keys(rooms));
     throw new Error(`No room exists with name: "${mapName}"`);
   }
   return roomCopy(room);
@@ -120,8 +121,6 @@ export const getIfExists = (key: string): OverworldTemplate | null => {
 };
 
 export const init = async () => {
-  await loadRooms();
-
   const STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM = new Transform(
     [0, 0, 0],
     [-684, 0, 0],
@@ -210,4 +209,6 @@ export const init = async () => {
       exp[name].music = undefined;
     }
   });
+
+  return loadRooms();
 };

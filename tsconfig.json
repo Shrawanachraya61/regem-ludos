@@ -33,5 +33,6 @@
   "references": [],
   "include": [
     "src/**/*",
+    "test/**/*"
   ]
 }

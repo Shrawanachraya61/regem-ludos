@@ -30,7 +30,7 @@ import TopBar, { TopBarButtons } from './TopBar';
 import { hexToRGBA } from 'utils';
 import { ItemStatus } from 'model/character';
 import { getIcon } from 'view/icons';
-import { keyframes } from 'lib/picostyle';
+import { keyframes } from 'picostyle';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -155,7 +155,7 @@ const slowBlink = keyframes({
   '100%': {
     opacity: '1',
   },
-});
+} as any);
 const StatusIconContainer = style('div', (props: { blink: boolean }) => {
   return {
     animation: props.blink ? `${slowBlink} 1000ms linear infinite` : 'unset',
