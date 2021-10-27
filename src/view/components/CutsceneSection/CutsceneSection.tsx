@@ -33,6 +33,7 @@ import {
   getCurrentBattle,
   getCurrentRoom,
   getCurrentScene,
+  getCutsceneSpeedMultiplier,
   isKeyDown,
 } from 'model/generics';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
@@ -491,7 +492,7 @@ const renderTextboxHtml = async (
       timeoutId = setTimeout(() => {
         cb();
         resolve();
-      }, ms) as any;
+      }, ms * (1 / getCutsceneSpeedMultiplier())) as any;
     }).catch(() => {
       clearTimeout(timeoutId);
     });
@@ -544,8 +545,8 @@ const renderTextboxHtml = async (
     textBox.style.opacity = '0';
     textBox.style.height = 'unset';
     textBox.innerHTML = resultInnerHTML;
-    // HACK: hope that the textbox updates its render in 100ms, otherwise you're SOL
-    await setTimeoutPromise(() => {}, 250);
+    // HACK: hope that the textbox updates its render in 200ms, otherwise you're SOL
+    await setTimeoutPromise(() => {}, 200);
     const boundingRect = textBox.getBoundingClientRect();
     // textBox.style.height = '0px';
     // textBox.style.transition = 'opacity 0.15s linear, height 0.15s linear';

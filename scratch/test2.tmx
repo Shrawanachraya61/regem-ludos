@@ -147,7 +147,7 @@
   <object id="75" name="TestDialogA" gid="193" x="44" y="540" width="32" height="32"/>
   <object id="76" name="TestDialogD" gid="193" x="94" y="524" width="32" height="32"/>
   <object id="77" name="Shopkeep" gid="193" x="449.25" y="33.75" width="32" height="32"/>
-  <object id="78" name="MarkerPlayer" gid="194" x="370" y="506" width="32" height="32"/>
+  <object id="78" name="MarkerPlayer" gid="194" x="212.5" y="465.5" width="32" height="32"/>
   <object id="79" name="#test-ada-sigma-shopkeep" x="407.937" y="14.9375" width="73.125" height="69.125"/>
   <object id="80" name="MarkerAdaShopkeep" gid="194" x="457" y="82.3333" width="32" height="32"/>
  </objectgroup>

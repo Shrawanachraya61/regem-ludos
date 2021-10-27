@@ -68,6 +68,7 @@ import {
   addCharacterWithSuspendedAi,
   setOverworldUpdateKeysDisabled,
   isKeyDown,
+  getCutsceneSpeedMultiplier,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -475,7 +476,10 @@ export const waitMS = (ms: number, cb?: () => void) => {
     }
     scene.waitTimeoutCb = null;
   };
-  scene.waitTimeoutId = setTimeout(scene.waitTimeoutCb, ms) as any;
+  scene.waitTimeoutId = setTimeout(
+    scene.waitTimeoutCb,
+    ms * (1 / getCutsceneSpeedMultiplier())
+  ) as any;
   return true;
 };
 
@@ -523,7 +527,10 @@ export const waitMSPreemptible = (ms: number, cb: () => void) => {
   };
   scene.isWaitingForTime = true;
   clearTimeout(scene.waitTimeoutId);
-  scene.waitTimeoutId = setTimeout(_cb, ms) as any;
+  scene.waitTimeoutId = setTimeout(
+    _cb,
+    ms * (1 / getCutsceneSpeedMultiplier())
+  ) as any;
   return true;
 };
 

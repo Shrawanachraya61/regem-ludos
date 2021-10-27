@@ -7,6 +7,8 @@ export const enableConsole = () => {
     error: originalConsole.error,
     warn: originalConsole.warn,
     debug: originalConsole.debug,
+    time: originalConsole.time,
+    timeEnd: originalConsole.timeEnd,
   };
 };
 
@@ -16,6 +18,8 @@ export const disableConsole = () => {
     error: () => {},
     warn: () => {},
     debug: () => {},
+    time: originalConsole.time,
+    timeEnd: originalConsole.timeEnd,
   };
 };
 

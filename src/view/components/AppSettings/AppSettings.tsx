@@ -1,5 +1,10 @@
 /* @jsx h */
-import { getVolume, setVolume } from 'model/generics';
+import {
+  getCutsceneSpeedMultiplier,
+  getVolume,
+  setCutsceneSpeedMultiplier,
+  setVolume,
+} from 'model/generics';
 import { playSound, playSoundName, SoundType } from 'model/sound';
 import { h } from 'preact';
 import Card, { CardSize } from 'view/elements/Card';
@@ -7,7 +12,7 @@ import Button, { ButtonType } from 'view/elements/Button';
 import { useReRender } from 'view/hooks';
 import { colors, style } from 'view/style';
 
-const VolumeArea = style('div', () => {
+const SettingsArea = style('div', () => {
   return {
     color: colors.WHITE,
     fontSize: '16px',
@@ -40,13 +45,20 @@ const AppSettings = () => {
   const handleVolumeSliderClick = (soundType: SoundType) => {
     setTimeout(() => playSoundName('aggro_alert', getVolume(soundType)), 25);
   };
+  const handleCutsceneSpeedChange = (value: number) => {
+    console.log('set cutscene speed', value);
+    setCutsceneSpeedMultiplier(value);
+    render();
+  };
 
   const volumeNormal = getVolume(SoundType.NORMAL);
   const volumeMusic = getVolume(SoundType.MUSIC);
 
+  const cutsceneSpeed = getCutsceneSpeedMultiplier();
+
   return (
     <Card size={CardSize.ADAPTIVE}>
-      <VolumeArea>
+      <SettingsArea>
         <h2>Volume Settings</h2>
         <div>
           <label name="generic-volume">
@@ -86,7 +98,29 @@ const AppSettings = () => {
             onMouseUp={() => handleVolumeSliderClick(SoundType.MUSIC)}
           ></input>
         </div>
-      </VolumeArea>
+      </SettingsArea>
+      <SettingsArea>
+        <h2>Game Settings</h2>
+        <div>
+          <label name="cutscene-speed">
+            Cutscene Speed - {Math.floor(cutsceneSpeed * 100)}%
+          </label>
+          <input
+            style={{
+              width: '100%',
+            }}
+            value={cutsceneSpeed}
+            type="range"
+            step={0.05}
+            min={0.5}
+            max={2.0}
+            onChange={(ev: any) =>
+              handleCutsceneSpeedChange(ev?.target?.value ?? 1)
+            }
+            // onMouseUp={() => handleCutsceneSpeedClick()}
+          ></input>
+        </div>
+      </SettingsArea>
     </Card>
   );
 };

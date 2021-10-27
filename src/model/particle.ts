@@ -9,7 +9,7 @@ import { Point, truncatePoint3d, getRandBetween } from 'utils';
 import { SpriteModification } from './sprite';
 import { DrawTextParams, DEFAULT_TEXT_PARAMS, measureText } from 'view/draw';
 import { TILE_HEIGHT, TILE_WIDTH } from './room';
-import { getFrameMultiplier } from './generics';
+import { getCutsceneSpeedMultiplier, getFrameMultiplier } from './generics';
 import { EmotionBubble, get as getParticle } from 'db/particles';
 import { Character } from './character';
 
@@ -205,7 +205,9 @@ export const createEmotionBubbleParticle = (
   ch: Character,
   emotion: EmotionBubble
 ) => {
-  const template = getParticle('EFFECT_TEMPLATE_EMOTION_BUBBLE');
+  const template = { ...getParticle('EFFECT_TEMPLATE_EMOTION_BUBBLE') };
+  template.duration =
+    (template.duration as number) * (1 / getCutsceneSpeedMultiplier());
   const particle = particleCreateFromTemplate([0, 0], template);
   particle.meta.ch = ch;
   particle.meta.emotion = emotion;

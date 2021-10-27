@@ -7,6 +7,7 @@ import { Character } from 'model/character';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { useEffect, useRef } from 'preact/hooks';
 import { timeoutPromise } from 'utils';
+import { getCutsceneSpeedMultiplier } from 'model/generics';
 
 export enum EmotionBubble {
   EXCLAMATION = 'exclaim',
@@ -61,9 +62,6 @@ const dialogBubbleClose = keyframes({
     transform: 'scale(0)',
   },
 });
-// const dialogBubble = () => {
-
-// }
 
 export const init = () => {
   const EFFECT_TEMPLATE_SWORD_LEFT: ParticleTemplate = {
@@ -213,10 +211,12 @@ export const init = () => {
       const emotion: EmotionBubble = props.particle.meta.emotion;
       /* eslint-disable-next-line react-hooks/rules-of-hooks */
       const ref: any = useRef();
-      const transitionDuration = 100;
+      const transitionDuration = 100 * (1 / getCutsceneSpeedMultiplier());
       /* eslint-disable-next-line react-hooks/rules-of-hooks */
       useEffect(() => {
-        timeoutPromise(750 - transitionDuration).then(() => {
+        timeoutPromise(
+          750 * (1 / getCutsceneSpeedMultiplier()) - transitionDuration
+        ).then(() => {
           ref.current.style.animation = `${dialogBubbleClose} ${transitionDuration}ms linear`;
         });
       }, []);

@@ -20,7 +20,7 @@ const MenuWrapper = style('div', (props: { dark?: boolean }) => {
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: '2',
-    pointerEvents: 'none',
+    // pointerEvents: 'none',
     background: props.dark ? 'rgba(0, 0, 0, 0.5)' : 'unset',
   };
 });
