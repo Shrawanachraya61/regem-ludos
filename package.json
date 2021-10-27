@@ -10,7 +10,7 @@
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --sourceMap false && node scripts/build src",
     "build:iframes": "yarn --cwd ./iframes build && mkdir -p dist/iframes/ && cp -r ./iframes/dist/* dist/iframes/",
-    "build:rpgscript": "yarn once-keys && cp --verbose -r src/rpgscript/* res/rpgscript/",
+    "build:rpgscript": "yarn once-keys && cp -v -r src/rpgscript/* res/rpgscript/",
     "once-keys": "node scripts/once-keys",
     "docs": "typedoc src/controller/scene-commands.ts --out dist/docs --theme minimal",
     "tsc": "tsc -v",
