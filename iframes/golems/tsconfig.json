@@ -4,11 +4,11 @@
     "target": "ES2018",
     "outFile": "main.js",
     "allowJs": true,
+    "moduleResolution": "node",
     "lib": [
       "dom",
       "ES2018"
     ],
-    "removeComments": true,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
@@ -20,6 +20,6 @@
     "node_modules"
   ],
   "include": [
-    "./src"
+    "src"
   ]
 }

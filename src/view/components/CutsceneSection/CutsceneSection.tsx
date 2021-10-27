@@ -880,7 +880,7 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
               opacity: '0',
               transition: 'unset',
             }}
-            ref={textBoxRef}
+            ref={textBoxRef as any}
           >
             {/* Text fades via a useEffect hook */}
             {props.renderImmediate ? cutscene.text : undefined}

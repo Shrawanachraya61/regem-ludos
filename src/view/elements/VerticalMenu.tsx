@@ -427,7 +427,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
         )}
       </MenuItemWrapper>
       <div
-        ref={menuRef}
+        ref={menuRef as any}
         style={{
           width: '100%',
           height: props.maxHeight ?? 'unset',
