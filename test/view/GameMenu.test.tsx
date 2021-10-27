@@ -1,10 +1,5 @@
 import { h } from 'preact';
 import { render } from '@testing-library/preact';
-import { useState, useReducer } from 'preact/hooks';
-
-import { AppStateInitial } from '../../src/model/store';
-import { appReducer } from 'controller/ui-actions';
-import { setUiInterface } from 'view/ui';
 import {
   getCurrentPlayer,
   setCurrentOverworld,
@@ -16,26 +11,12 @@ import { playerCreateNew } from 'model/player';
 import { initiateOverworld } from 'controller/overworld-management';
 import { get as getOverworld } from 'db/overworlds';
 
+import { AppShim } from '../helpers/AppShim';
+
 import MenuMain from 'view/components/MenuSection/MenuMain';
 import { sceneCreate } from 'model/scene';
 import initDb from 'db';
 import MenuStatus from 'view/components/MenuSection/MenuStatus';
-
-const AppShim = props => {
-  const [render, setRender] = useState(false);
-  const [appState, dispatch] = useReducer(appReducer, AppStateInitial);
-  setUiInterface(
-    ((window as any).uiInterface = {
-      appState,
-      render: () => {
-        setRender(!render);
-      },
-      dispatch,
-    })
-  );
-
-  return <div id="app-root">{props.children}</div>;
-};
 
 beforeAll(async () => {
   const scene = sceneCreate();

@@ -1,20 +1,28 @@
 import fetchMock from 'jest-fetch-mock';
 import fs from 'fs';
 
-jest.mock('preact/hooks', () => {
-  return {
-    useState: defaultValue => {
-      return [defaultValue];
-    },
-    useReducer: () => {
-      return [{}];
-    },
-    useEffect: () => {},
-    useRef: () => {
-      return null;
-    },
-  };
-});
+import { initConsole, disableConsole } from '../src/view/console';
+
+initConsole();
+disableConsole();
+
+jest.mock('preact/hooks', () => ({
+  ...jest.requireActual('preact/hooks'),
+  useEffect: jest.fn(),
+}));
+
+// jest.mock('preact/hooks', () => {
+//   return {
+//     useState: defaultValue => {
+//       return [defaultValue];
+//     },
+//     useReducer: useReducer,
+//     useEffect: () => {},
+//     useRef: () => {
+//       return null;
+//     },
+//   };
+// });
 
 import * as animsImport from 'model/animation';
 const anims = animsImport as any;
