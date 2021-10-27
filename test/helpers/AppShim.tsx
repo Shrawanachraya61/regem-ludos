@@ -1,12 +1,15 @@
 import { h } from 'preact';
 import { appReducer } from 'controller/ui-actions';
-import { AppStateInitial } from 'model/store';
+import { AppState, AppStateInitial } from 'model/store';
 import { useReducer, useState } from 'preact/hooks';
 import { setUiInterface } from 'view/ui';
 
-export const AppShim = props => {
+export const AppShim = (props: { state?: AppState; children?: any }) => {
   const [render, setRender] = useState(false);
-  const [appState, dispatch] = useReducer(appReducer, AppStateInitial);
+  const [appState, dispatch] = useReducer(
+    appReducer,
+    props.state ?? AppStateInitial
+  );
   setUiInterface(
     ((window as any).uiInterface = {
       appState,
@@ -17,5 +20,5 @@ export const AppShim = props => {
     })
   );
 
-  return <div id="app-root">{props.children}</div>;
+  return <div id="test-app-root">{props.children}</div>;
 };

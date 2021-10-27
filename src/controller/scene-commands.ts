@@ -200,9 +200,16 @@ export const playDialogue = (
     actorName
   );
 
-  return waitMS(150, () => {
+  const cb = () => {
     waitForUserInputDialog();
-  });
+  };
+
+  if ((window as any).TEST) {
+    cb();
+    return true;
+  }
+
+  return waitMS(150, cb);
 };
 
 /**
@@ -260,6 +267,10 @@ export const setConversation2 = (
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
   );
+  if (ms === 0) {
+    return;
+  }
+
   return waitMS(ms ?? 500);
 };
 
@@ -296,7 +307,7 @@ export const setConversation2 = (
  *
  *
  */
-export const setConversation = (actorName: string) => {
+export const setConversation = (actorName: string, ms?: number) => {
   const appState = getUiInterface().appState;
   if (appState.cutscene.visible) {
     // HACK.  Sometimes setConversation is called multiple times in a row and messes up
@@ -306,20 +317,30 @@ export const setConversation = (actorName: string) => {
     }
     setCutsceneText('');
     setConversationSpeaker(CutsceneSpeaker.None);
-    return waitMS(200, () => {
+    const cb = () => {
       startConversation(`${actorName.toLowerCase()}`, true);
       playSoundName('dialog_woosh');
-    });
+    };
+    if (ms === 0) {
+      return cb();
+    }
+    return waitMS(200, cb);
   } else {
     startConversation(`${actorName.toLowerCase()}`, true);
     playSoundName('dialog_woosh');
+    if (ms === 0) {
+      return undefined;
+    }
     return waitMS(100);
   }
 };
 
-export const setConversationWithoutBars = (actorName: string) => {
+export const setConversationWithoutBars = (actorName: string, ms?: number) => {
   startConversation(`${actorName.toLowerCase()}`, false);
   playSoundName('dialog_woosh');
+  if (ms === 0) {
+    return undefined;
+  }
   return waitMS(100);
 };
 
@@ -334,11 +355,19 @@ export const setConversationWithoutBars = (actorName: string) => {
 export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
-  return waitMS(ms ?? 500, () => {
-    if (dontHideCutscene === undefined || dontHideCutscene === false) {
+  const cb = () => {
+    if (
+      (dontHideCutscene === undefined || dontHideCutscene === false) &&
+      !getCurrentBattle()
+    ) {
       showSection(AppSection.Debug, true);
     }
-  });
+  };
+  if (ms === 0) {
+    return cb();
+  }
+
+  return waitMS(ms ?? 500, cb);
 };
 
 /**
@@ -533,6 +562,7 @@ const waitForUserInput = (cb?: () => void) => {
       case 'Enter':
       case 'x':
       case 'X':
+      case 'KeyX':
       case ' ': {
         inputDisabled = true;
         clearTimeout(scene.waitTimeoutId);
@@ -581,13 +611,19 @@ const waitForUserInputDialog = (cb?: () => void) => {
       case 'Enter':
       case 'x':
       case 'X':
+      case 'KeyX':
       case ' ': {
         inputDisabled = true;
         playSoundName('dialog_select');
-        setTimeout(() => {
+        if ((window as any).TEST) {
           clearTimeout(scene.waitTimeoutId);
           _cb();
-        }, 100);
+        } else {
+          setTimeout(() => {
+            clearTimeout(scene.waitTimeoutId);
+            _cb();
+          }, 100);
+        }
         break;
       }
     }
@@ -2007,7 +2043,7 @@ export const awaitChoice = (...choices: string[]) => {
   return waitUntil();
 };
 
-export const enterCombat = (encounterName: string) => {
+export const enterCombat = (encounterName: string, skipIntro?: boolean) => {
   const encounter = getEncounter(encounterName);
   if (!encounter) {
     console.error('No encounter exists with name:', encounterName);
@@ -2029,7 +2065,7 @@ export const enterCombat = (encounterName: string) => {
       leaderFacing,
       encounter
     ),
-    false
+    skipIntro ?? false
   );
 };
 

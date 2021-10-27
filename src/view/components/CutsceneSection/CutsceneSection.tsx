@@ -603,7 +603,7 @@ const renderTextboxHtml = async (
   }
 };
 
-const CutsceneSection = () => {
+const CutsceneSection = (props: { renderImmediate?: boolean }) => {
   const [barsVisible, setBarsVisible] = useState(false);
   const [isSkipping, setIsSkipping] = useState(false);
   const textBoxRef = useRef<null | HTMLDivElement>(null);
@@ -882,9 +882,8 @@ const CutsceneSection = () => {
             }}
             ref={textBoxRef}
           >
-            {/* Is it stupid that this must be commented out for the text to fade properly? */}
-            {/* Yes, Other Ben, yes it is. */}
-            {/* {cutscene.text} */}
+            {/* Text fades via a useEffect hook */}
+            {props.renderImmediate ? cutscene.text : undefined}
           </div>
           <TalkIconContainer
             id="talk-icon"

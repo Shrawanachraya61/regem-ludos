@@ -5,10 +5,19 @@ import { initConsole, disableConsole } from '../src/view/console';
 
 initConsole();
 disableConsole();
+(window as any).TEST = true;
 
 jest.mock('preact/hooks', () => ({
   ...jest.requireActual('preact/hooks'),
   useEffect: jest.fn(),
+}));
+
+jest.mock('model/sound', () => ({
+  ...jest.requireActual('model/sound'),
+  playSound: jest.fn(),
+  playSoundName: jest.fn(),
+  getCurrentMusic: jest.fn(),
+  stopCurrentMusic: jest.fn(),
 }));
 
 // jest.mock('preact/hooks', () => {
@@ -40,7 +49,7 @@ fetchMock.mockResponse(async req => {
   if (/res.txt/.test(req.url)) {
     respText = fs.readFileSync(__dirname + '/../' + req.url).toString();
   }
-  console.log('MOCK RESPONSE', req.url);
+  // console.log('MOCK RESPONSE', req.url);
 
   return respText;
 });
