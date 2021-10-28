@@ -35,7 +35,7 @@ describe('Cutscene', () => {
   // console.log(wrapper.container.textContent);
   // disableConsole();
 
-  test('Cutscene render.', async () => {
+  test('The CutsceneSection component renders in tests without errors', async () => {
     const wrapper = render(
       <AppShim
         state={{
@@ -54,7 +54,7 @@ describe('Cutscene', () => {
     expect(wrapper.container.textContent).toMatch('Example text.');
   });
 
-  test('Cutscene speaker.', async () => {
+  test("The CutsceneSection component displays a speaker's name with their dialogue", async () => {
     const wrapper = render(
       <AppShim
         state={{

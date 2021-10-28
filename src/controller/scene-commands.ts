@@ -705,7 +705,10 @@ export const lookAtCharacter = (chName: string, targetChName: string) => {
     return;
   }
   if (!ch2) {
-    console.error('Could not find target character with name: ' + targetChName);
+    console.error(
+      'Could not find target character to lookAtCharacter with name: ' +
+        targetChName
+    );
     return;
   }
 
@@ -1408,7 +1411,10 @@ export const spawnCharacterAtCharacter = (
     return;
   }
   if (!ch) {
-    console.error('Could not find target character with name: ' + chName);
+    console.error(
+      'Could not find target character to spawnCharacterAtCharacter with name: ' +
+        chName
+    );
     return;
   }
   if (xOffset !== undefined && typeof xOffset !== 'number') {
@@ -2486,7 +2492,7 @@ const completeQuestStep = (questName: string, stepInd: number) => {
     });
     return waitUntil();
   } else {
-    showNotification('Your journal has been updated');
+    showNotification('Your journal has been updated.');
   }
 };
 

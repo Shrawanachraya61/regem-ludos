@@ -91,14 +91,19 @@ export const completeQuestStep = (
     if (questIsActive(scene, quest)) {
       for (let i = 0; i < quest.steps.length; i++) {
         const step = quest.steps[i];
-        if (!scene.storage[step.completedScriptKey]) {
-          scene.storage[step.completedScriptKey] = true;
+        if (!scene.storage[step.completedScriptKey as string]) {
+          scene.storage[step.completedScriptKey as string] = true;
           if (i < quest.steps.length - 1) {
             return;
           }
         }
       }
       completeQuest(scene, questName);
+    } else {
+      console.error(
+        `cannot completeQuestStep ${ind}, quest is not active:`,
+        questName
+      );
     }
   } else {
     console.error('cannot completeQuestStep, quest not found:', questName);
@@ -111,7 +116,7 @@ export const getCurrentQuestStep = (scene: Scene, questName: string) => {
     if (questIsActive(scene, quest)) {
       for (let i = 0; i < quest.steps.length; i++) {
         const step = quest.steps[i];
-        if (!scene.storage[step.completedScriptKey]) {
+        if (!scene.storage[step.completedScriptKey as string]) {
           return {
             i,
             ...step,

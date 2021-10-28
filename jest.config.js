@@ -7,4 +7,5 @@ module.exports = {
   testPathIgnorePatterns: ['node_modules', 'iframes'],
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/test/mocksSetup.ts'],
+  coveragePathIgnorePatterns: ['node_modules', 'view/icons', 'lib/', 'test/'],
 };
