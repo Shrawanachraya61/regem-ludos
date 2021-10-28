@@ -847,6 +847,7 @@ Conscience: "Bingo!"
 Conscience: "C'mon.  Try it out!"
 +panCameraBackToPlayer();
 +:utils-stop-Conscience-dialogue();
++completeQuestStep(Tutorial, 1);
 +endConversation();
 
 // VR3 SECTION ---------------------------------------------------------------------------
@@ -1138,6 +1139,7 @@ Conscience: "We just have to find a way over there!"
 +panCameraBackToPlayer();
 +enableAnimationSounds();
 +:utils-stop-Conscience-dialogue();
++completeQuestStep(Tutorial, 2);
 +endConversation();
 
 #floor1-tut-transition-from-VRPreBoss-to-VRBoss
@@ -1433,7 +1435,7 @@ Conscience: "<scale=0.75 cascade>I wasn't gonna..."
 +playSound('spawn_enemy');
 +spawnCharacterAtMarker(Bartolo, MarkerBartolo3)
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, Bartolo, normal);
-Bartolo: "<cascade-letters=25>How very intriguing..."
+Bartolo: "<cascade-letters=25>An intriguing specimen, for certain."
 +none();
 +jump(Bartolo);
 +:lookAroundFast(Bartolo);
@@ -1451,6 +1453,21 @@ Bartolo: "<cascade-letters=25>How very intriguing..."
 +playSound('terminal_beep');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBartoloTerminal, normal);
 
+#floor1-tut-VR-exit-portal
+step-first,this
+action,floor1-tut-VR-exit-portal-action
+@this
++callScript('utils-vr-step');
+@floor1-tut-VR-exit-portal-action
++setConversation(Ada);
++callScript('utils-transition-to-vr', 'floor1Atrium', 'MarkerPlayer', true);
++endConversation();
++callScript('floor1-tut-completed-tutorial');
+
+@floor1-tut-completed-tutorial
++:utils-start-Conscience-dialogue(true);
++completeQuestStep(Tutorial, 3);
++endConversation();
 
 @test-tut-battle
 +enterCombat(ENCOUNTER_TUT_BOSS);
