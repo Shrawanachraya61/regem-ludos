@@ -33,7 +33,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
     label: 'Mandatory Tutorial',
     summary: 'Complete the Regem Ludos tutorial.',
     description:
-      'The Regem Ludos arcade requires a tutorial before they will allow anyone to ascend to the further floors.',
+      'The Regem Ludos arcade requires the completion of a tutorial before anyone is allowed to ascend to further floors.',
     questStartScriptKey: 'quest_tutorial_active',
     questEndScriptKey: 'quest_tutorial_complete',
     steps: [

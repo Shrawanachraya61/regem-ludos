@@ -35,7 +35,7 @@ describe('Cutscene', () => {
   // console.log(wrapper.container.textContent);
   // disableConsole();
 
-  test('The CutsceneSection component renders in tests without errors', async () => {
+  test('The CutsceneSection component renders without errors', async () => {
     const wrapper = render(
       <AppShim
         state={{
