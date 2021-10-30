@@ -75,7 +75,7 @@ export const init = () => {
     name: 'Atrium Elevator Employee',
     spriteBase: 'employee-guy',
     talkTrigger: 'floor1-atrium-elevator-employee',
-    facing: Facing.LEFT_DOWN,
+    facing: Facing.RIGHT_DOWN,
     animationState: AnimationState.IDLE,
   };
 
@@ -159,7 +159,7 @@ export const init = () => {
   exp.FloorAtriumWalkingNPC = {
     name: 'FloorAtriumWalkingNPC',
     nameLabel: 'Walking Boy',
-    spriteBase: 'guy6',
+    spriteBase: 'guy8',
     talkTrigger: 'floor1-AtriumWalkingNPC',
     facing: Facing.LEFT_UP,
     animationState: AnimationState.IDLE,

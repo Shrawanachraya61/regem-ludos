@@ -74,7 +74,7 @@ Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling
   +:begin-bowling();
 }
 +?eq(lastChoiceIndex, 1):{
-  +none()
+  +none();
   +setAnimationAndWait('Ada', 'ada_shake_head_down');
   Ada: "I am just looking around."
   Floor1BowlingEmployee: "Okay, come back if you change your mind.  We're always open!"

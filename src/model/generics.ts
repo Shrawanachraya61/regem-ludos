@@ -256,3 +256,9 @@ export const setCutsceneSpeedMultiplier = (v: number) => {
 export const getCutsceneSpeedMultiplier = () => {
   return cutsceneSpeed;
 };
+
+let cutsceneSkipEnabled = true;
+export const setCutsceneSkipEnabled = (v: boolean) => {
+  cutsceneSkipEnabled = v;
+};
+export const isCutsceneSkipEnabled = () => cutsceneSkipEnabled;

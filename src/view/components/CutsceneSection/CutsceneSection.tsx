@@ -34,6 +34,7 @@ import {
   getCurrentRoom,
   getCurrentScene,
   getCutsceneSpeedMultiplier,
+  isCutsceneSkipEnabled,
   isKeyDown,
 } from 'model/generics';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
@@ -722,7 +723,8 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
         !isSkipping &&
         !skipConfirmVisible &&
         !getCurrentBattle() &&
-        cutscene.showBars !== false
+        cutscene.showBars !== false &&
+        isCutsceneSkipEnabled()
       ) {
         showSkipConfirmModal();
       }
@@ -773,6 +775,13 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     skipConfirmVisible
   );
 
+  const skipCutsceneEnabled =
+    !isSkipping &&
+    !skipConfirmVisible &&
+    !getCurrentBattle() &&
+    cutscene.showBars !== false &&
+    isCutsceneSkipEnabled();
+
   return (
     <Root
       id="cutscene-root"
@@ -799,9 +808,16 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
         }}
       >
         <TopBar
-          buttons={[TopBarButtons.SETTINGS]}
+          buttons={[TopBarButtons.SETTINGS, TopBarButtons.SKIP_CUTSCENE]}
           onSettingsClick={() => {}}
           onSettingsClose={handleSettingsClose}
+          onSkipClick={
+            skipCutsceneEnabled
+              ? () => {
+                  showSkipConfirmModal();
+                }
+              : undefined
+          }
         ></TopBar>
       </div>
       <PortraitWrapper visible={cutscene.visible && barsVisible}>

@@ -403,6 +403,13 @@ export class ScriptParser {
     };
   }
 
+  createAllConditional(...args: (Conditional | boolean)[]): Conditional {
+    return {
+      type: 'all',
+      args: [...args],
+    };
+  }
+
   getConditionalFromLine(
     line: string,
     lineNum: number,
@@ -477,6 +484,7 @@ export class ScriptParser {
     let currentScript: Script | null = null;
     let currentTrigger: Trigger | null = null;
     let currentTriggerName: string | null = null;
+    const conditionalStack: (Conditional | boolean)[] = [];
     const lines = src.split('\n');
 
     lines.forEach((line: string, lineNum: number) => {
@@ -492,9 +500,11 @@ export class ScriptParser {
       const firstCh = line[0];
       if (firstCh === '{') {
         isCodeBlock = true;
+        conditionalStack.push(true);
       } else if (firstCh === '}') {
         isCodeBlock = false;
         currentBlock = null;
+        conditionalStack.pop();
       } else if (firstCh === '@' && !isCodeBlock) {
         let scriptName: string = line.substr(1, line.length - 1);
         if (scriptName === 'this') {
@@ -541,9 +551,12 @@ export class ScriptParser {
           );
           if (typeof conditional === 'object') {
             if (commandContents[endIndex] === '{') {
+              conditionalStack.push(conditional);
               isCodeBlock = true;
               currentBlock = currentScript.addCommandBlock();
-              currentBlock.conditional = conditional;
+              currentBlock.conditional = this.createAllConditional(
+                ...conditionalStack
+              );
               return;
             } else if (endIndex === commandContents.length) {
               currentBlock = currentScript.addCommandBlock();
@@ -679,7 +692,7 @@ export class ScriptParser {
           conditional = this.combineConditionals(
             itemConditional,
             localConditional,
-            'and'
+            'all'
           );
         }
 

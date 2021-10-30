@@ -105,6 +105,7 @@ export interface Prop {
   sprite: string;
   x: number;
   y: number;
+  name?: string;
   isDynamic: boolean;
   isFront: boolean;
   isItem?: boolean;
@@ -171,7 +172,7 @@ interface TiledTileset {
 }
 
 interface TiledLayer {
-  name: 'Props' | 'Objects' | 'Tiles' | 'Tiles2';
+  name: 'Props' | 'Objects' | 'Objects2' | 'Tiles' | 'Tiles2';
   objects?: any[];
   data?: any[];
 }
@@ -224,6 +225,7 @@ export const loadDynamicPropsTileset = async () => {
         ?.map(str =>
           str.slice(str.indexOf('"') + 1, str.lastIndexOf('"') - 4)
         ) ?? null;
+    console.log('PROPS DYNAMIC', dynamicPropsTileset);
   }
 };
 
@@ -247,6 +249,9 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Props') || {};
   const { objects } =
     tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Objects') ||
+    {};
+  const { objects: objects2 } =
+    tiledJson.layers.find((layer: TiledLayer) => layer.name === 'Objects2') ||
     {};
   const { firstgid: propsTilesetsFirstGid } = tiledJson.tilesets.find(
     (tileSet: any) => {
@@ -492,6 +497,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         id: `prop,${x},${y}`,
         x,
         y,
+        name: tiledProp.name || undefined,
         sprite,
         isDynamic: true,
         sortOffset,
@@ -682,8 +688,10 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     props.forEach(addProp);
   }
 
-  if (objects) {
-    objects.forEach((object: TiledObject) => {
+  if (objects || objects2) {
+    let arr = objects ?? [];
+    arr = arr.concat(objects2 ?? []);
+    arr.forEach((object: TiledObject) => {
       const isTaggedMarker =
         object.name.toLowerCase().indexOf('tagmarker') === 0;
       const isMarker = object.name.toLowerCase().indexOf('marker') > -1;
@@ -698,7 +706,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
         addTrigger(object);
       } else if (isTreasure) {
         addTreasure(object);
-      } else if (object.name) {
+      } else if (object.name && object.name.slice(0, 4) !== 'Prop') {
+        //HACK this breaks if a character is named Prop...
         addCharacter(object);
       } else {
         addProp(object);
@@ -789,6 +798,16 @@ export const roomRemoveParticle = (room: Room, p: Particle) => {
     room.particles.splice(pInd, 1);
   }
   removeRoomUiParticle(p);
+};
+
+export const roomGetProp = (room: Room, propName: string) => {
+  for (let i = 0; i < room.props.length; i++) {
+    const prop = room.props[i];
+    if (prop.name === propName) {
+      return prop;
+    }
+  }
+  return undefined;
 };
 
 export const roomRemoveProp = (room: Room, prop: Prop) => {

@@ -11,6 +11,7 @@ import {
   getCurrentScene,
   getCurrentRoom,
   getCurrentPlayer,
+  setCutsceneSkipEnabled,
 } from 'model/generics';
 import { Point, Point3d } from 'utils';
 import { EmotionBubble } from 'db/particles';
@@ -55,11 +56,7 @@ export const setConversationWithoutBars = (actorName: string) => {
 };
 
 export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
-  setCutsceneText('');
-  hideConversation();
-  if (dontHideCutscene === undefined || dontHideCutscene === false) {
-    showSection(AppSection.Debug, true);
-  }
+  return SC.endConversation(0, dontHideCutscene);
 };
 
 export const setConversationSpeaker = (speaker: CutsceneSpeaker) => {
@@ -641,6 +638,10 @@ const enableAnimationSounds = () => {
   return SC.enableAnimationSounds();
 };
 
+const changePropAnim = (...args) => {
+  return SC.changePropAnim(args[0], args[1]);
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -733,6 +734,7 @@ const commands = {
   modifyPartyHP,
   disableAnimationSounds,
   enableAnimationSounds,
+  changePropAnim,
 
   // custom scripts
   floor1TutToggleColorDoors,

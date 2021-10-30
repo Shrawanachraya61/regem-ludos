@@ -45,6 +45,7 @@ import {
   Character,
   characterStopAi,
   characterModifyHp,
+  characterStopWalking,
 } from 'model/character';
 import {
   getAllTagMarkers,
@@ -52,6 +53,7 @@ import {
   roomAddCharacter,
   roomAddParticle,
   roomGetCharacterByName,
+  roomGetProp,
   roomGetTileAt,
   roomGetTileBelow,
   roomRemoveCharacter,
@@ -69,6 +71,7 @@ import {
   setOverworldUpdateKeysDisabled,
   isKeyDown,
   getCutsceneSpeedMultiplier,
+  setCutsceneSkipEnabled,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -310,6 +313,8 @@ export const setConversation2 = (
  */
 export const setConversation = (actorName: string, ms?: number) => {
   const appState = getUiInterface().appState;
+  const player = getCurrentPlayer();
+  characterStopWalking(player.leader);
   if (appState.cutscene.visible) {
     // HACK.  Sometimes setConversation is called multiple times in a row and messes up
     // the cutscene rendering.  This short circuits that problem
@@ -356,6 +361,7 @@ export const setConversationWithoutBars = (actorName: string, ms?: number) => {
 export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
+  setCutsceneSkipEnabled(true);
   const cb = () => {
     if (
       (dontHideCutscene === undefined || dontHideCutscene === false) &&
@@ -2521,6 +2527,26 @@ const enableAnimationSounds = () => {
   Animation.enableSoundsGlobally();
 };
 
+const changePropAnim = (propName: string, animName: string) => {
+  const prop = roomGetProp(getCurrentRoom(), propName);
+
+  if (!prop) {
+    console.error('Cannot change prop, no prop in room is named: ' + propName);
+    return;
+  }
+
+  if (!hasAnimation(animName) || !prop.ro) {
+    console.error(
+      `Cannot change prop ${propName}, no anim in room is named: ` + animName
+    );
+    return;
+  }
+
+  const anim = createAnimation(animName);
+  anim.start();
+  prop.ro.anim = anim;
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -2635,6 +2661,7 @@ const commands = {
   modifyPartyHP,
   disableAnimationSounds,
   enableAnimationSounds,
+  changePropAnim,
 
   // custom scripts
   floor1TutToggleColorDoors,

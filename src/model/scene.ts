@@ -14,6 +14,7 @@ export interface Scene {
   storageOnceKeys: Record<string, boolean>;
   storageEncounters: Record<string, Record<string, boolean>>;
   storageTreasure: Record<string, Record<string, boolean>>;
+  onceKeysToCommit: string[];
   commands: Record<string, any>;
   currentScript: Script | null;
   currentTrigger: Trigger | null;
@@ -31,7 +32,7 @@ export interface Scene {
 }
 
 export const sceneCreate = (): Scene => {
-  const scene = {
+  const scene: Scene = {
     storage: {
       // 'quest_floor1-main': true,
     } as Record<string, string | boolean>,
@@ -39,6 +40,7 @@ export const sceneCreate = (): Scene => {
     storageOnceKeys: {} as Record<string, boolean>,
     storageEncounters: {} as Record<string, Record<string, boolean>>,
     storageTreasure: {} as Record<string, Record<string, boolean>>,
+    onceKeysToCommit: [] as string[],
     commands: {} as Record<string, any>,
     currentScript: null,
     currentTrigger: null,

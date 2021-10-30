@@ -1,5 +1,5 @@
 
-#floor1
+#floor1test
 action,this
 @this
 +setStorage('overworld', 'floor1');
@@ -323,6 +323,7 @@ action,this
   +completeQuestStep(TestQuest1, 1);
   +endConversation();
 
+
 #test-callScriptIntegration
 action,this
 @this
@@ -378,4 +379,30 @@ Shopkeep: "<cascade-letters>......"
 +panCameraBackToPlayer(500,false)
 Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
 Shopkeep: "I have <shake>no idea</> what she wants!</>"
++endConversation();
+
+#test-prop-light-anim
+step-first,test-prop-light-anim-on
+step-off,test-prop-light-anim-off
+@test-prop-light-anim-on
++changePropAnim(PropLight, props_small_light_alert);
+@test-prop-light-anim-off
++changePropAnim(PropLight, props_small_light_off);
+
+#test-testDialogE
+action,this
+@this
++lookAtEachOther(Ada, TestDialogE);
++setConversation(Ada);
+testDialogE: "This script tests nested if statements."
++?once(test-testDialogE1):{
+  +setStorage('test-testDialogEVal', 5);
+  +?once(test-testDialogE2):{
+    testDialogE: "This should show up the first time."
+  }
+  +?gt(test-testDialogEVal, 0):{
+    testDialogE: "This should display only once."
+  }
+}
+test-testDialogE: "The test has completed."
 +endConversation();

@@ -570,22 +570,6 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
       }
       break;
     }
-    case 'p': {
-      disableKeyUpdate();
-      await createAndCallScript(
-        getCurrentScene(),
-        `
-        +setConversation('Ada');
-        Ada: "You are testing 'createAndCallScript'"
-        Ada: "Hopefully you can see me speaking."
-        Ada: "This text was not specified in an rpgscript file, but instead in the code directly."
-        Ada: "The test will now conclude."
-        +endConversation();
-      `
-      );
-      enableKeyUpdate();
-      break;
-    }
     case 'd': {
       if (getTriggersVisible()) {
         hideTriggers();
@@ -606,16 +590,16 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     //   }
     //   break;
     // }
-    case 's': {
-      if (getKeyUpdateEnabled()) {
-        callScriptDuringOverworld('intro', {
-          disableKeys: true,
-          hideUi: true,
-          setPlayerIdle: true,
-        });
-      }
-      break;
-    }
+    // case 's': {
+    //   if (getKeyUpdateEnabled()) {
+    //     callScriptDuringOverworld('intro', {
+    //       disableKeys: true,
+    //       hideUi: true,
+    //       setPlayerIdle: true,
+    //     });
+    //   }
+    //   break;
+    // }
   }
 };
 

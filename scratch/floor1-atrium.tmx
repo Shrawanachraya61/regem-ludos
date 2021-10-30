@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="118">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="132">
  <editorsettings>
   <export target="../src/map/floor1-atrium.json" format="json"/>
  </editorsettings>
@@ -19,16 +19,16 @@
   <image source="../res/walls128.png" width="256" height="256"/>
  </tileset>
  <tileset firstgid="353" source="../res/props-dynamic.tiled-sheet.tsx"/>
- <tileset firstgid="359" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+ <tileset firstgid="360" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../res/props_small.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tiles" width="32" height="32">
   <data encoding="csv">
 129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,338,338,16,138,138,16,338,338,129,36,140,140,36,129,
 129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,338,338,140,140,338,338,129,129,36,140,140,36,129,
-129,338,16,16,338,338,338,338,338,5,5,5,5,338,5,5,5,5,5,5,338,140,140,338,16,16,16,36,140,140,36,16,
-129,16,212,212,338,130,130,130,338,137,137,137,137,137,137,137,137,137,137,140,140,140,140,140,140,16,140,140,140,140,140,1,
-16,16,137,137,338,7,7,9,338,137,137,137,137,137,137,137,137,137,137,140,140,140,140,140,140,16,140,140,140,140,140,1,
+129,338,16,16,338,338,338,338,338,5,5,5,5,5,5,5,5,5,5,5,338,140,140,338,16,16,16,36,140,140,36,16,
+129,16,212,212,338,137,137,137,338,137,137,137,137,137,137,137,137,137,137,140,140,140,140,140,140,16,140,140,140,140,140,1,
+16,16,137,137,137,137,137,137,137,137,137,137,137,137,137,137,137,137,137,140,140,140,140,140,140,16,140,140,140,140,140,1,
 16,16,137,137,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,1,
 140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,1,
 140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,140,16,
@@ -63,7 +63,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,339,339,0,0,0,0,0,15,15,0,0,
-0,0,0,0,0,0,0,0,0,0,227,227,0,0,227,227,0,0,0,0,0,0,0,0,0,0,243,0,0,0,0,0,
+0,0,0,0,0,227,227,227,0,0,227,227,0,0,227,227,0,0,0,0,0,0,0,0,0,0,243,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -101,24 +101,19 @@
   <object id="45" name="Floor1AtriumDeskEmployee" gid="193" x="348" y="352" width="32" height="32"/>
   <object id="46" name="MarkerDeskEmployeeWalk" gid="194" x="340" y="256" width="32" height="32"/>
   <object id="47" name="#floor1-atrium-desk-employee" x="320" y="296" width="40" height="48"/>
-  <object id="48" name="MarkerDoorElevatorA" gid="194" x="84" y="72" width="32" height="32"/>
-  <object id="49" name="MarkerElevatorInside" gid="194" x="96" y="56" width="32" height="32"/>
-  <object id="50" name="Floor1AtriumElevatorEmployee" gid="193" x="120" y="92" width="32" height="32"/>
-  <object id="51" name="MarkerElevatorOutside" gid="194" x="96" y="96" width="32" height="32"/>
   <object id="52" name="MarkerNPCWalkA" gid="194" x="359.375" y="126.625" width="32" height="32"/>
   <object id="53" name="MarkerNPCWalkB" gid="194" x="172.625" y="84.375" width="32" height="32"/>
   <object id="54" name="MarkerNPCWalkC" gid="194" x="150.125" y="130.375" width="32" height="32"/>
   <object id="55" name="MarkerNPCWalkD" gid="194" x="76" y="92" width="32" height="32"/>
   <object id="56" name="Floor1AtriumTicTacToeGirl" gid="193" x="52" y="208" width="32" height="32"/>
-  <object id="59" name="#floor1-atrium-elevator-employee" x="72" y="76" width="52" height="16"/>
   <object id="60" name="MarkerDoorTut" gid="198" x="463.5" y="70.5" width="32" height="32"/>
   <object id="61" name="Floor1AtriumEmployeeJason" gid="193" x="462" y="60" width="32" height="32"/>
   <object id="62" name="MarkerJasonB" gid="194" x="423" y="67" width="32" height="32"/>
   <object id="63" name="MarkerJasonA" gid="194" x="443.5" y="74.5" width="32" height="32"/>
   <object id="64" name="MarkerDoorTutTile" gid="194" x="456" y="40" width="32" height="32"/>
   <object id="65" name="MarkerTTTMachine" gid="194" x="56" y="248" width="32" height="32"/>
-  <object id="66" gid="361" x="340" y="320" width="32" height="32"/>
-  <object id="67" gid="361" x="308" y="320" width="32" height="32"/>
+  <object id="66" gid="362" x="340" y="320" width="32" height="32"/>
+  <object id="67" gid="362" x="308" y="320" width="32" height="32"/>
   <object id="68" name="Floor1PingPongGuyA" gid="193" x="152" y="260" width="32" height="32"/>
   <object id="69" name="Floor1PingPongGuyB" gid="193" x="152" y="316" width="32" height="32"/>
   <object id="70" name="#floor1-atrium-TicTacToeMachine" x="44" y="224" width="32" height="60"/>
@@ -140,20 +135,30 @@
   <object id="94" name="#floor1-atriumOpenNorthDoor" x="9.5" y="82.5" width="40" height="53"/>
   <object id="95" name="MarkerDoorNorth1" gid="194" x="27" y="119" width="32" height="32"/>
   <object id="96" name="MarkerDoorNorth2" gid="194" x="27.5" y="102.5" width="32" height="32"/>
-  <object id="97" gid="362" x="433" y="297" width="32" height="32"/>
-  <object id="98" gid="362" x="434" y="252" width="32" height="32"/>
-  <object id="99" gid="359" x="432" y="224" width="32" height="32"/>
-  <object id="100" gid="359" x="283" y="317" width="32" height="32"/>
+  <object id="97" gid="363" x="433" y="297" width="32" height="32"/>
+  <object id="98" gid="363" x="434" y="252" width="32" height="32"/>
+  <object id="99" gid="360" x="432" y="224" width="32" height="32"/>
+  <object id="100" gid="360" x="283" y="317" width="32" height="32"/>
   <object id="101" name="#floor1-transitionToPrimaryFromAtrium" x="-16" y="63.5" width="25" height="75.5"/>
   <object id="102" name="MarkerFromPrimary" gid="197" x="58.5" y="115.5" width="32" height="32"/>
-  <object id="103" type="20" gid="361" x="412" y="42" width="32" height="32"/>
-  <object id="104" type="24" gid="370" x="412" y="26" width="32" height="32"/>
-  <object id="109" name="#floor1-OpenRedDoorsFWD" x="464" y="118" width="31" height="52"/>
+  <object id="103" type="20" gid="362" x="412" y="42" width="32" height="32"/>
+  <object id="104" type="24" gid="371" x="416" y="24" width="32" height="32"/>
+  <object id="109" name="#floor1-OpenRedDoorsFWD" x="470" y="118" width="35.5" height="52"/>
   <object id="110" name="MarkerRedDoorFWD1" gid="194" x="491" y="151" width="32" height="32"/>
   <object id="111" name="MarkerRedDoorFWD2" gid="194" x="490" y="135.5" width="32" height="32"/>
-  <object id="113" gid="372" x="313.5" y="32.5" width="32" height="32"/>
-  <object id="114" gid="372" x="360.5" y="31.5" width="32" height="32"/>
+  <object id="113" gid="373" x="313.5" y="32.5" width="32" height="32"/>
+  <object id="114" gid="373" x="360.5" y="31.5" width="32" height="32"/>
   <object id="116" name="MarkerDoorTut2" gid="198" x="464" y="38" width="32" height="32"/>
   <object id="117" name="MarkerDeskEmployeeWalk2" gid="194" x="344" y="306" width="32" height="32"/>
+  <object id="118" type="front" gid="370" x="30.5" y="7.5" width="32" height="32"/>
+  <object id="119" type="front" gid="371" x="53.5" y="12.5" width="32" height="32"/>
+  <object id="120" type="front" gid="371" x="54.5" y="-2.5" width="32" height="32"/>
+  <object id="122" name="#floor1-transitionToFloor1East1FromFloor1Atrium" x="504" y="117.5" width="18.5" height="51.5"/>
+  <object id="124" name="MarkerFromEast1" gid="194" x="464.5" y="141.5" width="32" height="32"/>
+  <object id="125" type="24" gid="371" x="400" y="24" width="32" height="32"/>
+  <object id="127" type="24" gid="370" x="392" y="34" width="32" height="32"/>
+  <object id="128" type="24" gid="370" x="392" y="50" width="32" height="32"/>
+  <object id="130" type="front" gid="371" x="82" y="26" width="32" height="32"/>
+  <object id="131" type="front" gid="370" x="58.5" y="35.5" width="32" height="32"/>
  </objectgroup>
 </map>

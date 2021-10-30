@@ -1451,6 +1451,28 @@ Bartolo: "<cascade-letters=25>How very intriguing..."
 +playSound('terminal_beep');
 +spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, MarkerBartoloTerminal, normal);
 
+#floor1-transitionToEast1FromTutExit
+step,this
+@this
++:utils-change-room(floor1East1, MarkerFromVRPortal);
++setConversation(Ada);
++walkToMarker(Ada, MarkerExit1);
++:floor1-OpenRedDoorsFWDOpen2();
++walkToMarker(Ada, MarkerExit2);
++:floor1-OpenRedDoorsFWDClose2();
++:utils-start-Conscience-dialogue();
++:exhale(Ada);
+Ada: "<cascade-letters>Finally..."
++:exclaim(Conscience);
+Conscience: "You may not admit it, but you actually did a really good job!"
++:angry(Ada);
+Ada: "<cascade-letters>......"
+Ada: "Whatever."
++setFacing(Ada, leftup);
+Ada: "I have a <color=BLUE>Haptic Bracer</> so now I can ascend to the second floor."
+Conscience: "<scale=0.75 cascade>It's such a shame you don't like this place."
++:utils-stop-Conscience-dialogue();
++endConversation();
 
 @test-tut-battle
 +enterCombat(ENCOUNTER_TUT_BOSS);

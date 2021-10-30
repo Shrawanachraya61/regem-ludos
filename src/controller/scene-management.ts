@@ -132,6 +132,10 @@ export const updateScene = (scene: Scene): void => {
         scene.currentScript = null;
         scene.currentTrigger = null;
         scene.currentTriggerType = null;
+        scene.onceKeysToCommit.forEach(arg => {
+          scene.storageOnceKeys[arg] = true;
+        });
+        scene.onceKeysToCommit = [];
       }
     }
   }
@@ -211,8 +215,20 @@ export const evalCondition = (
         return !scene.storage[args[0]];
       }
     } else if (type === 'gt') {
+      if (typeof args[0] === 'string') {
+        args[0] = scene.storage[args[0]];
+      }
+      if (typeof args[1] === 'string') {
+        args[1] = scene.storage[args[1]];
+      }
       return args[0] > args[1];
     } else if (type === 'lt') {
+      if (typeof args[0] === 'string') {
+        args[0] = scene.storage[args[0]];
+      }
+      if (typeof args[1] === 'string') {
+        args[1] = scene.storage[args[1]];
+      }
       return args[0] < args[1];
     } else if (type === 'eq') {
       const conditions = [
@@ -286,7 +302,8 @@ export const evalCondition = (
         return false;
       }
       if (!dontTriggerOnce) {
-        scene.storageOnceKeys[arg] = true;
+        scene.onceKeysToCommit.push(arg);
+        // scene.storageOnceKeys[arg] = true;
       }
 
       return true;

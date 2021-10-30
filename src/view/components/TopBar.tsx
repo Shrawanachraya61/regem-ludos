@@ -30,6 +30,7 @@ import { playSound } from 'controller/scene-commands';
 import { playSoundName } from 'model/sound';
 import GearIcon from 'view/icons/Gear';
 import MenuIcon from 'view/icons/Menu';
+import TalkIcon from 'view/icons/Talk';
 
 const TopBarWrapper = style('div', {
   position: 'absolute',
@@ -50,6 +51,7 @@ export enum TopBarButtons {
   MENU = 'menu',
   BATTLE_MENU = 'battle-menu',
   ON_SCREEN_CONTROLS = 'on-screen-controls',
+  SKIP_CUTSCENE = 'skip',
 }
 
 interface ITopBarProps {
@@ -57,6 +59,7 @@ interface ITopBarProps {
   onSettingsClick?: () => void;
   onMenuClose?: () => void;
   onMenuClick?: () => void;
+  onSkipClick?: () => void;
   buttons: (TopBarButtons | undefined)[];
   disabled?: boolean;
 }
@@ -77,6 +80,12 @@ const TopBar = (props: ITopBarProps) => {
     if (props.onSettingsClose && props.onSettingsClick) {
       showSettings(props.onSettingsClose);
       props.onSettingsClick();
+    }
+  };
+
+  const handleSkipClick = () => {
+    if (props.onSkipClick) {
+      props.onSkipClick();
     }
   };
 
@@ -147,6 +156,19 @@ const TopBar = (props: ITopBarProps) => {
             <ButtonContentWithIcon>
               <GearIcon color={colors.WHITE} />
               Settings {getAuxKeyLabel()}
+            </ButtonContentWithIcon>
+          </Button>
+        ) : null}
+        {props.buttons.includes(TopBarButtons.SKIP_CUTSCENE) ? (
+          <Button
+            disabled={props.disabled || !props.onSkipClick}
+            style={buttonStyle}
+            type={ButtonType.SECONDARY}
+            onClick={handleSkipClick}
+          >
+            <ButtonContentWithIcon>
+              <TalkIcon color={colors.WHITE} />
+              Skip (Backspace)
             </ButtonContentWithIcon>
           </Button>
         ) : null}

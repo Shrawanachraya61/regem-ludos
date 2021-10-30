@@ -23,6 +23,7 @@ import {
 import { renderUi } from 'view/ui';
 import { runMainLoop } from 'controller/loop';
 import { ISave, loadSavedGame } from 'controller/save-management';
+import { beginQuest } from 'controller/quest';
 
 const setupGame = async () => {
   setTimeLoaded(+new Date());
@@ -47,6 +48,8 @@ const createNewGame = async () => {
   player.party.push(conscience);
   player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
+
+  // beginQuest(getCurrentScene());
 
   const overworldTemplate = getOverworld('floor1Outside');
   initiateOverworld(player, overworldTemplate);
