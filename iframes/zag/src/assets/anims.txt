@@ -1,0 +1,18 @@
+#
+invisible
+noloop
+invisible_0 100
+
+#
+enemy_segments_b_0
+loop
+segments_b_0_0 100
+segments_b_0_1 100
+segments_b_0_2 100
+
+#
+enemy_segments_f_0
+loop
+segments_f_0_0 100
+segments_f_0_1 100
+segments_f_0_2 100
