@@ -9,6 +9,7 @@ import {
   characterModifyHp,
   characterHasAnimationState,
   WeaponEquipState,
+  characterGetStatModifier,
 } from 'model/character';
 import { Point, randomId, timeoutPromise } from 'utils';
 import { BattleAI, get as getBattleAi } from 'db/battle-ai';
@@ -61,6 +62,7 @@ export interface BattleCharacter {
   castTimer: Timer;
   armorTimer: Timer; // timer for tracking simultaneous hits that break armor
   position: BattlePosition;
+  positionMarker: number;
   actionState: BattleActionState;
   actionStateIndex: number;
   statuses: {
@@ -96,6 +98,7 @@ const battleCharacterCreate = (
     castTimer: new Timer(1000),
     armorTimer: new Timer(250),
     position,
+    positionMarker: -1,
     actionState: BattleActionState.IDLE,
     actionStateIndex: 0,
     statuses: [] as {
@@ -147,6 +150,7 @@ export const battleCharacterCreateAlly = (
     bCh.staggerSoundName = template.staggerSoundName;
     bCh.armor = template.armor ?? ch.template?.armor ?? 0;
   }
+  bCh.armor += characterGetStatModifier(ch, 'armor');
   return bCh;
 };
 
@@ -393,6 +397,47 @@ export const battleCharacterSetAnimationStateAttack = (
   }
 };
 
+export const battleCharacterRecoverFromKnockDown = (
+  bCh: BattleCharacter,
+  battle: Battle
+) => {
+  if (battleCharacterIsKnockedDown(bCh) && !bCh.isReviving) {
+    bCh.koTimer.start();
+    bCh.koTimer.pause();
+    bCh.isReviving = true;
+    if (characterHasAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE)) {
+      characterSetAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE);
+      characterOnAnimationCompletion(bCh.ch, () => {
+        bCh.isReviving = false;
+        bCh.actionTimer.unpause();
+        battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+        battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+      });
+    } else {
+      timeoutPromise(500).then(() => {
+        bCh.isReviving = false;
+        bCh.actionTimer.unpause();
+        battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+        battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+      });
+    }
+  }
+};
+
+export const battleCharacterRecoverFromStagger = (
+  bCh: BattleCharacter,
+  battle: Battle
+) => {
+  if (battleCharacterIsStaggered(bCh) && !bCh.isReviving) {
+    bCh.staggerTimer.start();
+    bCh.staggerTimer.pause();
+    battleCharacterSetAnimationIdle(bCh);
+    bCh.actionTimer.unpause();
+    battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
+    battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+  }
+};
+
 export const updateBattleCharacter = (
   battle: Battle,
   bCh: BattleCharacter
@@ -459,30 +504,11 @@ export const updateBattleCharacter = (
 
   if (battleCharacterIsKnockedDown(bCh) && !bCh.isReviving) {
     if (bCh.koTimer.isComplete()) {
-      bCh.isReviving = true;
-      if (characterHasAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE)) {
-        characterSetAnimationState(bCh.ch, AnimationState.BATTLE_REVIVE);
-        characterOnAnimationCompletion(bCh.ch, () => {
-          bCh.isReviving = false;
-          bCh.actionTimer.unpause();
-          battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
-          battleCharacterSetActonState(bCh, BattleActionState.IDLE);
-        });
-      } else {
-        timeoutPromise(500).then(() => {
-          bCh.isReviving = false;
-          bCh.actionTimer.unpause();
-          battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
-          battleCharacterSetActonState(bCh, BattleActionState.IDLE);
-        });
-      }
+      battleCharacterRecoverFromKnockDown(bCh, battle);
     }
   } else if (battleCharacterIsStaggered(bCh) && !bCh.isReviving) {
     if (bCh.staggerTimer.isComplete()) {
-      battleCharacterSetAnimationIdle(bCh);
-      bCh.actionTimer.unpause();
-      battleInvokeEvent(battle, BattleEvent.onCharacterRecovered, bCh);
-      battleCharacterSetActonState(bCh, BattleActionState.IDLE);
+      battleCharacterRecoverFromStagger(bCh, battle);
     }
   }
   if (battleCharacterIsCasting(bCh)) {

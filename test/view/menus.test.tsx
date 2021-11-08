@@ -46,7 +46,7 @@ describe('Menus', () => {
   // console.log(wrapper.container.textContent);
   // disableConsole();
 
-  test('Game Main Menu Render', () => {
+  test('The MenuMain component renders without errors', () => {
     const wrapper = render(
       <AppShim>
         <MenuMain />
@@ -68,7 +68,7 @@ describe('Menus', () => {
     });
   });
 
-  test('Status Menu Render', () => {
+  test('The StatusMenu component renders without errors', () => {
     const wrapper = render(
       <AppShim>
         <MenuStatus
@@ -88,7 +88,7 @@ describe('Menus', () => {
     expect(wrapper.container.textContent).toContain('EVA');
   });
 
-  test('Equipment Render', () => {
+  test('The MenuEquipment component renders without errors', () => {
     const wrapper = render(
       <AppShim>
         <MenuEquipment onClose={() => void 0} player={getCurrentPlayer()} />
@@ -103,7 +103,7 @@ describe('Menus', () => {
     expect(wrapper.container.textContent).toMatch(/Accessory/);
   });
 
-  test('Journal Render', () => {
+  test('The MenuJournal component renders without errors', () => {
     const scene = getCurrentScene();
     beginQuest(scene, 'TestQuest1');
 
@@ -129,7 +129,7 @@ describe('Menus', () => {
     expect(wrapper.container.textContent).toMatch(/This is a test quest/);
   });
 
-  test('Items Render', () => {
+  test('The MenuItems component renders without errors', () => {
     playerAddItem(getCurrentPlayer(), 'RezGem');
 
     const wrapper = render(
@@ -145,7 +145,7 @@ describe('Menus', () => {
     expect(wrapper.container.textContent).toMatch(/Respawn Gem/);
   });
 
-  test('Positions Render', () => {
+  test('The MenuPositions component renders without errors', () => {
     const wrapper = render(
       <AppShim>
         <MenuPositions
@@ -159,7 +159,7 @@ describe('Menus', () => {
     expect(wrapper.container.textContent).toMatch(/Ada/);
   });
 
-  test('Load Render', () => {
+  test('The MenuLoad component renders without errors', () => {
     const wrapper = render(
       <AppShim>
         <MenuLoad onClose={() => void 0} />

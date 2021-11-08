@@ -11,7 +11,10 @@ import { characterGetHpPct } from 'model/character';
 import AnimDiv from 'view/elements/StaticAnimDiv';
 import ActionSelectMenu from './ActionSelectMenu';
 import { useState } from 'preact/hooks';
-import { useBattleSubscriptionWithBattleCharacter } from 'view/hooks';
+import {
+  useBattleSubscriptionWithBattleCharacter,
+  useReRender,
+} from 'view/hooks';
 import { setBattleCharacterSelectedAction } from 'controller/ui-actions';
 import { getUiInterface, renderUi } from 'view/ui';
 import { getCurrentBattle, getIsPaused } from 'model/generics';
@@ -135,6 +138,8 @@ interface IEnemyInfoCardProps {
 }
 
 const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
+  const render = useReRender();
+
   const createRenderKey = (append: string) => {
     return `${props.bCh.ch.name}_${append}`;
   };
@@ -161,11 +166,11 @@ const EnemyInfoCard = (props: IEnemyInfoCardProps) => {
     BattleEvent.onCharacterDamaged,
     () => {
       // HACK just render the individual progress bar instead of this...
-      renderUi();
+      render();
     }
   );
 
-  const chName = props.bCh.ch.name;
+  const chName = props.bCh.ch.name.slice(0, props.bCh.ch.name.indexOf('+'));
   const armorIcons: any[] = [];
   for (let i = 0; i < props.bCh.armor; i++) {
     armorIcons.push(

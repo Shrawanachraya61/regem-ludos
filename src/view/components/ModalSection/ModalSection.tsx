@@ -23,6 +23,7 @@ import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import CharacterStatus from '../CharacterStatus';
 import { useState } from 'preact/hooks';
 import UseItemDescription from '../UseItemDescription';
+import CharacterFollowerMenu from 'view/elements/CharacterFollowerMenu';
 
 export const MAX_WIDTH = '570px';
 const TUTORIAL_MAX_WIDTH = '500px';
@@ -357,6 +358,22 @@ const SelectPartyMemberModal = (props: ICustomModalProps) => {
   );
 };
 
+const SelectCharacterFollowerModal = (props: ICustomModalProps) => {
+  return (
+    <CharacterFollowerMenu
+      body={props.body}
+      characters={props.meta.characters as Character[]}
+      onCharacterClick={ch => {
+        if (props.onConfirm) {
+          props.onConfirm(ch);
+        }
+      }}
+      onClose={props.onClose}
+      isAll={props.meta.isAll}
+    ></CharacterFollowerMenu>
+  );
+};
+
 const Modal = () => {
   const [active, setActive] = useState(true);
   const modalState = getUiInterface()?.appState.modal;
@@ -432,9 +449,30 @@ const Modal = () => {
       break;
     }
     case ModalSection.SELECT_PARTY_MEMBER: {
-      console.log('RENDER BODY PARTY MEMBER', modalState);
       elem = (
         <SelectPartyMemberModal
+          body={modalState.body}
+          active={active}
+          onClose={handleClose}
+          onConfirm={async (ch: Character) => {
+            if (active) {
+              // setActive(false);
+              if (onConfirm) {
+                await onConfirm(ch);
+              } else {
+                hideSection(AppSection.Modal);
+              }
+            }
+          }}
+          filter={modalState.filter}
+          meta={modalState.meta}
+        />
+      );
+      break;
+    }
+    case ModalSection.SELECT_CHARACTER_FOLLOWER: {
+      elem = (
+        <SelectCharacterFollowerModal
           body={modalState.body}
           active={active}
           onClose={handleClose}

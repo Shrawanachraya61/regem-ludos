@@ -104,6 +104,30 @@
                  "width":32,
                  "x":108.5,
                  "y":217.5
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":68,
+                 "name":"MarkerEnemy1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":147.5,
+                 "y":94.5
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":69,
+                 "name":"MarkerEnemy2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":244,
+                 "y":126
                 }],
          "offsetx":-4,
          "offsety":4,
@@ -114,7 +138,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":68,
+ "nextobjectid":70,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

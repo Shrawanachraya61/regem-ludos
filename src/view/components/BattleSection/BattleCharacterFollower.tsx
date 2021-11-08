@@ -37,6 +37,7 @@ interface IBattleCharacterProps {
   battleIndex: number;
   isEnemy: boolean;
   animName?: string;
+  hideTargets?: boolean;
 }
 
 const targetRotate = keyframes({
@@ -104,8 +105,9 @@ const ArmorIconsContainer = style(
   (props: { align: 'left' | 'right' }) => {
     return {
       position: 'absolute',
+      top: '0px',
       right: props.align === 'right' ? '0px' : 'unset',
-      left: props.align === 'left' ? '0px' : 'unset',
+      left: props.align === 'left' ? '14px' : 'unset',
       width: '32px',
       height: '100%',
       display: 'flex',
@@ -123,6 +125,8 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
   const bCh = props.bCh;
   const battle = getCurrentBattle();
 
+  const render = useReRender();
+
   const [
     currentlyActingAllegiance,
     setCurrentlyActingAllegiance,
@@ -138,6 +142,16 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
     setCurrentlyActingAllegiance(null);
   });
 
+  useBattleSubscription(
+    getCurrentBattle(),
+    BattleEvent.onCharacterDamaged,
+    (bCh: BattleCharacter) => {
+      if (bCh === props.bCh) {
+        render();
+      }
+    }
+  );
+
   const targetedByMelee =
     battleGetTargetedEnemy(battle, BattleActionType.SWING) === bCh;
   const targetedByRanged =
@@ -145,7 +159,6 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
 
   const handleEnemyClick = () => {
     if (props.isEnemy) {
-      console.log('ACTING ALLEGIANCE', battleGetActingAllegiance(battle));
       if (battleGetActingAllegiance(battle) === null) {
         if (!targetedByMelee) {
           const wasTargetSet = battleSetEnemyTargetIndex(
@@ -175,7 +188,8 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
 
   const isNobodyActing = currentlyActingAllegiance === null;
   const isPaused = getIsPaused();
-  const targetsVisible = !bCh.isDefeated && (isPaused || isNobodyActing);
+  const targetsVisible =
+    !props.hideTargets && !bCh.isDefeated && (isPaused || isNobodyActing);
 
   return (
     <CharacterFollower
@@ -229,7 +243,8 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
             style={{
               position: 'absolute',
               bottom: '-4px',
-              right: '-3px',
+              right: props.isEnemy ? '-3px' : 'unset',
+              left: props.isEnemy ? 'unset' : '-4px',
               fontSize: '20px',
             }}
           >

@@ -537,6 +537,26 @@ export const showPartyMemberSelectModal = (props: {
   });
 };
 
+export const showCharacterFollowerSelectModal = (props: {
+  onClose: () => void;
+  onCharacterSelected: (ch: Character) => Promise<void>;
+  filter?: (a: any) => boolean;
+  body?: any;
+  characters: Character[];
+  isAll?: boolean;
+}) => {
+  showModal(ModalSection.SELECT_CHARACTER_FOLLOWER, {
+    onClose: props.onClose,
+    onConfirm: props.onCharacterSelected,
+    filter: props.filter,
+    body: props.body,
+    meta: {
+      characters: props.characters,
+      isAll: props.isAll,
+    },
+  });
+};
+
 export const showMenu = (onClose: () => void) => {
   playSoundName('menu_choice_open');
   const payload = {

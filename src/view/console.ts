@@ -7,6 +7,7 @@ export const enableConsole = () => {
     error: originalConsole.error,
     warn: originalConsole.warn,
     debug: originalConsole.debug,
+    trace: originalConsole.trace,
     time: originalConsole.time,
     timeEnd: originalConsole.timeEnd,
   };
@@ -18,6 +19,7 @@ export const disableConsole = () => {
     error: () => {},
     warn: () => {},
     debug: () => {},
+    trace: originalConsole.trace,
     time: originalConsole.time,
     timeEnd: originalConsole.timeEnd,
   };

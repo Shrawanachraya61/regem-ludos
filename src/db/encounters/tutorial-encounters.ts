@@ -291,7 +291,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),
         position: BattlePosition.FRONT,
-        ai: 'BATTLE_AI_ATTACK',
+        ai: 'BATTLE_AI_TUT_BOSS1',
       },
     ],
   };

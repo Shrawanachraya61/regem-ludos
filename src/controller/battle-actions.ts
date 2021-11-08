@@ -78,6 +78,7 @@ import { h } from 'preact';
 import ShieldIcon from 'view/icons/Shield';
 import SwordIcon from 'view/icons/Sword';
 import { playSound, playSoundName } from 'model/sound';
+import { colors } from 'view/style';
 
 export interface BattleAction {
   name: string;
@@ -488,19 +489,23 @@ export const doSpell = async (
   battle: Battle,
   action: BattleAction,
   bCh: BattleCharacter,
-  target: BattleCharacter,
+  targets: BattleCharacter[],
   {
     particleText,
     particleTemplate,
     soundName,
     baseDamage,
     baseStagger,
+    targetCb,
+    cb,
   }: {
     particleText: string;
-    particleTemplate: ParticleTemplate;
+    particleTemplate?: ParticleTemplate;
     soundName?: string;
-    baseDamage: number;
-    baseStagger: number;
+    baseDamage?: number;
+    baseStagger?: number;
+    targetCb?: (bChTarget: BattleCharacter) => void;
+    cb?: () => void;
   }
 ) => {
   console.log('DO SPELL', action, bCh);
@@ -510,7 +515,7 @@ export const doSpell = async (
   const [centerPx, centerPy] = characterGetPosCenterPx(bCh.ch);
   roomAddParticle(
     getCurrentRoom(),
-    createStatusParticle(particleText, centerPx, centerPy, 'red')
+    createStatusParticle(particleText, centerPx, centerPy, colors.RED)
   );
   await timeoutPromise(150);
   characterSetAnimationState(bCh.ch, AnimationState.BATTLE_SPELL);
@@ -523,22 +528,35 @@ export const doSpell = async (
   // } else {
   //   target = battleGetNearestAttackable(battle, allegiance);
   // }
-  if (target) {
-    const [targetPx, targetPy] = characterGetPosCenterPx(target.ch);
-    roomAddParticle(
-      battle.room,
-      particleCreateFromTemplate([targetPx, targetPy], particleTemplate)
-    );
-    if (soundName) {
-      playSoundName(soundName);
-    } else {
-      playSoundName('battle_fire_explosion1');
-    }
-    // await timeoutPromise(150);
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    if (target) {
+      const [targetPx, targetPy] = characterGetPosCenterPx(target.ch);
+      if (particleTemplate) {
+        roomAddParticle(
+          battle.room,
+          particleCreateFromTemplate([targetPx, targetPy], particleTemplate)
+        );
+      }
+      if (soundName) {
+        playSoundName(soundName);
+      } else {
+        playSoundName('battle_fire_explosion1');
+      }
 
-    applyMagicDamage(battle, bCh, target, baseDamage, baseStagger);
-    await timeoutPromise(2000);
+      if (baseDamage) {
+        applyMagicDamage(battle, bCh, target, baseDamage, baseStagger ?? 0);
+      }
+      if (targetCb) {
+        targetCb(bCh);
+      }
+      await timeoutPromise(100);
+    }
   }
+  if (cb) {
+    cb();
+  }
+  await timeoutPromise(1900);
 };
 
 export const doChannel = async (
@@ -564,7 +582,7 @@ export const doChannel = async (
   battleInvokeEvent(battle, BattleEvent.onCharacterChannelling, bCh);
   roomAddParticle(
     getCurrentRoom(),
-    createStatusParticle(particleText, centerPx, centerPy, 'white')
+    createStatusParticle(particleText, centerPx, centerPy, colors.WHITE)
   );
   await endAction(bCh);
   bCh.actionTimer.pause();

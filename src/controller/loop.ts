@@ -223,17 +223,34 @@ export const runMainLoop = async (): Promise<void> => {
       // position the camera in the right spot
       let roomXOffset = 0;
       let roomYOffset = 0;
-      if (battle) {
-        roomXOffset = screenW / 2 - 32 / 2;
-        roomYOffset = screenH / 4 - 13;
-      } else {
-        const player = getCurrentPlayer();
-        if (player) {
+      const player = getCurrentPlayer();
+      if (player) {
+        const transform = getCameraTransform();
+        if (transform) {
+          const [x, y] = transform.current();
+          roomXOffset = x;
+          roomYOffset = y;
+          transform.update();
+          // if (transform.shouldRemove) {
+          //   setCameraTransform(null);
+          // }
+        } else {
           const [oX, oY] = playerGetCameraOffset(player);
           roomXOffset = oX;
           roomYOffset = oY;
         }
       }
+      // if (battle) {
+      //   roomXOffset = screenW / 2 - 32 / 2;
+      //   roomYOffset = screenH / 4 - 13;
+      // } else {
+      //   const player = getCurrentPlayer();
+      //   if (player) {
+      //     const [oX, oY] = playerGetCameraOffset(player);
+      //     roomXOffset = oX;
+      //     roomYOffset = oY;
+      //   }
+      // }
       setCameraDrawOffset([roomXOffset, roomYOffset]);
 
       if (isPauseRenderingEnabled()) {

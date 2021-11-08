@@ -1,5 +1,10 @@
 import { createAnimation, Animation, hasAnimation } from 'model/animation';
-import { BattleStats, battleStatsCreate, BattleTemplate } from 'model/battle';
+import {
+  BattleStats,
+  battleStatsCreate,
+  BattleTemplate,
+  StatName,
+} from 'model/battle';
 import { Transform, Timer } from 'model/utility';
 import {
   Point,
@@ -46,7 +51,13 @@ import { drawPolygon, drawRect, drawText } from 'view/draw';
 import { playerGetCameraOffset } from 'model/player';
 import { OverworldAI, get as getOverworldAi } from 'db/overworld-ai';
 import { getIfExists as getEncounter } from 'db/encounters';
-import { Item, get as getItem, ItemType, WeaponType } from 'db/items';
+import {
+  Item,
+  get as getItem,
+  ItemType,
+  WeaponType,
+  ItemTemplate,
+} from 'db/items';
 import { getSprite } from './sprite';
 import { renderUi } from 'view/ui';
 
@@ -231,6 +242,7 @@ export interface CharacterTemplate {
   };
   sortOffset?: number;
   followerSize?: Point;
+  hiddenHP?: boolean;
 }
 
 export const characterCreate = (name: string): Character => {
@@ -571,19 +583,19 @@ export const characterSetFacingFromAngle = (ch: Character, angle: number) => {
 
 export const characterModifyHp = (ch: Character, n: number): void => {
   ch.hp += n;
-  if (ch.hp > ch.stats.HP) {
-    ch.hp = ch.stats.HP;
+  if (ch.hp > characterGetStat(ch, 'HP')) {
+    ch.hp = characterGetStat(ch, 'HP');
   } else if (ch.hp < 0) {
     ch.hp = 0;
   }
 };
 
 export const characterGetHpPct = (ch: Character): number => {
-  return Number((ch.hp / ch.stats.HP).toFixed(2));
+  return Number((ch.hp / characterGetStat(ch, 'HP')).toFixed(2));
 };
 
 export const characterGetResvPct = (ch: Character): number => {
-  return Number((ch.resv / ch.stats.RESV).toFixed(2));
+  return Number((ch.resv / characterGetStat(ch, 'RESV')).toFixed(2));
 };
 
 export const characterSetTransform = (
@@ -852,11 +864,29 @@ export const characterItemIsEquipped = (ch: Character, item: Item) => {
   return false;
 };
 
+export const characterGetEquippedItem = (
+  ch: Character,
+  type: string
+): ItemTemplate | undefined => {
+  if (type === 'Accessory') {
+    type = 'accessory1';
+  } else if (type === 'Accessory 2') {
+    type = 'accessory2';
+  }
+  type = type.toLowerCase();
+  const item = ch.equipment[type];
+  if (item) {
+    return item;
+  }
+};
+
 export const characterEquipItem = (
   ch: Character,
   item: Item,
-  accessoryIndex?: number
+  accessoryIndex?: 0 | 1
 ) => {
+  const lastHpPct = characterGetHpPct(ch);
+
   if (item.type === ItemType.WEAPON) {
     ch.equipment.weapon = item;
   } else if (item.type === ItemType.ARMOR) {
@@ -867,6 +897,12 @@ export const characterEquipItem = (
     } else if (accessoryIndex === 1) {
       ch.equipment.accessory2 = item;
     }
+  }
+
+  const currentHpPct = characterGetHpPct(ch);
+
+  if (lastHpPct !== currentHpPct) {
+    ch.hp = Math.round(lastHpPct * characterGetStat(ch, 'HP'));
   }
 
   ch.skills = [];
@@ -883,6 +919,8 @@ export const characterUnEquipItem = (
   item: Item,
   accessoryIndex?: number
 ) => {
+  const lastHpPct = characterGetHpPct(ch);
+
   if (item.type === ItemType.WEAPON) {
     ch.equipment.weapon = undefined;
   } else if (item.type === ItemType.ARMOR) {
@@ -894,6 +932,13 @@ export const characterUnEquipItem = (
       ch.equipment.accessory2 = undefined;
     }
   }
+
+  const currentHpPct = characterGetHpPct(ch);
+
+  if (lastHpPct !== currentHpPct) {
+    ch.hp = Math.round(lastHpPct * characterGetStat(ch, 'HP'));
+  }
+
   ch.skills = [];
   const weaponSkills = ch.equipment?.weapon?.skills ?? [];
   const armorSkills = ch.equipment?.armor?.skills ?? [];
@@ -905,7 +950,7 @@ export const characterUnEquipItem = (
 
 export const characterGetStatModifier = (
   ch: Character,
-  statName: string
+  statName: string | 'armor'
 ): number => {
   let mod = 0;
   for (const i in ch.equipment) {
@@ -920,7 +965,7 @@ export const characterGetStatModifier = (
   return mod;
 };
 
-export const characterGetStat = (ch: Character, statName: string): number => {
+export const characterGetStat = (ch: Character, statName: StatName): number => {
   const statVal = ch.stats[statName] ?? 0;
   return statVal + characterGetStatModifier(ch, statName);
 };

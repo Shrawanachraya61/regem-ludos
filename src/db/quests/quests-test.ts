@@ -1,5 +1,4 @@
 import { QuestTemplate } from '.';
-import GearIcon from 'view/icons/Gear';
 import { colors } from 'view/style';
 
 export const init = (exp: { [key: string]: QuestTemplate }) => {
@@ -10,7 +9,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
       'The test construct in the test room has a quest for you.  It wants you to talk to it a bunch of times for some reason.',
     questStartScriptKey: 'quest_test1',
     questEndScriptKey: 'quest_test1_complete',
-    icon: GearIcon,
+    icon: 'gear',
     iconColor: colors.RED,
     experienceReward: 50,
     itemsReward: () => [],

@@ -10,8 +10,17 @@ import {
   OnBeforeCharacterDamagedCb,
   BattleAllegiance,
   OnBeforeCharacterEvadesCb,
+  BattlePosition,
+  BattleTemplateEnemy,
+  battleSetEnemyActorPosition,
 } from 'model/battle';
-import { AnimationState, Facing, CharacterTemplate } from 'model/character';
+import {
+  AnimationState,
+  Facing,
+  CharacterTemplate,
+  characterCreateFromTemplate,
+  characterGetPosCenterPx,
+} from 'model/character';
 import {
   BattleAction,
   SwingType,
@@ -23,14 +32,28 @@ import {
   doSpell,
   doChannel,
 } from 'controller/battle-actions';
-import { setCasting } from 'controller/battle-management';
-import { BattleCharacter } from 'model/battle-character';
-import { EFFECT_TEMPLATE_FIREBALL } from 'model/particle';
+import { resetCooldownTimer, setCasting } from 'controller/battle-management';
+import {
+  BattleCharacter,
+  battleCharacterCreateEnemy,
+} from 'model/battle-character';
+import {
+  EFFECT_TEMPLATE_FIREBALL,
+  particleCreateFromTemplate,
+} from 'model/particle';
 import { createAnimation } from 'model/animation';
+import { get as getParticle } from 'db/particles';
+import { getCurrentBattle, getCurrentRoom } from 'model/generics';
 
-// const COOLDOWN_MOD = 1.5;
+import { get as getEnemy } from 'db/enemies';
+import { varyStats } from 'utils';
+import { roomAddCharacter, roomAddParticle } from 'model/room';
+import { playSoundName } from 'model/sound';
+import { renderUi } from 'view/ui';
 
-const COOLDOWN_MOD = 0.25;
+const COOLDOWN_MOD = 1.5;
+
+// const COOLDOWN_MOD = 0.25;
 
 export const initBattleActions = (): Record<string, BattleAction> => {
   const exp = {
@@ -113,7 +136,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 3;
-        const baseStagger = 1116;
+        const baseStagger = 1;
         const target = getTarget(battle, bCh);
         if (target) {
           await doSwing(battle, this, bCh, target, {
@@ -172,7 +195,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
     RobotBlackFireSnap: {
       name: 'RobotBlackFireSnap',
       description: 'AI',
-      cooldown: 3000 * COOLDOWN_MOD,
+      cooldown: 5500 * COOLDOWN_MOD,
       type: BattleActionType.CAST,
       meta: {
         castTime: 3000,
@@ -180,7 +203,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
       cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
         const baseDamage = 5;
-        const baseStagger = 15;
+        const baseStagger = 99;
         const target = getTarget(battle, bCh);
         if (target) {
           setCasting(bCh, {
@@ -188,7 +211,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
             onCast: async () => {
               const target = getTarget(battle, bCh);
               if (target) {
-                await doSpell(battle, exp.RobotBlackFireSnap, bCh, target, {
+                await doSpell(battle, exp.RobotBlackFireSnap, bCh, [target], {
                   baseDamage,
                   baseStagger,
                   particleText: 'Black Fire Snap!',
@@ -247,6 +270,153 @@ export const initBattleActions = (): Record<string, BattleAction> => {
           particleText: 'Evasion+',
           soundName: 'robot_channel_start',
         });
+      },
+    },
+
+    // BOSS ----------------------------------------------------------------------------------
+
+    BossRobotSwingArmoredN: {
+      name: 'BossRobotSwingArmoredNK',
+      description: 'AI',
+      cooldown: 6000 * COOLDOWN_MOD,
+      type: BattleActionType.SWING,
+      meta: {
+        swings: [SwingType.NORMAL, SwingType.NORMAL],
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 5;
+        const baseStagger = 3;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doSwing(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            swingType:
+              this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
+    BossRobotSwingArmoredNK: {
+      name: 'BossRobotSwingArmoredNK',
+      description: 'AI',
+      cooldown: 6000 * COOLDOWN_MOD,
+      type: BattleActionType.SWING,
+      meta: {
+        swings: [SwingType.KNOCK_DOWN],
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 5;
+        const baseStagger = 3;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doSwing(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            swingType:
+              this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
+    BossRobotSwingPierce: {
+      name: 'BossRobotSwingPierce',
+      description: 'AI',
+      cooldown: 7000 * COOLDOWN_MOD,
+      type: BattleActionType.SWING,
+      meta: {
+        swings: [SwingType.PIERCE],
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 1;
+        const baseStagger = 5;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doSwing(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            swingType:
+              this.meta?.swings?.[bCh.actionStateIndex] ?? SwingType.NORMAL,
+          });
+        }
+      },
+    },
+    BossRobotSummonAid: {
+      name: 'BossRobotSummonAid',
+      description: 'AI',
+      cooldown: 7000 * COOLDOWN_MOD,
+      type: BattleActionType.CAST,
+      meta: {
+        castTime: 1000,
+        // icon: SwordIcon,
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const target = getTarget(battle, bCh);
+        if (target) {
+          setCasting(bCh, {
+            castTime: exp.BossRobotSummonAid.meta.castTime as number,
+            onCast: async () => {
+              await doSpell(battle, exp.BossRobotSummonAid, bCh, [], {
+                baseDamage: undefined,
+                baseStagger: undefined,
+                particleText: 'Summon Aid!',
+                particleTemplate: getParticle('EFFECT_TEMPLATE_PORTAL_SPAWN'),
+                soundName: 'battle_fire_explosion1',
+                cb: () => {
+                  const room = getCurrentRoom();
+                  const battle = getCurrentBattle();
+                  const enemyTemplates = [
+                    {
+                      chTemplate: getEnemy('TUT_ROBOT_MELEE'),
+                      position: BattlePosition.FRONT,
+                      ai: 'BATTLE_AI_ATTACK',
+                    },
+                    {
+                      chTemplate: varyStats(getEnemy('TUT_ROBOT_MAGE')),
+                      position: BattlePosition.MIDDLE,
+                      ai: 'BATTLE_AI_ATTACK',
+                    },
+                  ];
+
+                  const enemies = enemyTemplates.map(
+                    (t: BattleTemplateEnemy) => {
+                      const ch = characterCreateFromTemplate(t.chTemplate);
+                      roomAddCharacter(room, ch);
+                      return battleCharacterCreateEnemy(ch, t);
+                    }
+                  );
+
+                  playSoundName('battle_fire_explosion1');
+                  enemies.forEach(bCh => {
+                    battle.enemies.push(bCh);
+                    battle.enemiesStorage.push(bCh);
+                    resetCooldownTimer(bCh);
+                    battleSetEnemyActorPosition(battle, bCh);
+
+                    const [targetPx, targetPy] = characterGetPosCenterPx(
+                      bCh.ch
+                    );
+                    const particleTemplate = getParticle(
+                      'EFFECT_TEMPLATE_PORTAL_SPAWN'
+                    );
+
+                    roomAddParticle(
+                      battle.room,
+                      particleCreateFromTemplate(
+                        [targetPx, targetPy],
+                        particleTemplate
+                      )
+                    );
+                  });
+
+                  // lol, need to render the character followers and info cards
+                  renderUi();
+                },
+              });
+            },
+            onInterrupt: async () => {},
+          });
+        }
       },
     },
   };
@@ -398,10 +568,11 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
   };
 
   exp.TUT_ROBOT_BOSS = {
-    name: 'Big Robot',
+    name: 'Big Robot!',
     spriteBase: 'tut_robot_boss',
     spriteSize: [96, 96],
     followerSize: [64, 64],
+    sortOffset: 32,
     stats: {
       ...battleStatsCreate(),
       HP: 100,
@@ -409,8 +580,14 @@ export const init = (exp: { [key: string]: CharacterTemplate }) => {
     },
     facing: Facing.LEFT,
     animationState: AnimationState.BATTLE_IDLE,
-    skills: [BattleActions.RobotSwingArmoredNK, BattleActions.RobotSwingPierce],
+    skills: [
+      BattleActions.BossRobotSwingArmoredN,
+      BattleActions.BossRobotSwingArmoredNK,
+      BattleActions.BossRobotSwingPierce,
+      BattleActions.BossRobotSummonAid,
+    ],
     armor: 1,
+    hiddenHP: true,
     staggerSoundName: 'robot_staggered',
   };
 };

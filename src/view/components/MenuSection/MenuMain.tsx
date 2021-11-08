@@ -76,7 +76,6 @@ const PartyMember = style(
       justifyContent: 'space-between',
       alignItems: 'center',
       height: '93px',
-      background: props.color ?? 'unset',
       padding: props.padding ?? 'unset',
       boxSizing: 'border-box',
       border: props.color ? `2px solid ${colors.DARKGREEN}` : 'unset',
@@ -195,8 +194,8 @@ const MenuSection = () => {
               scene={getCurrentScene()}
               isInactive={outerMenuActive}
               onClose={() => {
-                playSoundName('menu_choice_close');
-                setOuterMenuActive(true);
+                // playSoundName('menu_choice_close');
+                // setOuterMenuActive(true);
               }}
             />
           </MenuBox>
@@ -335,7 +334,9 @@ const MenuSection = () => {
             width="60%"
             open={true}
             isInactive={true}
-            backgroundColor={'#302C2E'}
+            // backgroundColor={'#302C2E'}
+            // backgroundColor="linear-gradient(20deg, rgba(17,17,17,1) 15%, rgba(48,44,46,1) 57%)"
+            backgroundColor="radial-gradient(circle, rgba(17,17,17,1) -0%, rgba(48,44,46,1) 85%) 150px 0px"
             items={party.map(ch => {
               return {
                 label: (

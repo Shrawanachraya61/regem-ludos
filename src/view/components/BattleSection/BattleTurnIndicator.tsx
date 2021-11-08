@@ -10,12 +10,13 @@ import { BattleAllegiance } from 'model/battle';
 interface IBattleTurnIndicatorProps {
   id?: string;
   allegiance: BattleAllegiance;
+  isEffectActive: boolean;
 }
 
 const Root = style('div', () => {
   return {
     position: 'absolute',
-    left: 'calc(50% - 45px)',
+    left: 'calc(50% - 90px)',
     top: '178px',
     width: '180px',
     display: 'flex',
@@ -56,7 +57,7 @@ const BattleTurnIndicator = (props: IBattleTurnIndicatorProps) => {
       >
         <Icon color={color} />
       </div>
-      <div>{text}</div>
+      <div>{props.isEffectActive ? 'Using item' : text}</div>
     </Root>
   );
 };

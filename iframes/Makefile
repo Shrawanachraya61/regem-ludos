@@ -6,6 +6,7 @@ install:
 	sudo apt-get install libsdl2-ttf-dev -y
 	sudo apt install libsdl2-image-dev -y
 	sudo apt install libsdl2-mixer-dev -y
+	sudo apt install libsdl2-gfx-dev -y
 
 install_msys2:
 	pacman -S base-devel gcc vim cmake

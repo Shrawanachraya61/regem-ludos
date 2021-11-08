@@ -91,6 +91,7 @@ export enum ModalSection {
   INFO = 'INFO',
   CONFIRM = 'CONFIRM',
   SELECT_PARTY_MEMBER = 'SELECT_PARTY_MEMBER',
+  SELECT_CHARACTER_FOLLOWER = 'SELECT_CHARACTER_FOLLOWER',
 }
 
 export interface IModalState {

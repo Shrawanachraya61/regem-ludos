@@ -85,8 +85,13 @@ import {
   getCurrentPlayer,
   getCurrentOverworld,
   setCameraTransform,
+  getCameraTransform,
 } from 'model/generics';
-import { Player, playerGetBattlePosition } from 'model/player';
+import {
+  Player,
+  playerGetBattlePosition,
+  playerGetCameraOffset,
+} from 'model/player';
 import {
   createDamageParticle,
   createStatusParticle,
@@ -338,8 +343,10 @@ export const initiateBattle = (
     BattleEvent.onTurnStarted,
     (allegiance: BattleAllegiance) => {
       if (allegiance === BattleAllegiance.ALLY) {
+        panCameraRelativeToBattleCenter(300, 20, 0);
         battlePauseActionTimers(battle, battle.allies);
       } else {
+        panCameraRelativeToBattleCenter(300, -20, 0);
         battlePauseActionTimers(battle, battle.enemies);
       }
     }
@@ -353,6 +360,8 @@ export const initiateBattle = (
       } else {
         battleUnpauseActionTimers(battle, battle.enemies);
       }
+
+      panCameraToBattleCenter(300);
     }
   );
 
@@ -390,6 +399,34 @@ export const initiateBattle = (
   console.log('CREATE BATTLE', battle);
 
   return battle;
+};
+
+const getBattleCenterCameraLoc = () => {
+  const [screenW, screenH] = getScreenSize();
+  return [screenW / 2 - 32 / 2, screenH / 4 - 13];
+};
+export const panCameraToBattleCenter = (ms: number) => {
+  panCameraRelativeToBattleCenter(ms, 0, 0);
+};
+
+export const panCameraRelativeToBattleCenter = (
+  ms: number,
+  x: number,
+  y: number
+) => {
+  const duration = ms;
+  const transform = getCameraTransform();
+  if (transform) {
+    const [tX, tY] = transform.current();
+    const [oX, oY] = getBattleCenterCameraLoc();
+    const t = new Transform(
+      [tX, tY, 0],
+      [oX - x, oY - y, 0],
+      duration,
+      TransformEase.EASE_OUT
+    );
+    setCameraTransform(t);
+  }
 };
 
 // used at beginning of fight to start all characters who have an active channel
@@ -592,6 +629,7 @@ export const invokeSkill = (bCh: BattleCharacter, skill: BattleAction) => {
 
   bCh.canActSignaled = false;
   skill.cb(battle, bCh);
+  // console.log('INVOKE SKILL', bCh, skill);
   battleInvokeEvent(getCurrentBattle(), BattleEvent.onCharacterAction, bCh);
 };
 
@@ -1014,7 +1052,6 @@ export const resetCooldownTimer = (bCh: BattleCharacter) => {
     let newTime = Math.max(skill.cooldown - skill.cooldown * cdr, 1000);
 
     if (battleCharacterHasStatus(bCh, BattleStatus.HASTE)) {
-      console.log('CH IS HASTED');
       newTime = newTime / 2;
     }
 
@@ -1168,6 +1205,7 @@ export const applyDamage = (
       )
     );
     characterModifyHp(bCh.ch, -dmg);
+    battleInvokeEvent(battle, BattleEvent.onCharacterDamaged, bCh);
   }
 
   if (bCh.isDefeated) {
@@ -1306,6 +1344,12 @@ const checkBattleCompletion = async (battle: Battle) => {
       );
     }
   } else if (battleIsLoss(battle)) {
+    // HACK: If Ada is last character to die, the on turn end callback does not get called
+    // which sets the character's dead anim status
+    characterSetAnimationState(
+      getCurrentPlayer().leader,
+      AnimationState.BATTLE_DEAD
+    );
     hideSections();
     playSoundName('battle_loss');
     battle.isCompleted = true;

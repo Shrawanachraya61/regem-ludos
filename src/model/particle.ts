@@ -191,7 +191,7 @@ export const createStatusParticle = (
   particle.timer = new Timer(duration);
   particle.transform = new Transform(
     [x, y, 0],
-    [x, y - TILE_HEIGHT * 2.5, 0],
+    [x, y - TILE_HEIGHT * 1.75, 0],
     duration,
     TransformEase.EASE_OUT
   );

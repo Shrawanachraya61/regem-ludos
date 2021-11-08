@@ -138,6 +138,11 @@ export const getPauseKeyLabel = () => '(Space)';
 export const isPauseKey = (key: string) => [' '].includes(key);
 export const getAuxKeyLabel = () => '(C)';
 
+export const isLeftKey = (key: string) => ['ArrowLeft'].includes(key);
+export const isRightKey = (key: string) => ['ArrowRight'].includes(key);
+export const isUpKey = (key: string) => ['ArrowUp'].includes(key);
+export const isDownKey = (key: string) => ['ArrowDown'].includes(key);
+
 export const isSkipKey = (key: string) => {
   return ['Backspace', 'Escape'].includes(key);
 };

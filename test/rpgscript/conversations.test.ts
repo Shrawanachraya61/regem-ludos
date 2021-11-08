@@ -18,14 +18,7 @@ import {
   initAppStateReducers,
 } from '../helpers/immediate-reducer';
 import { getConfirmKey, getCurrentKeyHandler } from 'controller/events';
-
-const pressCutsceneInput = () => {
-  const cb = getCurrentKeyHandler();
-  if (cb) {
-    cb({ key: getConfirmKey() } as any);
-    updateScene(getCurrentScene());
-  }
-};
+import { pressCutsceneInput } from '../helpers/cutscene-helpers';
 
 beforeEach(async () => {
   // enableConsole();
@@ -51,7 +44,7 @@ describe('RPGScript Conversations', () => {
   // console.log(wrapper.container.textContent);
   // disableConsole();
 
-  test('setConversation.', async () => {
+  test('The setConversation command mutates the app state to display a single-person conversation', async () => {
     const script = `
     +setConversation(Ada, 0);
     Ada: "This is a test."
@@ -77,7 +70,7 @@ describe('RPGScript Conversations', () => {
     expect(sceneIsWaiting(scene)).toEqual(false);
   });
 
-  test('setConversation2.', async () => {
+  test('The setConversation command mutates the app state to display a two-person conversation', async () => {
     const script = `
     +setConversation2(Ada, Conscience, 0);
     Ada: "This is a test."

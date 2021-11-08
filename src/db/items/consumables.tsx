@@ -2,7 +2,10 @@
 import { h } from 'preact';
 
 import { createParticleAtCharacter } from 'controller/battle-actions';
-import { resetCooldownTimer } from 'controller/battle-management';
+import {
+  applyArmorDamage,
+  resetCooldownTimer,
+} from 'controller/battle-management';
 import { popKeyHandler, pushEmptyKeyHandler } from 'controller/events';
 import { pause, unpause } from 'controller/loop';
 import {
@@ -13,16 +16,21 @@ import {
   hideBattleEffect,
   hideModal,
   showBattleEffect,
+  showCharacterFollowerSelectModal,
   showModal,
   showPartyMemberSelectModal,
 } from 'controller/ui-actions';
 import {
+  battleGetAllegiance,
   battleGetBattleCharacterFromCharacter,
   battlePauseTimers,
   BattleStatus,
 } from 'model/battle';
 import {
+  BattleCharacter,
   battleCharacterAddStatus,
+  battleCharacterIsKnockedDown,
+  battleCharacterRecoverFromKnockDown,
   battleCharacterSetActonState,
   battleCharacterSetAnimationIdle,
 } from 'model/battle-character';
@@ -62,6 +70,7 @@ import { clearScreen } from 'view/draw';
 import { colors } from 'view/style';
 import { renderUi } from 'view/ui';
 import { ItemTemplate, ItemType, Item } from '.';
+import { get as getPEffect } from '../persistent-effects';
 
 const assertPlayerHasItem = (itemName: string) => {
   return playerGetItemCount(getCurrentPlayer(), itemName) > 0;
@@ -78,11 +87,6 @@ const showBattleParticles = async (
       hideModal();
       // this needs to be a loop anim because of how AnimDiv works (crappily)
       showBattleEffect([bCh], effectName);
-      bCh.isDefeated = false;
-      bCh.shouldRemove = false;
-      if (!battle.allies.includes(bCh)) {
-        battle.allies.push(bCh);
-      }
       enablePauseRendering();
 
       let textParticle: any = null;
@@ -114,8 +118,8 @@ const showBattleParticles = async (
         // HACK at least one render has to remove the particles...
         setTimeout(() => {
           disablePauseRendering();
-          resolve(true);
         }, 100);
+        resolve(true);
       }, 1500);
     }
   });
@@ -160,6 +164,44 @@ const createSelectPartyMemberCall = (
   });
 };
 
+// onClose: () => void;
+// onCharacterSelected: (ch: Character) => Promise<void>;
+// filter?: (a: any) => boolean;
+// body?: any;
+// characters: Character[];
+// isAll?: boolean;
+
+const createSelectEnemyCall = (
+  item: Item,
+  resolve: (v: boolean) => void,
+  { filter, onCharacterSelectedBattle }: ICreateSelectPartyMemberCallMeta
+) => {
+  const battle = getCurrentBattle();
+  // HACK this removes the item select dialog without actually removing it.
+  showBattleEffect([], '');
+  showCharacterFollowerSelectModal({
+    body: `Use ${item.label} on which character?`,
+    isAll: false,
+    characters: battle.enemies.map(bCh => bCh.ch),
+    onCharacterSelected: async (ch: Character) => {
+      if (!assertPlayerHasItem(item.name as string)) {
+        playSoundName('terminal_cancel');
+        return;
+      }
+      enablePauseRendering();
+      onCharacterSelectedBattle(ch);
+      console.log('EFFECT USED');
+      hideModal();
+    },
+    onClose: () => {
+      hideModal();
+      hideBattleEffect();
+      resolve(false);
+    },
+    filter,
+  });
+};
+
 const createConfirmUseModal = (item: Item, resolve: (v: boolean) => void) => {
   const emptyStackCb = pushEmptyKeyHandler();
   showModal(ModalSection.CONFIRM, {
@@ -188,22 +230,45 @@ const createConfirmUseModal = (item: Item, resolve: (v: boolean) => void) => {
   });
 };
 
-const createStandardOnUseCb = (
+const createPartyMemberSelectOnUseCb = (
   particleName: string,
   particleText: string,
-  applyItem: (ch: Character, item: Item) => void
+  applyItem: (ch: Character, item: Item) => void,
+  filter?: any
 ): ((item: Item, isBattle?: boolean) => Promise<boolean>) => {
   return async (item: Item, isBattle?: boolean) => {
     return new Promise(resolve => {
       createSelectPartyMemberCall(item, resolve, {
         isBattle,
-        filter: ch => ch.hp > 0,
+        filter: filter ?? (ch => ch.hp > 0),
         onCharacterSelectedMenu: (ch: Character) => {
           applyItem(ch, item);
         },
         onCharacterSelectedBattle: (ch: Character) => {
           applyItem(ch, item);
           showBattleParticles(ch, particleName, particleText);
+        },
+      });
+    });
+  };
+};
+
+const createEnemySelectOnUseCb = (
+  particleName: string,
+  particleText: string,
+  applyItem: (chList: Character[], item: Item) => void,
+  filter?: any
+): ((item: Item, isBattle?: boolean) => Promise<boolean>) => {
+  return async (item: Item, isBattle?: boolean) => {
+    return new Promise(resolve => {
+      createSelectEnemyCall(item, resolve, {
+        filter: filter ?? (ch => true),
+        onCharacterSelectedMenu: () => {},
+        onCharacterSelectedBattle: (ch: Character) => {
+          applyItem([ch], item);
+          showBattleParticles(ch, particleName, particleText).then(() =>
+            resolve(true)
+          );
         },
       });
     });
@@ -229,7 +294,17 @@ const createRezOnUseCb = (
         onCharacterSelectedBattle: (ch: Character) => {
           applyItem(ch, item);
 
+          const battle = getCurrentBattle();
+          const bCh = battleGetBattleCharacterFromCharacter(battle, ch);
+          if (bCh) {
+            bCh.isDefeated = false;
+            bCh.shouldRemove = false;
+            if (!battle.allies.includes(bCh)) {
+              battle.allies.push(bCh);
+            }
+          }
           showBattleParticles(ch, particleName, particleText);
+
           // have to use setTimeout here because timeoutPromise does not operate when paused,
           // and all items must be used while paused
           setTimeout(() => {
@@ -279,7 +354,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     effectDescription: 'Restore 10 hp.',
     type: ItemType.USABLE,
     icon: 'potion',
-    onUse: createStandardOnUseCb(
+    onUse: createPartyMemberSelectOnUseCb(
       'effect_heal_anim_loop',
       '+10',
       (ch: Character, item: Item) => {
@@ -298,7 +373,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     effectDescription: 'Restore 25 hp.',
     type: ItemType.USABLE,
     icon: 'potion',
-    onUse: createStandardOnUseCb(
+    onUse: createPartyMemberSelectOnUseCb(
       'effect_heal_anim_loop',
       '+10',
       (ch: Character, item: Item) => {
@@ -317,7 +392,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     effectDescription: 'Restore 50 hp.',
     type: ItemType.USABLE,
     icon: 'potion',
-    onUse: createStandardOnUseCb(
+    onUse: createPartyMemberSelectOnUseCb(
       'effect_heal_anim_loop',
       '+50',
       (ch: Character, item: Item) => {
@@ -336,7 +411,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     effectDescription: 'Restore 100 hp.',
     type: ItemType.USABLE,
     icon: 'potion',
-    onUse: createStandardOnUseCb(
+    onUse: createPartyMemberSelectOnUseCb(
       'effect_heal_anim_loop',
       '+100',
       (ch: Character, item: Item) => {
@@ -405,12 +480,75 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     ),
   };
 
+  exp.Muffin = {
+    label: 'Muffin',
+    sortName: 'Muffin',
+    description:
+      'This tasty snack is just the right thing to put somebody back on their feet.',
+    effectDescription:
+      'Remove the "Knocked Down" status for an allied character.',
+    type: ItemType.USABLE_BATTLE,
+    icon: 'muffin',
+    onUse: createPartyMemberSelectOnUseCb(
+      'effect_heal_anim_loop',
+      '',
+      (ch: Character, item: Item) => {
+        battleCharacterRecoverFromKnockDown(
+          battleGetBattleCharacterFromCharacter(
+            getCurrentBattle(),
+            ch
+          ) as BattleCharacter,
+          getCurrentBattle()
+        );
+        playerRemoveItem(getCurrentPlayer(), item.name as string);
+      },
+      (ch: Character) =>
+        ch.hp > 0 &&
+        getCurrentBattle() &&
+        battleCharacterIsKnockedDown(
+          battleGetBattleCharacterFromCharacter(
+            getCurrentBattle(),
+            ch
+          ) as BattleCharacter
+        )
+    ),
+  };
+
+  exp.DilutedAcidicCompound = {
+    label: 'Diluted Acidic Compound',
+    description:
+      "A flask of some nasty-smelling liquid that supposedly can eat through one's armor.",
+    effectDescription: 'Remove 1 point of armor from target.',
+    type: ItemType.USABLE_BATTLE,
+    icon: 'flask',
+    onUse: createEnemySelectOnUseCb(
+      '',
+      'Acid',
+      (characters: Character[], item: Item) => {
+        const ch = characters[0];
+        const battle = getCurrentBattle();
+        if (battle) {
+          const bCh = battleGetBattleCharacterFromCharacter(battle, ch);
+          if (bCh) {
+            applyArmorDamage(battle, bCh, 1, true);
+            // bCh.armor--;
+            // if (bCh.armor < 0) {
+            //   bCh.armor = 0;
+            // }
+            playerRemoveItem(getCurrentPlayer(), item.name as string);
+          }
+        }
+      }
+    ),
+  };
+
   exp.DeVisibleCloak = {
     label: 'DeVisible Cloak',
     description:
       'In the early days of the Regem Ludos VR, players were forced to engage in any battle they encountered, since enemies were known to tenaciously chase players down when spotted.  Ostensibly this irritated Mr. Charles DeVisible, who spent months hacking a certain item into the world that would cloak himself from vision.  When other players caught Mr. DeVisible using this item to bypass challenges in VR, they sought to copy the item.  <br/><br/>And copy it they most certainly did.  <br/><br/>While Mr. DeVisible probably still holds the original version of the DeVisible Cloak, a copious number of copies of it can be found littered all about the various floors of the Regem Ludos VR, and they all serve the same purpose: to bypass encounters.  Unfortunately, these copies are not perfect.  For some reason they only last for a limited time before the cloak inexplicably disintegrates, leaving the wearer quite vulnerable.',
-    effectDescription:
-      'Apply the CLOAKED effect for 30 seconds: enemies will not see you while walking around.',
+    effectDescription: `Apply the ${
+      getPEffect('CLOAKED').name
+    } effect for 30 seconds: ${getPEffect('CLOAKED').description}`,
     type: ItemType.USABLE_OVERWORLD,
     icon: 'cloakConsume',
     onUse: createOverworldStatusOnUseCb((item: Item) => {
@@ -439,11 +577,12 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     label: 'Haste Flavoring',
     description:
       'This viscous, red "flavoring" is used to decrease the cooldowns of abilities while in a Regem Ludos VR Battle.  Even though it looks suspiciously like ketchup, nobody can actually taste anything while in VR, so the substance cannot be confirmed.',
-    effectDescription:
-      'While in battle, apply the HASTE effect to one character:  Cooldowns are reduced by 50% (10s).',
+    effectDescription: `While in battle, apply the ${
+      getPEffect('HASTE').name
+    } effect to one character:  ${getPEffect('HASTE').description}`,
     type: ItemType.USABLE_BATTLE,
     icon: 'potion',
-    onUse: createStandardOnUseCb(
+    onUse: createPartyMemberSelectOnUseCb(
       'effect_heal_anim_loop',
       'Haste',
       (ch: Character, item: Item) => {

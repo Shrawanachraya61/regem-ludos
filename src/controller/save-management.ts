@@ -42,6 +42,7 @@ import { runMainLoop, unpause } from './loop';
 import { renderUi } from 'view/ui';
 import { showSection } from './ui-actions';
 import { AppSection } from 'model/store';
+import { getLastUpdatedQuests, resetLastUpdatedQuests } from './quest';
 
 const APP_LS_PREFIX = 'regem_ludos_';
 const APP_SETTINGS_KEY = 'settings';
@@ -63,6 +64,7 @@ export interface ISave {
   timestampLoaded: Date;
   durationPlayed: number;
   debug: boolean;
+  questsUpdated?: string[];
   overworld: {
     name: string;
   };
@@ -204,6 +206,7 @@ export const loadSaveListFromLS = (): ISave[] => {
           overworld: {
             name: save.overworld.name ?? '',
           },
+          questsUpdated: save.questsUpdated ?? [],
           scene: {
             storage: save.scene.storage ?? {},
             storageOnce: save.scene.storageOnce ?? {},
@@ -283,6 +286,7 @@ export const createSave = (params: {
     overworld: {
       name: getCurrentOverworld().name,
     },
+    questsUpdated: getLastUpdatedQuests(),
     scene: {
       storage: scene.storage ?? {},
       storageOnce: scene.storageOnce ?? {},
@@ -377,6 +381,9 @@ const loadGame = (save: ISave) => {
   scene.storageTreasure = {
     ...save.scene.storageTreasure,
   };
+
+  resetLastUpdatedQuests(save.questsUpdated);
+
   player.tokens = save.player.tokens;
   player.tickets = save.player.tickets;
   player.backpack = save.player.backpack

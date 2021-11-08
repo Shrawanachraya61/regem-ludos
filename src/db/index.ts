@@ -12,9 +12,11 @@ import { init as initItems } from './items';
 import { init as initBattleActions } from './battle-actions';
 import { init as initSaves } from './saves';
 import { init as initScripts } from './scripts';
+import { init as initPersistentEffects } from './persistent-effects';
 import { Scene } from 'model/scene';
 
 export default async (scene: Scene) => {
+  initPersistentEffects();
   initQuests();
   initParticles();
   initEnemies();

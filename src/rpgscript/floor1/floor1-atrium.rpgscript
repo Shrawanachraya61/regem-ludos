@@ -237,6 +237,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Conscience: "Yay!"
   +:happy(Conscience);
   Conscience: "It'll be worth it, I promise!"
+  +startQuest(Tutorial);
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);

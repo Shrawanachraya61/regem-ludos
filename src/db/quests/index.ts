@@ -3,6 +3,7 @@ import { init as initPart1 } from './quests-part1';
 import { init as initTest } from './quests-test';
 
 export interface QuestTemplate {
+  name?: string;
   label: string;
   summary: string;
   description: string;
@@ -13,7 +14,7 @@ export interface QuestTemplate {
   ticketsReward?: number;
   experienceReward?: number;
   itemsReward?: () => Item[];
-  icon?: any;
+  icon?: string;
   iconColor?: string;
 }
 
@@ -23,7 +24,7 @@ export interface IQuestStep {
   i?: number;
   label: string;
   description: string;
-  completedScriptKey: string;
+  completedScriptKey?: string;
 }
 
 const exp = {} as { [key: string]: QuestTemplate };
@@ -59,8 +60,10 @@ export const init = () => {
 
   for (const i in exp) {
     const quest = exp[i];
+    quest.name = i;
     quest.steps.forEach((step, i) => {
       step.i = i;
+      step.completedScriptKey = quest.questStartScriptKey + '-' + i;
     });
   }
 };

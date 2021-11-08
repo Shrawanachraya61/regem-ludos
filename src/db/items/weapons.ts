@@ -133,7 +133,7 @@ export const initBattleActions = (): Record<string, BattleAction> => {
               BattleActionType.RANGED
             );
             if (target) {
-              await doSpell(battle, exp.Fireball, bCh, target, {
+              await doSpell(battle, exp.Fireball, bCh, [target], {
                 baseDamage: 15,
                 baseStagger: 15,
                 particleText: 'Fireball!',

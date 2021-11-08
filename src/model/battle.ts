@@ -194,6 +194,18 @@ export interface BattleStats {
   RESV: number;
 }
 
+export type StatName =
+  | 'HP'
+  | 'POW'
+  | 'ACC'
+  | 'FOR'
+  | 'CON'
+  | 'RES'
+  | 'SPD'
+  | 'EVA'
+  | 'STAGGER'
+  | 'RESV';
+
 export const battleCreate = (
   room: Room,
   allies: BattleCharacter[],
@@ -267,27 +279,42 @@ export const battleSetActorPositions = (battle: Battle): void => {
   battle.allies.forEach((bCh, i) => {
     const ind = player.battlePositions.indexOf(bCh.ch);
     setAtMarker(bCh.ch.name, 'MarkerAlly' + (ind > -1 ? ind : i));
+    bCh.positionMarker = i;
   });
 
-  const usedPositions: Record<string, boolean> = {};
   battle.enemies.forEach(bCh => {
-    const pos = bCh.position;
-    let offset = 0;
-
-    if (pos === BattlePosition.MIDDLE) {
-      offset = 2;
-    } else if (pos === BattlePosition.BACK) {
-      offset = 4;
-    }
-
-    const markerName = 'MarkerEnemy' + offset;
-    if (usedPositions[markerName]) {
-      setAtMarker(bCh.ch.name, 'MarkerEnemy' + (offset + 1));
-    } else {
-      usedPositions[markerName] = true;
-      setAtMarker(bCh.ch.name, markerName);
-    }
+    battleSetEnemyActorPosition(battle, bCh);
   });
+};
+
+export const battleSetEnemyActorPosition = (
+  battle: Battle,
+  bCh: BattleCharacter
+) => {
+  const pos = bCh.position;
+  let offset = 0;
+  if (pos === BattlePosition.MIDDLE) {
+    offset = 2;
+  } else if (pos === BattlePosition.BACK) {
+    offset = 4;
+  }
+
+  const existingEnemyAtPosition = battle.enemies.find(
+    bCh => bCh.positionMarker === offset
+  );
+  if (existingEnemyAtPosition) {
+    offset++;
+  }
+
+  if (battle.enemies.find(bCh => bCh.positionMarker === offset)) {
+    console.error(
+      'WARNING: Setting battle character at a position which is already occupied.',
+      bCh
+    );
+  }
+
+  setAtMarker(bCh.ch.name, 'MarkerEnemy' + offset);
+  bCh.positionMarker = offset;
 };
 
 export const battleIsVictory = (battle: Battle): boolean => {
@@ -355,29 +382,27 @@ export const battleGetTargetableCharacters = (
     battle,
     battleGetOppositeAllegiance(allegiance)
   );
-  let target: BattleCharacter[];
-  target = arr.filter((bCh: BattleCharacter) => {
-    return bCh.position === BattlePosition.FRONT;
-  });
-  if (
-    (actionType === BattleActionType.SWING && !target.length) ||
-    actionType !== BattleActionType.SWING
-  ) {
-    target = target.concat(
-      arr.filter((bCh: BattleCharacter) => {
-        return bCh.position === BattlePosition.MIDDLE;
-      })
-    );
-  }
-  if (
-    (actionType === BattleActionType.SWING && !target.length) ||
-    actionType !== BattleActionType.SWING
-  ) {
+  if (actionType === BattleActionType.SWING) {
+    let target: BattleCharacter[];
     target = arr.filter((bCh: BattleCharacter) => {
-      return bCh.position === BattlePosition.BACK;
+      return bCh.position === BattlePosition.FRONT;
     });
+    if (!target.length) {
+      target = target.concat(
+        arr.filter((bCh: BattleCharacter) => {
+          return bCh.position === BattlePosition.MIDDLE;
+        })
+      );
+    }
+    if (!target.length) {
+      target = arr.filter((bCh: BattleCharacter) => {
+        return bCh.position === BattlePosition.BACK;
+      });
+    }
+    return target ?? null;
+  } else {
+    return arr;
   }
-  return target ?? null;
 };
 
 export const battleGetNearestAttackable = (
@@ -626,7 +651,7 @@ export const battlePauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
-  console.log(
+  console.trace(
     'BATTLE PAUSE',
     characters ?? battle.allies.concat(battle.enemies)
   );

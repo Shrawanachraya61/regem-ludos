@@ -17,6 +17,7 @@ import { ItemTemplate, ItemType } from 'db/items';
 import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { sortItems } from 'utils';
 import { itemIsCurrentlyUsable } from 'model/item';
+import { getIcon } from 'view/icons';
 
 const MAX_HEIGHT = '628px';
 
@@ -282,17 +283,35 @@ const MenuItems = (props: IMenuItemsProps) => {
           isInactive={!menuOpen || props.isInactive}
           hideTitle={true}
           startingIndex={0}
+          itemHeight={48}
           items={filteredBackpack.map((item, i) => {
+            const count = playerGetItemCount(props.player, item.name as string);
+            const Icon = getIcon(item.icon ?? 'help');
             return {
               label: (
                 <div
                   style={{
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '4px',
+                    textDecoration: itemIsCurrentlyUsable(item)
+                      ? 'underline'
+                      : 'unset',
                     background:
                       i === selectedItemIndex ? colors.DARKGREEN : 'unset',
                   }}
                 >
-                  {item.label} (
-                  {playerGetItemCount(props.player, item.name as string)})
+                  <div
+                    style={{
+                      width: '24px',
+                      marginRight: '16px',
+                      marginLeft: '32px',
+                    }}
+                  >
+                    <Icon color={colors.WHITE} />
+                  </div>
+                  {item.label} {count > 1 ? `(${count})` : ''}
                 </div>
               ),
               value: i,

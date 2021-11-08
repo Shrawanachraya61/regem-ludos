@@ -44,6 +44,7 @@ import { playSoundName } from 'model/sound';
 import BattleItems from './BattleItems';
 import BattleTurnIndicator from './BattleTurnIndicator';
 import { fleeBattle } from 'controller/battle-management';
+import CharacterFollowerMenu from 'view/elements/CharacterFollowerMenu';
 
 const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
 
@@ -279,12 +280,6 @@ const BattleSection = (props: IBattleSectionProps) => {
       <ChannelIndicators allegiance={BattleAllegiance.ENEMY} />
       <ChannelIndicators allegiance={BattleAllegiance.ALLY} />
       {battle.alliesStorage.map(bCh => {
-        console.log(
-          'ALLY',
-          bCh.ch.name,
-          isEffectActive,
-          uiState.effect.bChList.includes(bCh)
-        );
         return (
           <BattleCharacterFollower
             key={bCh.ch.name}
@@ -304,8 +299,9 @@ const BattleSection = (props: IBattleSectionProps) => {
           <BattleCharacterFollower
             key={bCh.ch.name}
             bCh={bCh}
-            battleIndex={battle.enemiesStorage.indexOf(bCh)}
+            battleIndex={battle.enemies.indexOf(bCh)}
             isEnemy={true}
+            hideTargets={isEffectActive}
             animName={
               isEffectActive && uiState.effect.bChList.includes(bCh)
                 ? uiState.effect.effectAnimName
@@ -315,7 +311,7 @@ const BattleSection = (props: IBattleSectionProps) => {
         );
       })}
       <PauseTextSection>
-        {isPaused ? (
+        {isPaused && !isEffectActive ? (
           <>
             <p style={{ marginRight: '8px' }}>
               Press Left Arrow to cycle Melee Target.
@@ -422,7 +418,10 @@ const BattleSection = (props: IBattleSectionProps) => {
                       //     ? selectedStyles
                       //     : { color: colors.YELLOW }
                       // }
-                      disabled={areBattleMenuItemsDisabled}
+                      disabled={
+                        areBattleMenuItemsDisabled ||
+                        battle.template?.disableFlee
+                      }
                     >
                       Flee
                     </BattleMenuItem>
@@ -443,8 +442,12 @@ const BattleSection = (props: IBattleSectionProps) => {
                   ) {
                     playSoundName('menu_cancel');
                   } else if (val === 'flee') {
-                    unpause();
-                    fleeBattle(battle);
+                    if (battle.template?.disableFlee) {
+                      playSoundName('menu_cancel');
+                    } else {
+                      unpause();
+                      fleeBattle(battle);
+                    }
                   } else {
                     setMenuState(val);
                   }
@@ -470,6 +473,7 @@ const BattleSection = (props: IBattleSectionProps) => {
         />
       ) : null}
       <BattleTurnIndicator
+        isEffectActive={isEffectActive}
         allegiance={currentlyActingAllegiance ?? BattleAllegiance.NONE}
       />
     </Root>

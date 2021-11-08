@@ -418,12 +418,17 @@ function H(n, l, u, i, t, o, r, c) {
         break;
       }
   if (null == n) {
-    if (null === l.type) return document.createTextNode(d);
-    (n = t
-      ? document.createElementNS('http://www.w3.org/2000/svg', l.type)
-      : document.createElement(l.type, d.is && { is: d.is })),
-      (o = null),
-      (c = !1);
+    try {
+      if (null === l.type) return document.createTextNode(d);
+      (n = t
+        ? document.createElementNS('http://www.w3.org/2000/svg', l.type)
+        : document.createElement(l.type, d.is && { is: d.is })),
+        (o = null),
+        (c = !1);
+    } catch (e) {
+      console.error('TYPE', l);
+      throw e;
+    }
   }
   if (null === l.type) p === d || (c && n.data === d) || (n.data = d);
   else {

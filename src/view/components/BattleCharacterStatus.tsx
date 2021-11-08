@@ -72,6 +72,8 @@ const BattleCharacterStatus = (
   if (!hasAnimation(portraitName)) {
     portraitName = 'bartolo_portrait';
   }
+
+  console.log('RENDER BATTLE CHARACTER STATUS', props.bCh.ch.name);
   return (
     <ButtonWrapper>
       <Bar top={true}>

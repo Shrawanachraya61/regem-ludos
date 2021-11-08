@@ -47,6 +47,7 @@ interface IItemDescriptionProps {
   item?: Item;
   showName?: boolean;
   onUse?: (item: Item) => void;
+  disableTitle?: boolean;
 }
 
 const ItemDescription = (props: IItemDescriptionProps) => {
@@ -87,7 +88,9 @@ const ItemDescription = (props: IItemDescriptionProps) => {
   return (
     <Root>
       <div>
-        <EquipmentDescriptionTitle>DESCRIPTION</EquipmentDescriptionTitle>
+        {props.disableTitle ? null : (
+          <EquipmentDescriptionTitle>DESCRIPTION</EquipmentDescriptionTitle>
+        )}
         {props.showName ? (
           <EquipmentTitleText
             style={{

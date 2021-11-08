@@ -163,9 +163,13 @@ export const main = async (): Promise<void> => {
   // player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
-  player.leader.hp = 30;
-  conscience.hp = 30;
+  // player.leader.hp = 30;
+  // conscience.hp = 30;
 
+  beginQuest(scene, 'OpeningQuest');
+
+  characterEquipItem(player.leader, getItem('ShieldRing'), 0);
+  characterEquipItem(player.leader, getItem('PierceSword'));
   // player.leader.hp = 0;
 
   characterEquipItem(conscience, player.backpack[1]);

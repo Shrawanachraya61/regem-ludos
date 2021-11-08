@@ -3,7 +3,12 @@ import { h, render, Fragment } from 'preact';
 import { useEffect, useState, useReducer } from 'preact/hooks';
 import { colors, style } from 'view/style';
 
-import { getCurrentPlayer, getCurrentScene, getIsPaused } from 'model/generics';
+import {
+  getCurrentBattle,
+  getCurrentPlayer,
+  getCurrentScene,
+  getIsPaused,
+} from 'model/generics';
 import { AppState, AppStateInitial, AppSection } from 'model/store';
 import { appReducer } from 'controller/ui-actions';
 import { getDrawScale, SCREEN_WIDTH, SCREEN_HEIGHT } from 'model/canvas';
@@ -164,7 +169,7 @@ const App = () => {
       }}
     >
       <Root id="ui-sections">
-        {getIsPaused() ? (
+        {getIsPaused() && !appState.battle.effect.active ? (
           <PausedOverlay>
             <PausedText>PAUSED</PausedText>
           </PausedOverlay>

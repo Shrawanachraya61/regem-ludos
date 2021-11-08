@@ -9,7 +9,7 @@ import MenuLoad from './MenuSection/MenuLoad';
 import { getCancelKeyLabel } from 'controller/events';
 import { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import { playSoundName } from 'model/sound';
-import { setCurrentPlayer, setTimeLoaded } from 'model/generics';
+import { getCurrentScene, setCurrentPlayer, setTimeLoaded } from 'model/generics';
 import { getCanvas, setDrawScale } from 'model/canvas';
 import { initHooks } from 'view/hooks';
 import { get as getCharacter } from 'db/characters';
@@ -49,7 +49,7 @@ const createNewGame = async () => {
   player.partyStorage.push(conscience);
   player.battlePositions.push(conscience);
 
-  // beginQuest(getCurrentScene());
+  beginQuest(getCurrentScene(), 'OpeningQuest');
 
   const overworldTemplate = getOverworld('floor1Outside');
   initiateOverworld(player, overworldTemplate);

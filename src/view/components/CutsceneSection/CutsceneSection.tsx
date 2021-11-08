@@ -672,7 +672,7 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     setIsSkipping(true);
     const fade2 = document.getElementById('fade2');
     if (fade2) {
-      fade2.style.transition = `background-color ${500}ms`;
+      fade2.style.transition = `background-color ${300}ms`;
       fade2.style['background-color'] = 'rgba(0, 0, 0, 255)';
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -694,15 +694,15 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
       const fade2 = document.getElementById('fade2');
       hideSection(AppSection.Cutscene);
       if (fade2) {
-        fade2.style.transition = `background-color ${500}ms`;
+        fade2.style.transition = `background-color ${300}ms`;
         fade2.style['background-color'] = 'rgba(0, 0, 0, 0)';
       }
       if (ui) {
-        ui.style.transition = 'opacity 500ms linear';
+        ui.style.transition = 'opacity 300ms linear';
         ui.style.opacity = '1';
       }
       if (canvOuter) {
-        canvOuter.style.transition = 'opacity 500ms linear';
+        canvOuter.style.transition = 'opacity 300ms linear';
         canvOuter.style.opacity = '1';
       }
     }, 500);
@@ -775,6 +775,13 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     skipConfirmVisible
   );
 
+  const topBarButtons = [TopBarButtons.SETTINGS];
+
+  // Hack removes this button from visibility during battles, but leaves the settings one
+  if (!getCurrentBattle()) {
+    topBarButtons.push(TopBarButtons.SKIP_CUTSCENE);
+  }
+
   const skipCutsceneEnabled =
     !isSkipping &&
     !skipConfirmVisible &&
@@ -808,7 +815,7 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
         }}
       >
         <TopBar
-          buttons={[TopBarButtons.SETTINGS, TopBarButtons.SKIP_CUTSCENE]}
+          buttons={topBarButtons}
           onSettingsClick={() => {}}
           onSettingsClose={handleSettingsClose}
           onSkipClick={

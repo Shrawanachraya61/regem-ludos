@@ -20,6 +20,7 @@ import SpearIcon from 'view/icons/Spear';
 import HammerIcon from 'view/icons/Hammer';
 import WandIcon from 'view/icons/Wand';
 import GunIcon from 'view/icons/Gun';
+import { StatName } from 'model/battle';
 
 const Root = style('div', () => {
   return {
@@ -213,7 +214,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
   ];
 
   return (
-    <Root style={props.style}>
+    <Root style={props.style} id={'ch-status-' + props.ch?.name}>
       <PrimaryRoot>
         <PortraitContainer>
           {props.usePortrait ? (
@@ -283,7 +284,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
                 return (
                   <Stat key={label}>
                     <label>{label}</label>{' '}
-                    {value ? characterGetStat(ch, value) : ''}
+                    {value ? characterGetStat(ch, value as StatName) : ''}
                   </Stat>
                 );
               })}
@@ -293,7 +294,7 @@ const CharacterStatus = (props: ICharacterStatusProps) => {
                 return (
                   <Stat key={label}>
                     <label>{label}</label>{' '}
-                    {value ? characterGetStat(ch, value) : ''}
+                    {value ? characterGetStat(ch, value as StatName) : ''}
                   </Stat>
                 );
               })}

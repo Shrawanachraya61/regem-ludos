@@ -558,15 +558,25 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     }
     case 'b': {
       if (getKeyUpdateEnabled()) {
-        console.log('DISABLE KEYS');
-        disableKeyUpdate();
-        // await callScript(getCurrentScene(), 'floor1-Skye_intro');
-        await callScript(getCurrentScene(), 'test-combat');
-        if (overworld.visible) {
-          showSection(AppSection.Debug, true);
-        }
-        console.log('ENABLE KEYS');
-        enableKeyUpdate();
+        overworldHide(getCurrentOverworld());
+        transitionToBattle(
+          getCurrentPlayer(),
+          getEncounter('ENCOUNTER_IMPOSSIBLE'),
+          () => {
+            console.log('COMPLETED!');
+          },
+          true
+        );
+
+        // console.log('DISABLE KEYS');
+        // disableKeyUpdate();
+        // // await callScript(getCurrentScene(), 'floor1-Skye_intro');
+        // await callScript(getCurrentScene(), 'test-combat');
+        // if (overworld.visible) {
+        //   showSection(AppSection.Debug, true);
+        // }
+        // console.log('ENABLE KEYS');
+        // enableKeyUpdate();
       }
       break;
     }

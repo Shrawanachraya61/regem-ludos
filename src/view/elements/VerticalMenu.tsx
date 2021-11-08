@@ -1,10 +1,16 @@
 import { h } from 'preact';
 import { useEffect, useReducer, useRef } from 'preact/hooks';
-import { style, colors, keyframes } from 'view/style';
-import CursorIcon from 'view/icons/Cursor';
+import { style, colors } from 'view/style';
+import Cursor from 'view/elements/Cursor';
 import CloseIcon from 'view/icons/Close';
 import { playSoundName } from 'model/sound';
-import { isAuxKey, isCancelKey, isConfirmKey } from 'controller/events';
+import {
+  isAuxKey,
+  isCancelKey,
+  isConfirmKey,
+  isDownKey,
+  isUpKey,
+} from 'controller/events';
 
 interface IVerticalMenuProps<T> {
   items: VerticalMenuItem<T>[];
@@ -31,7 +37,9 @@ interface IVerticalMenuProps<T> {
   style?: Record<string, string>;
   hideTitle?: boolean;
   resetCursor?: boolean;
+  resetIfTooLong?: boolean;
   useSpaceBarConfirm?: boolean;
+  itemHeight?: number;
 }
 
 interface VerticalMenuItem<T> {
@@ -154,49 +162,6 @@ const MenuItem = style(
   }
 );
 
-const cursorPulse = keyframes({
-  '0%': {
-    transform: 'translateX(-5px)',
-  },
-  '20%': {
-    transform: 'translateX(0px)',
-  },
-  '100%': {
-    transform: 'translateX(-5px)',
-  },
-});
-const CursorRoot = style(
-  'div',
-  (props: { offsetX: number; offsetY: number }) => {
-    return {
-      pointerEvents: 'none',
-      color: colors.WHITE,
-      position: 'absolute',
-      top: -4 + props.offsetY + 'px',
-      left: -32 + props.offsetX + 'px',
-      animation: `${cursorPulse} 500ms linear infinite`,
-    };
-  }
-);
-const Cursor = (props: {
-  offsetX: number;
-  offsetY: number;
-  angle: number;
-  visibility: 'hidden' | 'unset';
-}): h.JSX.Element => {
-  return (
-    <CursorRoot
-      offsetX={props.offsetX}
-      offsetY={props.offsetY}
-      style={{
-        visibility: props.visibility,
-      }}
-    >
-      <CursorIcon color={colors.BLUE} angle={props.angle} />
-    </CursorRoot>
-  );
-};
-
 const MenuTitleRoot = style('div', (props: { title?: string }) => ({
   textAlign: 'center',
   position: 'relative',
@@ -263,7 +228,7 @@ const MenuTitle = (props: {
 
 const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
   const menuRef = useRef<HTMLDivElement>();
-  const DEFAULT_ITEM_HEIGHT = 37;
+  const DEFAULT_ITEM_HEIGHT = props.itemHeight ?? 37;
 
   const [{ cursorIndex, active }, dispatch] = useReducer(
     ({ cursorIndex, active }, action: { type: string; payload?: number }) => {
@@ -345,10 +310,10 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (props.open && !props.isInactive && !props.isCursorSelectInactive) {
-        if (ev.code === 'ArrowDown') {
+        if (isDownKey(ev.code)) {
           playSoundName('menu_move');
           dispatch({ type: 'Increment' });
-        } else if (ev.code === 'ArrowUp') {
+        } else if (isUpKey(ev.code)) {
           playSoundName('menu_move');
           dispatch({ type: 'Decrement' });
         } else if (
@@ -395,6 +360,19 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
   useEffect(() => {
     dispatch({ type: 'ResetCursor' });
   }, [props.resetCursor]);
+
+  // useEffect(() => {
+  //   const item = props.items[cursorIndex];
+  //   if (item && props.onItemHover) {
+  //     props.onItemHover(item.value, cursorIndex);
+  //   }
+  // }, [props.items]);
+
+  useEffect(() => {
+    if (props.resetIfTooLong && cursorIndex >= props.items.length) {
+      dispatch({ type: 'ResetCursor' });
+    }
+  }, [props.resetIfTooLong, props.items, cursorIndex]);
 
   const lineHeight = props.lineHeight || MenuLineHeight.MEDIUM;
 

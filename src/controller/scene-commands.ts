@@ -711,7 +711,10 @@ export const lookAtCharacter = (chName: string, targetChName: string) => {
     return;
   }
   if (!ch2) {
-    console.error('Could not find target character with name: ' + targetChName);
+    console.error(
+      'Could not find target character to lookAtCharacter with name: ' +
+        targetChName
+    );
     return;
   }
 
@@ -821,11 +824,21 @@ export const setFacing = (chName: string, facing: Facing) => {
  * +shakeScreen(500);
  * ```
  */
-export const shakeScreen = (ms?: number) => {
+export const shakeScreen = (ms?: number, skipWait?: boolean) => {
   const canvasContainer = document.getElementById('canvas-container');
   if (canvasContainer) {
     canvasContainer.className = 'shake';
   }
+  if (skipWait) {
+    setTimeout(() => {
+      if (canvasContainer) {
+        canvasContainer.className = '';
+      }
+    }, ms ?? 1000);
+    return;
+  }
+  //
+
   return waitMS(ms ?? 1000, () => {
     if (canvasContainer) {
       canvasContainer.className = '';
@@ -1414,7 +1427,10 @@ export const spawnCharacterAtCharacter = (
     return;
   }
   if (!ch) {
-    console.error('Could not find target character with name: ' + chName);
+    console.error(
+      'Could not find target character to spawnCharacterAtCharacter with name: ' +
+        chName
+    );
     return;
   }
   if (xOffset !== undefined && typeof xOffset !== 'number') {
@@ -2492,7 +2508,7 @@ const completeQuestStep = (questName: string, stepInd: number) => {
     });
     return waitUntil();
   } else {
-    showNotification('Your journal has been updated');
+    showNotification('Your journal has been updated.');
   }
 };
 

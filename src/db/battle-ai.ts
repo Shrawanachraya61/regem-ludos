@@ -40,10 +40,45 @@ export const init = () => {
       allegiance,
       skill.type
     );
-    // const target = randInArr(targets);
-    const target = targets[0];
+    const target = randInArr(targets);
+
+    // const target = targets[0];
+    console.log('BATTLE AI ATTACK', bCh, targets);
     if (target) {
-      invokeSkill(bCh, bCh.ch.skills[0]);
+      invokeSkill(bCh, skill);
+    }
+  };
+
+  exp.BATTLE_AI_TUT_BOSS1 = (battle: Battle, bCh: BattleCharacter): void => {
+    const ch = bCh.ch;
+    const allegiance = battleGetAllegiance(battle, ch);
+
+    // summon aid
+    // only summon if robot is the only one left
+    if (battle.enemies.length === 1) {
+      const skill = bCh.ch.skills[3];
+      bCh.ch.skillIndex = bCh.ch.skills.indexOf(skill);
+      const targets = battleGetTargetableCharacters(
+        battle,
+        allegiance,
+        skill.type
+      );
+      const target = randInArr(targets);
+      if (target) {
+        invokeSkill(bCh, skill);
+      }
+    } else {
+      const skill = randInArr(bCh.ch.skills.slice(0, 3));
+      bCh.ch.skillIndex = bCh.ch.skills.indexOf(skill);
+      const targets = battleGetTargetableCharacters(
+        battle,
+        allegiance,
+        skill.type
+      );
+      const target = randInArr(targets);
+      if (target) {
+        invokeSkill(bCh, skill);
+      }
     }
   };
 };
