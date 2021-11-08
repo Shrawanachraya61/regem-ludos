@@ -5,7 +5,7 @@
       "type": "shell",
       "label": "C/C++: g++.exe build active file",
       "command": "g++.exe",
-      "args": ["-g", "${file}", "-o", "${fileDirname}\\${fileBasenameNoExtension}.exe"],
+      "args": ["-g", "-Wall", "${file}", "-o", "${fileDirname}\\${fileBasenameNoExtension}.exe"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
