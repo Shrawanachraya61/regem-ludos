@@ -55,6 +55,7 @@ import { colors } from 'view/style';
 import { useEffect } from 'preact/hooks';
 import { beginQuest } from 'controller/quest';
 import { getIfExists as getSave } from 'db/saves';
+import { initConsole } from 'view/console';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -86,6 +87,7 @@ const loadingTick = () => {
 
 export const main = async (): Promise<void> => {
   setUseZip(true);
+  initConsole();
   console.time('load');
 
   // Mount this first so that appInterface is MOST LIKELY set when loading the overworld,

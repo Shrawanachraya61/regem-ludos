@@ -3,6 +3,7 @@ import {
   getCurrentOverworld,
   getCurrentPlayer,
   getCurrentScene,
+  getCutsceneSpeedMultiplier,
   getDurationPlayed,
   getTimeLoaded,
   getVolume,
@@ -11,6 +12,7 @@ import {
   setArcadeGameVolume,
   setCameraTransform,
   setCurrentPlayer,
+  setCutsceneSpeedMultiplier,
   setDebugModeEnabled,
   setDurationPlayed,
   setTimeLoaded,
@@ -52,6 +54,7 @@ interface ISaveSettings {
     arcadeGame: number;
   };
   arcadeGameMuted: boolean;
+  cutsceneSpeed: number;
 }
 
 export interface ISave {
@@ -121,6 +124,7 @@ export const getCurrentSettings = (): ISaveSettings => {
       arcadeGame: getArcadeGameVolume(),
     },
     arcadeGameMuted: isArcadeGameMuted(),
+    cutsceneSpeed: getCutsceneSpeedMultiplier(),
   };
   return settings;
 };
@@ -130,6 +134,7 @@ export const setCurrentSettings = (settings: ISaveSettings) => {
   setVolume(SoundType.MUSIC, settings.volumeLevels[SoundType.MUSIC]);
   setArcadeGameVolume(settings.volumeLevels.arcadeGame);
   setArcadeGameMuted(settings.arcadeGameMuted);
+  setCutsceneSpeedMultiplier(settings.cutsceneSpeed);
 };
 
 const getLSKey = (type: LocalStorageKeyType, optional?: string) => {
@@ -168,6 +173,7 @@ export const loadSettingsFromLS = (): ISaveSettings => {
         arcadeGame: settingsJson?.volumeLevels?.arcadeGame ?? 100,
       },
       arcadeGameMuted: settingsJson?.arcadeGameMuted ?? false,
+      cutsceneSpeed: settingsJson?.cutsceneSpeed ?? 1,
     };
     return settings;
   } catch (e) {

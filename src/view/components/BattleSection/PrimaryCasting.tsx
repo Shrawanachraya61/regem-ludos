@@ -14,8 +14,7 @@ import CloseIcon from 'view/icons/Close';
 import SwingNormalIcon from 'view/icons/SwingNormal';
 import SwingPierceIcon from 'view/icons/SwingPierce';
 import SwingFinisherIcon from 'view/icons/SwingFinisher';
-import { useState } from 'lib/preact-hooks';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 import {
   useBattleSubscriptionWithBattleCharacter,
   useReRender,

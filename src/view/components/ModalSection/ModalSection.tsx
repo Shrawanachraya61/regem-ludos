@@ -21,7 +21,7 @@ import { Character, characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import CharacterStatus from '../CharacterStatus';
-import { useState } from 'lib/preact-hooks';
+import { useState } from 'preact/hooks';
 import UseItemDescription from '../UseItemDescription';
 
 export const MAX_WIDTH = '570px';
@@ -271,7 +271,7 @@ const PartyMember = style(
 );
 
 const SelectPartyMemberModal = (props: ICustomModalProps) => {
-  const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedMember, setSelectedMember] = useState<Character | null>(null);
 
   const player = getCurrentPlayer();
   const party = player.party;

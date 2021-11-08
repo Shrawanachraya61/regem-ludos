@@ -63,6 +63,7 @@ const PausedText = style('div', () => ({
 
 export let uiInterface: UIInterface | null = null;
 export const getUiInterface = () => uiInterface as UIInterface;
+export const setUiInterface = (iFace: any) => (uiInterface = iFace);
 
 const App = () => {
   const [render, setRender] = useState(false);
@@ -174,7 +175,7 @@ const App = () => {
           if (UiComponent) {
             return <UiComponent key={'particle-' + i} particle={p} />;
           } else {
-            return <></>;
+            return <div></div>;
           }
         })}
       </Root>

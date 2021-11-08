@@ -9,7 +9,7 @@ import {
 
 import { init as initParty } from './party';
 import { init as initTutorial } from './tutorial-roamers';
-import { init as initTest } from './test';
+import { init as initTest } from './test2';
 import { init as initFloor1 } from './floor1';
 
 const exp = {} as { [key: string]: CharacterTemplate };

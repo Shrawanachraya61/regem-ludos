@@ -248,3 +248,11 @@ export const isOverworldUpdateKeysDisabled = () => overworldUpdateKeysDisabled;
 let debugModeEnabled = true;
 export const setDebugModeEnabled = (v: boolean) => (debugModeEnabled = v);
 export const isDebugModeEnabled = () => debugModeEnabled;
+
+let cutsceneSpeed = 1.0;
+export const setCutsceneSpeedMultiplier = (v: number) => {
+  cutsceneSpeed = v;
+};
+export const getCutsceneSpeedMultiplier = () => {
+  return cutsceneSpeed;
+};

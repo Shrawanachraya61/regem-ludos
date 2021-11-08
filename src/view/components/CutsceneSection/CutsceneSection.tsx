@@ -33,6 +33,7 @@ import {
   getCurrentBattle,
   getCurrentRoom,
   getCurrentScene,
+  getCutsceneSpeedMultiplier,
   isKeyDown,
 } from 'model/generics';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
@@ -491,7 +492,7 @@ const renderTextboxHtml = async (
       timeoutId = setTimeout(() => {
         cb();
         resolve();
-      }, ms) as any;
+      }, ms * (1 / getCutsceneSpeedMultiplier())) as any;
     }).catch(() => {
       clearTimeout(timeoutId);
     });
@@ -544,8 +545,8 @@ const renderTextboxHtml = async (
     textBox.style.opacity = '0';
     textBox.style.height = 'unset';
     textBox.innerHTML = resultInnerHTML;
-    // HACK: hope that the textbox updates its render in 100ms, otherwise you're SOL
-    await setTimeoutPromise(() => {}, 250);
+    // HACK: hope that the textbox updates its render in 200ms, otherwise you're SOL
+    await setTimeoutPromise(() => {}, 200);
     const boundingRect = textBox.getBoundingClientRect();
     // textBox.style.height = '0px';
     // textBox.style.transition = 'opacity 0.15s linear, height 0.15s linear';
@@ -603,7 +604,7 @@ const renderTextboxHtml = async (
   }
 };
 
-const CutsceneSection = () => {
+const CutsceneSection = (props: { renderImmediate?: boolean }) => {
   const [barsVisible, setBarsVisible] = useState(false);
   const [isSkipping, setIsSkipping] = useState(false);
   const textBoxRef = useRef<null | HTMLDivElement>(null);
@@ -880,11 +881,10 @@ const CutsceneSection = () => {
               opacity: '0',
               transition: 'unset',
             }}
-            ref={textBoxRef}
+            ref={textBoxRef as any}
           >
-            {/* Is it stupid that this must be commented out for the text to fade properly? */}
-            {/* Yes, Other Ben, yes it is. */}
-            {/* {cutscene.text} */}
+            {/* Text fades via a useEffect hook */}
+            {props.renderImmediate ? cutscene.text : undefined}
           </div>
           <TalkIconContainer
             id="talk-icon"

@@ -9,11 +9,11 @@ const CLIENT_FILES = ['../main.js'];
 console.log('Client Files', CLIENT_FILES);
 
 const execAsync = async command => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     console.log(command);
     exec(command, (err, stdout, stderr) => {
       if (err) {
-        console.error(err, stdout, stderr);
+        reject(err, stderr);
         return;
       }
       resolve(stdout);
@@ -137,13 +137,19 @@ const build = async () => {
   } catch (e) {
     console.log('failed adv zip', e);
   }
-  const result = await execAsync(
-    `stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`
-  );
+  try {
+    const result = await execAsync(
+      `stat -c '%n %s' ${__dirname}/../${outputDirName}.zip`
+    );
+    const bytes = parseInt(result.split(' ')[1]);
+    const kb13 = 13312;
+    console.log(
+      `${bytes}b of ${kb13}b (${((bytes * 100) / kb13).toFixed(2)}%)`
+    );
+  } catch (e) {
+    console.log('Stat not supported on Mac D:');
+  }
   await execAsync(`mv src.zip dist/Golems.zip`);
-  const bytes = parseInt(result.split(' ')[1]);
-  const kb13 = 13312;
-  console.log(`${bytes}b of ${kb13}b (${((bytes * 100) / kb13).toFixed(2)}%)`);
 };
 
 build().catch(e => {

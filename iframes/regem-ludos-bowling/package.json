@@ -5,7 +5,7 @@
   "scripts": {
     "build": "yarn && yarn mv && cross-env NODE_ENV=production rollup -c rollup.config.ts",
     "start": "rollup -c rollup.config.ts -w",
-    "mv": "mkdir -p dist && cp -t dist/ public/* -v && rm -rf dist/main.js*",
+    "mv": "mkdir -p dist && cp -v public/* dist/ && rm -rf dist/main.js*",
     "clean": "rm -rf dist",
     "analyze": "cross-env NODE_ENV=production ANALYZE=true rollup -c rollup.config.ts"
   },

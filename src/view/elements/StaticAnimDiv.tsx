@@ -36,7 +36,7 @@ const StaticAnimDiv = (props: IAnimDivProps): h.JSX.Element => {
   }, [s, width, height, animName, anim]);
   return (
     <div>
-      <canvas style={props.style} ref={canvasRef}></canvas>
+      <canvas style={props.style} ref={canvasRef as any}></canvas>
     </div>
   );
 };

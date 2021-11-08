@@ -122,12 +122,16 @@ const build = async () => {
     `cd .build && zip -9 ${__dirname}/../${outputDirName}.zip main.js`
   );
   await execAsync(`mv src.zip dist/main.zip`);
-  const result = await execAsync(`stat -c '%n %s' dist/main.js`);
-  const resultZip = await execAsync(`stat -c '%n %s' dist/main.zip`);
-  const bytes = parseInt(result.split(' ')[1]);
-  const bytesZip = parseInt(resultZip.split(' ')[1]);
+  try {
+    const result = await execAsync(`stat -c '%n %s' dist/main.js`);
+    const resultZip = await execAsync(`stat -c '%n %s' dist/main.zip`);
+    const bytes = parseInt(result.split(' ')[1]);
+    const bytesZip = parseInt(resultZip.split(' ')[1]);
 
-  console.log('\nmain.js: ' + bytes + 'b | zipped: ' + bytesZip + 'b');
+    console.log('\nmain.js: ' + bytes + 'b | zipped: ' + bytesZip + 'b');
+  } catch (e) {
+    console.log('Stat not supported on Mac D:');
+  }
 };
 
 build();

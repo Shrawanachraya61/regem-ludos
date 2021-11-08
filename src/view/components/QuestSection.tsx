@@ -12,7 +12,7 @@ import {
   getConfirmKey,
   getConfirmKeyLabel,
 } from 'controller/events';
-import { useState } from 'lib/preact-hooks';
+import { useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 import {
   saveGame,
@@ -27,6 +27,7 @@ import { playerAddExperience } from 'model/player';
 import { getCurrentPlayer } from 'model/generics';
 import FlowerIcon from 'view/icons/Flower';
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
+import { getIcon } from 'view/icons';
 
 const RewardsList = style('div', () => {
   return {
@@ -116,6 +117,12 @@ const QuestSection = (props: IQuestSectionProps) => {
   };
 
   const quest = props.quest;
+  let questIcon = <FlowerIcon color={quest.iconColor || colors.WHITE} />;
+
+  if (quest.icon) {
+    const Icon = getIcon(quest.icon);
+    questIcon = <Icon color={quest.iconColor || colors.WHITE} />;
+  }
 
   return (
     <MenuBox
@@ -160,11 +167,7 @@ const QuestSection = (props: IQuestSectionProps) => {
                   borderTopRightRadius: '16px',
                 }}
               >
-                {quest.icon ? (
-                  <quest.icon color={quest.iconColor || colors.WHITE} />
-                ) : (
-                  <FlowerIcon color={quest.iconColor || colors.WHITE} />
-                )}
+                {questIcon}
               </IconContainer>
               <IconContainer
                 style={{
@@ -200,11 +203,7 @@ const QuestSection = (props: IQuestSectionProps) => {
                   borderTopRightRadius: '16px',
                 }}
               >
-                {quest.icon ? (
-                  <quest.icon color={quest.iconColor || colors.WHITE} />
-                ) : (
-                  <FlowerIcon color={quest.iconColor || colors.WHITE} />
-                )}
+                {questIcon}
               </IconContainer>
               <IconContainer
                 style={{

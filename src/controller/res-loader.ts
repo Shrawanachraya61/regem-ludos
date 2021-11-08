@@ -3,7 +3,9 @@ import { loadImageAsSpritesheet, SpriteModification } from 'model/sprite';
 import { loadSound, SoundType } from 'model/sound';
 import { shouldUseZip } from 'model/generics';
 
-const JSZip = (window as any).JSZip;
+const getJSZip = () => {
+  return (window as any).JSZip;
+};
 
 const zipImages = {};
 const zipAudio = {};
@@ -230,7 +232,7 @@ const fetchZipArchive = async (url: string) => {
         return Promise.reject(new Error(response.statusText));
       }
     })
-    .then(JSZip.loadAsync);
+    .then(getJSZip().loadAsync);
   return zip;
 };
 

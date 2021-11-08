@@ -2,7 +2,7 @@
 import { h, Fragment } from 'preact';
 import AppSettings from 'view/components/AppSettings';
 import { getCancelKeyLabel } from 'controller/events';
-import { useEffect } from 'lib/preact-hooks';
+import { useEffect } from 'preact/hooks';
 import {
   getCurrentSettings,
   saveSettingsToLS,

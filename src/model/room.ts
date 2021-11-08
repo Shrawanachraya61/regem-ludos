@@ -292,27 +292,31 @@ export const createRoom = (name: string, tiledJson: any): Room => {
 
   console.log(
     'create room',
-    name,
-    tiledJson,
-    room.widthPx,
-    room.heightPx,
-    room.width,
-    room.height
+    name
+    // tiledJson,
+    // room.widthPx,
+    // room.heightPx,
+    // room.width,
+    // room.height
   );
 
   const applyTileTemplate = (tile: Tile) => {
-    const tileTemplate = getReplacementTemplate(tile.sprite);
-    if (tileTemplate && tile.ro) {
-      tile.ro.sprite = tileTemplate.baseSprite;
-      tile.isWall = tileTemplate.isWall ?? tile.isWall;
-      if (tileTemplate?.animName) {
-        tile.animName = tileTemplate.animName;
-        tile.ro.anim = createAnimation(tileTemplate.animName);
-        tile.ro.anim.start();
+    try {
+      const tileTemplate = getReplacementTemplate(tile.sprite);
+      if (tileTemplate && tile.ro) {
+        tile.ro.sprite = tileTemplate.baseSprite;
+        tile.isWall = tileTemplate.isWall ?? tile.isWall;
+        if (tileTemplate?.animName) {
+          tile.animName = tileTemplate.animName;
+          tile.ro.anim = createAnimation(tileTemplate.animName);
+          tile.ro.anim.start();
+        }
+        if (tileTemplate.onAfterCreation) {
+          tileTemplate.onAfterCreation(tile);
+        }
       }
-      if (tileTemplate.onAfterCreation) {
-        tileTemplate.onAfterCreation(tile);
-      }
+    } catch (e) {
+      console.error('Failed to apply tile template: ', e);
     }
   };
 

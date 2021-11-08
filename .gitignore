@@ -13,3 +13,5 @@ dist/
 desktop.ini
 regem-ludos.tiled-session
 .vscode/c_cpp_properties.json
+.DS_Store
+coverage/

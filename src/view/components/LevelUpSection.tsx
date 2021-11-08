@@ -34,6 +34,7 @@ import { useKeyboardEventListener } from 'view/hooks';
 import AnimDiv from 'view/elements/AnimDiv';
 import { playerModifyTickets } from 'model/player';
 import Button, { ButtonType } from 'view/elements/Button';
+import Card, { CardSize, sizes as cardSizes } from 'view/elements/Card';
 
 interface CostObj {
   stat: string;
@@ -138,9 +139,8 @@ const PartyMember = style(
   (props: { color?: string; padding?: string }) => {
     return {
       display: 'flex',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
       alignItems: 'center',
-      background: colors.BLACK,
       padding: '4px',
       boxSizing: 'border-box',
       border: props.color ? `2px solid ${colors.DARKGREEN}` : 'unset',
@@ -154,14 +154,19 @@ const PartyMember = style(
 const Info = style('div', () => {
   return {
     border: `1px solid ${colors.WHITE}`,
-    color: colors.GREEN,
+    color: colors.LIGHTGREEN,
     textAlign: 'left',
     marginBottom: '1.5rem',
     background: colors.BLACK,
     fontFamily: 'courier',
-    padding: '8px',
+    padding: '16px',
     width: '100%',
     boxSizing: 'border-box',
+    zIndex: '1',
+    fontSize: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
   };
 });
 
@@ -169,6 +174,7 @@ const Primary = style('div', () => {
   return {
     display: 'flex',
     justifyContent: 'space-between',
+    margin: '2px',
   };
 });
 
@@ -358,185 +364,206 @@ const LevelUpModal = () => {
 
   return (
     <MenuBox
-      title="Improvement Kiosk"
+      title="VR Improvement Kiosk"
       hideTitle={true}
       onClose={() => {
         handleBackClick();
       }}
       closeButtonLabel={'Back ' + getCancelKeyLabel()}
-      maxWidth={MAX_WIDTH}
+      // maxWidth={MAX_WIDTH}
       dark={true}
       disableKeyboardShortcut={true}
     >
-      <Primary>
-        {partySelectVisible ? (
-          <AnimDiv
-            animName="tile_stats_kiosk_menu"
-            renderLoopId="stats-kiosk"
-            scale={4}
-            style={{
-              transform: 'translateY(-20px)',
-            }}
-          ></AnimDiv>
-        ) : null}
-        <Info>
+      <Card
+        id="menu-main"
+        size={CardSize.XLARGE}
+        // style={{
+        //   transform: 'scale(0)',
+        //   transition: 'opacity 100ms, transform 100ms',
+        // }}
+      >
+        <Primary>
           {partySelectVisible ? (
-            <>
-              <p>Welcome to the Regem Ludos Improvement Kiosk!</p>
-              <p>To begin, please select one of your party members.</p>
-            </>
-          ) : (
-            <>
-              <p style={{ width: '520px' }}>
-                You have selected <b>{ch?.fullName}</b>.
-              </p>
-              <p style={{ color: colors.YELLOW, height: '54px' }}>
-                {currentCostObj
-                  ? `${currentCostObj.stat}: ${currentCostObj.desc}`
-                  : null}
-              </p>
-            </>
-          )}
-        </Info>
-      </Primary>
-      <PartySelectContainer visible={partySelectVisible}>
-        <div
-          style={{
-            paddingBottom: '8px',
-            display: partySelectVisible ? 'unset' : 'none',
-          }}
-        >
-          You have <Number value={localTickets}>{localTickets} Tickets</Number>{' '}
-          available to spend.
-        </div>
-        <VerticalMenu
-          title="Party"
-          hideTitle={true}
-          open={true}
-          isInactive={!partySelectVisible || confirmVisible}
-          style={{
-            display: partySelectVisible ? 'unset' : 'none',
-          }}
-          // width="400px"
-          items={party.map(innerCh => {
-            return {
-              label: <PartyMemberRow ch={innerCh} />,
-              value: innerCh,
-            };
-          })}
-          onItemClickSound="blip"
-          onItemClick={c => {
-            setCh(c);
-            setLocalLvlPoints(c.experienceCurrency);
-            setLocalTickets(player.tickets);
-            setUpgrades(INITIAL_STATE);
-          }}
-        />
-      </PartySelectContainer>
-      {ch ? (
-        <>
+            <AnimDiv
+              animName="tile_stats_kiosk_menu"
+              renderLoopId="stats-kiosk"
+              scale={4}
+              style={{
+                transform: 'translateY(-20px)',
+                margin: '64px',
+              }}
+            ></AnimDiv>
+          ) : null}
+          <Info>
+            {partySelectVisible ? (
+              <>
+                <p>Welcome to the Regem Ludos Improvement Kiosk!</p>
+                <p>To begin, please select one of your party members.</p>
+              </>
+            ) : (
+              <>
+                <p style={{ width: '520px' }}>
+                  You have selected <b>{ch?.fullName}</b>.
+                </p>
+                <p style={{ color: colors.YELLOW, height: '54px' }}>
+                  {currentCostObj
+                    ? `${currentCostObj.stat}: ${currentCostObj.desc}`
+                    : null}
+                </p>
+              </>
+            )}
+          </Info>
+        </Primary>
+        <PartySelectContainer visible={partySelectVisible}>
           <div
             style={{
               paddingBottom: '8px',
-              textAlign: 'center',
+              display: partySelectVisible ? 'unset' : 'none',
             }}
           >
             You have{' '}
-            <Number value={localTickets}>{localTickets} Tickets</Number> and{' '}
-            <Number value={localLvlPoints}>{localLvlPoints} LVL Points</Number>{' '}
+            <Number value={localTickets}>{localTickets} Tickets</Number>{' '}
             available to spend.
           </div>
-          <LevelUpContainer>
-            <PartyMemberRow ch={ch} hideLvlPoints={true} />
-            <VerticalMenu
-              title="Stats"
-              hideTitle={true}
-              isInactive={confirmVisible}
-              resetCursor={levelUpVisible}
-              open={true}
-              items={[
-                ...STATS_COSTS.map(costObj => {
-                  const { lvlCost, ticketCost, stat } = costObj;
-                  return {
-                    label: (
-                      <StatRow>
-                        <div>
-                          {stat} {ch?.stats?.[stat]}
-                        </div>
-                        <div>{upgrades[stat] ? '+' + upgrades[stat] : ''}</div>
-                        <StatRowCosts>
-                          <div>
-                            <Number value={lvlCost <= localLvlPoints ? 1 : 0}>
-                              LVL Cost: {lvlCost}
-                            </Number>
-                            ,
-                          </div>
-                          <div>
-                            <Number value={ticketCost <= localTickets ? 1 : 0}>
-                              Ticket Cost: {ticketCost}
-                            </Number>
-                          </div>
-                          <Button
-                            type={ButtonType.CANCEL}
-                            disabled={upgrades[stat] === 0}
+          <VerticalMenu
+            title="Party"
+            hideTitle={true}
+            open={true}
+            isInactive={!partySelectVisible || confirmVisible}
+            style={{
+              display: partySelectVisible ? 'unset' : 'none',
+            }}
+            // width="400px"
+            items={party.map(innerCh => {
+              return {
+                label: <PartyMemberRow ch={innerCh} />,
+                value: innerCh,
+              };
+            })}
+            onItemClickSound="blip"
+            onItemClick={c => {
+              setCh(c);
+              setLocalLvlPoints(c.experienceCurrency);
+              setLocalTickets(player.tickets);
+              setUpgrades(INITIAL_STATE);
+            }}
+          />
+        </PartySelectContainer>
+        {ch ? (
+          <>
+            <div
+              style={{
+                paddingBottom: '8px',
+                textAlign: 'center',
+              }}
+            >
+              You have{' '}
+              <Number value={localTickets}>{localTickets} Tickets</Number> and{' '}
+              <Number value={localLvlPoints}>
+                {localLvlPoints} LVL Points
+              </Number>{' '}
+              available to spend.
+            </div>
+            <LevelUpContainer>
+              <PartyMemberRow ch={ch} hideLvlPoints={true} />
+              <VerticalMenu
+                title="Stats"
+                hideTitle={true}
+                isInactive={confirmVisible}
+                resetCursor={levelUpVisible}
+                open={true}
+                items={[
+                  ...STATS_COSTS.map(costObj => {
+                    const { lvlCost, ticketCost, stat } = costObj;
+                    return {
+                      label: (
+                        <StatRow>
+                          <div
                             style={{
-                              fontSize: '12px',
-                            }}
-                            onClick={ev => {
-                              ev.stopPropagation();
-                              unImproveStat(costObj);
+                              width: '120px',
                             }}
                           >
-                            Undo {getAuxKeyLabel()}
-                          </Button>
-                        </StatRowCosts>
-                      </StatRow>
-                    ),
-                    value: costObj,
-                  };
-                }),
-                {
-                  label: <ConfirmButton>Confirm!</ConfirmButton>,
-                  value: null,
-                },
-              ]}
-              onItemClick={costObj => {
-                if (costObj) {
-                  improveStat(costObj);
-                } else {
-                  let hasUpgrade = false;
-                  for (const i in upgrades) {
-                    if (upgrades[i] > 0) {
-                      hasUpgrade = true;
-                      break;
-                    }
-                  }
-                  if (hasUpgrade) {
-                    playSound('menu_sparkle');
-                    onConfirm();
+                            {stat} {ch?.stats?.[stat]}
+                          </div>
+                          <div>
+                            {upgrades[stat] ? '+' + upgrades[stat] : ''}
+                          </div>
+                          <StatRowCosts>
+                            <div>
+                              <Number value={lvlCost <= localLvlPoints ? 1 : 0}>
+                                LVL Cost: {lvlCost}
+                              </Number>
+                              ,
+                            </div>
+                            <div>
+                              <Number
+                                value={ticketCost <= localTickets ? 1 : 0}
+                              >
+                                Ticket Cost: {ticketCost}
+                              </Number>
+                            </div>
+                            <Button
+                              type={ButtonType.CANCEL}
+                              disabled={upgrades[stat] === 0}
+                              style={{
+                                fontSize: '12px',
+                              }}
+                              onClick={ev => {
+                                ev.stopPropagation();
+                                unImproveStat(costObj);
+                              }}
+                            >
+                              Undo {getAuxKeyLabel()}
+                            </Button>
+                          </StatRowCosts>
+                        </StatRow>
+                      ),
+                      value: costObj,
+                    };
+                  }),
+                  {
+                    label: <ConfirmButton>Confirm!</ConfirmButton>,
+                    value: null,
+                  },
+                ]}
+                onItemClick={costObj => {
+                  if (costObj) {
+                    improveStat(costObj);
                   } else {
-                    playSound('blip');
+                    let hasUpgrade = false;
+                    for (const i in upgrades) {
+                      if (upgrades[i] > 0) {
+                        hasUpgrade = true;
+                        break;
+                      }
+                    }
+                    if (hasUpgrade) {
+                      playSound('menu_sparkle');
+                      onConfirm();
+                    } else {
+                      playSound('blip');
+                    }
+                    setCh(undefined);
                   }
-                  setCh(undefined);
-                }
-              }}
-              onAuxClick={() => {
-                const costObj = STATS_COSTS[currentCostObjIndex];
-                if (costObj) {
-                  unImproveStat(costObj);
-                }
-              }}
-              onItemHover={costObj => {
-                if (costObj) {
-                  setCurrentCostObj(STATS_COSTS.indexOf(costObj));
-                } else {
-                  setCurrentCostObj(-1);
-                }
-              }}
-            />
-          </LevelUpContainer>
-        </>
-      ) : null}
+                }}
+                onAuxClick={() => {
+                  const costObj = STATS_COSTS[currentCostObjIndex];
+                  if (costObj) {
+                    unImproveStat(costObj);
+                  }
+                }}
+                onItemHover={costObj => {
+                  if (costObj) {
+                    setCurrentCostObj(STATS_COSTS.indexOf(costObj));
+                  } else {
+                    setCurrentCostObj(-1);
+                  }
+                }}
+              />
+            </LevelUpContainer>
+          </>
+        ) : null}
+      </Card>
     </MenuBox>
   );
 };

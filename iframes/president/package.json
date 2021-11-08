@@ -5,7 +5,7 @@
   "scripts": {
     "build": "mkdir -p dist && ../../node_modules/.bin/terser president.js --keep-fnames -o dist/president.js && yarn mv",
     "build:dev": "yarn build",
-    "mv": "mkdir -p dist && cp -t dist/ president.html favicon.png -v",
+    "mv": "mkdir -p dist && cp -v president.html favicon.png dist/",
     "clean": "rm -rf dist"
   },
   "dependencies": {}

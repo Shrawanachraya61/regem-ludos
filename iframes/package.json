@@ -9,7 +9,7 @@
     "list:js": "echo $(cat package.json | jq -r '.jsIframes | .[]')",
     "list:cpp": "echo $(cat package.json | jq -r '.cppIframes | .[]')",
     "clean": "rm -rf dist",
-    "build:lib": "cp -t dist lib.js lib.css"
+    "build:lib": "cp lib.js lib.css dist/"
   },
   "cppIframes": [
     "invaderz",

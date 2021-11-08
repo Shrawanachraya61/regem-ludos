@@ -68,6 +68,7 @@ import {
   addCharacterWithSuspendedAi,
   setOverworldUpdateKeysDisabled,
   isKeyDown,
+  getCutsceneSpeedMultiplier,
 } from 'model/generics';
 import { callScript as sceneCallScript } from 'controller/scene-management';
 import {
@@ -200,9 +201,16 @@ export const playDialogue = (
     actorName
   );
 
-  return waitMS(150, () => {
+  const cb = () => {
     waitForUserInputDialog();
-  });
+  };
+
+  if ((window as any).TEST) {
+    cb();
+    return true;
+  }
+
+  return waitMS(150, cb);
 };
 
 /**
@@ -260,6 +268,10 @@ export const setConversation2 = (
     `${actorNameLeft.toLowerCase()}`,
     `${actorNameRight.toLowerCase()}`
   );
+  if (ms === 0) {
+    return;
+  }
+
   return waitMS(ms ?? 500);
 };
 
@@ -296,7 +308,7 @@ export const setConversation2 = (
  *
  *
  */
-export const setConversation = (actorName: string) => {
+export const setConversation = (actorName: string, ms?: number) => {
   const appState = getUiInterface().appState;
   if (appState.cutscene.visible) {
     // HACK.  Sometimes setConversation is called multiple times in a row and messes up
@@ -306,20 +318,30 @@ export const setConversation = (actorName: string) => {
     }
     setCutsceneText('');
     setConversationSpeaker(CutsceneSpeaker.None);
-    return waitMS(200, () => {
+    const cb = () => {
       startConversation(`${actorName.toLowerCase()}`, true);
       playSoundName('dialog_woosh');
-    });
+    };
+    if (ms === 0) {
+      return cb();
+    }
+    return waitMS(200, cb);
   } else {
     startConversation(`${actorName.toLowerCase()}`, true);
     playSoundName('dialog_woosh');
+    if (ms === 0) {
+      return undefined;
+    }
     return waitMS(100);
   }
 };
 
-export const setConversationWithoutBars = (actorName: string) => {
+export const setConversationWithoutBars = (actorName: string, ms?: number) => {
   startConversation(`${actorName.toLowerCase()}`, false);
   playSoundName('dialog_woosh');
+  if (ms === 0) {
+    return undefined;
+  }
   return waitMS(100);
 };
 
@@ -334,11 +356,19 @@ export const setConversationWithoutBars = (actorName: string) => {
 export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   setCutsceneText('');
   hideConversation();
-  return waitMS(ms ?? 500, () => {
-    if (dontHideCutscene === undefined || dontHideCutscene === false) {
+  const cb = () => {
+    if (
+      (dontHideCutscene === undefined || dontHideCutscene === false) &&
+      !getCurrentBattle()
+    ) {
       showSection(AppSection.Debug, true);
     }
-  });
+  };
+  if (ms === 0) {
+    return cb();
+  }
+
+  return waitMS(ms ?? 500, cb);
 };
 
 /**
@@ -446,7 +476,10 @@ export const waitMS = (ms: number, cb?: () => void) => {
     }
     scene.waitTimeoutCb = null;
   };
-  scene.waitTimeoutId = setTimeout(scene.waitTimeoutCb, ms) as any;
+  scene.waitTimeoutId = setTimeout(
+    scene.waitTimeoutCb,
+    ms * (1 / getCutsceneSpeedMultiplier())
+  ) as any;
   return true;
 };
 
@@ -494,7 +527,10 @@ export const waitMSPreemptible = (ms: number, cb: () => void) => {
   };
   scene.isWaitingForTime = true;
   clearTimeout(scene.waitTimeoutId);
-  scene.waitTimeoutId = setTimeout(_cb, ms) as any;
+  scene.waitTimeoutId = setTimeout(
+    _cb,
+    ms * (1 / getCutsceneSpeedMultiplier())
+  ) as any;
   return true;
 };
 
@@ -533,6 +569,7 @@ const waitForUserInput = (cb?: () => void) => {
       case 'Enter':
       case 'x':
       case 'X':
+      case 'KeyX':
       case ' ': {
         inputDisabled = true;
         clearTimeout(scene.waitTimeoutId);
@@ -581,13 +618,19 @@ const waitForUserInputDialog = (cb?: () => void) => {
       case 'Enter':
       case 'x':
       case 'X':
+      case 'KeyX':
       case ' ': {
         inputDisabled = true;
         playSoundName('dialog_select');
-        setTimeout(() => {
+        if ((window as any).TEST) {
           clearTimeout(scene.waitTimeoutId);
           _cb();
-        }, 100);
+        } else {
+          setTimeout(() => {
+            clearTimeout(scene.waitTimeoutId);
+            _cb();
+          }, 100);
+        }
         break;
       }
     }
@@ -662,7 +705,10 @@ export const lookAtCharacter = (chName: string, targetChName: string) => {
     return;
   }
   if (!ch2) {
-    console.error('Could not find target character with name: ' + targetChName);
+    console.error(
+      'Could not find target character to lookAtCharacter with name: ' +
+        targetChName
+    );
     return;
   }
 
@@ -1365,7 +1411,10 @@ export const spawnCharacterAtCharacter = (
     return;
   }
   if (!ch) {
-    console.error('Could not find target character with name: ' + chName);
+    console.error(
+      'Could not find target character to spawnCharacterAtCharacter with name: ' +
+        chName
+    );
     return;
   }
   if (xOffset !== undefined && typeof xOffset !== 'number') {
@@ -2007,7 +2056,7 @@ export const awaitChoice = (...choices: string[]) => {
   return waitUntil();
 };
 
-export const enterCombat = (encounterName: string) => {
+export const enterCombat = (encounterName: string, skipIntro?: boolean) => {
   const encounter = getEncounter(encounterName);
   if (!encounter) {
     console.error('No encounter exists with name:', encounterName);
@@ -2029,7 +2078,7 @@ export const enterCombat = (encounterName: string) => {
       leaderFacing,
       encounter
     ),
-    false
+    skipIntro ?? false
   );
 };
 
@@ -2443,7 +2492,7 @@ const completeQuestStep = (questName: string, stepInd: number) => {
     });
     return waitUntil();
   } else {
-    showNotification('Your journal has been updated');
+    showNotification('Your journal has been updated.');
   }
 };
 

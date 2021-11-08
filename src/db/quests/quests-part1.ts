@@ -1,49 +1,65 @@
 import { colors } from 'view/style';
 import { QuestTemplate } from '.';
 
-import TicTacToeIcon from 'view/icons/TicTacToe';
-
 export const init = (exp: { [key: string]: QuestTemplate }) => {
-  exp.Part1MainQuest = {
-    label: 'Main',
-    summary: 'Discover what Carl-Arnold wants at the Regem Ludos Arcade.',
-    description: 'Discover what Carl-Arnold wants at the Regem Ludos Arcade.',
+  exp.OpeningQuest = {
+    label: 'And so it begins...',
+    summary:
+      'Discover what Carl-Arnold wants with Ada at the Regem Ludos Arcade.',
+    description:
+      'Carl-Arnold, an acquaintance from the school they both attend, wants to meet Ada at an arcade in the city. ',
     questStartScriptKey: 'quest_floor1-main',
     questEndScriptKey: 'quest_floor1-main1-complete',
     steps: [
       {
-        completedScriptKey: 'quest_floor1-main-1',
-        label: 'Find Carl-Arnold on the second floor.',
+        label: 'Find out where Carl-Arnold is inside the Regem Ludos Arcade.',
         description:
-          'Carl-Arnold said he is waiting for Ada on the second floor of the arcade.  Go and see what he wants.',
+          'Carl-Arnold is waiting in the Regem Ludos Arcade.  Discover why he insists on Ada coming here to meet him today.',
       },
       {
-        completedScriptKey: 'quest_floor1-main-2',
-        label: 'Acquire a "Haptic Bracer".',
+        label: 'Go to the second floor of the Regem Ludos Arcade.',
         description:
-          'Apparently something called a "Haptic Bracer" is required to access further floors of the arcade.  This item can be acquired from the employee standing in the eastern side of the atrium.',
+          'Carl-Arnold is waiting for Ada on the second floor of the Regem Ludos Arcade.  Go there and meet him.',
       },
       {
-        completedScriptKey: 'quest_floor1-main-3',
-        label: 'Complete the tutorial VR area.',
+        label: 'Follow Lotte.',
         description:
-          'Follow Employee Jason through the tutorial VR area and follow his instructions.',
+          'A girl named Lotte will lead the way to Carl-Arnold.  Follow her.',
       },
     ],
   };
 
-  exp.Part1MainQuest = {
-    label: 'Main',
-    summary: 'Follow employee Jason through the Regem Ludos tutorial.',
-    description: 'Follow employee Jason through the Regem Ludos tutorial.',
+  exp.Tutorial = {
+    label: 'Mandatory Tutorial',
+    summary: 'Complete the Regem Ludos tutorial.',
+    description:
+      'The Regem Ludos arcade requires the completion of a tutorial before anyone is allowed to ascend to further floors.',
     questStartScriptKey: 'quest_tutorial_active',
     questEndScriptKey: 'quest_tutorial_complete',
     steps: [
       {
         completedScriptKey: 'quest_tutorial1',
-        label: 'Complete the tutorial.',
+        label: 'Speak with Employee Jason.',
         description:
-          'An employee of the Regem Ludos arcade is providing a tutorial.  This must be completed before access is granted to the upper floors.',
+          'An employee standing in the atrium of the Regem Ludos arcade will provide a tutorial on how to use their fancy VR.  Ask him to do so.',
+      },
+      {
+        completedScriptKey: 'quest_tutorial2',
+        label: 'Follow Employee Jason through the tutorial.',
+        description:
+          'Employee Jason will guide Ada through the tutorial.  Follow his instructions to complete it.',
+      },
+      {
+        completedScriptKey: 'quest_tutorial3',
+        label: 'Find a way to escape the tutorial.',
+        description:
+          'Ada and Conscience arrived in the tutorial area via some kind of portal.  Find out if there is another one.',
+      },
+      {
+        completedScriptKey: 'quest_tutorial4',
+        label: 'Access the escape portal.',
+        description:
+          'An escape portal is on the northern side of the tutorial area.  Find a way to access the platform on which it resides.',
       },
     ],
   };
@@ -55,7 +71,7 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
       "A girl standing by the Tic Tac Toe machines feels sorry for the AI programmed inside of them.  After all, the game is so simple that it does an awful lot of losing.  Someone ought to let it win a couple of games so that it doesn't need to have it so rough.",
     questStartScriptKey: 'quest_floor1-atrium_tic-tac-toe',
     questEndScriptKey: 'quest_floor1-atrium_tic-tac-toe-complete',
-    icon: TicTacToeIcon,
+    icon: 'tic-tac-toe',
     iconColor: colors.WHITE,
     experienceReward: 3,
     ticketsReward: 10,

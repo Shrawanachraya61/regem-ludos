@@ -13,7 +13,7 @@ export interface QuestTemplate {
   ticketsReward?: number;
   experienceReward?: number;
   itemsReward?: () => Item[];
-  icon?: any;
+  icon?: string;
   iconColor?: string;
 }
 
@@ -23,7 +23,7 @@ export interface IQuestStep {
   i?: number;
   label: string;
   description: string;
-  completedScriptKey: string;
+  completedScriptKey?: string;
 }
 
 const exp = {} as { [key: string]: QuestTemplate };
@@ -61,6 +61,7 @@ export const init = () => {
     const quest = exp[i];
     quest.steps.forEach((step, i) => {
       step.i = i;
+      step.completedScriptKey = quest.questStartScriptKey + '-' + i;
     });
   }
 };

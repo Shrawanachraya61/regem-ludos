@@ -35,7 +35,7 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawAnimation(anim, 0, 0, scale, ctx);
     }
-  }, [s, width, height, animName, anim]);
+  }, [s, width, height, anim]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,7 +49,7 @@ const AnimDiv = (props: IAnimDivProps): h.JSX.Element => {
   useRenderLoop(props.renderLoopId, loopFunc);
   return (
     <div id={props.id} style={props.rootStyle}>
-      <canvas style={props.style} ref={canvasRef}></canvas>
+      <canvas style={props.style} ref={canvasRef as any}></canvas>
     </div>
   );
 };

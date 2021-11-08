@@ -109,7 +109,7 @@ import { playMusic, playSoundName } from 'model/sound';
 import { transitionToBattle } from './battle-management';
 import { get as getEncounter } from 'db/encounters';
 
-let overworldKeysDisabledOnLoadVal = false;
+export let overworldKeysDisabledOnLoadVal = false;
 
 export const initiateOverworld = (
   player: Player,

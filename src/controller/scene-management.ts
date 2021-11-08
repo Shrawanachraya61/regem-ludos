@@ -93,7 +93,7 @@ export const updateScene = (scene: Scene): void => {
         // console.log('MAP COMMAND ARGS', cmd);
         const commandArgs: any[] = cmd?.args.map(mapGetSceneArgs);
 
-        // console.log('next cmd', cmd.type, cmd.args, commandArgs);
+        console.log('next cmd', cmd.type, cmd.args, commandArgs);
         if (commandFunction(...commandArgs)) {
           break;
         }

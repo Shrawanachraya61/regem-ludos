@@ -125,7 +125,7 @@ const MenuJournal = (props: IMenuJournalProps) => {
               }
               return (
                 <p
-                  key={questStep.completedScriptKey + i}
+                  key={(questStep.completedScriptKey as string) + i}
                   style={{
                     textDecoration: 'line-through',
                     color: colors.LIGHTGREY,

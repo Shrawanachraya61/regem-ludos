@@ -5,7 +5,7 @@
   "scripts": {
     "build": "yarn clean && (cd src && make js) && yarn mv",
     "build:dev": "yarn build",
-    "mv": "mkdir -p dist && cp -t dist/ public/* -v",
+    "mv": "mkdir -p dist && cp -v public/* dist/",
     "clean": "rm -rf dist"
   },
   "dependencies": {}
