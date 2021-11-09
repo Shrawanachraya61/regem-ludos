@@ -78,10 +78,10 @@ int main(int argc, char *argv[]) {
                                 window.makeColor(255, 255, 255));
         return true;
       } else {
-        // if (firstRender) {
-        //   game.setState(GAME_STATE_MENU);
-        //   firstRender = false;
-        // }
+        if (firstRender) {
+          game.setState(GAME_STATE_MENU);
+          firstRender = false;
+        }
         return game.loop();
       }
     });

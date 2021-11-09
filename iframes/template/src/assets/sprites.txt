@@ -1,0 +1,12 @@
+Picture,invisible,assets/invisible.png
+SpriteList,invisible,1,1,1
+
+Picture,blockers,assets/blockers.png
+SpriteList,blockers_0,4,22,16
+
+Picture,enemy_segments,assets/enemy_segments.png
+SpriteList,segments_b_0,22,16,3
+SpriteList,segments_f_0,22,16,3
+
+Picture,player,assets/player.png
+SpriteList,player_0,22,16,3

@@ -11,9 +11,6 @@ class Player;
 class Circle;
 class Rect;
 class Particle;
-class Projectile;
-class Train;
-class Game;
 
 enum GameState {
   GAME_STATE_MENU,
@@ -26,62 +23,55 @@ enum GameState {
 #define NUM_TILES_TALL (512 / 16)
 #define TILE_WIDTH_PX 22
 #define TILE_HEIGHT_PX 16
-#define BLOCKER_PX_OFFSET -8
+#define BLOCKER_PX_OFFSET -12
 
-class GameWorld {
-public:
-  int score = 0;
-  int lives = 3;
-  int width = 0;
-  int height = 0;
-  int tiles[NUM_TILES_WIDE * NUM_TILES_TALL];
+struct GameWorld {
+  int score;
+  int lives;
+  int width;
+  int height;
+  int blockers[NUM_TILES_WIDE * NUM_TILES_TALL];
   std::unique_ptr<Player> player;
   std::vector<std::unique_ptr<SDL2Wrapper::Timer>> timers;
   std::vector<std::unique_ptr<Particle>> particles;
-  std::vector<std::unique_ptr<Projectile>> projectiles;
-  std::vector<std::unique_ptr<Train>> trains;
-
-  GameWorld(Game& game);
-  ~GameWorld();
 };
 
 class Game {
   bool shouldExit;
   bool shouldClearTimers;
 
-
 public:
   bool isTransitioning;
-  std::unique_ptr<GameWorld> worldPtr;
+  GameWorld world;
   GameState state;
-  SDL2Wrapper::Window& window;
+  SDL2Wrapper::Window &window;
 
-  Game(SDL2Wrapper::Window& windowA);
+  Game(SDL2Wrapper::Window &windowA);
   ~Game();
 
-  static void loadAssets(SDL2Wrapper::Window& windowA);
+  static void loadAssets(SDL2Wrapper::Window &windowA);
 
   void initWorld();
 
   void startNewGame();
+  std::vector<int> generateBackgroundRow();
 
   void setState(GameState stateA);
 
-  const std::pair<int, int> tileIndexToPx(int i) const;
-  int pxToTileIndex(int x, int y) const;
-
-  void addBoolTimer(const int maxFrames, bool& ref);
+  void addBoolTimer(const int maxFrames, bool &ref);
   void addFuncTimer(const int maxFrames, std::function<void()> cb);
+  void addPowerup(int x, int y, const std::string &type);
   void modifyScore(const int value);
-  void handleKeyDown(const std::string& key);
-  void handleKeyUp(const std::string& key);
+  void handleKeyDown(const std::string &key);
+  void handleKeyUp(const std::string &key);
   void handleKeyUpdate();
-  void handleKeyMenu(const std::string& key);
-  void handleKeyGameOver(const std::string& key);
+  void handleKeyMenu(const std::string &key);
+  void handleKeyGameOver(const std::string &key);
   void handleGameOver();
   void checkCollisions();
   void checkGameOver();
   void drawUI();
+  void drawBlockers();
   bool menuLoop();
   bool gameLoop();
   bool otherLoop();

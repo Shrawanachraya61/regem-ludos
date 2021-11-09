@@ -309,7 +309,7 @@ void Window::drawAnimation(Animation& anim,
                            const double angle,
                            const std::pair<double, double> scale) {
   if (anim.isInitialized()) {
-    drawSprite(anim.getCurrentSpriteName(), x, y, centered);
+    drawSprite(anim.getCurrentSpriteName(), x, y, centered, angle, scale);
     if (updateAnim) {
       anim.update();
     }

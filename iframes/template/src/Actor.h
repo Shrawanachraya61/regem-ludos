@@ -6,9 +6,6 @@
 
 class Game;
 class Circle;
-class Rect;
-
-enum Direction { LEFT, RIGHT };
 
 class Actor {
 protected:
@@ -27,14 +24,7 @@ public:
   double vy;
   double ax;
   double ay;
-  double prevX;
-  double prevY;
-  double prevVx;
-  double prevVy;
-  double prevAx;
-  double prevAy;
   double accelerationRate;
-  double frictionRate;
   double maxSpeed;
   double headingDeg;
   bool accelerating;

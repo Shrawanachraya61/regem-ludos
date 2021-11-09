@@ -4,10 +4,8 @@
 #include "Player.h"
 #include <sstream>
 
-Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
-    : Actor(gameA, "invisible"),
-      particleType(particleTypeA),
-      text(""),
+Particle::Particle(Game &gameA, ParticleType particleTypeA, const int ms)
+    : Actor(gameA, "invisible"), particleType(particleTypeA), text(""),
       timer(addFuncTimer(ms, [=]() { remove(); })) {
 
   switch (particleType) {
@@ -41,11 +39,10 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
 
 Particle::~Particle() {}
 
-void Particle::spawnParticle(
-    Game& game, const int x, const int y, ParticleType type, const int ms) {
-  GameWorld& world = *(game.worldPtr);
-  world.particles.push_back(std::make_unique<Particle>(game, type, ms));
-  world.particles.back()->set(x, y);
+void Particle::spawnParticle(Game &game, const int x, const int y,
+                             ParticleType type, const int ms) {
+  game.world.particles.push_back(std::make_unique<Particle>(game, type, ms));
+  game.world.particles.back()->set(x, y);
 }
 void Particle::update() { Actor::update(); }
 

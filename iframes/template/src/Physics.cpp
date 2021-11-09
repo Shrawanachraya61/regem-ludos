@@ -54,11 +54,6 @@ bool collidesCircleCircle(const Circle& c1, const Circle& c2) {
   return false;
 }
 
-bool collidesRectRect(const Rect& rect1, const Rect& rect2) {
-  return rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
-         rect1.y < rect2.y + rect2.h && rect1.h + rect1.y > rect2.y;
-}
-
 std::pair<double, double> getNormalizedVec(const double x, const double y) {
   double d = sqrt(x * x + y * y);
   return std::make_pair(x / d, y / d);

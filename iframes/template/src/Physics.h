@@ -26,7 +26,6 @@ public:
 float distance(const int x1, const int y1, const int x2, const int y2);
 std::string collidesCircleRect(const Circle& c, const Rect& r);
 bool collidesCircleCircle(const Circle& c1, const Circle& c2);
-bool collidesRectRect(const Rect& r1, const Rect& r2);
 std::pair<double, double> getNormalizedVec(const double x, const double y);
 double getAngleDegTowards(std::pair<double, double> point1,
                           std::pair<double, double> point2);

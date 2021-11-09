@@ -14,14 +14,7 @@ Actor::Actor(Game& gameA, const std::string& spriteBaseA)
       vy(0.0),
       ax(0.0),
       ay(0.0),
-      prevX(0.0),
-      prevY(0.0),
-      prevVx(0.0),
-      prevVy(0.0),
-      prevAx(0.0),
-      prevAy(0.0),
       accelerationRate(1.0),
-      frictionRate(0.02),
       maxSpeed(5.0),
       headingDeg(0.0),
       accelerating(false),
@@ -135,13 +128,6 @@ SDL2Wrapper::Timer& Actor::addFuncTimer(const int maxTimeMs,
 void Actor::update() {
   double frameRatio = game.window.getFrameRatio();
 
-  prevX = x;
-  prevY = y;
-  prevVx = vx;
-  prevVy = vy;
-  prevAx = ax;
-  prevAy = ay;
-
   if (accelerating) {
     double headingRad = degreesToRadians(headingDeg);
     ax = sin(float(headingRad)) * accelerationRate;
@@ -183,10 +169,10 @@ void Actor::update() {
 
   if (frictionEnabled) {
     if (ax == 0.0) {
-      decelerateX(frictionRate);
+      decelerateX(0.02);
     }
     if (ay == 0.0) {
-      decelerateY(frictionRate);
+      decelerateY(0.02);
     }
   }
   ax = 0.0;
