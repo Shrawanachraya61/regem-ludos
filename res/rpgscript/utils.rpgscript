@@ -436,6 +436,11 @@ action,utils-heal-pool-action
 +playSound(emotion);
 +spawnEmotionParticleAtCharacter([ARG0], serious);
 +waitMS(1000);
+@exhale
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], exhale);
++waitMS(1000);
 @minorPause
 +none();
 +waitMS(1000);

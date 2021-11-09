@@ -238,7 +238,6 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +:happy(Conscience);
   Conscience: "It'll be worth it, I promise!"
   +callScript('utils-stop-Conscience-dialogue');
-  +startQuest(Tutorial);
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);
 @floor1-atrium-desk-employee2
@@ -334,7 +333,6 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +:bored(Ada);
   Ada: "<cascade-letters>I suppose..."
   Atrium Employee Jason: "Then let's start the tutorial!"
-  +completeQuestStep(Tutorial, 0);
   +callScript('floor1-atrium-employee-jason-start-tutorial');
 @floor1-atrium-employee-jason-start-tutorial
   +lookAtEachOther('Ada', 'Atrium Employee Jason');

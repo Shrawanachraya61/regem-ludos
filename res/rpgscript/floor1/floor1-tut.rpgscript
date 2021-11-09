@@ -106,6 +106,7 @@ Ada: "Let it be known that I have a particularly bad feeling about this."
 +none();
 +waitMS(300);
 +callScript('utils-stop-Conscience-dialogue');
++completeQuestStep(Tutorial, 0);
 +endConversation();
 
 // TRANSITION from entrance to vr1
@@ -1187,7 +1188,11 @@ Jason: "You spooked me!"
 +:shakeZ(Ada);
 Ada: "<cascade-letters italic>I spooked you?"
 +:angry(Ada);
++shakeScreen(200, true);
++walkToOffset(Ada, 8, 0);
 Ada: "<scale=1.25 cascade>Why did you run away from us?"
++shakeScreen(200, true);
++walkToOffset(Ada, 16, 0);
 Ada: "<scale=1.5 cascade>You are supposed to be leading us through this place!"
 +:teardrop(Jason);
 Jason: "Uh... You see..."
@@ -1460,7 +1465,7 @@ action,floor1-tut-VR-exit-portal-action
 +callScript('utils-vr-step');
 @floor1-tut-VR-exit-portal-action
 +setConversation(Ada);
-+callScript('utils-transition-to-vr', 'floor1Atrium', 'MarkerPlayer', true);
++callScript('utils-transition-to-vr', 'floor1Atrium', 'MarkerVRPortal', true);
 +endConversation();
 +callScript('floor1-tut-completed-tutorial');
 
@@ -1468,6 +1473,28 @@ action,floor1-tut-VR-exit-portal-action
 +:utils-start-Conscience-dialogue(true);
 +completeQuestStep(Tutorial, 3);
 +endConversation();
+
+#floor1-transitionToEast1FromTutExit
+step,this
+@this
++:utils-change-room(floor1East1, MarkerFromVRPortal);
++setConversation(Ada);
++walkToMarker(Ada, MarkerExit1);
++:floor1-OpenRedDoorsFWDOpen2();
++walkToMarker(Ada, MarkerExit2);
++:floor1-OpenRedDoorsFWDClose2();
++:utils-start-Conscience-dialogue();
++:exhale(Ada);
+Ada: "<cascade-letters>Finally..."
++:exclaim(Conscience);
+Conscience: "You may not admit it, but you actually did a really good job!"
++:angry(Ada);
+Ada: "<cascade-letters>......"
+Ada: "Whatever."
++setFacing(Ada, leftup);
+Ada: "I have a <color=BLUE>Haptic Bracer</> so now I can ascend to the second floor."
+Conscience: "<scale=0.75 cascade>It's such a shame you don't like this place."
++:utils-stop-Conscience-dialogue();
 
 @test-tut-battle
 +enterCombat(ENCOUNTER_TUT_BOSS);

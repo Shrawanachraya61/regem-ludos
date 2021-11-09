@@ -1,0 +1,345 @@
+#floor1-OpenRedDoorsFWD
+step-first,floor1-OpenRedDoorsFWDOpen
+step-off,floor1-OpenRedDoorsFWDClose
+@floor1-OpenRedDoorsFWDOpen
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:openDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+@floor1-OpenRedDoorsFWDClose
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:closeDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+
+#floor1-OpenRedDoorsFWD2
+step-first,floor1-OpenRedDoorsFWDOpen2
+step-off,floor1-OpenRedDoorsFWDClose2
+@floor1-OpenRedDoorsFWDOpen2
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorFWD21, RED_DOOR_FWDL);
++:openDoor(MarkerRedDoorFWD22, RED_DOOR_FWDR);
+@floor1-OpenRedDoorsFWDClose2
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorFWD21, RED_DOOR_FWDL);
++:closeDoor(MarkerRedDoorFWD22, RED_DOOR_FWDR);
+
+#floor1-OpenRedDoorsBCK
+step-first,floor1-OpenRedDoorsBCKOpen
+step-off,floor1-OpenRedDoorsBCKClose
+@floor1-OpenRedDoorsBCKOpen
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorBCK2, RED_DOOR_BCKL);
++:openDoor(MarkerRedDoorBCK1, RED_DOOR_BCKR);
+@floor1-OpenRedDoorsBCKClose
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorBCK2, RED_DOOR_BCKL);
++:closeDoor(MarkerRedDoorBCK1, RED_DOOR_BCKR);
+
+#floor1-atrium-elevator-employee
+  action,?isnot(with('HapticBracer')):floor1-atrium-elevator-employee-no-bracer-talk
+  action,?all(with('HapticBracer'), once('9019ab71')):floor1-atrium-elevator-employee-with-bracer
+  action,floor1-atrium-elevator-employee-default
+@floor1-atrium-elevator-employee-default
+  +lookAtEachOther('Ada', Atrium Elevator Employee);
+  +setConversation('Ada');
+  Atrium Elevator Employee: "Here for the elevator?  Go right ahead."
+  +setConversationSpeaker(none);
+  +endConversation();
+@floor1-atrium-elevator-employee-no-bracer-talk
+  +setConversation(Ada);
+  +lookAtEachOther('Ada', Atrium Elevator Employee);
+  Atrium Elevator Employee: "Here to ride the elevator?  I need to see your <color=BLUE>Haptic Bracer</> before you can go through there."
+  +?is('floor1-atrium-desk-employee'):{
+    Ada: "I have not acquired a <color=BLUE>Haptic Bracer</> yet."
+    +:teardrop(Atrium Elevator Employee);
+    Atrium Elevator Employee: "I'm afraid you'll have to get one of those before I can let you use the elevator."
+    Atrium Elevator Employee: "<cascade>Go talk to <color=BLUE cascade>Instructor Jason<cascade> by the VR Practice room, he'll be able to set you up with one."
+  }
+  +?isnot('floor1-atrium-desk-employee'):{
+    +:question(Ada);
+    Ada: "Haptic Bracer?  What is that?"
+    Atrium Elevator Employee: "Ah, you're new here huh?"
+    Atrium Elevator Employee: "Go speak to whoever is running the reception desk, they can get you oriented."
+  }
+  // this script might not get called from a talk trigger
+  +resetAi('Atrium Elevator Employee');
+  +endConversation();
+@floor1-atrium-elevator-employee-no-bracer
+  +setConversation('Ada');
+  +stopAi('Atrium Elevator Employee');
+  +playSound(deep_siren);
+  +changePropAnim(PropDoorLight1, props_small_light_alert);
+  +changePropAnim(PropDoorLight2, props_small_light_alert);
+  +changePropAnim(PropDoorLight3, props_small_light_alert);
+  +changePropAnim(PropDoorLight4, props_small_light_alert);
+  +:exclaim(Ada);
+  +:jump(Ada);
+  +waitMS(33);
+  +walkToMarker(Ada, MarkerMoveBack);
+  +setFacing(Ada, leftup);
+  +changePropAnim(PropDoorLight1, props_small_light_off);
+  +changePropAnim(PropDoorLight2, props_small_light_off);
+  +changePropAnim(PropDoorLight3, props_small_light_off);
+  +changePropAnim(PropDoorLight4, props_small_light_off);
+  +waitMS(100);
+  +?once('d0ad3672'):{
+    +:floor1-atrium-elevator-employee-catch-ada();
+  }
+  // this script might not get called from a talk trigger
+  +resetAi('Atrium Elevator Employee');
+  +endConversation();
+@floor1-atrium-elevator-employee-catch-ada
+  +lookAtCharacter(Atrium Elevator Employee, Ada);
+  Atrium Elevator Employee: "Whoah, hold up there, girl."
+  +lookAtEachOther('Ada', Atrium Elevator Employee);
+  Atrium Elevator Employee: "Here to ride the elevator?  Can you show me your <color=BLUE>Haptic Bracer</>?"
+  +?is('floor1-atrium-desk-employee'):{
+    Ada: "I have not acquired a <color=BLUE>Haptic Bracer</> yet."
+    +:teardrop(Atrium Elevator Employee);
+    Atrium Elevator Employee: "I'm afraid you'll have to get one of those before I can let you use the elevator."
+    Atrium Elevator Employee: "<cascade>Go talk to <color=BLUE cascade>Instructor Jason<cascade> by the VR Practice room, he'll be able to set you up with one."
+  }
+  +?isnot('floor1-atrium-desk-employee'):{
+    +:question(Ada);
+    Ada: "Haptic Bracer?  What is that?"
+    Atrium Elevator Employee: "Ah, you're new here huh?"
+    Atrium Elevator Employee: "Go speak to whoever is running the reception desk, they can get you oriented."
+  }
+@floor1-atrium-elevator-employee-with-bracer
+  +lookAtEachOther('Ada', Atrium Elevator Employee);
+  +setConversation('Ada');
+  Atrium Elevator Employee: "Here to ride the elevator?  Can you show me your <color=BLUE>Haptic Bracer</>?"
+  Atrium Elevator Employee: "Ah yes, I see you have one.  Go right ahead into the elevator; it'll take you to the next floor."
+  +setConversationSpeaker(none);
+  +endConversation();
+  // +callScript(floor1-atrium-enter-elevator);
+  // +callScript(floor1-atrium-sendElevatorUp);
+  // +fadeOut(1000);
+  // +endConversation();
+  // +changeRoom(floor2South, MarkerDoorElevatorDown);
+  // +fadeIn(1000);
+@floor1-atrium-sendElevatorUp
+  +applyZTransform('Ada', 64, 2000);
+@floor1-atrium-open-elevator
+  +playSound(sliding_door_open);
+  +changeTileAtMarker(MarkerDoorElevator[ARG0], ELEVATOR_BCK_OPEN2);
+  +changeTileAtMarker(MarkerDoorElevator[ARG0], ELEVATOR_BCK_OPEN1, 16, 0);
+@floor1-atrium-close-elevator
+  +playSound(sliding_door_close);
+  +changeTileAtMarker(MarkerDoorElevator[ARG0], ELEVATOR_BCK_CLOSED2);
+  +changeTileAtMarker(MarkerDoorElevator[ARG0], ELEVATOR_BCK_CLOSED1, 16, 0);
+@floor1-atrium-enter-elevator
+  +walkToMarker('Ada', MarkerElevatorInside[ARG0], 0, 32);
+  +walkToMarker('Ada', MarkerElevatorInside[ARG0]);
+  +setFacing('Ada', leftdown);
+#floor1-OpenRedDoorsToElevatorFWD
+step-first,?isnot(with('HapticBracer')):floor1-atrium-elevator-employee-no-bracer
+step-first,floor1-OpenRedDoorsToElevatorFWDOpen
+step-off,floor1-OpenRedDoorsToElevatorFWDClose
+@floor1-OpenRedDoorsToElevatorFWDOpen
++playSound(sliding_door_open);
++:openDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:openDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+@floor1-OpenRedDoorsToElevatorFWDClose
++playSound(sliding_door_close);
++:closeDoor(MarkerRedDoorFWD1, RED_DOOR_FWDL);
++:closeDoor(MarkerRedDoorFWD2, RED_DOOR_FWDR);
+
+#floor1-call-elevator
+step,floor1-call-elevator-step
+action,floor1-call-elevator-action
+@floor1-call-elevator-step
++setCharacterText('Press Action (X) to call elevator.');
+@floor1-call-elevator-action
++setConversation(Ada);
++setFacing(Ada, rightup);
++waitMS(100);
++playSound(terminal_beep);
++:bumpY(Ada, -1);
++waitMS(100);
++walkToMarker(Ada, MarkerDoorElevatorWait);
++setFacing(Ada, rightup);
++waitMS(1000);
++playSound(vr_portal_beep);
++changePropAnim(PropElevatorLight2, props_small_light_on);
++waitMS(300);
++:floor1-atrium-open-elevator(2);
++waitMS(200);
++:floor1-atrium-enter-elevator(2);
++:floor1-atrium-close-elevator(2);
++changePropAnim(PropElevatorLight2, props_small_light_off);
+// show floor-select
++fadeOut(1000, true);
++:floor1-atrium-sendElevatorUp();
++fadeIn(500);
++setCharacterAtMarker(Ada, MarkerPlayer);
++endConversation();
+
+
+#Floor1PrimaryGuy1
+action,?once('11028f4f'):Floor1PrimaryGuy1-1
+action,Floor1PrimaryGuy1-2
+@Floor1PrimaryGuy1-1
++setConversation(Ada);
++lookAtEachOther(Ada, Floor1PrimaryGuy1);
+Floor1PrimaryGuy1: "It's nice to come hang out at an arcade on a day like this."
+Floor1PrimaryGuy1: "Highschoolers like yourself have such a good place available to you here."
+Floor1PrimaryGuy1: "If I had this kind of facility in my younger years, I'd have been here <scale=1.5 color=RED> every day </>!"
++:wink(Floor1PrimaryGuy1);
+Floor1PrimaryGuy1: "And with that kind of practice, you could bet I'd beat every <color=BLUE>high score</> in here."
+Floor1PrimaryGuy1: "<cascade-letters italic>Mark. My. Words. <cascade>I'd easily trump that <color=ORANGE>Carl-Arnold<cascade> fella I keep hearing about."
+Floor1PrimaryGuy1: "He can't be as good at games as the scuttlebutt says, can he?"
++endConversation();
+@Floor1PrimaryGuy1-2
++setConversation(Ada);
++lookAtEachOther(Ada, Floor1PrimaryGuy1);
+Floor1PrimaryGuy1: "This place is pretty cool, huh?"
++endConversation();
+
+#Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo
+action,?once('4cefa402'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
+action,?once('3f6c1a28'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
+action,?once('1a50b78f'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-3
+action,?once('5c67238f'):Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-4
+action,Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-5
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-1
++setConversation(Ada);
++lookAtCharacter(Ada, Floor1PrimaryGuy2);
++panCameraToFitCharacters(500, false, Floor1PrimaryGuy2, Floor1PrimaryGirl1);
+Floor1PrimaryGuy2: "Did I tell you? My niece is gonna be attending the nearby high school coming this next year!"
++:shakeZ(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "The nearby one? <color=ORANGE>Erran Valley<cascade>? Isn't that a prep school that's really hard to get into?"
++:happy(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "That's right!  She worked hard to pass the entrance exams.  I'm really proud of her."
++:exclaim(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "That's really cool!  Although, I hear that place can get kinda <color=LIGHTBLUE>weird<cascade> sometimes."
++:question(Floor1PrimaryGuy2)
+Floor1PrimaryGuy2: "Weird? <delay=300 cascade-letters> How?"
+Floor1PrimaryGirl1: "Well, some of the state's richest kids go there, so they have a huge budget for extracurriculars."
+Floor1PrimaryGirl1: "Apparantly they've got this whole league set up for some <color=BLUE>virtual esport</> and the whole school attends the championships every year."
++:exclaim(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "That's not weird; that's awesome!"
+Floor1PrimaryGuy2: "I wish my high school did that!"
++:angry(Floor1PrimaryGirl1):
+Floor1PrimaryGirl1: "I'm not talking about some kind of dinky little shooter esport."
+Floor1PrimaryGirl1: "They have a VR there, similar to the tech they have in this arcade.  They use it to play some kind of combat sport.  I don't really know what it is."
++:exclaim(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "You have to admit, it's a little weird!  Most schools don't do that!"
++:exclaim(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "That sounds awesome!  I hope I get the chance to see it."
++panCameraBackToPlayer();
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-2
++setConversation(Ada);
++lookAtCharacter(Ada, Floor1PrimaryGuy2);
++:smirk(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "Did you hear anything else weird about <color=ORANGE>Erran Valley</>?"
++:nervous(Floor1PrimaryGirl1);
++:shakeZ(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "<cascade-letters>Well...  <delay=200 cascade>There's the rumor that the father of one of the students there is none other than <color=ORANGE>Dalton Eldridge</>!"
++:exclaim(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "You mean that higher-up in that <color=PURPLE> shady science company, Tyzon Corp</>?"
++lookAtCharacter(Floor1PrimaryGirl1, Floor1PrimaryGuy2);
++:shakeZ(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "Yeah! I had no idea he lived around here!"
+Floor1PrimaryGirl1: "Apparantly he put some kind of <color=BLUE>computer chip or something</> in his kid's head."
+Floor1PrimaryGirl1: "And because of it, supposedly <italic>that student</> is the smartest in the whole school."
++:flat(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "You're not serious, are you?"
++:exclaim(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "I am!"
+Floor1PrimaryGirl1: "I told it you was a <italic> rumor</>!"
++none();
++?func(inParty, Conscience):{
+  +walkToMarker(Ada, MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo);
+  +:utils-start-Conscience-dialogue();
+  Conscience: "She was talking about <color=ORANGE>Father</>, wasn't she?"
+  +:bored(Ada);
+  Ada: "Probably.  It appears he has created some infamy for himself."
+  +:smirk(Conscience);
+  Conscience: "You mean he has created <italic>infamy</> for <color=LIGHTBLUE>you</>."
+  Conscience: "Although <italic>smartest in the school</> is a pointed exaggeration."
+  +:blush(Ada);
+  Ada: "That remains to be seen."
+  +:teardrop(Conscience);
+  Conscience: "<color=ORANGE>Father</> would be so dissappointed by this gossip, though."
+  Conscience: "It doesn't have nearly enough <color=LIGHTBLUE>truth</> to it."
+  +:utils-stop-Conscience-dialogue();
+}
++?isnot(func(inParty, Conscience)):{
+  +setConversation(Ada);
+  +walkToMarker(Ada, MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo);
+  +setFacing(Ada, down);
+  +:question(Ada);
+  Ada: "I wonder if Father knows how infamous he is around here."
+}
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-3
++setConversation(Ada);
++lookAtCharacter(Ada, Floor1PrimaryGuy2);
++panCameraToFitCharacters(500, false, Floor1PrimaryGuy2, Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "I didn't realize your brother was well-off enough to send his daughter to <color=ORANGE>Erran Valley</>."
++:teardrop(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "He's not, really."
+Floor1PrimaryGuy2: "You don't actually have to be rich to attend. <delay=300> Just <cascade-letters>smart..."
++:happy(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "Like my niece!"
+Floor1PrimaryGuy2: "They make you take this really difficult test that weeds out most kids."
++:wink(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "Judging by the number of rich kids who attend that school, it seems like you can pay for smarts."
++:teardrop(Floor1PrimaryGuy2);
+Floor1PrimaryGuy2: "Huh, I guess you might have something of a point there."
++panCameraBackToPlayer();
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-4
++setConversation(Ada);
++panCameraToFitCharacters(500, false, Floor1PrimaryGuy2, Floor1PrimaryGirl1);
++lookAtEachOther(Ada, Floor1PrimaryGuy2);
++lookAtEachOther(Ada, Floor1PrimaryGirl1);
++:question(Floor1PrimaryGuy2)
+Floor1PrimaryGuy2: "Excuse me, did you want something?"
++:grumpy(Floor1PrimaryGirl1);
+Floor1PrimaryGirl1: "Yeah, you've been kinda hovering around us."
++:teardrop(Ada);
+Ada: "<cascade-letters>...No.<delay=300 /> No I did not mean to bother you."
++resetAi(Floor1PrimaryGirl1);
++resetAi(Floor1PrimaryGuy2);
++panCameraBackToPlayer();
++endConversation();
+@Floor1PrimaryGuy2-Floor1PrimaryGirl1-convo-5
++walkToMarker(Ada, MarkerFloor1PrimaryGuy2-Floor1PrimaryGirl1-convo);
++setFacing(Ada, down);
++setConversation(Ada);
+Ada: "I do not want to bother them any further."
++resetAi(Floor1PrimaryGirl1);
++resetAi(Floor1PrimaryGuy2);
++endConversation();
+
+// Sorry my brain switches to backwards mode sometimes *shrug*
+#floor1-transitionFromFloor1West2ToFloor1East2
+step,this
+@this
++:utils-change-room(floor1East2, MarkerFromWest2);
+#floor1-transitionFromFloor1East2ToFloor1West2
+step,this
+@this
++:utils-change-room(floor1West2, MarkerFromEast2);
+
+#floor1-transitionToFloor1East1FromFloor2East2
+step,this
+@this
++:utils-change-room(floor1East1, MarkerFromEast2);
+#floor1-transitionToFloor1East2FromFloor2East1
+step,this
+@this
++:utils-change-room(floor1East2, MarkerFromEast1);
+
+#floor1-transitionToFloor1AtriumFromFloor1West1
+step,this
+@this
++:utils-change-room(floor1Atrium, MarkerFromEast1);
+
+#floor1-transitionToFloor1East1FromFloor1Atrium
+step,this
+@this
++:utils-change-room(floor1East1, MarkerFromAtrium);
+
