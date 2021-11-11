@@ -15,3 +15,24 @@ SpriteList,player_ready,1,22,16
 
 Picture,bullet,assets/bullet.png
 SpriteList,bullet,1,2,12
+
+Picture,player_area,assets/player_area.png
+SpriteList,player_area,1,512,114
+
+Picture,bomber,assets/bombers.png
+SpriteList,bomber_0,3,22,16
+
+Picture,bomb,assets/bomb.png
+SpriteList,bomb,1,8,8
+
+Picture,bomb_target,assets/bomb_target.png
+SpriteList,bomb_target,1,8,8
+
+Picture,bomb_expl,assets/bomb_expl.png
+SpriteList,bomb_expl,8,64,64
+
+Picture,entity_expl,assets/expl_entity.png
+SpriteList,entity_expl,4,22,16
+
+Picture,score_area,assets/score_area.png
+SpriteList,score_area,1,512,16

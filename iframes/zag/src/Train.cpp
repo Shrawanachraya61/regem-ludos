@@ -1,6 +1,7 @@
 #include "Train.h"
 #include "Game.h"
 #include "GameOptions.h"
+#include "Particle.h"
 #include "Physics.h"
 #include "Projectile.h"
 
@@ -10,10 +11,8 @@ Train::Train(Game& game, int xA, int yA) : Actor(game, "invisible") {
 
   frictionEnabled = false;
   wrapEnabled = false;
-  animState = "bullet_0";
   r = 7.5;
 
-  // vy = -8;
   maxSpeed = abs(vy);
 
   createAnimationDefinition("enemy_segments_b_0");
@@ -26,10 +25,10 @@ Train::~Train() {}
 void Train::setDirection(Direction facingA) {
   facing = facingA;
   if (facing == LEFT) {
-    spriteDir = SPRITE_RIGHT;
+    spriteDir = SPRITE_LEFT;
     vx = -maxSpeed;
   } else {
-    spriteDir = SPRITE_LEFT;
+    spriteDir = SPRITE_RIGHT;
     vx = maxSpeed;
   }
   setIsHead(isHead);
@@ -96,7 +95,7 @@ bool Train::isPartOfTrain(const Train* train) const {
 }
 
 void Train::onRemove() {
-  // spawn particle
+  Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
 }
 
 void Train::handleCollision(const Rect& blocker) {
@@ -114,6 +113,12 @@ void Train::handleCollision(const Rect& blocker) {
 }
 
 void Train::handleCollision(const Projectile& projectile) {
+  if (projectile.type != PLAYER) {
+    return;
+  }
+
+  game.modifyScore(isHead ? 100 : 10);
+
   int i = game.pxToTileIndex(x, y);
   GameWorld& world = *(game.worldPtr);
 
@@ -121,6 +126,17 @@ void Train::handleCollision(const Projectile& projectile) {
   if (facing == LEFT) {
     blockerIndex = i - 1;
   }
+
+  // make sure spawning mushroom doesn't wrap around the array
+  auto pair = game.tileIndexToPx(blockerIndex);
+  if (abs(pair.first - x) > 44) {
+    blockerIndex = i;
+  }
+
+  // prevent spawning on last row :(
+  // if (blockerIndex >= NUM_TILES_WIDE * NUM_TILES_TALL - NUM_TILES_WIDE * 2) {
+  //   blockerIndex -= NUM_TILES_WIDE;
+  // }
   world.tiles[blockerIndex] = 1;
 
   if (child != nullptr) {
@@ -154,14 +170,24 @@ void Train::handleCollision(const Train& train) {
 
     turnIds.push_back(blockerIndex);
     Train* currentChild = child;
+    // maxSpeed += 0.1;
     while (currentChild != nullptr) {
       currentChild->turnIds.push_back(blockerIndex);
-      int i = game.pxToTileIndex(currentChild->x, currentChild->y);
-      auto pair = game.tileIndexToPx(i);
-      currentChild->x = pair.first + 11;
+      // currentChild->maxSpeed += 0.1;
+      // int i = game.pxToTileIndex(currentChild->x, currentChild->y);
+      // auto pair = game.tileIndexToPx(i);
+      // currentChild->x = pair.first + 11;
       currentChild = currentChild->child;
     }
   }
+}
+
+void Train::handleCollision(const Player& player) {
+  if (shouldRemove()) {
+    return;
+  }
+
+  remove();
 }
 
 void Train::update() {
@@ -176,11 +202,11 @@ void Train::update() {
         if (facing == LEFT) {
           facing = RIGHT;
           vx = maxSpeed;
-          spriteDir = SPRITE_LEFT;
+          spriteDir = SPRITE_RIGHT;
         } else {
           facing = LEFT;
           vx = -maxSpeed;
-          spriteDir = SPRITE_RIGHT;
+          spriteDir = SPRITE_LEFT;
         }
       } else {
         if (facing == LEFT) {
@@ -197,11 +223,11 @@ void Train::update() {
         if (facing == LEFT) {
           facing = RIGHT;
           vx = maxSpeed;
-          spriteDir = SPRITE_LEFT;
+          spriteDir = SPRITE_RIGHT;
         } else {
           facing = LEFT;
           vx = -maxSpeed;
-          spriteDir = SPRITE_RIGHT;
+          spriteDir = SPRITE_LEFT;
         }
       } else {
         if (facing == LEFT) {
@@ -221,15 +247,19 @@ void Train::update() {
     }
   }
 
-  if (!isMovingDownOrUp() && (x < TILE_WIDTH_PX / 2 || x > 512 - TILE_WIDTH_PX / 2)) {
-    swapDirections();
+  if (!isMovingDownOrUp()) {
+    if (x < TILE_WIDTH_PX / 2 && facing == LEFT) {
+      swapDirections();
+    } else if (x > 512 - TILE_WIDTH_PX / 2 && facing == RIGHT) {
+      swapDirections();
+    }
   }
 }
 void Train::draw() {
   // game.window.drawSprite(animState, x, y);
 
   int angleDeg = 0;
-  if (spriteDir == SPRITE_RIGHT) {
+  if (spriteDir == SPRITE_LEFT) {
     angleDeg = 180;
   } else if (spriteDir == SPRITE_LEFT_DOWN) {
     angleDeg = 90 + 45;
@@ -249,11 +279,11 @@ void Train::draw() {
   game.window.drawAnimation(
       anim, static_cast<int>(x), static_cast<int>(y), true, true, angleDeg);
 
+  // for (unsigned int i = 0; i < turnIds.size(); i++) {
+  //   int tileInd = turnIds[i];
+  //   auto pair = game.tileIndexToPx(tileInd);
+  //   game.window.drawSprite("blockers_debug_0", pair.first, pair.second,
+  //   false);
 
-  for (unsigned int i = 0; i < turnIds.size(); i++) {
-    int tileInd = turnIds[i];
-    auto pair = game.tileIndexToPx(tileInd);
-    game.window.drawSprite("blockers_debug_0", pair.first, pair.second, false);
-
-  }
+  // }
 }

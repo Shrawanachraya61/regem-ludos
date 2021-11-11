@@ -13,7 +13,7 @@ const std::string GameOptions::programName = "Zag";
 const int GameOptions::width = 512;
 const int GameOptions::height = 512;
 
-void parseArgs(int argc, char *argv[], std::vector<std::string> &args) {
+void parseArgs(int argc, char* argv[], std::vector<std::string>& args) {
   for (int i = 0; i < argc; i++) {
     std::string arg = argv[i];
     if (arg.size() > 2 && arg.at(0) == '-' && arg.at(1) == '-') {
@@ -23,7 +23,7 @@ void parseArgs(int argc, char *argv[], std::vector<std::string> &args) {
   }
 }
 
-bool includes(const std::string &arg, const std::vector<std::string> &args) {
+bool includes(const std::string& arg, const std::vector<std::string>& args) {
   if (std::find(args.begin(), args.end(), arg) != args.end()) {
     return true;
   } else {
@@ -31,7 +31,7 @@ bool includes(const std::string &arg, const std::vector<std::string> &args) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   SDL2Wrapper::Logger(GameOptions::programName)
       << "Program Begin." << std::endl;
   srand(time(NULL));
@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> args;
   parseArgs(argc, argv, args);
   try {
-    SDL2Wrapper::Window window(GameOptions::programName, GameOptions::width,
-                               GameOptions::height);
+    SDL2Wrapper::Window window(
+        GameOptions::programName, GameOptions::width, GameOptions::height);
     SDL2Wrapper::Store::createFont("default", "assets/monofonto.ttf");
     window.setCurrentFont("default", 18);
 
@@ -59,10 +59,10 @@ int main(int argc, char *argv[]) {
     bool firstRender = true;
 
     if (isWaitingToStart) {
-      auto pressButton = [&](const std::string &key) {
+      auto pressButton = [&](const std::string& key) {
         isWaitingToStart = false;
       };
-      SDL2Wrapper::Events &events = window.getEvents();
+      SDL2Wrapper::Events& events = window.getEvents();
       events.setKeyboardEvent("keydown", pressButton);
     }
 
@@ -74,21 +74,21 @@ int main(int argc, char *argv[]) {
       if (isWaitingToStart) {
         window.setCurrentFont("default", 20);
         window.drawSprite("cpp_splash_bg", 0, 0, false);
-        window.drawTextCentered("Press button.", 256, 256,
-                                window.makeColor(255, 255, 255));
+        window.drawTextCentered(
+            "Press button.", 256, 256, window.makeColor(255, 255, 255));
         return true;
       } else {
-        // if (firstRender) {
-        //   game.setState(GAME_STATE_MENU);
-        //   firstRender = false;
-        // }
+        if (firstRender) {
+          game.setState(GAME_STATE_MENU);
+          firstRender = false;
+        }
         return game.loop();
       }
     });
 
     SDL2Wrapper::Logger(GameOptions::programName)
         << "Program End." << std::endl;
-  } catch (const std::string &e) {
+  } catch (const std::string& e) {
     std::cout << e;
   }
   return 0;

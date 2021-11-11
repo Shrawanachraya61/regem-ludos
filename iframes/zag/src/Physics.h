@@ -34,3 +34,5 @@ double degreesToRadians(const double degrees);
 double radiansToDegrees(const double radians);
 
 double sgn(double val);
+
+double normalize(double x, double a, double b, double c, double d);

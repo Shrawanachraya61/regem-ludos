@@ -13,4 +13,31 @@ enemy_segments_f_0
 loop
 segments_f_0_0 100
 
+#
+bomber_0
+loop
+bomber_0_0 100
+bomber_0_2 100
+bomber_0_1 100
+bomber_0_2 100
+
+#
+bomb_expl
+noloop
+bomb_expl_0 50
+bomb_expl_1 50
+bomb_expl_2 50
+bomb_expl_3 50
+bomb_expl_4 50
+bomb_expl_5 50
+bomb_expl_6 50
+bomb_expl_7 50
+
+#
+entity_expl
+noloop
+entity_expl_0 50
+entity_expl_1 50
+entity_expl_2 50
+entity_expl_3 50
 

@@ -47,6 +47,7 @@ enum SpriteDirection {
 #include "Actor.h"
 
 class Projectile;
+class Player;
 
 class Train : public Actor {
 
@@ -78,6 +79,7 @@ public:
   void handleCollision(const Rect& blocker);
   void handleCollision(const Projectile& projectile);
   void handleCollision(const Train& train);
+  void handleCollision(const Player& player);
 
   void onRemove() override;
   void update() override;

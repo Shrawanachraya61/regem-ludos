@@ -14,7 +14,8 @@
   "cppIframes": [
     "invaderz",
     "elasticity",
-    "vortex"
+    "vortex",
+    "zag"
   ],
   "jsIframes": [
     "tic-tac-toe",

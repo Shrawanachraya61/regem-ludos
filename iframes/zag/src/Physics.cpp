@@ -101,3 +101,13 @@ double radiansToDegrees(const double radians) {
 }
 
 double sgn(double x) { return (x > 0) ? 1 : ((x < 0) ? -1 : 0); }
+
+double normalize(double x, double a, double b, double c, double d) {
+  if (x < a) {
+    x = a;
+  } else if (x > b) {
+    x = b;
+  }
+
+  return c + ((x - a) * (d - c)) / (b - a);
+}

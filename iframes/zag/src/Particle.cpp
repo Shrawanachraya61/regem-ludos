@@ -10,6 +10,8 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
       text(""),
       timer(addFuncTimer(ms, [=]() { remove(); })) {
 
+  wrapEnabled = false;
+
   switch (particleType) {
   case PARTICLE_TYPE_FADE_IN: {
     setV(0, 0);
@@ -26,16 +28,18 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
     set(0, 0);
     break;
   }
-    // case PARTICLE_TYPE_EXPLOSION: {
-    //   setV(0, 0);
-    //   setAnimState("explosion");
-    //   break;
-    // }
-    // case PARTICLE_TYPE_EXPLOSION2: {
-    //   setV(0, 0);
-    //   setAnimState("explosion2");
-    //   break;
-    // }
+  case PARTICLE_TYPE_BOMB_EXPL: {
+    setV(0, 0);
+    createAnimationDefinition("bomb_expl");
+    setAnimState("bomb_expl");
+    break;
+  }
+  case PARTICLE_TYPE_ENTITY_EXPL: {
+    setV(0, 0);
+    createAnimationDefinition("entity_expl");
+    setAnimState("entity_expl");
+    break;
+  }
   }
 }
 

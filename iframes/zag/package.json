@@ -1,0 +1,12 @@
+{
+  "name": "arcade_cpp_zag",
+  "version": "1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn clean && (cd src && make js) && yarn mv",
+    "build:dev": "yarn build",
+    "mv": "mkdir -p dist && cp -v public/* dist/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {}
+}
