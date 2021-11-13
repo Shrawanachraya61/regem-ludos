@@ -28,6 +28,16 @@ Asteroids-like featuring sprites generated from 3d models and several unique pow
 
 ------
 
+Zag - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/zag/dist/index.html?tap=true)
+
+Centipede-like with a few alterations.
+
+![image](https://user-images.githubusercontent.com/1266353/141657708-887c0caf-30a7-4896-b768-57b956a8b432.png)
+
+![image](https://user-images.githubusercontent.com/1266353/141657697-2a064f30-93b1-42af-b77d-548cc46fe035.png)
+
+------
+
 Elasticity - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/elasticity/dist/index.html?tap=true)
 
 Breakout-like with a gritty-earth theming and challenging levels.
