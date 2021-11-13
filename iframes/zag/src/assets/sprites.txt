@@ -3,7 +3,9 @@ SpriteList,invisible,1,1,1
 
 Picture,blockers,assets/blockers.png
 SpriteList,blockers_0,4,22,16
-SpriteList,blockers_debug,1,22,16
+SpriteList,blockers_1,4,22,16
+SpriteList,blockers_2,4,22,16
+SpriteList,blockers_3,4,22,16
 
 Picture,enemy_segments,assets/enemy_segments.png
 SpriteList,segments_b_0,3,22,16
@@ -32,7 +34,48 @@ Picture,bomb_expl,assets/bomb_expl.png
 SpriteList,bomb_expl,8,64,64
 
 Picture,entity_expl,assets/expl_entity.png
-SpriteList,entity_expl,4,22,16
+SpriteList,entity_expl_0,4,22,16
+SpriteList,entity_expl_1,4,22,16
+SpriteList,entity_expl_2,4,22,16
+SpriteList,entity_expl_3,4,22,16
 
 Picture,score_area,assets/score_area.png
 SpriteList,score_area,1,512,16
+
+Picture,trains0,assets/trains0.png
+SpriteList,trains_b_horiz_0,3,22,16
+SpriteList,trains_f_horiz_0,3,22,16
+SpriteList,trains_b_vert_0,2,22,16
+SpriteList,trains_f_vert_0,2,22,16
+SpriteList,trains_b_diag_0,2,22,16
+SpriteList,trains_f_diag_0,2,22,16
+
+Picture,trains1,assets/trains1.png
+SpriteList,trains_b_horiz_1,3,22,16
+SpriteList,trains_f_horiz_1,3,22,16
+SpriteList,trains_b_vert_1,2,22,16
+SpriteList,trains_f_vert_1,2,22,16
+SpriteList,trains_b_diag_1,2,22,16
+SpriteList,trains_f_diag_1,2,22,16
+
+Picture,trains2,assets/trains2.png
+SpriteList,trains_b_horiz_2,3,22,16
+SpriteList,trains_f_horiz_2,3,22,16
+SpriteList,trains_b_vert_2,2,22,16
+SpriteList,trains_f_vert_2,2,22,16
+SpriteList,trains_b_diag_2,2,22,16
+SpriteList,trains_f_diag_2,2,22,16
+
+Picture,trains3,assets/trains3.png
+SpriteList,trains_b_horiz_3,3,22,16
+SpriteList,trains_f_horiz_3,3,22,16
+SpriteList,trains_b_vert_3,2,22,16
+SpriteList,trains_f_vert_3,2,22,16
+SpriteList,trains_b_diag_3,2,22,16
+SpriteList,trains_f_diag_3,2,22,16
+
+Picture,airplane,assets/airplane.png
+SpriteList,airplane,4,22,16
+
+Picture,duo_missile,assets/duo_missile.png
+SpriteList,duo_missile,4,16,16

@@ -63,6 +63,7 @@ public:
   SDL2Wrapper::Timer& addBoolTimer(const int maxTimeMs, bool& ref);
   SDL2Wrapper::Timer& addFuncTimer(const int maxTimeMs,
                                    std::function<void()> cb);
+  void clearTimers();
   void remove();
   bool shouldRemove() const;
   virtual void onRemove();

@@ -3,8 +3,10 @@ function LIB() {
     startButtonEnabled: true,
     soundEnabled: true,
     shouldShowControls: true,
+    shouldShowButtons: true,
     originalScale: false,
     gameStarted: false,
+    controlLayout: 'default', // default, overlay
   };
 
   this.BUTTON_LEFT = 1073741904;
@@ -24,6 +26,9 @@ function LIB() {
       Module.ccall('enableSound');
     }
     config.soundEnabled = !config.soundEnabled;
+  };
+  this.setSoundEnabled = function (v) {
+    config.soundEnabled = Boolean(v);
   };
   this.toggleScale = function () {
     const board = document.getElementById('board');
@@ -53,6 +58,14 @@ function LIB() {
     }
     config.shouldShowControls = !config.shouldShowControls;
   };
+  this.toggleButtons = function () {
+    if (config.shouldShowButtons) {
+      this.hideButtons();
+    } else {
+      this.showButtons();
+    }
+    config.shouldShowButtons = !config.shouldShowButtons;
+  };
   this.hideLoading = function () {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'none';
@@ -78,6 +91,14 @@ function LIB() {
   this.showControls = function () {
     const top = document.getElementById('top-bar-controls');
     if (top) top.style.display = 'flex';
+    const controls = document.getElementById('on-screen-controls');
+    if (controls) controls.style.display = 'flex';
+  };
+  this.hideButtons = function () {
+    const controls = document.getElementById('on-screen-controls');
+    if (controls) controls.style.display = 'none';
+  };
+  this.showButtons = function () {
     const controls = document.getElementById('on-screen-controls');
     if (controls) controls.style.display = 'flex';
   };
@@ -411,6 +432,10 @@ if (expand === 'true') {
     if (toggleScaleElem) toggleScaleElem.style.display = 'none';
     var toggleSoundElem = document.getElementById('toggle-sound');
     if (toggleSoundElem) toggleSoundElem.style.display = 'none';
+    var toggleControlsElem = document.getElementById('toggle-controls');
+    if (toggleControlsElem) toggleControlsElem.style.display = 'none';
+    var toggleControls2Elem = document.getElementById('toggle-controls2');
+    if (toggleControls2Elem) toggleControls2Elem.style.display = 'none';
   });
 }
 

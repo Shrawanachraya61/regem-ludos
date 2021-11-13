@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Actor.h"
+
 enum SpriteDirection {
   SPRITE_LEFT,
   SPRITE_RIGHT,
@@ -10,41 +12,6 @@ enum SpriteDirection {
   SPRITE_DOWN,
   SPRITE_UP,
 };
-
-// class Train : public Actor {
-// public:
-//   bool isHead;
-//   SpriteDirection spriteDir;
-//   Direction facing;
-//   unsigned int variant;
-
-//   bool isMovingUp;
-//   bool isCascading;
-
-//   int moveThreshold;
-
-//   explicit Train(Game& gameA,
-//                  int xA,
-//                  int yA,
-//                  bool isHeadA,
-//                  Direction facingA,
-//                  int variantA,
-//                  int speedA);
-//   ~Train();
-
-//   void setSpeed(int speed);
-//   void swapDirections();
-
-//   bool isMovingDownOrUp() const;
-
-//   void handleCollision(const Rect& blocker);
-
-//   void onRemove() override;
-//   void update() override;
-//   void draw() override;
-// };
-
-#include "Actor.h"
 
 class Projectile;
 class Player;
@@ -61,6 +28,9 @@ public:
   int moveThreshold = 0;
   Train* child = nullptr;
   Train* parent = nullptr;
+  bool canTurn = true;
+
+  int cascadeUntil = 0;
 
   std::vector<int> turnIds;
   std::vector<int> turnIgnoreIds;

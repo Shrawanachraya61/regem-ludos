@@ -229,6 +229,19 @@ action,test2-vortex-machine-action
 +fadeIn(50);
 +setAtMarker(Ada, MarkerVortexMachine);
 
+#test2-zag-machine
+step-first,this
+action,test2-zag-machine-action
+@this
++setCharacterText('Press Action (X) to play Zag.');
+@test2-zag-machine-action
++setFacing(Ada, leftup);
++setCharacterText('');
++fadeOut(500);
++runArcadeCabinetGame(ZAG);
++fadeIn(50);
++setAtMarker(Ada, MarkerZagMachine);
+
 #test-testDialogA
 action,this
 @this

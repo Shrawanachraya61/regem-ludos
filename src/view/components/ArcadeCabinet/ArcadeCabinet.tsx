@@ -37,7 +37,17 @@ import {
 } from './ArcadeCabinetHelpers';
 import { unpause } from 'controller/loop';
 import { useKeyboardEventListener } from 'view/hooks';
-import { isCancelKey, isConfirmKey } from 'controller/events';
+import {
+  getEscapeKeyLabel,
+  getMuteKeyLabel,
+  getPauseKeyLabel,
+  getSkipKeyLabel,
+  isCancelKey,
+  isConfirmKey,
+  isEscapeKey,
+  isMuteKey,
+  isSelectKey,
+} from 'controller/events';
 import { isDevelopmentMode } from 'utils';
 import {
   getCurrentSettings,
@@ -52,6 +62,7 @@ import './GameTicTacToe';
 import './GamePresident';
 import './GameInvaderz';
 import './GameElasticity';
+import './GameZag';
 import './GameVortex';
 import './GameBowling';
 
@@ -512,6 +523,46 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
     }
   };
 
+  const handleExpand = () => {
+    const nextExpanded = !expanded;
+    setExpanded(nextExpanded);
+    if (nextExpanded) {
+      if (isGameReadyToPlay || isGameRunning) {
+        showControls();
+      } else {
+        hideControls();
+      }
+      setScaleWindow();
+    } else {
+      hideControls();
+      setScaleOriginal();
+    }
+  };
+
+  const handleMuted = () => {
+    const nextMuted = !muted;
+    setMuted(nextMuted);
+    if (nextMuted) {
+      muteAudio();
+    } else {
+      unmuteAudio();
+    }
+
+    // saves the arcade game mute/volume
+    setArcadeGameMuted(nextMuted);
+    saveSettingsToLS(getCurrentSettings());
+  };
+
+  useKeyboardEventListener(ev => {
+    if (isEscapeKey(ev.key)) {
+      cancelGame();
+    } else if (isSelectKey(ev.key)) {
+      handleExpand();
+    } else if (isMuteKey(ev.key)) {
+      handleMuted();
+    }
+  });
+
   let backgroundColor = colors.BGGREY;
   if (meta?.cabinet?.backgroundColor) {
     backgroundColor = meta?.cabinet?.backgroundColor;
@@ -536,7 +587,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 marginRight: '1rem',
               }}
             >
-              Back
+              Back {getEscapeKeyLabel()}
             </Button>
             {meta.cabinet?.disabled ? null : (
               <Button
@@ -544,31 +595,17 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
                 style={{
                   marginRight: '1rem',
                 }}
-                onClick={() => {
-                  const nextExpanded = !expanded;
-                  setExpanded(nextExpanded);
-                  if (nextExpanded) {
-                    if (isGameReadyToPlay || isGameRunning) {
-                      showControls();
-                    } else {
-                      hideControls();
-                    }
-                    setScaleWindow();
-                  } else {
-                    hideControls();
-                    setScaleOriginal();
-                  }
-                }}
+                onClick={handleExpand}
               >
                 {expanded ? (
                   <ButtonContentWithIcon>
                     <Contract color={colors.WHITE} />
-                    Contract
+                    Contract {getSkipKeyLabel()}
                   </ButtonContentWithIcon>
                 ) : (
                   <ButtonContentWithIcon>
                     <Expand color={colors.WHITE} />
-                    Expand
+                    Expand {getSkipKeyLabel()}
                   </ButtonContentWithIcon>
                 )}
               </Button>
@@ -578,29 +615,17 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
               style={{
                 marginRight: '1rem',
               }}
-              onClick={() => {
-                const nextMuted = !muted;
-                setMuted(nextMuted);
-                if (nextMuted) {
-                  muteAudio();
-                } else {
-                  unmuteAudio();
-                }
-
-                // saves the arcade game mute/volume
-                setArcadeGameMuted(nextMuted);
-                saveSettingsToLS(getCurrentSettings());
-              }}
+              onClick={handleMuted}
             >
               {muted ? (
                 <ButtonContentWithIcon>
                   <SpeakerOff color={colors.WHITE} />
-                  Unmute
+                  Unmute {getMuteKeyLabel()}
                 </ButtonContentWithIcon>
               ) : (
                 <ButtonContentWithIcon>
                   <Speaker color={colors.WHITE} />
-                  Mute
+                  Mute {getMuteKeyLabel()}
                 </ButtonContentWithIcon>
               )}
             </Button>

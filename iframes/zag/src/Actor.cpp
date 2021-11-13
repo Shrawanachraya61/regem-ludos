@@ -132,6 +132,8 @@ SDL2Wrapper::Timer& Actor::addFuncTimer(const int maxTimeMs,
   return *timers.back();
 }
 
+void Actor::clearTimers() { timers.clear(); }
+
 void Actor::update() {
   double frameRatio = game.window.getFrameRatio();
 

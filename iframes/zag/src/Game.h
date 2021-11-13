@@ -13,7 +13,9 @@ class Rect;
 class Particle;
 class Projectile;
 class Bomber;
+class Airplane;
 class Train;
+class DuoMissile;
 class Game;
 
 enum GameState { GAME_STATE_MENU, GAME_STATE_GAME };
@@ -28,18 +30,23 @@ enum GameState { GAME_STATE_MENU, GAME_STATE_GAME };
 class GameWorld {
 public:
   int score = 0;
+  int nextHighScore = 15000;
   int lastScore = 0;
   int lives = 3;
   int width = 0;
   int height = 0;
   int round = 0;
+  int variant = 0;
   int tiles[NUM_TILES_WIDE * NUM_TILES_TALL];
+  int poisonTiles[NUM_TILES_WIDE * NUM_TILES_TALL];
   std::unique_ptr<Player> player;
   std::vector<std::unique_ptr<SDL2Wrapper::Timer>> timers;
   std::vector<std::unique_ptr<Particle>> particles;
   std::vector<std::unique_ptr<Projectile>> projectiles;
   std::vector<std::unique_ptr<Train>> trains;
   std::vector<std::unique_ptr<Bomber>> bombers;
+  std::vector<std::unique_ptr<Airplane>> airplanes;
+  std::vector<std::unique_ptr<DuoMissile>> missiles;
 
   GameWorld(Game& game);
   ~GameWorld();
@@ -52,6 +59,13 @@ class Game {
 
   bool isSpawningBomber = false;
   bool isSpawningFront = false;
+  bool isSpawningAirplane = false;
+  bool isSpawningMissile = false;
+
+  bool isSettingNextState = false;
+  GameState nextState = GAME_STATE_MENU;
+
+  bool initWorldNextTick = false;
 
 public:
   bool isTransitioning;
@@ -68,11 +82,17 @@ public:
   void initRound();
 
   void spawnBomber();
-  void spawnFront(bool init = false);
-
+  void spawnAirplane();
+  void spawnMissile();
+  void spawnStartingFronts();
+  void spawnExtraFront();
   void startNewGame();
+  void spawnBlocker(int i);
+  bool isPoisoned(int i);
 
+  void playSound(const std::string& soundName);
   void setState(GameState stateA);
+  void setNextState(GameState stateA);
 
   const std::pair<int, int> tileIndexToPx(int i) const;
   int pxToTileIndex(int x, int y) const;

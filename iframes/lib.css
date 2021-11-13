@@ -2,7 +2,14 @@ body {
   background: black;
   color: #dedede;
   margin: 0px;
-  font-family: 'Courier New', Courier, monospace;
+  /* font-family: 'Courier New', Courier, monospace; */
+}
+@font-face {
+  font-family: Consolas;
+  src: url(/res/fonts/Consolas.woff);
+}
+body {
+  font-family: Consolas;
 }
 .fixed {
   position: fixed;
@@ -30,7 +37,7 @@ body {
   position: relative;
   width: 512px;
   height: 512px;
-  border: 1px solid white;
+  /* border: 1px solid white; */
 }
 .canvas-original {
   width: 512px;
@@ -52,29 +59,23 @@ canvas {
   width: calc(100% - 4px);
   height: auto;
   border: 1px solid white;
-  image-rendering: -moz-crisp-edges; /* Firefox */
-  image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
-  image-rendering: pixelated; /* Chrome */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
 }
 @media (min-aspect-ratio: 9/11) {
   .board {
     margin: unset;
-    /* margin-bottom: 82px; */
-    /* margin-top: 40px; */
-    /* position: relative; */
-    /* top: 40px; */
-    /* height: calc(100% - 82px - 40px); */
     border: unset;
     display: flex;
     transform: translateY(-30px);
-    /* flex-shrink: unset; */
-    /* flex-grow: unset; */
   }
-  
+
   canvas {
     box-sizing: border-box;
     width: auto;
     height: calc(100% - 130px);
+    transform: translateY(2px);
   }
 }
 .top-bar-controls {
@@ -110,7 +111,7 @@ canvas {
   text-align: center;
   font-family: monospace;
   user-select: none;
-  -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none;
 }
 @media only screen and (max-width: 580px) {
   .on-screen-controls {
@@ -138,5 +139,24 @@ canvas {
   cursor: default;
   font-size: 32px;
   user-select: none;
-  -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none;
+}
+
+button {
+  font-family: Consolas;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: 80px;
+  padding: 4px 10px;
+  background: #243f72;
+  border: 2px solid #31a2f2;
+  border-bottom: 2px solid #999;
+}
+button:hover {
+  filter: brightness(120%);
+}
+button:active {
+  filter: brightness(80%);
+  transform: translateY(2px);
 }

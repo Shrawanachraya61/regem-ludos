@@ -3,7 +3,9 @@
 #include "GameOptions.h"
 #include "LibHTML.h"
 
+#include "Airplane.h"
 #include "Bomber.h"
+#include "DuoMissile.h"
 #include "Particle.h"
 #include "Physics.h"
 #include "Player.h"
@@ -90,19 +92,32 @@ void Game::setState(GameState stateA) {
   state = stateA;
   SDL2Wrapper::Events& events = window.getEvents();
 
-  std::cout << "SET GAME STATE: " << state << std::endl;
-
   if (state == GAME_STATE_MENU) {
-    events.pushRoute();
+    window.playMusic("menu");
+    worldPtr->player->setAi(true);
+    worldPtr->player->isDead = false;
+    initWorld();
+    initRound();
+
+    // events.pushRoute();
     events.setKeyboardEvent(
         "keydown",
         std::bind(&Game::handleKeyMenu, this, std::placeholders::_1));
   } else if (state == GAME_STATE_GAME) {
-    events.popRouteNextTick();
+    worldPtr->player->setAi(false);
+    worldPtr->player->isDead = false;
+    // events.popRouteNextTick();
+    events.setKeyboardEvent(
+        "keydown",
+        std::bind(&Game::handleKeyDown, this, std::placeholders::_1));
+    events.setKeyboardEvent(
+        "keyup", std::bind(&Game::handleKeyUp, this, std::placeholders::_1));
   }
+}
 
-  // events.popRouteNextTick();
-  // events.pushRoute();
+void Game::setNextState(GameState stateA) {
+  nextState = stateA;
+  isSettingNextState = true;
 }
 
 const std::pair<int, int> Game::tileIndexToPx(int i) const {
@@ -127,8 +142,14 @@ void Game::startNewGame() {
   GameWorld& world = *worldPtr;
   world.lives = 2;
   world.score = 0;
+  world.nextHighScore = 12000;
   world.round = 0;
+  world.variant = 0;
   world.player->isDead = false;
+
+  world.player->isAi = false;
+  world.player->maxSpeed = 4.3;
+  world.player->clearTimers();
 
   initWorld();
   initRound();
@@ -141,20 +162,21 @@ void Game::initWorld() {
   world.timers.clear();
   world.trains.clear();
   world.projectiles.clear();
-  world.player->set(GameOptions::width / 2, GameOptions::height - 40);
+  world.bombers.clear();
+  world.airplanes.clear();
+  world.missiles.clear();
+  world.player->set(512 / 2, 512 - TILE_HEIGHT_PX * 3);
 
   for (int i = 0; i < NUM_TILES_WIDE * NUM_TILES_TALL; i++) {
     int x = i % world.width;
     int y = i / world.width;
 
     world.tiles[i] = 0;
+    world.poisonTiles[i] = 0;
+
     if (x == 10 && y == 20) {
       world.tiles[i] = 1;
     }
-
-    // if (x == 15 && y == 1) {
-    //   world.tiles[i] = 1;
-    // }
 
     if (y > 23 || y < 3 || x <= 0 ||
         x >= NUM_TILES_WIDE * TILE_WIDTH_PX - TILE_WIDTH_PX * 2) {
@@ -163,9 +185,6 @@ void Game::initWorld() {
       world.tiles[i] = rand() % 11 > 0 ? 0 : 1;
     }
   }
-
-  // world.trains.push_back(
-  //     std::make_unique<Train>(*this, 100, 8, true, RIGHT, 0, 3));
 }
 
 void Game::initRound() {
@@ -174,83 +193,50 @@ void Game::initRound() {
   world.player->isDead = false;
   isSpawningBomber = false;
   isSpawningFront = false;
-  int speed = 3.5 + world.round * 0.25;
+  isSpawningAirplane = false;
+  isSpawningMissile = false;
+  int speed = 3.25 + world.round * 0.25;
+  // int speed = 1 + world.round * 0.25;
 
-  world.tiles[17] = 1;
+  Direction dir = rand() % 2 ? LEFT : RIGHT;
+  world.tiles[dir == RIGHT ? 17 : 10] = 1;
 
-  {
-    int startX = 300;
-    int startY = TILE_HEIGHT_PX * 0 - TILE_HEIGHT_PX / 2 + BLOCKER_PY_OFFSET;
+  int startX = dir == RIGHT ? 200 + rand() % 100 : 400 - rand() % 100;
+  // int startX = 450;
+  int startY = TILE_HEIGHT_PX * 0 - TILE_HEIGHT_PX / 2 + BLOCKER_PY_OFFSET;
 
-    world.trains.push_back(std::make_unique<Train>(*this, startX, startY));
-    Train& frontTrain = *(world.trains.back());
-    frontTrain.setSpeed(speed);
-    frontTrain.setDirection(RIGHT);
-    frontTrain.setVariant(0);
-    frontTrain.setIsHead(true);
+  world.trains.push_back(std::make_unique<Train>(*this, startX, startY));
+  Train& frontTrain = *(world.trains.back());
+  frontTrain.setSpeed(speed);
+  frontTrain.setDirection(dir);
+  frontTrain.setVariant(world.variant);
+  frontTrain.setIsHead(true);
 
-    Train* prevTrain = &frontTrain;
+  Train* prevTrain = &frontTrain;
 
-    int numTrainsSolo = world.round % 12;
-    int trainLength = 12 - numTrainsSolo;
+  int numTrainsSolo = world.round % 14;
+  int trainLength = 14 - numTrainsSolo;
 
-    for (int i = 1; i <= trainLength; i++) {
-      world.trains.push_back(
-          std::make_unique<Train>(*this, startX - TILE_WIDTH_PX * i, startY));
-      Train& train = *(world.trains.back());
-      train.setSpeed(speed);
-      train.setDirection(RIGHT);
-      train.setVariant(0);
-      train.setIsHead(false);
+  for (int i = 1; i <= trainLength; i++) {
+    world.trains.push_back(std::make_unique<Train>(
+        *this, startX + TILE_WIDTH_PX * i * (dir == RIGHT ? -1 : 1), startY));
+    Train& train = *(world.trains.back());
+    train.setSpeed(speed);
+    train.setDirection(dir);
+    train.setVariant(world.variant);
+    train.setIsHead(false);
 
-      prevTrain->child = &train;
-      train.parent = prevTrain;
-      prevTrain = &train;
-    }
-    for (int i = 0; i < numTrainsSolo; i++) {
-      // world.trains.push_back(std::make_unique<Train>(
-      //     *this,
-      //     32 + rand() % 450,
-      //     (rand() % 3) * TILE_HEIGHT_PX - BLOCKER_PY_OFFSET));
-      // Train& frontTrain = *(world.trains.back());
-      // frontTrain.setSpeed(speed);
-      // frontTrain.setDirection(rand() % 2 ? LEFT : RIGHT);
-      // frontTrain.setVariant(0);
-      // frontTrain.setIsHead(true);
-      spawnFront(true);
-    }
+    prevTrain->child = &train;
+    train.parent = prevTrain;
+    prevTrain = &train;
   }
+  spawnStartingFronts();
+}
 
-  // world.bombers.push_back(std::make_unique<Bomber>(*this, 0, 512 - 114));
-
-  // {
-  //   int startX = 450;
-  //   int startY = TILE_HEIGHT_PX * 3 - TILE_HEIGHT_PX / 2;
-
-  //   world.trains.push_back(std::make_unique<Train>(*this, startX, startY));
-  //   Train& frontTrain = *(world.trains.back());
-  //   frontTrain.setSpeed(speed);
-  //   frontTrain.setDirection(LEFT);
-  //   frontTrain.setVariant(0);
-  //   frontTrain.setIsHead(true);
-
-  //   Train* prevTrain = &frontTrain;
-
-  //   for (int i = 1; i <= 2; i++) {
-  //     world.trains.push_back(
-  //         std::make_unique<Train>(*this, startX + TILE_WIDTH_PX * i,
-  //         startY));
-  //     Train& train = *(world.trains.back());
-  //     train.setSpeed(speed);
-  //     train.setDirection(LEFT);
-  //     train.setVariant(0);
-  //     train.setIsHead(false);
-
-  //     prevTrain->child = &train;
-  //     train.parent = prevTrain;
-  //     prevTrain = &train;
-  //   }
-  // }
+void Game::playSound(const std::string& soundName) {
+  if (state == GAME_STATE_GAME) {
+    window.playSound(soundName);
+  }
 }
 
 void Game::spawnBomber() {
@@ -263,36 +249,137 @@ void Game::spawnBomber() {
   }
 }
 
-void Game::spawnFront(bool init) {
+void Game::spawnAirplane() {
+  playSound("airplane");
+  if (rand() % 10 <= 4) {
+    worldPtr->airplanes.push_back(std::make_unique<Airplane>(
+        *this,
+        512 + 44,
+        TILE_HEIGHT_PX * 4 + (rand() % 15) * TILE_HEIGHT_PX +
+            BLOCKER_PY_OFFSET + 8));
+    worldPtr->airplanes.back()->direction = LEFT;
+    worldPtr->airplanes.back()->vx = -3.25;
+  } else {
+    worldPtr->airplanes.push_back(std::make_unique<Airplane>(
+        *this,
+        0 - 44,
+        TILE_HEIGHT_PX * 4 + (rand() % 15) * TILE_HEIGHT_PX +
+            BLOCKER_PY_OFFSET + 8));
+    worldPtr->airplanes.back()->direction = RIGHT;
+    worldPtr->airplanes.back()->vx = 3.25;
+  }
+}
+
+void Game::spawnMissile() {
+  playSound("missile_spawn");
+  worldPtr->missiles.push_back(std::make_unique<DuoMissile>(
+      *this, 44 + (rand() % (512 - 44 - 44)), -16));
+  worldPtr->missiles.back()->vy = 3 + worldPtr->round * 0.5;
+}
+
+void Game::spawnStartingFronts() {
   GameWorld& world = *worldPtr;
-  int speed = 3.5 + world.round * 0.25 + 0.75;
+  int numTrainsSolo = world.round % 14;
+  int speed = 3.25 + world.round * 0.25 + 0.75;
 
-  int y =
-      (init ? ((rand() % 3) * TILE_HEIGHT_PX + BLOCKER_PY_OFFSET) : 512 - 114) +
-      8;
+  for (int i = 0; i < numTrainsSolo; i++) {
+    int y = (rand() % 3) * TILE_HEIGHT_PX + BLOCKER_PY_OFFSET + 8;
+    int x = 0 - TILE_WIDTH_PX * (i * 4 + 5);
+    Direction d = RIGHT;
+    if (rand() % 2) {
+      x = 512 + TILE_HEIGHT_PX * (i * 4 + 5);
+      d = LEFT;
+    }
 
+    world.trains.push_back(std::make_unique<Train>(*this, x, y));
+    Train& frontTrain = *(world.trains.back());
+    frontTrain.setSpeed(speed);
+    frontTrain.setDirection(d);
+    frontTrain.setVariant(world.variant);
+    frontTrain.setIsHead(true);
+  }
+}
+
+void Game::spawnExtraFront() {
+  GameWorld& world = *worldPtr;
+  int speed = 3.25 + world.round * 0.25 + 0.75;
+  int y = (512 - 114) + BLOCKER_PY_OFFSET + 8;
   if (rand() % 10 <= 4) {
     world.trains.push_back(std::make_unique<Train>(*this, 512, y));
     Train& frontTrain = *(world.trains.back());
     frontTrain.setSpeed(speed);
     frontTrain.setDirection(LEFT);
-    frontTrain.setVariant(0);
+    frontTrain.setVariant(world.variant);
     frontTrain.setIsHead(true);
   } else {
     world.trains.push_back(std::make_unique<Train>(*this, 0, y));
     Train& frontTrain = *(world.trains.back());
     frontTrain.setSpeed(speed);
     frontTrain.setDirection(RIGHT);
-    frontTrain.setVariant(0);
+    frontTrain.setVariant(world.variant);
     frontTrain.setIsHead(true);
   }
 }
 
+// When spawning a blocker, if a train occupies that position, then that train
+// should ignore the blocker
+void Game::spawnBlocker(int i) {
+  GameWorld& world = *worldPtr;
+
+  // prevent spawning on the last row and first row
+  if (i > NUM_TILES_WIDE &&
+      i < NUM_TILES_TALL * NUM_TILES_WIDE - NUM_TILES_WIDE) {
+    worldPtr->tiles[i] = 1;
+
+    // Train Tile collision
+    for (unsigned int j = 0; j < world.trains.size(); j++) {
+      int tileVal = world.tiles[i];
+      auto pair = tileIndexToPx(i);
+      int x = pair.first;
+      int y = pair.second;
+      int width = TILE_WIDTH_PX;
+      int height = TILE_HEIGHT_PX;
+      const Rect rect = Rect(x, y, width, height);
+
+      Train& train = *world.trains[j];
+
+      Circle trainCircle = train.getCollisionCircle();
+      trainCircle.r = 0.5;
+      if (train.facing == LEFT) {
+        trainCircle.x -= 8;
+      } else {
+        trainCircle.x += 8;
+      }
+
+      if (collidesCircleRect(trainCircle, rect) != "none") {
+        train.turnIgnoreIds.push_back(i);
+        Train* child = train.child;
+        while (child != nullptr) {
+          child->turnIgnoreIds.push_back(i);
+          child = child->child;
+        }
+      }
+    }
+  }
+}
+
+bool Game::isPoisoned(int i) { return worldPtr->poisonTiles[i]; }
+
 void Game::modifyScore(const int value) {
+  if (state == GAME_STATE_MENU) {
+    return;
+  }
+
   GameWorld& world = *worldPtr;
   world.score += value;
   if (world.score < 0) {
     world.score = 0;
+  }
+
+  if (world.score > 0 && world.score > world.nextHighScore) {
+    playSound("extra_life");
+    world.lives++;
+    world.nextHighScore += 12000;
   }
 }
 
@@ -340,10 +427,9 @@ void Game::handleKeyUpdate() {
   if (events.isKeyPressed("Down")) {
     ay = world.player->accelerationRate;
   }
-  if (events.isKeyPressed("Space") && world.player->canFire) {
-    world.projectiles.push_back(std::make_unique<Projectile>(
-        *this, world.player->x, world.player->y, PLAYER));
-    world.player->canFire = false;
+  if (events.isKeyPressed("Space") && world.player->canFire &&
+      !isTransitioning) {
+    world.player->shootMissile();
   }
 
   world.player->ax = ax;
@@ -357,6 +443,7 @@ void Game::handleKeyMenu(const std::string& key) {
     } else {
       window.stopMusic();
       setState(GAME_STATE_GAME);
+      playSound("start_game");
       startNewGame();
     }
   }
@@ -365,13 +452,23 @@ void Game::handleKeyMenu(const std::string& key) {
 void Game::checkCollisions() {
   GameWorld& world = *worldPtr;
 
-  // Projectile Train/Bomber/Player collision
+  // Projectile Train/Bomber/Airplane/OtherProjectile/Missile/Player collision
   for (unsigned int i = 0; i < world.projectiles.size(); i++) {
     Projectile& projectile = *world.projectiles[i];
     const Rect projectileRect = Rect(projectile.x - 4, projectile.y - 6, 6, 12);
 
     if (!projectile.collisionEnabled) {
       continue;
+    }
+
+    for (unsigned int j = 0; j < world.projectiles.size(); j++) {
+      Projectile& projectile2 = *world.projectiles[j];
+      const Circle projectile2Circle = projectile2.getCollisionCircle();
+      if (collidesCircleRect(projectile2Circle, projectileRect) != "none") {
+        projectile2.handleCollision(projectile);
+        projectile.handleCollision(projectile2);
+        break;
+      }
     }
 
     for (unsigned int j = 0; j < world.trains.size(); j++) {
@@ -397,12 +494,43 @@ void Game::checkCollisions() {
       }
     }
 
+    for (unsigned int j = 0; j < world.airplanes.size(); j++) {
+      Airplane& airplane = *world.airplanes[j];
+      if (airplane.shouldRemove() || projectile.type != PLAYER) {
+        continue;
+      }
+
+      Circle airplaneCircle = airplane.getCollisionCircle();
+
+      if (collidesCircleRect(airplaneCircle, projectileRect) != "none") {
+        airplane.handleCollision(projectile);
+        projectile.handleCollision(airplane);
+      }
+    }
+
+    for (unsigned int j = 0; j < world.missiles.size(); j++) {
+      DuoMissile& missile = *world.missiles[j];
+      if (missile.shouldRemove() || projectile.type != PLAYER) {
+        continue;
+      }
+
+      Circle missileCircle = missile.getCollisionCircle();
+
+      if (collidesCircleRect(missileCircle, projectileRect) != "none") {
+        missile.handleCollision(projectile);
+        projectile.handleCollision(missile);
+      }
+    }
+
     Player& player = *world.player;
     const Circle projectileCircle = projectile.getCollisionCircle();
     const Circle playerCircle = player.getCollisionCircle();
     if (collidesCircleCircle(playerCircle, projectileCircle)) {
       player.handleCollision(projectile);
       projectile.handleCollision(player);
+    }
+    if (player.isDead) {
+      return;
     }
   }
 
@@ -416,6 +544,10 @@ void Game::checkCollisions() {
     int width = TILE_WIDTH_PX;
     int height = TILE_HEIGHT_PX;
     const Rect rect = Rect(x, y, width, height);
+
+    if (world.player->isDead) {
+      return;
+    }
 
     if (tileVal > 0 && tileVal < 5) {
 
@@ -470,6 +602,15 @@ void Game::checkCollisions() {
 
         if (collidesCircleRect(trainCircle, rect) != "none") {
           train.handleCollision(rect);
+
+          // the i value in the train collision seems messed up
+          if (isPoisoned(i)) {
+            if (train.isHead) {
+              train.isCascading = true;
+            } else if (train.parent != nullptr && train.parent->isCascading) {
+              train.isCascading = true;
+            }
+          }
         }
       }
 
@@ -493,6 +634,37 @@ void Game::checkCollisions() {
           bomber.handleCollision(player);
           continue;
         }
+      }
+
+      // Airplane tile collision
+      for (unsigned int j = 0; j < world.airplanes.size(); j++) {
+        Airplane& airplane = *world.airplanes[j];
+        if (airplane.shouldRemove()) {
+          continue;
+        }
+
+        Circle airplaneCircle = airplane.getCollisionCircle();
+
+        if (collidesCircleRect(airplaneCircle, rect) != "none") {
+          // airplane.handleCollision(rect);
+          world.poisonTiles[i] = 1;
+        }
+      }
+    }
+
+    // missile player collision
+    for (unsigned int i = 0; i < world.missiles.size(); i++) {
+      DuoMissile& missile = *world.missiles[i];
+      if (missile.shouldRemove()) {
+        continue;
+      }
+      Circle missileCircle = missile.getCollisionCircle();
+      Player& player = *world.player;
+      const Circle playerCircle = player.getCollisionCircle();
+      if (collidesCircleCircle(playerCircle, missileCircle)) {
+        player.handleCollision(missile);
+        missile.handleCollision(player);
+        continue;
       }
     }
 
@@ -530,13 +702,13 @@ void Game::checkCollisions() {
 
     Player& player = *world.player;
     const Circle playerCircle = player.getCollisionCircle();
-    if (collidesCircleCircle(playerCircle, train1Circle)) {
+    if (collidesCircleCircle(playerCircle, train1Circle) && !player.isDead) {
       player.handleCollision(train1);
       train1.handleCollision(player);
       continue;
     }
 
-    if (train1.shouldRemove() || !train1.isHead) {
+    if (train1.shouldRemove() || !train1.isHead || train1.isCascading) {
       continue;
     }
 
@@ -579,7 +751,7 @@ void Game::checkCollisions() {
   // traveling on the same plane.
   for (unsigned int i = 0; i < world.trains.size(); i++) {
     Train& train = *world.trains[i];
-    if (train.child == nullptr) {
+    if (train.child == nullptr || train.isCascading) {
       continue;
     }
     Train& trainChild = *train.child;
@@ -610,9 +782,14 @@ void Game::applyGameOver() {
   GameWorld& world = *worldPtr;
   bool foundSomething = false;
   for (int i = 0; i < NUM_TILES_WIDE * NUM_TILES_TALL; i++) {
-    if (world.tiles[i] > 1 && world.tiles[i] < 5) {
+    bool isBrokenBlocker = world.tiles[i] > 1 && world.tiles[i] < 5;
+    bool isActivePoisonedBlocker =
+        world.tiles[i] > 0 && world.tiles[i] < 5 && world.poisonTiles[i] == 1;
+
+    if (isActivePoisonedBlocker || isBrokenBlocker) {
       foundSomething = true;
       world.tiles[i] = 1;
+      world.poisonTiles[i] = 0;
       auto pair = tileIndexToPx(i);
       Particle::spawnParticle(*this,
                               pair.first + 11,
@@ -621,33 +798,63 @@ void Game::applyGameOver() {
                               50 * 4);
       break;
     }
+    world.poisonTiles[i] = 0;
   }
 
   if (foundSomething) {
     modifyScore(5);
-    addFuncTimer(150, [=]() { applyGameOver(); });
+    addFuncTimer(200, [=]() { applyGameOver(); });
   } else {
-    if (world.lives > 0) {
-      std::cout << "GAME NOT OVER LIVES: " << world.lives << std::endl;
-      world.lives--;
+    for (int i = 0; i < NUM_TILES_WIDE * NUM_TILES_TALL; i++) {
+      world.poisonTiles[i] = 0;
+    }
 
-      addFuncTimer(1000, [=]() {
-        worldPtr->bombers.clear();
-        worldPtr->projectiles.clear();
-        initRound();
-        isTransitioning = false;
-      });
+    if (state == GAME_STATE_MENU || world.lives > 0) {
+      world.lives--;
+      if (state == GAME_STATE_GAME) {
+        addFuncTimer(1000, [=]() {
+          worldPtr->bombers.clear();
+          worldPtr->projectiles.clear();
+          worldPtr->airplanes.clear();
+          worldPtr->missiles.clear();
+          worldPtr->trains.clear();
+          worldPtr->player->set(512 / 2, 512 - TILE_HEIGHT_PX * 3);
+          initRound();
+          isTransitioning = false;
+        });
+      } else {
+        addFuncTimer(1000, [=]() {
+          initWorldNextTick = true;
+          isTransitioning = false;
+          worldPtr->bombers.clear();
+          worldPtr->projectiles.clear();
+          worldPtr->airplanes.clear();
+          worldPtr->missiles.clear();
+          worldPtr->trains.clear();
+          worldPtr->player->set(512 / 2, 512 - TILE_HEIGHT_PX * 3);
+        });
+      }
     } else {
       isGameOver = true;
-      std::cout << "GAME OVER " << world.lives << std::endl;
+      playSound("game_over");
 
-      addFuncTimer(1000, [=]() {
+      addFuncTimer(2500, [=]() {
         worldPtr->bombers.clear();
         worldPtr->projectiles.clear();
+        worldPtr->airplanes.clear();
+        worldPtr->missiles.clear();
+        worldPtr->trains.clear();
+        worldPtr->round = 0;
+        worldPtr->variant = 0;
         isGameOver = false;
         isTransitioning = false;
         worldPtr->lastScore = worldPtr->score;
-        setState(GAME_STATE_MENU);
+        if (state == GAME_STATE_GAME) {
+          notifyGameCompleted(worldPtr->score);
+          setNextState(GAME_STATE_MENU);
+        } else {
+          initWorldNextTick = true;
+        }
       });
     }
   }
@@ -661,7 +868,7 @@ void Game::checkGameOver() {
   if (worldPtr->player->isDead) {
     isTransitioning = true;
     worldPtr->timers.clear();
-    applyGameOver();
+    addFuncTimer(1000, [=]() { applyGameOver(); });
   }
 }
 
@@ -672,12 +879,14 @@ void Game::checkNextRound() {
   }
 
   if (world.trains.size() == 0) {
-    std::cout << "------------------NEXT ROUND" << std::endl;
     worldPtr->timers.clear();
     isTransitioning = true;
-    addFuncTimer(1000, [=] {
+    addFuncTimer(100, [=] {
       GameWorld& world = *worldPtr;
-      world.round++;
+      if (state == GAME_STATE_GAME) {
+        world.round++;
+        world.variant = (world.variant + 1) % 4;
+      }
       initRound();
       isTransitioning = false;
     });
@@ -708,11 +917,20 @@ void Game::drawUI() {
 }
 
 bool Game::menuLoop() {
+  shouldExit = !gameLoop();
+
   window.setCurrentFont("default", 72);
+
+  window.drawTextCentered(
+      "Zag", 512 / 2 - 2, 512 / 2 - 2, window.makeColor(80, 87, 107));
   window.drawTextCentered(
       "Zag", 512 / 2, 512 / 2, window.makeColor(248, 248, 248));
 
   window.setCurrentFont("default", 18);
+  window.drawTextCentered("Press button to start.",
+                          512 / 2 - 2,
+                          512 / 2 + 512 / 4 - 2,
+                          window.makeColor(80, 87, 107));
   window.drawTextCentered("Press button to start.",
                           512 / 2,
                           512 / 2 + 512 / 4,
@@ -722,9 +940,14 @@ bool Game::menuLoop() {
     window.setCurrentFont("default", 18);
     window.drawTextCentered("Last score: " +
                                 std::to_string(worldPtr->lastScore),
+                            512 / 2 - 1,
+                            512 / 2 - 512 / 4 - 1,
+                            window.makeColor(80, 87, 107));
+    window.drawTextCentered("Last score: " +
+                                std::to_string(worldPtr->lastScore),
                             512 / 2,
                             512 / 2 - 512 / 4,
-                            window.makeColor(182, 213, 60));
+                            window.makeColor(234, 113, 189));
   }
   return !shouldExit;
 }
@@ -739,7 +962,14 @@ bool Game::gameLoop() {
     int id = world.tiles[i];
     if (id > 0 && id < 5) {
       auto pair = tileIndexToPx(i);
-      window.drawSprite("blockers_0_" + std::to_string(id - 1),
+
+      int variant = world.variant;
+      if (isPoisoned(i)) {
+        variant = (variant + 3) % 4;
+      }
+
+      window.drawSprite("blockers_" + std::to_string(variant) + "_" +
+                            std::to_string(id - 1),
                         pair.first,
                         pair.second,
                         false,
@@ -755,7 +985,8 @@ bool Game::gameLoop() {
     auto& arr = world.projectiles;
     for (unsigned int i = 0; i < arr.size(); i++) {
       auto& item = *arr[i];
-      if (!isTransitioning) {
+      if (isTransitioning && item.type == MISSILE) {
+      } else {
         item.update();
       }
       item.draw();
@@ -800,6 +1031,38 @@ bool Game::gameLoop() {
   }
 
   {
+    auto& arr = world.airplanes;
+    for (unsigned int i = 0; i < arr.size(); i++) {
+      auto& item = *arr[i];
+      if (!isTransitioning) {
+        item.update();
+      }
+      item.draw();
+      if (item.shouldRemove()) {
+        item.onRemove();
+        arr.erase(arr.begin() + i);
+        i--;
+      }
+    }
+  }
+
+  {
+    auto& arr = world.missiles;
+    for (unsigned int i = 0; i < arr.size(); i++) {
+      auto& item = *arr[i];
+      if (!isTransitioning) {
+        item.update();
+      }
+      item.draw();
+      if (item.shouldRemove()) {
+        item.onRemove();
+        arr.erase(arr.begin() + i);
+        i--;
+      }
+    }
+  }
+
+  {
     auto& arr = world.particles;
     for (unsigned int i = 0; i < arr.size(); i++) {
       auto& item = *arr[i];
@@ -813,10 +1076,15 @@ bool Game::gameLoop() {
     }
   }
 
-  drawUI();
+  if (state == GAME_STATE_GAME) {
+    drawUI();
+  }
 
   if (isGameOver && isTransitioning) {
     window.setCurrentFont("default", 36);
+
+    window.drawTextCentered(
+        "Game over.", 512 / 2 - 2, 512 / 2 - 2, window.makeColor(80, 87, 107));
     window.drawTextCentered(
         "Game over.", 512 / 2, 512 / 2, window.makeColor(248, 248, 248));
   }
@@ -827,6 +1095,23 @@ bool Game::gameLoop() {
     addFuncTimer(100 + rand() % 8000, [=] {
       isSpawningBomber = false;
       spawnBomber();
+    });
+  }
+
+  if (!isTransitioning && !isSpawningAirplane) {
+    isSpawningAirplane = true;
+    addFuncTimer(std::max(10000 - world.round * 500, 1000) + rand() % 10000,
+                 [=] {
+                   isSpawningAirplane = false;
+                   spawnAirplane();
+                 });
+  }
+
+  if (!isTransitioning && !isSpawningMissile) {
+    isSpawningMissile = true;
+    addFuncTimer(std::max(7500 - world.round * 500, 1000) + rand() % 5000, [=] {
+      isSpawningMissile = false;
+      spawnMissile();
     });
   }
 
@@ -844,13 +1129,15 @@ bool Game::gameLoop() {
     isSpawningFront = true;
     addFuncTimer(5000, [=] {
       isSpawningFront = false;
-      spawnFront();
+      spawnExtraFront();
     });
   }
 
-  checkCollisions();
-  checkNextRound();
-  checkGameOver();
+  if (!isTransitioning) {
+    checkCollisions();
+    checkNextRound();
+    checkGameOver();
+  }
 
   return !shouldExit;
 }
@@ -870,6 +1157,23 @@ bool Game::loop() {
       world.timers.erase(world.timers.begin() + i);
       i--;
     }
+  }
+
+  if (isSettingNextState) {
+    world.timers.clear();
+    world.trains.clear();
+    world.projectiles.clear();
+    world.bombers.clear();
+    world.airplanes.clear();
+    world.missiles.clear();
+    isSettingNextState = false;
+    setState(nextState);
+  }
+
+  if (initWorldNextTick) {
+    initWorldNextTick = false;
+    initWorld();
+    initRound();
   }
 
   if (state == GAME_STATE_GAME) {

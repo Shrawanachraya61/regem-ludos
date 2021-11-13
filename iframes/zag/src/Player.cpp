@@ -1,11 +1,11 @@
 #include "Player.h"
+#include "Bomber.h"
 #include "Game.h"
 #include "GameOptions.h"
 #include "Particle.h"
 #include "Physics.h"
 #include "Projectile.h"
 #include "Train.h"
-#include "Bomber.h"
 
 #include <sstream>
 
@@ -22,6 +22,35 @@ Player::Player(Game& gameA)
 
 Player::~Player() {}
 
+void Player::setNextWalkPos() {
+  int minX = TILE_WIDTH_PX;
+  int minY = 512 - 125;
+  int maxX = 512 - TILE_WIDTH_PX * 3;
+  int maxY = 512 - TILE_HEIGHT_PX * 3;
+
+  walkX = static_cast<int>(normalize(rand() % 100, 0, 99, minX, maxX));
+  walkY = static_cast<int>(normalize(rand() % 100, 0, 99, minY, maxY));
+
+  maxSpeed = walkSpeed;
+}
+
+void Player::shootMissile() {
+  if (canFire && !game.isTransitioning) {
+    game.playSound("player_missile");
+    game.worldPtr->projectiles.push_back(
+        std::make_unique<Projectile>(game, x, y, PLAYER));
+    canFire = false;
+  }
+}
+
+void Player::setAi(bool isAiA) {
+  isAi = isAiA;
+  if (isAi) {
+    isSettingNextWalkPos = false;
+    setNextWalkPos();
+  }
+}
+
 const std::string Player::getAnimationStr() {
   if (isDead) {
     return "invisible";
@@ -36,7 +65,6 @@ void Player::setAnimState(const std::string& state) { animState = state; }
 
 void Player::handleCollision(const Rect& blocker,
                              const std::string& collisionResult) {
-
   if (isDead) {
     return;
   }
@@ -74,6 +102,7 @@ void Player::handleCollision(const Projectile& projectile) {
   }
 
   Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
+  game.playSound("player_hit");
   isDead = true;
 }
 
@@ -83,6 +112,7 @@ void Player::handleCollision(const Train& train) {
   }
 
   Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
+  game.playSound("player_hit");
   isDead = true;
 }
 
@@ -92,12 +122,53 @@ void Player::handleCollision(const Bomber& bomber) {
   }
 
   Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
+  game.playSound("player_hit");
+  isDead = true;
+}
+
+void Player::handleCollision(const DuoMissile& missile) {
+  if (isDead) {
+    return;
+  }
+
+  Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
+  game.playSound("player_hit");
   isDead = true;
 }
 
 // bool logStuff = true;
 
 void Player::update() {
+  if (isAi) {
+    float d = distance(x, y, walkX, walkY);
+    if (d < 50) {
+      maxSpeed = walkSpeed / 2;
+    }
+
+    if (d < 30) {
+      setNextWalkPos();
+      clearTimers();
+    }
+
+    double heading =
+        getAngleDegTowards(std::make_pair(x, y), std::make_pair(walkX, walkY));
+    setHeading(heading);
+
+    accelerating = true;
+
+    if (canFire) {
+      shootMissile();
+      // addFuncTimer(rand() % 100, [=]() { shootMissile(); });
+    }
+    if (!isSettingNextWalkPos) {
+      isSettingNextWalkPos = true;
+      addFuncTimer(250 + rand() % 1000, [&]() {
+        isSettingNextWalkPos = false;
+        setNextWalkPos();
+      });
+    }
+  }
+
   Actor::update();
   GameWorld& world = *(game.worldPtr);
   setAnimState(getAnimationStr());
@@ -110,6 +181,7 @@ void Player::update() {
   //             << ", freq=" << SDL_GetPerformanceFrequency() << std::endl;
   // }
 
+
   if (y < 512 - 114 + 8) {
     y = 512 - 114 + 8;
   } else if (y > 512 - 12) {
@@ -119,6 +191,7 @@ void Player::update() {
   } else if (x > 512) {
     x = 512;
   }
+  
 
   accelerating = false;
 

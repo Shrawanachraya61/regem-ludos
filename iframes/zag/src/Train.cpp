@@ -5,6 +5,8 @@
 #include "Physics.h"
 #include "Projectile.h"
 
+#include <sstream>
+
 Train::Train(Game& game, int xA, int yA) : Actor(game, "invisible") {
   x = xA;
   y = yA;
@@ -18,6 +20,15 @@ Train::Train(Game& game, int xA, int yA) : Actor(game, "invisible") {
   createAnimationDefinition("enemy_segments_b_0");
   createAnimationDefinition("enemy_segments_f_0");
   setAnimState("enemy_segments_f_0");
+
+  for (int i = 0; i < 4; i++) {
+    createAnimationDefinition("trains_b_horiz_" + std::to_string(i));
+    createAnimationDefinition("trains_f_horiz_" + std::to_string(i));
+    createAnimationDefinition("trains_b_vert_" + std::to_string(i));
+    createAnimationDefinition("trains_f_vert_" + std::to_string(i));
+    createAnimationDefinition("trains_b_diag_" + std::to_string(i));
+    createAnimationDefinition("trains_f_diag_" + std::to_string(i));
+  }
 }
 
 Train::~Train() {}
@@ -56,12 +67,17 @@ void Train::setSpeed(int speed) {
 }
 
 void Train::swapDirections() {
+  if (!canTurn) {
+    return;
+  }
+
   vx = 0;
   x = prevX;
 
   if (isMovingUp) {
     if (y < 512 - TILE_HEIGHT_PX * 6) {
       isMovingUp = false;
+      isCascading = false;
       turnIgnoreIds.clear();
       turnIds.clear();
     }
@@ -70,6 +86,7 @@ void Train::swapDirections() {
   } else {
     if (y > 512 - TILE_HEIGHT_PX * 2) {
       isMovingUp = true;
+      isCascading = false;
       turnIgnoreIds.clear();
       turnIds.clear();
     }
@@ -99,9 +116,8 @@ void Train::onRemove() {
 }
 
 void Train::handleCollision(const Rect& blocker) {
-  if (!isMovingDownOrUp()) {
+  if (!isMovingDownOrUp() && !isCascading) {
     int i = game.pxToTileIndex(x, y);
-
     auto pair = game.tileIndexToPx(i);
     if (facing == LEFT) {
       x = pair.first;
@@ -133,31 +149,36 @@ void Train::handleCollision(const Projectile& projectile) {
     blockerIndex = i;
   }
 
-  // prevent spawning on last row :(
-  // if (blockerIndex >= NUM_TILES_WIDE * NUM_TILES_TALL - NUM_TILES_WIDE * 2) {
-  //   blockerIndex -= NUM_TILES_WIDE;
-  // }
-  world.tiles[blockerIndex] = 1;
+  // Hitting head of cascading train causes it to stop cascading
+  if (isHead && isCascading) {
+    Train* childTrain = child;
+    while (childTrain != nullptr) {
+      childTrain->cascadeUntil = pair.second;
+      childTrain = childTrain->child;
+    }
+  }
+
 
   if (child != nullptr) {
     child->setIsHead(true);
     child->parent = nullptr;
+    child = nullptr;
   }
   if (parent != nullptr) {
     parent->child = nullptr;
     parent->turnIgnoreIds.push_back(blockerIndex);
+    parent = nullptr;
   }
+
+  game.spawnBlocker(blockerIndex);
 
   remove();
 }
 
 void Train::handleCollision(const Train& train) {
-  if (isHead && !isMovingDownOrUp()) {
+  if (isHead && !isMovingDownOrUp() && !isCascading) {
     int i = game.pxToTileIndex(train.x, train.y);
     int blockerIndex = i;
-    // if (facing == LEFT) {
-    //   blockerIndex = i - 1;
-    // }
     auto pair = game.tileIndexToPx(i);
 
     if (facing == LEFT) {
@@ -166,17 +187,10 @@ void Train::handleCollision(const Train& train) {
       x = pair.first;
     }
 
-    // swapDirections();
-
     turnIds.push_back(blockerIndex);
     Train* currentChild = child;
-    // maxSpeed += 0.1;
     while (currentChild != nullptr) {
       currentChild->turnIds.push_back(blockerIndex);
-      // currentChild->maxSpeed += 0.1;
-      // int i = game.pxToTileIndex(currentChild->x, currentChild->y);
-      // auto pair = game.tileIndexToPx(i);
-      // currentChild->x = pair.first + 11;
       currentChild = currentChild->child;
     }
   }
@@ -208,6 +222,9 @@ void Train::update() {
           vx = -maxSpeed;
           spriteDir = SPRITE_LEFT;
         }
+        if (!canTurn) {
+          addBoolTimer(100, canTurn);
+        }
       } else {
         if (facing == LEFT) {
           spriteDir = SPRITE_LEFT_UP;
@@ -229,6 +246,9 @@ void Train::update() {
           vx = -maxSpeed;
           spriteDir = SPRITE_LEFT;
         }
+        if (!canTurn) {
+          addBoolTimer(100, canTurn);
+        }
       } else {
         if (facing == LEFT) {
           if (moveThreshold - y < TILE_HEIGHT_PX / 2) {
@@ -247,8 +267,16 @@ void Train::update() {
     }
   }
 
+  if (isCascading && cascadeUntil > 0 && y >= cascadeUntil) {
+    isCascading = false;
+    cascadeUntil = 0;
+  }
+
   if (!isMovingDownOrUp()) {
-    if (x < TILE_WIDTH_PX / 2 && facing == LEFT) {
+    if (isCascading && canTurn) {
+      swapDirections();
+      canTurn = false;
+    } else if (x < TILE_WIDTH_PX / 2 && facing == LEFT) {
       swapDirections();
     } else if (x > 512 - TILE_WIDTH_PX / 2 && facing == RIGHT) {
       swapDirections();
@@ -256,34 +284,52 @@ void Train::update() {
   }
 }
 void Train::draw() {
-  // game.window.drawSprite(animState, x, y);
+  // this is for rotating a sprite instead of determining what sprite
+  // int angleDeg = 0;
+  // if (spriteDir == SPRITE_LEFT) {
+  //   angleDeg = 180;
+  // } else if (spriteDir == SPRITE_LEFT_DOWN) {
+  //   angleDeg = 90 + 45;
+  // } else if (spriteDir == SPRITE_DOWN) {
+  //   angleDeg = 90;
+  // } else if (spriteDir == SPRITE_RIGHT_DOWN) {
+  //   angleDeg = 90 - 45;
+  // } else if (spriteDir == SPRITE_LEFT_UP) {
+  //   angleDeg = 270 + 45;
+  // } else if (spriteDir == SPRITE_UP) {
+  //   angleDeg = 270;
+  // } else if (spriteDir == SPRITE_RIGHT_UP) {
+  //   angleDeg = 270 - 45;
+  // }
 
-  int angleDeg = 0;
-  if (spriteDir == SPRITE_LEFT) {
-    angleDeg = 180;
-  } else if (spriteDir == SPRITE_LEFT_DOWN) {
-    angleDeg = 90 + 45;
-  } else if (spriteDir == SPRITE_DOWN) {
-    angleDeg = 90;
-  } else if (spriteDir == SPRITE_RIGHT_DOWN) {
-    angleDeg = 90 - 45;
-  } else if (spriteDir == SPRITE_LEFT_UP) {
-    angleDeg = 270 + 45;
-  } else if (spriteDir == SPRITE_UP) {
-    angleDeg = 270;
-  } else if (spriteDir == SPRITE_RIGHT_UP) {
-    angleDeg = 270 - 45;
+  // SDL2Wrapper::Animation& anim = anims[animState];
+  // game.window.drawAnimation(
+  //     anim, static_cast<int>(x), static_cast<int>(y), true, true, angleDeg);
+
+  bool flipped = false;
+  std::string orientation = "diag";
+
+  if (spriteDir == SPRITE_LEFT || spriteDir == SPRITE_LEFT_DOWN ||
+      spriteDir == SPRITE_LEFT_UP) {
+    flipped = true;
   }
 
-  SDL2Wrapper::Animation& anim = anims[animState];
-  game.window.drawAnimation(
-      anim, static_cast<int>(x), static_cast<int>(y), true, true, angleDeg);
+  if (spriteDir == SPRITE_UP || spriteDir == SPRITE_DOWN) {
+    orientation = "vert";
+  } else if (spriteDir == SPRITE_LEFT || spriteDir == SPRITE_RIGHT) {
+    orientation = "horiz";
+  }
 
-  // for (unsigned int i = 0; i < turnIds.size(); i++) {
-  //   int tileInd = turnIds[i];
-  //   auto pair = game.tileIndexToPx(tileInd);
-  //   game.window.drawSprite("blockers_debug_0", pair.first, pair.second,
-  //   false);
+  std::stringstream derivedAnimName;
+  derivedAnimName << "trains_" << (isHead ? "f" : "b") << "_" << orientation
+                  << "_" << variant;
 
-  // }
+  SDL2Wrapper::Animation& anim = anims[derivedAnimName.str()];
+  game.window.drawAnimation(anim,
+                            static_cast<int>(x),
+                            static_cast<int>(y),
+                            true,
+                            true,
+                            0,
+                            std::make_pair(flipped ? -1.0 : 1.0, 1.0));
 }

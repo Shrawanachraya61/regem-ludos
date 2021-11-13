@@ -1,4 +1,6 @@
 #include "Projectile.h"
+#include "Airplane.h"
+#include "DuoMissile.h"
 #include "Game.h"
 #include "GameOptions.h"
 #include "Particle.h"
@@ -21,8 +23,15 @@ Projectile::Projectile(Game& game, int xA, int yA, ProjectileType typeA)
     r = 28;
   } else if (type == PLAYER) {
     animState = "bullet_0";
-    vy = -8;
+    vy = -15;
     maxSpeed = abs(vy);
+  } else if (type == MISSILE) {
+    collisionEnabled = false;
+    addBoolTimer(100, collisionEnabled);
+    animState = "duo_missile_2";
+    maxSpeed = 10;
+    targetX = x;
+    targetY = y;
   }
 }
 
@@ -77,7 +86,41 @@ void Projectile::handleCollision(const Bomber& bomber) {
   }
 }
 
-void Projectile::handleCollision(const Player& player) {}
+void Projectile::handleCollision(const Airplane& airplane) {
+  if (!collisionEnabled) {
+    return;
+  }
+  if (type == PLAYER) {
+    remove();
+  }
+}
+
+void Projectile::handleCollision(const DuoMissile& missile) {
+  if (!collisionEnabled) {
+    return;
+  }
+  if (type == PLAYER) {
+    remove();
+  }
+}
+
+void Projectile::handleCollision(const Player& player) {
+  if (type != PLAYER) {
+    remove();
+  }
+}
+
+void Projectile::handleCollision(const Projectile& projectile) {
+  // This matters I promise
+  if (projectile.type == PLAYER && type == MISSILE) {
+    Particle::spawnParticle(game, x, y, PARTICLE_TYPE_ENTITY_EXPL, 50 * 4);
+    remove();
+  } else if (projectile.type == MISSILE && type == PLAYER) {
+    remove();
+  }
+}
+
+void handleCollision(const Projectile& projectile);
 
 void Projectile::update() {
   if (type == PLAYER) {
@@ -85,7 +128,7 @@ void Projectile::update() {
     if (y < 0) {
       remove();
     }
-  } else {
+  } else if (type == BOMB) {
     double tMax = 60 * 1;
     t += game.window.getFrameRatio();
 
@@ -105,12 +148,40 @@ void Projectile::update() {
     if (t > tMax + 15) {
       remove();
     }
+  } else if (type == MISSILE) {
+    Actor::update();
+    double d = distance(x, y, targetX, targetY);
+    if (d > 3 * TILE_WIDTH_PX || x > 512 - 16 || x < 16) {
+      vx = 0;
+      vy = maxSpeed;
+      animState = "duo_missile_3";
+
+      if (!isPlayingSound) {
+        isPlayingSound = true;
+        game.playSound("missile_speed");
+      }
+
+    } else {
+      animState = "duo_missile_2";
+      if (vx < 0) {
+        flipped = true;
+      }
+    }
+    if (y > 512 + 44) {
+      remove();
+    }
   }
 }
 void Projectile::draw() {
   if (type == BOMB) {
-    game.window.drawSprite("bomb_target_0", targetX, targetY);
+    game.window.drawSprite("bomb_target_0",
+                           targetX,
+                           targetY,
+                           true,
+                           0,
+                           std::make_pair(flipped ? -1.0 : 1.0, 1.0));
   }
 
-  game.window.drawSprite(animState, x, y);
+  game.window.drawSprite(
+      animState, x, y, true, 0, std::make_pair(flipped ? -1.0 : 1.0, 1.0));
 }

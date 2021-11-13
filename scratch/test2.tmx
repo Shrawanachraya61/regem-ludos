@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="85">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="87">
  <editorsettings>
   <export target="../src/map/test2.json" format="json"/>
  </editorsettings>
@@ -150,11 +150,13 @@
   <object id="75" name="TestDialogA" gid="193" x="44" y="540" width="32" height="32"/>
   <object id="76" name="TestDialogD" gid="193" x="94" y="524" width="32" height="32"/>
   <object id="77" name="Shopkeep" gid="193" x="449.25" y="33.75" width="32" height="32"/>
-  <object id="78" name="MarkerPlayer" gid="194" x="307.5" y="484.5" width="32" height="32"/>
+  <object id="78" name="MarkerPlayer" gid="194" x="81.5" y="402.5" width="32" height="32"/>
   <object id="79" name="#test-ada-sigma-shopkeep" x="407.937" y="14.9375" width="73.125" height="69.125"/>
   <object id="80" name="MarkerAdaShopkeep" gid="194" x="457" y="82.3333" width="32" height="32"/>
   <object id="81" name="PropLight" type="front" gid="356" x="308.5" y="427.5" width="32" height="32"/>
   <object id="82" name="#test-prop-light-anim" x="286.5" y="429.5" width="47" height="33"/>
   <object id="84" name="TestDialogE" gid="193" x="265" y="447" width="32" height="32"/>
+  <object id="85" name="MarkerZagMachine" gid="194" x="44" y="376" width="32" height="32"/>
+  <object id="86" name="#test2-zag-machine" x="24" y="356" width="28" height="48"/>
  </objectgroup>
 </map>

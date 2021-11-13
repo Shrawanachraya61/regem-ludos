@@ -33,16 +33,13 @@ void Bomber::onRemove() {
 void Bomber::setNextWalkPos() {
   int minX = TILE_WIDTH_PX;
   int minY = 512 - 200;
-  int maxX = 512 - TILE_WIDTH_PX;
+  int maxX = 512 - TILE_WIDTH_PX * 3;
   int maxY = 512 - TILE_HEIGHT_PX;
 
   walkX = static_cast<int>(normalize(rand() % 100, 0, 99, minX, maxX));
   walkY = static_cast<int>(normalize(rand() % 100, 0, 99, minY, maxY));
 
   maxSpeed = walkSpeed;
-
-  std::cout << "Set walk pos for bomber: " << walkX << "," << walkY
-            << std::endl;
 }
 
 void Bomber::shootBomb() {
@@ -74,7 +71,9 @@ void Bomber::shootBomb() {
   Projectile& projectile = *game.worldPtr->projectiles.back();
   projectile.setTarget(targetX, targetY);
 
-  addBoolTimer(750 + (rand() % 100), shootEnabled);
+  game.playSound("shoot_bomb");
+
+  addBoolTimer(650 + (rand() % 250), shootEnabled);
 }
 
 void Bomber::handleCollision(const Rect& blocker) {
@@ -87,17 +86,18 @@ void Bomber::handleCollision(const Player& player) { remove(); }
 
 void Bomber::handleCollision(const Projectile& projectile) {
   if (projectile.type == PLAYER) {
-
     double d =
         distance(x, y, game.worldPtr->player->x, game.worldPtr->player->y);
 
+    int score = 300;
     if (d < 50) {
-      game.modifyScore(900);
-    } else if (d < 150) {
-      game.modifyScore(600);
-    } else {
-      game.modifyScore(300);
+      score = 900;
+    } else if (d < 100) {
+      score = 600;
     }
+    game.modifyScore(score);
+    Particle::spawnParticle(game, x, y, PARTICLE_TYPE_TEXT, 1000);
+    game.worldPtr->particles.back()->text = std::to_string(score);
 
     remove();
   }

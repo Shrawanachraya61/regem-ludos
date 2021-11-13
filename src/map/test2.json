@@ -492,8 +492,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":307.5,
-                 "y":484.5
+                 "x":81.5,
+                 "y":402.5
                 }, 
                 {
                  "height":69.125,
@@ -552,6 +552,29 @@
                  "width":32,
                  "x":265,
                  "y":447
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":85,
+                 "name":"MarkerZagMachine",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":44,
+                 "y":376
+                }, 
+                {
+                 "height":48,
+                 "id":86,
+                 "name":"#test2-zag-machine",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":28,
+                 "x":24,
+                 "y":356
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -560,7 +583,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":85,
+ "nextobjectid":87,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

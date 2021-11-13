@@ -34,10 +34,197 @@ bomb_expl_6 50
 bomb_expl_7 50
 
 #
-entity_expl
+entity_expl_0
 noloop
-entity_expl_0 50
-entity_expl_1 50
-entity_expl_2 50
-entity_expl_3 50
+entity_expl_0_0 50
+entity_expl_0_1 50
+entity_expl_0_2 50
+entity_expl_0_3 50
 
+#
+entity_expl_1
+noloop
+entity_expl_1_0 50
+entity_expl_1_1 50
+entity_expl_1_2 50
+entity_expl_1_3 50
+
+#
+entity_expl_2
+noloop
+entity_expl_2_0 50
+entity_expl_2_1 50
+entity_expl_2_2 50
+entity_expl_2_3 50
+
+#
+entity_expl_3
+noloop
+entity_expl_3_0 50
+entity_expl_3_1 50
+entity_expl_3_2 50
+entity_expl_3_3 50
+
+#
+trains_b_horiz_0
+loop
+trains_b_horiz_0_0 100
+trains_b_horiz_0_1 100
+trains_b_horiz_0_0 100
+trains_b_horiz_0_2 100
+#
+trains_b_vert_0
+loop
+trains_b_vert_0_0 100
+trains_b_vert_0_1 100
+#
+trains_b_diag_0
+loop
+trains_b_diag_0_0 100
+trains_b_diag_0_1 100
+#
+trains_f_horiz_0
+loop
+trains_f_horiz_0_0 100
+trains_f_horiz_0_1 100
+trains_f_horiz_0_0 100
+trains_f_horiz_0_2 100
+#
+trains_f_vert_0
+loop
+trains_f_vert_0_0 100
+trains_f_vert_0_1 100
+#
+trains_f_diag_0
+loop
+trains_f_diag_0_0 100
+trains_f_diag_0_1 100
+
+#
+trains_b_horiz_1
+loop
+trains_b_horiz_1_0 100
+trains_b_horiz_1_1 100
+trains_b_horiz_1_0 100
+trains_b_horiz_1_2 100
+#
+trains_b_vert_1
+loop
+trains_b_vert_1_0 100
+trains_b_vert_1_1 100
+#
+trains_b_diag_1
+loop
+trains_b_diag_1_0 100
+trains_b_diag_1_1 100
+#
+trains_f_horiz_1
+loop
+trains_f_horiz_1_0 100
+trains_f_horiz_1_1 100
+trains_f_horiz_1_0 100
+trains_f_horiz_1_2 100
+#
+trains_f_vert_1
+loop
+trains_f_vert_1_0 100
+trains_f_vert_1_1 100
+#
+trains_f_diag_1
+loop
+trains_f_diag_1_0 100
+trains_f_diag_1_1 100
+
+#
+trains_b_horiz_2
+loop
+trains_b_horiz_2_0 100
+trains_b_horiz_2_1 100
+trains_b_horiz_2_0 100
+trains_b_horiz_2_2 100
+#
+trains_b_vert_2
+loop
+trains_b_vert_2_0 100
+trains_b_vert_2_1 100
+#
+trains_b_diag_2
+loop
+trains_b_diag_2_0 100
+trains_b_diag_2_1 100
+#
+trains_f_horiz_2
+loop
+trains_f_horiz_2_0 100
+trains_f_horiz_2_1 100
+trains_f_horiz_2_0 100
+trains_f_horiz_2_2 100
+#
+trains_f_vert_2
+loop
+trains_f_vert_2_0 100
+trains_f_vert_2_1 100
+#
+trains_f_diag_2
+loop
+trains_f_diag_2_0 100
+trains_f_diag_2_1 100
+
+#
+trains_b_horiz_3
+loop
+trains_b_horiz_3_0 100
+trains_b_horiz_3_1 100
+trains_b_horiz_3_0 100
+trains_b_horiz_3_2 100
+#
+trains_b_vert_3
+loop
+trains_b_vert_3_0 100
+trains_b_vert_3_1 100
+#
+trains_b_diag_3
+loop
+trains_b_diag_3_0 100
+trains_b_diag_3_1 100
+#
+trains_f_horiz_3
+loop
+trains_f_horiz_3_0 100
+trains_f_horiz_3_1 100
+trains_f_horiz_3_0 100
+trains_f_horiz_3_2 100
+#
+trains_f_vert_3
+loop
+trains_f_vert_3_0 100
+trains_f_vert_3_1 100
+#
+trains_f_diag_3
+loop
+trains_f_diag_3_0 100
+trains_f_diag_3_1 100
+
+#
+airplane
+loop
+airplane_0 75
+airplane_1 200
+airplane_0 75
+airplane_2 200
+
+#
+duo_missile
+loop
+duo_missile_0 100
+duo_missile_1 100
+
+#
+duo_missile_horiz
+loop
+duo_missile_2 100
+
+#
+duo_missile_vert
+loop
+duo_missile_3 100

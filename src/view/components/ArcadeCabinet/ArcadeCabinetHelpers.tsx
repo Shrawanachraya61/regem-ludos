@@ -36,6 +36,7 @@ export enum ArcadeGamePath {
   INVADERZ = 'iframes/invaderz/dist/index.html',
   ELASTICITY = 'iframes/elasticity/dist/elasticity.html',
   VORTEX = 'iframes/vortex/dist/index.html',
+  ZAG = 'iframes/zag/dist/index.html',
   BOWLING = 'iframes/regem-ludos-bowling/dist/index.html',
 }
 

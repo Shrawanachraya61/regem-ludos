@@ -1,0 +1,13 @@
+Sound,airplane,assets/airplane.wav
+Sound,bomb_expl,assets/bomb_expl.wav
+Sound,extra_life,assets/extra_life.wav
+Sound,game_over,assets/game_over.wav
+Sound,hit,assets/hit.wav
+Sound,missile_spawn,assets/missile_spawn.wav
+Sound,missile_split,assets/missile_split.wav
+Sound,missile_speed,assets/missile_speed.wav
+Sound,player_missile,assets/player_missile.wav
+Sound,shoot_bomb,assets/shoot_bomb.wav
+Sound,start_game,assets/start_game.wav
+Sound,player_hit,assets/player_hit.wav
+Music,menu,assets/zag.wav

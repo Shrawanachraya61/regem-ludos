@@ -148,6 +148,22 @@ export const isSkipKey = (key: string) => {
 };
 export const getSkipKeyLabel = () => '(Backspace)';
 
+export const isMuteKey = (key: string) => {
+  return ['M', 'm', 'KeyM'].includes(key);
+};
+export const getMuteKeyLabel = () => '(M)';
+
+export const isEscapeKey = (key: string) => {
+  return ['Escape'].includes(key);
+};
+export const getEscapeKeyLabel = () => {
+  return '(ESC)';
+};
+
+export const isSelectKey = (key: string) => {
+  return ['Backspace'].includes(key);
+};
+
 export const getBattleActionKey = (ind: number) => {
   switch (ind) {
     case 0:

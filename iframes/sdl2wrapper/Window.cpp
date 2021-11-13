@@ -116,7 +116,7 @@ Window::~Window() {
     TTF_Quit();
     SDL_Quit();
   }
-    Logger(INFO) << "SDL2Wrapper Window removed" << std::endl;
+  Logger(INFO) << "SDL2Wrapper Window removed" << std::endl;
 }
 
 Window& Window::getGlobalWindow() { return *Window::globalWindow; }
@@ -289,16 +289,25 @@ void Window::drawSprite(const std::string& name,
   SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(tex, globalAlpha);
 
-  double scaledX = double(sprite.cw) * scale.first;
-  double scaledY = double(sprite.ch) * scale.second;
+  SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+  std::pair<double, double> scaleLocal = scale;
+
+  // HACK setting negative x scale to -1.0 will flip sprite horizontally.
+  if (scale.first == -1.0) {
+    scaleLocal.first = 1.0;
+    flip = SDL_FLIP_HORIZONTAL;
+  }
+
+  double scaledX = double(sprite.cw) * scaleLocal.first;
+  double scaledY = double(sprite.ch) * scaleLocal.second;
   SDL_Rect pos = {x + (centered ? -sprite.cw / 2 : 0),
                   y + (centered ? -sprite.ch / 2 : 0),
                   static_cast<int>(floor(scaledX)),
                   static_cast<int>(floor(scaledY))};
   SDL_Rect clip = {sprite.cx, sprite.cy, sprite.cw, sprite.ch};
   SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
-  SDL_RenderCopyEx(
-      renderer.get(), tex, &clip, &pos, angleDeg, NULL, SDL_FLIP_NONE);
+  SDL_RenderCopyEx(renderer.get(), tex, &clip, &pos, angleDeg, NULL, flip);
 }
 
 void Window::drawAnimation(Animation& anim,

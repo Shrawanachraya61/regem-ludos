@@ -6,6 +6,7 @@
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server --mimetypes ./scripts/mime.types ./dist -o index.html -g -p 8081",
+    "start:only": "concurrently -n 1,2 \"http-server --mimmetypes ./scripts/mime.types -o index.html\" \"tsc --project tsconfig.prod.json --watch\"",
     "build": "yarn clean && yarn zip && yarn build:rpgscript && yarn build:setup && yarn build:iframes && yarn docs && cross-env NODE_ENV=production yarn build:main",
     "build:setup": "mkdir -p dist && cp favicon.ico dist/",
     "build:main": "tsc --project tsconfig.prod.json --sourceMap false && node scripts/build src",
@@ -17,7 +18,7 @@
     "zip": "yarn zip:foley && yarn zip:images",
     "zip:foley": "cd res/snd/foley && rm -f foley.mp3 && audiosprite --silence 2 -e mp3 --output foley *.mp3",
     "zip:images": "(cd res && zip images.zip *.png iso-text/*.png)",
-    "watch": "yarn zip && yarn build:rpgscript && tsc --project tsconfig.prod.json && concurrently -n 1,2 \"http-server --mimmetypes ./scripts/mime.types -o index.html\" \"tsc --project tsconfig.prod.json --watch\"",
+    "watch": "yarn zip && yarn build:rpgscript && tsc --project tsconfig.prod.json && yarn start:only",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:ci": "echo 'Tests Disabled'",

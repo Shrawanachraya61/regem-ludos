@@ -28,16 +28,24 @@ Particle::Particle(Game& gameA, ParticleType particleTypeA, const int ms)
     set(0, 0);
     break;
   }
+  case PARTICLE_TYPE_TEXT: {
+    setV(0, 0);
+    set(0, 0);
+    break;
+  }
   case PARTICLE_TYPE_BOMB_EXPL: {
+    game.playSound("bomb_expl");
     setV(0, 0);
     createAnimationDefinition("bomb_expl");
     setAnimState("bomb_expl");
     break;
   }
   case PARTICLE_TYPE_ENTITY_EXPL: {
+    game.playSound("hit");
     setV(0, 0);
-    createAnimationDefinition("entity_expl");
-    setAnimState("entity_expl");
+    createAnimationDefinition("entity_expl_" +
+                              std::to_string(game.worldPtr->variant));
+    setAnimState("entity_expl_" + std::to_string(game.worldPtr->variant));
     break;
   }
   }
@@ -65,6 +73,10 @@ void Particle::draw() {
     game.window.globalAlpha = 255;
   } else if (particleType == PARTICLE_TYPE_BLACK) {
     game.window.drawSprite("cpp_splash_black", 0, 0, false);
+  } else if (particleType == PARTICLE_TYPE_TEXT) {
+    game.window.setCurrentFont("default", 16);
+    game.window.drawTextCentered(
+        text, x, y, game.window.makeColor(248, 248, 248));
   } else {
     Actor::draw();
   }
