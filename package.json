@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": "10^",
+    "vscode": "*"
+  },
   "scripts": {
     "start": "yarn watch",
     "start:dist": "http-server --mimetypes ./scripts/mime.types ./dist -o index.html -g -p 8081",

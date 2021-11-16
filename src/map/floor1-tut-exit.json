@@ -98,8 +98,20 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":124,
-                 "y":188
+                 "x":154,
+                 "y":242
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":80,
+                 "name":"MarkerJason",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":125,
+                 "y":189
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -108,7 +120,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":80,
+ "nextobjectid":81,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

@@ -343,3 +343,101 @@ step,this
 @this
 +:utils-change-room(floor1East1, MarkerFromAtrium);
 
+#Floor1East1PrizeEmployee
+action,?func(questNotStarted, Tutorial):Floor1East1PrizeEmployee-questNotStarted
+action,Floor1East1PrizeEmployee-default
+step-first,?all(func(questCompleted, Tutorial), once()):Floor1East1PrizeEmployee-questCompleted
+@Floor1East1PrizeEmployee-default
++setConversation(Ada);
++walkToMarker(Ada, MarkerAdaShopkeep);
++lookAtEachOther(ada,shopkeep);
+Shopkeep: "Please take a look at our wares."
++endConversation();
+@Floor1East1PrizeEmployee-questNotStarted
++setConversation(Ada);
++walkToMarker(Ada, MarkerAdaShopkeep);
++lookAtEachOther(ada,shopkeep);
+Shopkeep: "Welcome to the prize counter! Can you show me your <color=BLUE>Haptic Bracer</>?"
+Ada: "I do not have one of those."
++:sad(Shopkeep);
+Shopkeep: "Oh, I'm sorry then, I can't help you."
+Shopkeep: "You'll have to get one before you can purchase any prizes from the <color=ORANGE scale=1.33>Regem Ludos</> prize counter."
++endConversation();
+@Floor1East1PrizeEmployee-questCompleted
++setConversation(Ada);
++panCameraToFitCharacters(500,false,ada,shopkeep);
++:exclaim(Shopkeep);
+Shopkeep: "Hey there! girl!  I see you've just finished the tutorial!"
++walkToMarker(ada,MarkerAdaShopkeep);
++lookAtEachOther(ada,shopkeep);
++panCameraToFitCharacters(500,false,ada,shopkeep);
++:jump(Shopkeep);
+Shopkeep: "Allow me to welcome to the <color=ORANGE scale=1.33>Regem Ludos</> prize counter!"
++:happy(shooter);
+Shopkeep: "We have a very impressive selection among the many prize counters in this arcade."
+Shopkeep: "Please feel free to use your newly-acquired tickets to purchase our wares."
++:question(Shopkeep);
+Shopkeep: "Perhaps a pretty girl such as yourself would like one of our charm bracelets!"
++:smirk(Shopkeep);
+Shopkeep: "Or maybe you're a little rough around the edges and would enjoy a sharp, utility knife?"
++:jump(Shopkeep);
+Shopkeep: "If you've got a bit of as sweet tooth, why not try our famous <delay=200 cascade-letters=50 color=BLUE>cream pops</>!"
+Shopkeep: "<scale=0.75 cascade>(Although, I don't have any of those here, you'll have to go upstairs where they've got the ice cream machine.)</>"
++setConversation(Sigma);
++:none();
++:waitMS(500);
+Sigma: "Moo?"
++lookAtCharacter(ada,sigma);
++lookAtCharacter(shopkeep,sigma)
++lookAtCharacter(ada,sigma);
++waitMS(500);
++:question(shopkeep);
++:question(ada);
++panCameraToFitCharacters(500,false,ada,sigma,shopkeep);
+Shopkeep: "Excuse me young miss?"
++none()
++waitMS(500)
++:jump(sigma)
++setConversation(sigma);
+Sigma: "Moo!"
+// Shopkeep looks back at the wall and then back at Sigma
++setFacing(shopkeep,leftup); 
++waitMS(750)
++:teardrop(shopkeep);
++lookAtCharacter(shopkeep,sigma);
+Shopkeep: "I am sorry, miss, but I don't understand."
++:happy(sigma);
+Sigma: "Moo. <scale=1.33> MOOoo!"
++:jump(Sigma);
++:flat(Shopkeep);
+Shopkeep: "<cascade-letters>......"
++lookAtEachOther(shopkeep,ada);
++panCameraBackToPlayer(500,false);
++:question(Shopkeep);
+Shopkeep: "<scale=0.85>That girl has been saying 'Moo' for the better part of an hour."
+Shopkeep: "I have <shake>no idea</> what she wants!</>"
++:teardrop(Shopkeep);
+Shopkeep: "Anyway, if you would like to purchase a wonderful prize, you need only speak to me again."
++endConversation();
+
+#Floor1East1Sigma
+action,this
+@this
++setConversation(Ada);
++lookAtEachOther(Ada,Sigma);
++:question(Ada);
++setConversation(Ada);
+Ada: "<cascade-letters>......"
++:smallPause();
++setConversation(Sigma);
+Sigma: "<cascade-letters>......"
++:smallPause();
++setConversation(Ada);
+Ada: "<cascade-letters>......"
++:question(Sigma);
++setConversation(Sigma);
+Sigma: "<cascade-letters>......"
++:serious(Ada);
++walkToOffset(Ada, 16, 16);
++:exhale(Ada);
++endConversation();

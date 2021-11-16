@@ -1,6 +1,10 @@
-import { Scene, sceneHasCommand } from 'model/scene';
+type Scene = any;
 
-const RPGSCRIPT_LOAD_DIR = 'src/rpgscript';
+// Code above this line exists for compatibility.
+
+const sceneHasCommand = (scene: Scene, k: string) => {
+  return scene.commands.includes(k);
+};
 
 function splitNotInParens(str: string, spl: string) {
   const ret: string[] = [];
@@ -65,7 +69,7 @@ function indexOfNotInParens(str: string, spl: string) {
 }
 
 function removeQuotes(args: string[]) {
-  return args.map(arg => {
+  return args.map((arg) => {
     if (arg[0] === '"' || arg[0] === "'") {
       return arg.slice(1, -1);
     } else {
@@ -75,7 +79,7 @@ function removeQuotes(args: string[]) {
 }
 
 export function formatArgs(args: string[]) {
-  return removeQuotes(args).map(arg => {
+  return removeQuotes(args).map((arg) => {
     if (!isNaN(parseFloat(arg))) {
       return parseFloat(arg);
     } else {
@@ -174,7 +178,7 @@ export class Script {
   reset() {
     this.currentBlockIndex = 0;
     this.currentCommandIndex = 0;
-    this.blocks.forEach(block => {
+    this.blocks.forEach((block) => {
       block.conditionalResult = undefined;
     });
   }
@@ -293,6 +297,7 @@ export class ScriptParser {
       }
       const scriptName = src.slice(1, indFirstOpen);
       const scriptArgs = src.slice(indFirstOpen + 1, indLastClose).split(',');
+      callScriptStrings.push({ scriptName, lineNum, fileName: this.name });
       commandSrc = `callScript(${scriptName},${scriptArgs.join(',')});`;
     }
 
@@ -324,8 +329,8 @@ export class ScriptParser {
         (firstParenIndex + 1) -
         (commandSrc.length - lastParenIndex)
     );
-    args = splitNotInParens(args, ',').map(arg => arg.trim());
-    args.forEach(arg => {
+    args = splitNotInParens(args, ',').map((arg) => arg.trim());
+    args.forEach((arg) => {
       if (arg[0] === "'") {
         if (arg[arg.length - 1] !== "'") {
           this.throwParsingError(
@@ -381,7 +386,7 @@ export class ScriptParser {
 
     return {
       type: type,
-      args: args.map(arg => {
+      args: args.map((arg) => {
         if (
           typeof arg === 'string' &&
           type !== 'func' &&
@@ -462,9 +467,8 @@ export class ScriptParser {
       type = 'playDialogueInterruptable';
     }
     subtitle = subtitle.trim();
-    const { soundNameCh, soundNameIndexed, n } = script.getNextDialog(
-      actorName
-    );
+    const { soundNameCh, soundNameIndexed, n } =
+      script.getNextDialog(actorName);
     this.soundsToLoad.push({ soundNameCh, soundNameIndexed });
     return {
       i: parseInt(String(n)),
@@ -490,7 +494,6 @@ export class ScriptParser {
     const conditionalStack: (Conditional | boolean)[] = [];
     const lines = src.split('\n');
 
-    let lastValidLine = 0;
     lines.forEach((line: string, lineNum: number) => {
       lineNum = lineNum + 1;
       line = line.trim();
@@ -500,7 +503,6 @@ export class ScriptParser {
       if (line[0] === '/' && line[1] === '/') {
         return;
       }
-      lastValidLine = lineNum;
 
       const firstCh = line[0];
       if (firstCh === '{') {
@@ -689,14 +691,12 @@ export class ScriptParser {
           );
         }
 
-        const {
-          conditional: localConditional,
-          endIndex,
-        } = this.getConditionalFromLine(
-          triggerContents,
-          lineNum,
-          currentScript as Script | undefined
-        );
+        const { conditional: localConditional, endIndex } =
+          this.getConditionalFromLine(
+            triggerContents,
+            lineNum,
+            currentScript as Script | undefined
+          );
         let conditional = localConditional;
         if (itemConditional) {
           conditional = this.combineConditionals(
@@ -756,13 +756,18 @@ export class ScriptParser {
 
 const scripts: Record<string, Script> = {};
 const triggers: Record<string, Trigger> = {};
+const callScriptStrings: {
+  scriptName: string;
+  lineNum: number;
+  fileName: string;
+}[] = [];
 
-export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
-  const url = `${RPGSCRIPT_LOAD_DIR}/${scriptFileName}.rpgscript`;
-  console.log('Loading script', url);
-  const src = await (await fetch(url)).text();
-  parseRPGScript(scriptFileName, src, scene);
-};
+// export const loadRPGScript = async (scriptFileName: string, scene: Scene) => {
+//   const url = `${RPGSCRIPT_LOAD_DIR}/${scriptFileName}.rpgscript`;
+//   console.log('Loading script', url);
+//   const src = await (await fetch(url)).text();
+//   parseRPGScript(scriptFileName, src, scene);
+// };
 
 export const parseRPGScript = (
   scriptName: string,
@@ -823,3 +828,4 @@ export const triggerExists = (triggerName: string) => {
 
 export const getScripts = () => scripts;
 export const getTriggers = () => triggers;
+export const getCallScriptStrings = () => callScriptStrings;

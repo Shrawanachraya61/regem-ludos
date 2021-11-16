@@ -1,0 +1,15 @@
+#floor1test
+action,this
+@this
+// +eatPizza();
+
+#floor1test
+action,?once():this
+@this
+{
+  Ada: asdf
+}
+
+@pizza
++:question(Ada);
+

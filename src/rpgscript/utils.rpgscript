@@ -482,5 +482,5 @@ action,utils-heal-pool-action
 +waitMS(33);
 +setFacing([ARG0], 'leftdown');
 +waitMS(33);
-+setFacing([ARG0], 'down');
++:setFacing([ARG0], 'down');
 +none();

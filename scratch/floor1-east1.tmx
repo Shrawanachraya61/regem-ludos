@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="206">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="233">
  <editorsettings>
   <export target="../src/map/floor1-east1.json" format="json"/>
  </editorsettings>
@@ -94,7 +94,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="2" name="Objects" locked="1">
+ <objectgroup id="2" name="Objects">
   <object id="138" gid="364" x="190.5" y="147.5" width="32" height="32"/>
   <object id="139" gid="361" x="192" y="124" width="32" height="32"/>
   <object id="140" gid="361" x="192" y="192" width="32" height="32"/>
@@ -145,13 +145,32 @@
   <object id="203" name="MarkerPlayer" gid="194" x="241.5" y="162.5" width="32" height="32"/>
   <object id="204" name="MarkerExit1" gid="194" x="408" y="258" width="32" height="32"/>
   <object id="205" name="MarkerExit2" gid="194" x="294" y="228" width="32" height="32"/>
+  <object id="223" name="MarkerAdaShopkeep" gid="194" x="221" y="171" width="32" height="32"/>
+  <object id="225" name="#Floor1East1PrizeEmployee" x="249.5" y="126" width="18.5" height="194.5"/>
+  <object id="227" name="#Floor1East1PrizeEmployee" x="266.5" y="167.5" width="118.5" height="25.5"/>
+  <object id="230" name="#Floor1East1PrizeEmployee" x="205.5" y="125.5" width="19" height="65"/>
+  <object id="231" name="Sigma" gid="193" x="215" y="213" width="32" height="32"/>
+  <object id="232" name="Floor1East1PrizeEmployee" gid="193" x="183.5" y="156.5" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="8" name="Objects2">
+ <objectgroup id="8" name="Objects2" locked="1">
   <object id="196" type="front" gid="396" x="136.5" y="119.5" width="32" height="32"/>
   <object id="197" type="front" gid="395" x="134.5" y="127.5" width="32" height="32"/>
   <object id="198" type="26" gid="389" x="150" y="118" width="32" height="32"/>
   <object id="199" type="20" gid="390" x="149.5" y="122.5" width="32" height="32"/>
   <object id="201" type="20" gid="391" x="149" y="127" width="32" height="32"/>
-  <object id="202" type="20" gid="367" x="152.5" y="187.5" width="32" height="32"/>
+  <object id="202" type="20" gid="367" x="153" y="189" width="32" height="32"/>
+  <object id="206" type="front" gid="402" x="137" y="143" width="32" height="32"/>
+  <object id="207" type="front" gid="399" x="135" y="155" width="32" height="32"/>
+  <object id="208" type="front" gid="400" x="135" y="161" width="32" height="32"/>
+  <object id="209" type="20" gid="397" x="151" y="137" width="32" height="32"/>
+  <object id="210" type="20" gid="398" x="151" y="143" width="32" height="32"/>
+  <object id="212" type="front" gid="404" x="136.5" y="171.5" width="32" height="32"/>
+  <object id="213" type="24" gid="389" x="152" y="182" width="32" height="32"/>
+  <object id="214" type="20" gid="405" x="149" y="173" width="32" height="32"/>
+  <object id="216" type="20" gid="390" x="152" y="176" width="32" height="32"/>
+  <object id="218" type="24" gid="390" x="150.5" y="165.5" width="32" height="32"/>
+  <object id="219" type="20" gid="406" x="151.5" y="156.5" width="32" height="32"/>
+  <object id="220" type="25" gid="391" x="148.5" y="181.5" width="32" height="32"/>
+  <object id="221" type="25" gid="391" x="153" y="169" width="32" height="32"/>
  </objectgroup>
 </map>

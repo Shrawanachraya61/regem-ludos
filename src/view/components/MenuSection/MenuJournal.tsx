@@ -132,7 +132,7 @@ const MenuJournal = (props: IMenuJournalProps) => {
     : false;
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <p style={{ textAlign: 'center' }}>
         Press {getConfirmKeyLabel()} to mark read.
       </p>

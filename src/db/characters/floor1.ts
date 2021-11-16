@@ -225,5 +225,14 @@ export const init = () => {
     animationState: AnimationState.IDLE,
   };
 
+  exp.Floor1East1PrizeEmployee = {
+    name: 'Shopkeep',
+    nameLabel: 'Prize Employee',
+    spriteBase: 'employee-guy',
+    talkTrigger: 'Floor1East1PrizeEmployee',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
+
   return exp;
 };

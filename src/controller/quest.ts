@@ -69,7 +69,10 @@ export const getAllCompletedQuests = (scene: Scene) => {
   });
 };
 
-export const beginQuest = (scene: Scene, questName: string) => {
+export const beginQuest = ((window as any).beginQuest = (
+  scene: Scene,
+  questName: string
+) => {
   const quest = getIfExists(questName);
   if (quest) {
     console.log('begin quest', quest);
@@ -82,9 +85,12 @@ export const beginQuest = (scene: Scene, questName: string) => {
   } else {
     console.error('cannot beginQuest, quest not found:', questName);
   }
-};
+});
 
-export const completeQuest = (scene: Scene, questName: string) => {
+export const completeQuest = ((window as any).completeQuest = (
+  scene: Scene,
+  questName: string
+) => {
   const quest = getIfExists(questName);
 
   console.log('COMPLETE QUEST', questName);
@@ -94,7 +100,7 @@ export const completeQuest = (scene: Scene, questName: string) => {
   } else {
     console.error('cannot beginQuest, quest not found:', questName);
   }
-};
+});
 
 export const completeQuestStep = (
   scene: Scene,

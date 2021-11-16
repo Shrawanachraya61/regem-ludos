@@ -61,8 +61,8 @@ export const init = () => {
   exp.Sigma = {
     name: 'Sigma',
     spriteBase: 'sigma',
-    talkTrigger: 'test-sigma',
-    facing: Facing.RIGHT_DOWN,
+    talkTrigger: 'Floor1East1Sigma',
+    facing: Facing.LEFT_UP,
     animationState: AnimationState.IDLE,
   };
 
