@@ -30,7 +30,6 @@ const Root = style('div', {
   justifyContent: 'flex-start',
   alignItems: 'center',
   width: '100%',
-  height: '532px',
 });
 
 const LowerRoot = style('div', {

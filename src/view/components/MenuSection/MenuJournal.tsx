@@ -31,6 +31,7 @@ const InnerRoot = style('div', {
 const LeftDiv = style('div', {
   width: '50%',
   maxHeight: MAX_HEIGHT,
+  zIndex: '1',
 });
 
 const RightDiv = style('div', {
@@ -40,6 +41,7 @@ const RightDiv = style('div', {
 const DescriptionWrapper = style('div', {
   width: '100%',
   height: '475px',
+  zIndex: '1',
 });
 
 const DescriptionName = style('div', {
@@ -50,6 +52,7 @@ const DescriptionName = style('div', {
   textTransform: 'uppercase',
   padding: '16px',
   textAlign: 'center',
+  marginBottom: '2px',
 });
 
 const Description = style('div', {
@@ -66,7 +69,7 @@ const DescriptionBody = style('div', {
   background: colors.DARKGREY_ALT,
   margin: '2px 0px',
   padding: '16px',
-  height: 'calc(100% - 126px)',
+  height: 'calc(100% - 128px)',
 });
 
 const newIconBob = keyframes({

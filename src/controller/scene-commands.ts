@@ -18,6 +18,8 @@ import {
   hideQuestSection,
   hideSection,
   hideSections,
+  showStoreSection,
+  hideStoreSection,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import {
@@ -130,6 +132,7 @@ import {
   completeQuestStep as completeQuestStepFromManagement,
   questIsCompleted,
 } from './quest';
+import { getIfExists as getStore } from 'db/stores';
 
 /**
  * Displays dialog in a text box with the given actorName as the one speaking.
@@ -348,6 +351,19 @@ export const setConversationWithoutBars = (actorName: string, ms?: number) => {
     return undefined;
   }
   return waitMS(100);
+};
+
+export const setUnskippableConversation = (actorName: string, ms?: number) => {
+  setCutsceneSkipEnabled(false);
+  startConversation(`${actorName.toLowerCase()}`, false);
+  if (ms === 0) {
+    return undefined;
+  }
+  return waitMS(100);
+};
+
+export const setUnskippable = (v: boolean) => {
+  setCutsceneSkipEnabled(!v);
 };
 
 /**
@@ -2068,7 +2084,7 @@ export const setDoorStateAtMarker = (
 export const awaitChoice = (...choices: string[]) => {
   setTimeout(() => {
     showChoices(choices);
-  }, 250);
+  }, 33);
   return waitUntil();
 };
 
@@ -2563,6 +2579,26 @@ const changePropAnim = (propName: string, animName: string) => {
   prop.ro.anim = anim;
 };
 
+const showStore = (storeName: string) => {
+  const store = getStore(storeName);
+  if (!store) {
+    console.error('Cannot get item store, no store is named: ' + storeName);
+  }
+
+  setCutsceneSkipEnabled(false);
+
+  none();
+
+  showStoreSection(storeName, () => {
+    setCutsceneSkipEnabled(true);
+    hideStoreSection();
+    sceneStopWaitingUntil(getCurrentScene());
+    const scene = getCurrentScene();
+    scene.inputDisabled = false;
+  });
+  return waitUntil();
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -2600,6 +2636,8 @@ const commands = {
   setConversation,
   setConversation2,
   setConversationWithoutBars,
+  setUnskippableConversation,
+  setUnskippable,
   endConversation,
   setConversationSpeaker,
   none,
@@ -2666,6 +2704,7 @@ const commands = {
   spawnParticleAtMarker,
   setCharacterText,
   showUISection,
+  showStore,
   setBattlePaused,
   equipWeaponOrArmor,
   pauseOverworld,

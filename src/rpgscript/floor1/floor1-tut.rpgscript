@@ -1098,7 +1098,7 @@ Conscience: "Yeah, it does.  I wonder what it's for?"
 Ada: "Have you noticed that we have been acquiring <color=BLUE>experience</> from the battles we fight?"
 +:lightbulb(Conscience);
 Conscience: "Oh, yeah!  You think we can use this terminal to level up or something?"
-+:setFacing(Ada, rightup);
++setFacing(Ada, rightup);
 +:minorPause();
 Ada: "Not that I am particularly invested in this particular world..."
 +lookAtEachOther(Ada, Conscience);

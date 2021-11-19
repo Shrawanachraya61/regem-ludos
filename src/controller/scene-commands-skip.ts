@@ -55,6 +55,14 @@ export const setConversationWithoutBars = (actorName: string) => {
   return;
 };
 
+export const setUnskippableConversation = () => {
+  return;
+};
+
+export const setUnskippable = () => {
+  return;
+};
+
 export const endConversation = (ms?: number, dontHideCutscene?: boolean) => {
   return SC.endConversation(0, dontHideCutscene);
 };
@@ -642,6 +650,10 @@ const changePropAnim = (...args) => {
   return SC.changePropAnim(args[0], args[1]);
 };
 
+const showStore = (storeName: string) => {
+  return SC.showStore(storeName);
+};
+
 // CUSTOM --------------------------------------------------------------------------------
 
 // Used in the tutorial room to toggle open/closed all doors with the color of the marker
@@ -657,6 +669,8 @@ const commands = {
   setConversation,
   setConversation2,
   setConversationWithoutBars,
+  setUnskippableConversation,
+  setUnskippable,
   endConversation,
   setConversationSpeaker,
   none,
@@ -729,6 +743,7 @@ const commands = {
   unpauseOverworld,
   setAiState,
   startQuest,
+  showStore,
   completeQuestStep,
   showNotification,
   modifyPartyHP,

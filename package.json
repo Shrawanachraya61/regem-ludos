@@ -4,8 +4,8 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": "10^",
-    "vscode": "*"
+    "node": ">=10",
+    "vscode": "^1.61.0"
   },
   "scripts": {
     "start": "yarn watch",
@@ -25,8 +25,8 @@
     "watch": "yarn zip && yarn build:rpgscript && tsc --project tsconfig.prod.json && yarn start:only",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:ci": "echo 'Tests Disabled'",
-    "test:ci2": "jest --coverage --ci --reporters='default' --reporters='./scripts/github-actions-reporter'",
+    "test:ci2": "echo 'Tests Disabled'",
+    "test:ci": "jest --coverage --ci --reporters='default' --reporters='./scripts/github-actions-reporter'",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js"
   },
   "devDependencies": {

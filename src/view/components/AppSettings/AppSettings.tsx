@@ -57,71 +57,80 @@ const AppSettings = () => {
   const cutsceneSpeed = getCutsceneSpeedMultiplier();
 
   return (
-    <Card size={CardSize.ADAPTIVE}>
-      <SettingsArea>
-        <h2>Volume Settings</h2>
-        <div>
-          <label name="generic-volume">
-            Effects Volume - {Math.floor(volumeNormal * 100)}%
-          </label>
-          <input
-            style={{
-              width: '100%',
-            }}
-            value={volumeNormal}
-            type="range"
-            step={0.05}
-            min={0}
-            max={1.0}
-            onChange={(ev: any) =>
-              handleVolumeSliderChange(ev?.target?.value ?? 1, SoundType.NORMAL)
-            }
-            onMouseUp={() => handleVolumeSliderClick(SoundType.NORMAL)}
-          ></input>
-        </div>
-        <div>
-          <label name="music-volume">
-            Music Volume - {Math.floor(volumeMusic * 100)}%
-          </label>
-          <input
-            style={{
-              width: '100%',
-            }}
-            value={volumeMusic}
-            type="range"
-            step={0.05}
-            min={0}
-            max={1.0}
-            onChange={(ev: any) =>
-              handleVolumeSliderChange(ev?.target?.value ?? 1, SoundType.MUSIC)
-            }
-            onMouseUp={() => handleVolumeSliderClick(SoundType.MUSIC)}
-          ></input>
-        </div>
-      </SettingsArea>
-      <SettingsArea>
-        <h2>Game Settings</h2>
-        <div>
-          <label name="cutscene-speed">
-            Cutscene Speed - {Math.floor(cutsceneSpeed * 100)}%
-          </label>
-          <input
-            style={{
-              width: '100%',
-            }}
-            value={cutsceneSpeed}
-            type="range"
-            step={0.05}
-            min={0.5}
-            max={2.0}
-            onChange={(ev: any) =>
-              handleCutsceneSpeedChange(ev?.target?.value ?? 1)
-            }
-            // onMouseUp={() => handleCutsceneSpeedClick()}
-          ></input>
-        </div>
-      </SettingsArea>
-    </Card>
+    <div>
+      <p>Changes to these settings are automatically saved.</p>
+      <Card size={CardSize.ADAPTIVE}>
+        <SettingsArea>
+          <h2>Volume Settings</h2>
+          <div>
+            <label name="generic-volume">
+              Effects Volume - {Math.floor(volumeNormal * 100)}%
+            </label>
+            <input
+              style={{
+                width: '100%',
+              }}
+              value={volumeNormal}
+              type="range"
+              step={0.05}
+              min={0}
+              max={1.0}
+              onChange={(ev: any) =>
+                handleVolumeSliderChange(
+                  ev?.target?.value ?? 1,
+                  SoundType.NORMAL
+                )
+              }
+              onMouseUp={() => handleVolumeSliderClick(SoundType.NORMAL)}
+            ></input>
+          </div>
+          <div>
+            <label name="music-volume">
+              Music Volume - {Math.floor(volumeMusic * 100)}%
+            </label>
+            <input
+              style={{
+                width: '100%',
+              }}
+              value={volumeMusic}
+              type="range"
+              step={0.05}
+              min={0}
+              max={1.0}
+              onChange={(ev: any) =>
+                handleVolumeSliderChange(
+                  ev?.target?.value ?? 1,
+                  SoundType.MUSIC
+                )
+              }
+              onMouseUp={() => handleVolumeSliderClick(SoundType.MUSIC)}
+            ></input>
+          </div>
+        </SettingsArea>
+        <SettingsArea>
+          <h2>Game Settings</h2>
+          <div>
+            <label name="cutscene-speed">
+              Cutscene Speed - {Math.floor(cutsceneSpeed * 100)}%
+            </label>
+            <input
+              style={{
+                width: '100%',
+              }}
+              value={cutsceneSpeed}
+              type="range"
+              step={0.05}
+              min={0.5}
+              max={2.0}
+              onChange={(ev: any) =>
+                handleCutsceneSpeedChange(ev?.target?.value ?? 1)
+              }
+              // onMouseUp={() => handleCutsceneSpeedClick()}
+            ></input>
+          </div>
+        </SettingsArea>
+      </Card>
+    </div>
   );
 };
 

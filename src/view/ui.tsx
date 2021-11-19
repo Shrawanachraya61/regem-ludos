@@ -33,6 +33,7 @@ import { get as getBattle } from 'db/encounters';
 import { get as getQuest } from 'db/quests';
 import QuestSection from './components/QuestSection';
 import { questIsCompleted } from 'controller/quest';
+import ItemStoreSection from './components/ItemStoreSection';
 
 interface UIInterface {
   appState: AppState;
@@ -117,13 +118,10 @@ const App = () => {
       case AppSection.Save: {
         return <SaveSection key={key} />;
       }
+      case AppSection.Store: {
+        return <ItemStoreSection key={key} />;
+      }
       case AppSection.Menu: {
-        // const battle = initiateBattle(
-        //   getCurrentPlayer(),
-        //   getBattle('ENCOUNTER_TUT_DUNGEON1')
-        // );
-        // battlePauseTimers(battle);
-        // return <BattleConclusion key={key} isVictory={true} />;
         return <MenuSection key={key} />;
       }
       case AppSection.Quest: {

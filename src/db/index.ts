@@ -10,6 +10,7 @@ import { init as initParticles } from './particles';
 import { init as initQuests } from './quests';
 import { init as initItems } from './items';
 import { init as initBattleActions } from './battle-actions';
+import { init as initStores } from './stores';
 import { init as initSaves } from './saves';
 import { init as initScripts } from './scripts';
 import { init as initPersistentEffects } from './persistent-effects';
@@ -28,6 +29,7 @@ export default async (scene: Scene) => {
   initAnimMetadata();
   initItems();
   initBattleActions();
+  initStores();
   initSaves();
   await initScripts(scene);
   initOverworlds();

@@ -3,6 +3,8 @@ const commands = [
   'setConversation',
   'setConversation2',
   'setConversationWithoutBars',
+  'setUnskippableConversation',
+  'setUnskippable',
   'endConversation',
   'setConversationSpeaker',
   'none',
@@ -82,5 +84,6 @@ const commands = [
   'enableAnimationSounds',
   'changePropAnim',
   'floor1TutToggleColorDoors',
+  'showStore',
 ];
 module.exports = commands;

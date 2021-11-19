@@ -38,8 +38,9 @@ import {
   isKeyDown,
 } from 'model/generics';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
-import { skipCurrentScript } from 'controller/scene-management';
+import { sceneIsPlaying, skipCurrentScript } from 'controller/scene-management';
 import { panCameraBackToPlayer } from 'controller/scene-commands';
+import { pause, unpause } from 'controller/loop';
 
 export enum PortraitActiveState {
   Active = 'active',
@@ -612,14 +613,22 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
   const cutscene = getUiInterface().appState.cutscene;
   const [
     skipConfirmVisible,
-    showSkipConfirmModal,
+    setSkipConfirmVisible,
     // hideModal,
   ] = useConfirmModal({
     onConfirm: () => {
       skipCutscene();
     },
+    onClose: () => {
+      unpause();
+    },
     body: 'Are you sure you want to skip this cutscene?',
   });
+
+  const showSkipConfirmModal = () => {
+    pause();
+    setSkipConfirmVisible();
+  };
 
   // This hook executes on first render.  If a cutscene is not currently being rendered,
   // then this will pull the cutscene bars towards the center of the screen.
@@ -677,6 +686,7 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
     setIsSkipping(false);
+    unpause();
     skipCurrentScript(getCurrentScene());
     popKeyHandler(handler);
     setTimeout(() => {

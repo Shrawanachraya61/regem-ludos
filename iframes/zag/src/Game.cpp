@@ -884,6 +884,7 @@ void Game::checkNextRound() {
     addFuncTimer(100, [=] {
       GameWorld& world = *worldPtr;
       if (state == GAME_STATE_GAME) {
+        modifyScore(1000 * world.round);
         world.round++;
         world.variant = (world.variant + 1) % 4;
       }

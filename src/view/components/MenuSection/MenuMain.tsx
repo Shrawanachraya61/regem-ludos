@@ -228,7 +228,7 @@ const MenuSection = () => {
           <MenuBox
             title="Status"
             onClose={() => {
-              playSoundName('menu_choice_close');
+              // playSoundName('menu_choice_close');
               setOuterMenuActive(true);
             }}
             maxWidth={cardSizes[CardSize.XLARGE].width}
@@ -239,7 +239,7 @@ const MenuSection = () => {
               player={getCurrentPlayer()}
               isInactive={false}
               onClose={() => {
-                playSoundName('menu_choice_close');
+                // playSoundName('menu_choice_close');
                 setOuterMenuActive(true);
               }}
             />
@@ -334,9 +334,11 @@ const MenuSection = () => {
             width="60%"
             open={true}
             isInactive={true}
+            transparentBg={true}
             // backgroundColor={'#302C2E'}
+            backgroundColor="linear-gradient(90deg, #2E3740 0%, rgba(0,0,0,0) 100%)"
             // backgroundColor="linear-gradient(20deg, rgba(17,17,17,1) 15%, rgba(48,44,46,1) 57%)"
-            backgroundColor="radial-gradient(circle, rgba(17,17,17,1) -0%, rgba(48,44,46,1) 85%) 150px 0px"
+            // backgroundColor="radial-gradient(circle, rgba(17,17,17,1) -0%, rgba(48,44,46,1) 85%) 150px 0px"
             items={party.map(ch => {
               return {
                 label: (

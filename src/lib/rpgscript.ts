@@ -522,7 +522,7 @@ export class ScriptParser {
           const obj = currentScript.isValid(scene);
           const err = obj.msg;
           if (err) {
-            this.throwParsingError(err, obj.lineNum, '');
+            this.throwParsingError(err, obj.lineNum ?? 0, '');
           }
         }
         currentScript = new Script(scriptName, this.name, lineNum);
@@ -747,7 +747,7 @@ export class ScriptParser {
       const obj = (currentScript as Script).isValid(scene);
       const err = obj?.msg;
       if (err) {
-        this.throwParsingError(err, obj.lineNum, lines[lines.length - 1]);
+        this.throwParsingError(err, obj.lineNum ?? 0, lines[lines.length - 1]);
       }
     }
     return { triggers, scripts };

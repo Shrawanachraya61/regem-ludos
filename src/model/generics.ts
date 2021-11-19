@@ -12,6 +12,7 @@ import {
   setVolumeForMusic,
   SoundType,
 } from './sound';
+import { IItemStoreSave } from 'controller/save-management';
 
 let currentRoom: Room | null = ((window as any).room = null);
 export const getCurrentRoom = (): Room => currentRoom as Room;
@@ -262,3 +263,14 @@ export const setCutsceneSkipEnabled = (v: boolean) => {
   cutsceneSkipEnabled = v;
 };
 export const isCutsceneSkipEnabled = () => cutsceneSkipEnabled;
+
+let storesStorage: Record<
+  string,
+  IItemStoreSave
+> = ((window as any).storesStorage = {});
+export const setItemStores = (stores: Record<string, IItemStoreSave>) => {
+  storesStorage = Object.assign({}, stores);
+};
+export const getItemStores = () => {
+  return storesStorage;
+};

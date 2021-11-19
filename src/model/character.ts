@@ -141,6 +141,7 @@ export enum AnimationState {
 export enum ItemStatus {
   CLOAKED = 'cloaked',
   SPEEDY = 'speedy',
+  STAT = 'stat',
 }
 
 export const ANIMATIONS_WITHOUT_FACING = [AnimationState.BATTLE_FLOURISH];
@@ -206,6 +207,7 @@ export interface Character {
   ro?: RenderObject;
   itemStatuses: {
     status: ItemStatus;
+    statMeta?: any;
     state: 'normal' | 'expiring';
   }[];
 }
@@ -296,6 +298,7 @@ export const characterCreate = (name: string): Character => {
     encounterStuckRetries: 0,
     itemStatuses: [] as {
       status: ItemStatus;
+      statMeta?: any;
       state: 'normal' | 'expiring';
     }[],
     sortOffset: undefined,
@@ -1030,9 +1033,14 @@ export const characterHasItemStatus = (ch: Character, status: ItemStatus) => {
   return Boolean(ch.itemStatuses.find(obj => obj.status === status));
 };
 
-export const characterAddItemStatus = (ch: Character, status: ItemStatus) => {
+export const characterAddItemStatus = (
+  ch: Character,
+  status: ItemStatus,
+  statMeta?: any
+) => {
   ch.itemStatuses.push({
     status,
+    statMeta,
     state: 'normal',
   });
 

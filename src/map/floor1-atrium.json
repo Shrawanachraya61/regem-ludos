@@ -801,6 +801,17 @@
                  "width":32,
                  "x":58.5,
                  "y":35.5
+                }, 
+                {
+                 "height":19.5,
+                 "id":132,
+                 "name":"#floor1Atrium-SnackVending",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":34.5,
+                 "x":28.5,
+                 "y":61.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -809,7 +820,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":132,
+ "nextobjectid":133,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

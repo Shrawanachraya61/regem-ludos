@@ -398,7 +398,10 @@ export const varyStats = (chTemplate: CharacterTemplate): CharacterTemplate => {
 };
 
 export const sortItems = (a: Item, b: Item) => {
-  return a.label < b.label ? -1 : 1;
+  const aName = a.sortName ?? a.label;
+  const bName = b.sortName ?? b.label;
+
+  return aName < bName ? -1 : 1;
 };
 
 export const msToTimeLabel = (duration: number) => {

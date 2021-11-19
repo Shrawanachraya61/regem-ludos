@@ -75,7 +75,7 @@ import { get as getPEffect } from '../persistent-effects';
 const assertPlayerHasItem = (itemName: string) => {
   return playerGetItemCount(getCurrentPlayer(), itemName) > 0;
 };
-const showBattleParticles = async (
+export const showBattleParticles = async (
   ch: Character,
   effectName: string,
   text?: string
@@ -132,7 +132,7 @@ interface ICreateSelectPartyMemberCallMeta {
   onCharacterSelectedBattle: (ch: Character) => void;
 }
 
-const createSelectPartyMemberCall = (
+export const createSelectPartyMemberCall = (
   item: Item,
   resolve: (v: boolean) => void,
   {
@@ -171,7 +171,7 @@ const createSelectPartyMemberCall = (
 // characters: Character[];
 // isAll?: boolean;
 
-const createSelectEnemyCall = (
+export const createSelectEnemyCall = (
   item: Item,
   resolve: (v: boolean) => void,
   { filter, onCharacterSelectedBattle }: ICreateSelectPartyMemberCallMeta
@@ -190,7 +190,6 @@ const createSelectEnemyCall = (
       }
       enablePauseRendering();
       onCharacterSelectedBattle(ch);
-      console.log('EFFECT USED');
       hideModal();
     },
     onClose: () => {
@@ -202,7 +201,10 @@ const createSelectEnemyCall = (
   });
 };
 
-const createConfirmUseModal = (item: Item, resolve: (v: boolean) => void) => {
+export const createConfirmUseModal = (
+  item: Item,
+  resolve: (v: boolean) => void
+) => {
   const emptyStackCb = pushEmptyKeyHandler();
   showModal(ModalSection.CONFIRM, {
     onClose: () => {
@@ -230,7 +232,7 @@ const createConfirmUseModal = (item: Item, resolve: (v: boolean) => void) => {
   });
 };
 
-const createPartyMemberSelectOnUseCb = (
+export const createPartyMemberSelectOnUseCb = (
   particleName: string,
   particleText: string,
   applyItem: (ch: Character, item: Item) => void,
@@ -253,7 +255,7 @@ const createPartyMemberSelectOnUseCb = (
   };
 };
 
-const createEnemySelectOnUseCb = (
+export const createEnemySelectOnUseCb = (
   particleName: string,
   particleText: string,
   applyItem: (chList: Character[], item: Item) => void,
@@ -275,7 +277,7 @@ const createEnemySelectOnUseCb = (
   };
 };
 
-const createRezOnUseCb = (
+export const createRezOnUseCb = (
   particleName: string,
   particleText: string,
   applyItem: (ch: Character, item: Item) => void
@@ -327,7 +329,7 @@ const createRezOnUseCb = (
   };
 };
 
-const createOverworldStatusOnUseCb = (
+export const createOverworldStatusOnUseCb = (
   applyItem: (item: Item) => void
 ): ((item: Item, isBattle?: boolean) => Promise<boolean>) => {
   return async (item: Item, isBattle?: boolean) => {
@@ -531,10 +533,6 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
           const bCh = battleGetBattleCharacterFromCharacter(battle, ch);
           if (bCh) {
             applyArmorDamage(battle, bCh, 1, true);
-            // bCh.armor--;
-            // if (bCh.armor < 0) {
-            //   bCh.armor = 0;
-            // }
             playerRemoveItem(getCurrentPlayer(), item.name as string);
           }
         }

@@ -436,17 +436,6 @@ Floor1AtriumPingPongSearcher: "And those two guys over there have been playing f
 Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
 +endConversation();
 
-#floor1-bowling-girl
-action,this
-@this
-+lookAtEachOther(Ada, Floor1BowlingGirl);
-+setConversation(Ada);
-Floor1BowlingGirl: "I just realized that bowling is kinda like golf."
-Floor1BowlingGirl: "<cascade>Not like physically or anything -- I mean sheesh, those bowling balls are super heavy -- but like, in the <italic>game sense."
-Floor1BowlingGirl: "In both games you gotta pick a starting point, spin, and aiming direction."
-Floor1BowlingGirl: "Feels like everything's got a connection sometimes, you know."
-+endConversation();
-
 #floor1-AtriumNPC1NPC2
 action,this
 @this
@@ -486,3 +475,8 @@ action,this
 +lookAtEachOther(Ada, FloorAtriumWalkingNPC);
 FloorAtriumWalkingNPC: "Sometimes I just like to come in here and walk around."
 +endConversation();
+
+#floor1Atrium-SnackVending
+action,this
+@this
++showStore(SNACK_VENDING_MACHINE);

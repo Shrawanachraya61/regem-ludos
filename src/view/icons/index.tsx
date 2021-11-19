@@ -28,6 +28,8 @@ import RangedNormalIcon from './RangedNormal';
 import RingIcon from './Ring';
 import ShieldIcon from './Shield';
 import SignalIcon from './Signal';
+import SnackIcon from './Snack';
+import SodaIcon from './Soda';
 import SpeakerIcon from './Speaker';
 import SpearIcon from './Spear';
 import StarIcon from './Star';
@@ -39,6 +41,7 @@ import TalkIcon from './Talk';
 import TargetIcon from './Target';
 import TargetMeleeIcon from './TargetMelee';
 import TicTacToeIcon from './TicTacToe';
+import VendingMachineIcon from './VendingMachine';
 import WandIcon from './Wand';
 
 const icons = {
@@ -70,6 +73,8 @@ const icons = {
   ring: RingIcon,
   shield: ShieldIcon,
   signal: SignalIcon,
+  snack: SnackIcon,
+  soda: SodaIcon,
   speaker: SpeakerIcon,
   spear: SpearIcon,
   star: StarIcon,
@@ -81,6 +86,7 @@ const icons = {
   target: TargetIcon,
   targetMelee: TargetMeleeIcon,
   ticTacToe: TicTacToeIcon,
+  vending: VendingMachineIcon,
   wand: WandIcon,
 };
 export const getIcon = (

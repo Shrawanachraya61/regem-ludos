@@ -20,6 +20,7 @@ const MenuWrapper = style('div', (props: { dark?: boolean }) => {
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: '2',
+    boxShadow: '0px 0px 12px 8px rgba(0, 0, 0, 0.75)',
     // pointerEvents: 'none',
     background: props.dark ? 'rgba(0, 0, 0, 0.5)' : 'unset',
   };
@@ -56,7 +57,10 @@ const MenuBackground = style('div', () => {
 });
 const MenuTitle = style('div', () => {
   return {
+    color: colors.ORANGE,
+    background: `linear-gradient(90deg, ${colors.DARKBLUE} 0%, rgba(0,0,0,0) 100%)`,
     margin: '8px',
+    marginBottom: '-8px',
     padding: '8px',
     fontSize: '32px',
     textTransform: 'uppercase',
@@ -67,7 +71,7 @@ const MenuTitle = style('div', () => {
 const MenuContent = style('div', () => {
   return {
     margin: '8px',
-    padding: '8px',
+    // padding: '8px',
     fontSize: '16px',
     display: 'flex',
     justifyContent: 'center',
@@ -76,11 +80,14 @@ const MenuContent = style('div', () => {
 });
 const MenuActionButtons = style('div', () => {
   return {
+    borderTop: '2px solid ' + colors.BLUE,
     display: 'flex',
     justifyContent: 'flex-end',
     padding: '8px',
     margin: '8px',
+    marginTop: '16px',
     zIndex: 2,
+    background: `linear-gradient(270deg, ${colors.DARKBLUE} 0%, rgba(0,0,0,0) 100%)`,
   };
 });
 interface IMenuProps {
@@ -147,6 +154,9 @@ const MenuBox = (props: IMenuProps) => {
               }}
               active={closeButtonActive}
               onClick={() => {
+                if (!props.disableCloseSound) {
+                  playSoundName('menu_choice_close');
+                }
                 playSoundName('menu_select');
                 props.onClose();
               }}

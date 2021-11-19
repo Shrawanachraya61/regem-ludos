@@ -486,7 +486,8 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
     !getUiInterface().appState.sections.includes(AppSection.Debug) ||
     getUiInterface().appState.sections.includes(AppSection.Menu) ||
     overworldKeysDisabledOnLoadVal ||
-    getUiInterface().appState.sections.includes(AppSection.Modal)
+    getUiInterface().appState.sections.includes(AppSection.Modal) ||
+    getUiInterface().appState.sections.includes(AppSection.Store)
   ) {
     return;
   }

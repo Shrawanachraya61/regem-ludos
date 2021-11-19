@@ -48,6 +48,7 @@ interface IItemDescriptionProps {
   showName?: boolean;
   onUse?: (item: Item) => void;
   disableTitle?: boolean;
+  disableUse?: boolean;
 }
 
 const ItemDescription = (props: IItemDescriptionProps) => {
@@ -87,7 +88,7 @@ const ItemDescription = (props: IItemDescriptionProps) => {
 
   return (
     <Root>
-      <div>
+      <div style={{ zIndex: 1 }}>
         {props.disableTitle ? null : (
           <EquipmentDescriptionTitle>DESCRIPTION</EquipmentDescriptionTitle>
         )}
@@ -96,22 +97,27 @@ const ItemDescription = (props: IItemDescriptionProps) => {
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
+            <b>{props.item?.label}</b>
             <div
-              style={{
-                width: '32px',
-                marginRight: '12px',
-                marginBottom: '8px',
-                marginTop: '8px',
-              }}
+              style={
+                props.item?.label
+                  ? {
+                      width: '48px',
+                      padding: '8px',
+                      border: '1px solid ' + colors.LIGHTGREY,
+                      background: colors.BLACK,
+                    }
+                  : {}
+              }
             >
               <Icon color={colors.WHITE} />
             </div>
-            <b>{props.item?.label}</b>
           </EquipmentTitleText>
         ) : null}
-        {isCurrentlyUsable ? (
+        {isCurrentlyUsable && !props.disableUse ? (
           <Button
             type={ButtonType.SECONDARY}
             style={{ width: '100px', marginLeft: '8px', marginBottom: '16px' }}

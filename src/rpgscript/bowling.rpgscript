@@ -15,9 +15,21 @@ step-first,this
 +waitMS(1000);
 +fadeIn(500);
 
+#floor1-bowling-girl
+action,this
+@this
++lookAtEachOther(Ada, Floor1BowlingGirl);
++setConversation(Ada);
+Floor1BowlingGirl: "I just realized that bowling is kinda like golf."
+Floor1BowlingGirl: "<cascade>Not like physically or anything - I mean sheesh, those bowling balls are super heavy - but like, in the <italic>game sense."
+Floor1BowlingGirl: "In both games you gotta pick a starting point, spin, and aiming direction."
+Floor1BowlingGirl: "Feels like everything's got a connection sometimes, you know."
++endConversation();
+
 #floor1-bowling-employee-standalone
 action,this
 @this
++setUnskippable(Ada);
 +setConversation(Ada);
 +lookAtEachOther(Ada, Floor1BowlingEmployee);
 Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?"
@@ -62,6 +74,7 @@ Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling
 #floor1-bowling-employee
 action,this
 @this
++setUnskippable(Ada);
 +setConversation(Ada);
 +lookAtEachOther(Ada, Floor1BowlingEmployee);
 Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?  It's 5 tokens to play."

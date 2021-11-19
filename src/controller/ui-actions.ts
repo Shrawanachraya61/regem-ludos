@@ -17,6 +17,7 @@ import {
   IRoomState,
   NotificationState,
   IQuestState,
+  IItemStoreState,
 } from 'model/store';
 import {
   ArcadeGamePath,
@@ -33,6 +34,7 @@ import { popKeyHandler, pushEmptyKeyHandler } from './events';
 import { Character, characterGetPortraitSpriteName } from 'model/character';
 import { pause, unpause } from './loop';
 import { Particle } from 'model/particle';
+import { get as getStore } from 'db/stores';
 
 export interface ReducerAction<T> {
   action: string;
@@ -116,6 +118,9 @@ const resolvers: { [key: string]: MutationFunction } = {
   },
   setQuestState: (newState: AppState, payload: Partial<IQuestState>) => {
     Object.assign(newState.quest, payload);
+  },
+  setStoreState: (newState: AppState, payload: Partial<IItemStoreState>) => {
+    Object.assign(newState.store, payload);
   },
   addRoomUiParticle: (newState: AppState, payload: Particle) => {
     newState.room.particles = [...newState.room.particles, payload];
@@ -692,4 +697,38 @@ export const setInterfaceStateDisabled = (disabled: boolean) => {
       interfaceDisabled: disabled,
     },
   });
+};
+
+export const showStoreSection = (storeName: string, onClose: () => void) => {
+  const payload = {
+    onClose,
+    storeName,
+  };
+
+  const store = getStore(storeName);
+  if (store.openSound) {
+    playSoundName(store.openSound);
+  } else {
+    playSoundName('menu_choice_open');
+  }
+
+  getUiInterface().dispatch({
+    action: 'setStoreState',
+    payload,
+  });
+  showSection(AppSection.Store, false);
+};
+
+export const hideStoreSection = () => {
+  const storeName = getUiInterface().appState.store.storeName;
+  if (storeName) {
+    const store = getStore(storeName);
+    if (store.closeSound) {
+      playSoundName(store.closeSound);
+    } else {
+      playSoundName('menu_choice_close');
+    }
+  }
+
+  hideSection(AppSection.Store);
 };

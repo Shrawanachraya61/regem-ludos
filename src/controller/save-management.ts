@@ -5,6 +5,7 @@ import {
   getCurrentScene,
   getCutsceneSpeedMultiplier,
   getDurationPlayed,
+  getItemStores,
   getTimeLoaded,
   getVolume,
   isArcadeGameMuted,
@@ -15,6 +16,7 @@ import {
   setCutsceneSpeedMultiplier,
   setDebugModeEnabled,
   setDurationPlayed,
+  setItemStores,
   setTimeLoaded,
   setVolume,
 } from 'model/generics';
@@ -92,6 +94,7 @@ export interface ISave {
     golems: number;
     president: number;
   };
+  stores: Record<string, IItemStoreSave>;
 }
 
 interface ICharacterSave {
@@ -111,6 +114,14 @@ interface ICharacterSave {
     accessory2: number;
     armor: number;
   };
+}
+
+export interface IItemStoreSave {
+  name: string;
+  items: {
+    itemName: string;
+    quantity: number;
+  }[];
 }
 
 enum LocalStorageKeyType {
@@ -231,6 +242,7 @@ export const loadSaveListFromLS = (): ISave[] => {
             golems: save?.highScores?.golems ?? 0,
             president: save?.highScores?.president ?? 0,
           },
+          stores: Object.assign({}, save?.stores ?? {}),
         };
       }
     );
@@ -315,6 +327,7 @@ export const createSave = (params: {
       golems: 0,
       president: 0,
     },
+    stores: getItemStores(),
   };
 
   const durationSinceLastSave = +new Date() - +params.lastTimestampLoaded;
@@ -383,6 +396,8 @@ const loadGame = (save: ISave) => {
   };
 
   resetLastUpdatedQuests(save.questsUpdated);
+
+  setItemStores(save.stores ?? {});
 
   player.tokens = save.player.tokens;
   player.tickets = save.player.tickets;

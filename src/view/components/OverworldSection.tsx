@@ -186,16 +186,20 @@ const renderItemStatus = (
 ) => {
   const itemStatusToIconName = {
     [ItemStatus.CLOAKED]: {
-      itemName: 'cloakConsume',
+      iconName: 'cloakConsume',
+      color: colors.BLUE,
+    },
+    [ItemStatus.STAT]: {
+      iconName: 'star',
       color: colors.BLUE,
     },
   };
   const obj = itemStatusToIconName[statusObj.status] ?? {
-    itemName: 'help',
+    iconName: 'help',
     color: colors.WHITE,
   };
 
-  const Icon = getIcon(obj.itemName);
+  const Icon = getIcon(obj.iconName);
 
   console.log('RENDER ITEM STATUS', statusObj.state, statusObj.status);
 

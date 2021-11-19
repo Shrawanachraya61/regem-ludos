@@ -1,6 +1,6 @@
 Sound,blip,foley/blip.mp3,0.7,zzfx
 Sound,pop,foley/pop.mp3,0.7,zzfx
-Sound,menu_move,foley/menu_move2.mp3,0.5,zzfx
+Sound,menu_move,foley/menu_move2.mp3,0.35,zzfx
 Sound,menu_select,foley/menu_select2.mp3,
 Sound,menu_select2,foley/menu_cancel.mp3,0.7,zzfx
 Sound,menu_cancel,foley/terminal_cancel.mp3,0.7,zzfx
@@ -22,7 +22,7 @@ Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
 Sound,battle_encountered,foley/encounter.mp3,jsfxr
 Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
 Sound,woosh_reverse,foley/woosh_reverse.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
-Sound,fanfare,foley/fanfare.mp3,0.35,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,fanfare,foley/fanfare.mp3,0.3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
 Sound,despawn,foley/despawn.mp3,0.55,jsfxr
 Sound,battle_jump,foley/jump2.mp3,0.9,Attribution https://freesound.org/people/andersmmg/sounds/518970/
 Sound,battle_shoot_arrow,foley/shoot_arrow.mp3,jsfxr
@@ -82,9 +82,11 @@ Sound,sliding_door_open,foley/sliding_door_open.mp3,1.0,Creative Commons Non Com
 Sound,sliding_door_close,foley/sliding_door_close.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ cut and sped up
 Sound,red_door_open,foley/red_door_open.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut
 Sound,red_door_close,foley/red_door_close.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut pitch down
-Sound,token_get,foley/token_get.mp3,Blades of Exile SND15 https://github.com/calref/cboe/tree/master/rsrc/sounds
+Sound,token_get,foley/token_get.mp3,Creative Commons https://freesound.org/people/Pogmog/sounds/393909/
+Sound,make_purchase,foley/make_purchase.mp3,Blades of Exile SND15 https://github.com/calref/cboe/tree/master/rsrc/sounds
 Sound,zap_quiet,foley/zap.mp3,0.5,Creative Commons 0 https://freesound.org/people/michael_grinnell/sounds/512471/
 Sound,deep_siren,foley/deep_siren.mp3,1.0,Attribution https://freesound.org/people/InspectorJ/sounds/455602/
+Sound,vending_machine,foley/vending_machine.mp3,0.8, Attribution https://freesound.org/people/HarryPeeks/sounds/242138/ + Creative Commons https://freesound.org/people/Kodack/sounds/258020/
 
 Music,music_menu,music/menu.mp3
 Music,music_battle1,music/battle1.mp3

@@ -27,6 +27,7 @@ const InnerRoot = style('div', {
   alignItems: 'flex-start',
   width: '100%',
   zIndex: '1',
+  marginTop: '16px',
   // height: '100%',
 });
 

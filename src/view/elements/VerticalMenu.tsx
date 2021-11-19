@@ -40,6 +40,7 @@ interface IVerticalMenuProps<T> {
   resetIfTooLong?: boolean;
   useSpaceBarConfirm?: boolean;
   itemHeight?: number;
+  transparentBg?: boolean;
 }
 
 interface VerticalMenuItem<T> {
@@ -97,6 +98,7 @@ const getMenuLineHeightStyles = (
 const Root = style(
   'div',
   (props: {
+    transparentBg: boolean;
     backgroundColor: string;
     borderColor?: string;
     open: boolean;
@@ -104,7 +106,7 @@ const Root = style(
     height?: string;
   }) => {
     return {
-      background: colors.BLACK,
+      background: props.transparentBg ? 'rgba(0, 0, 0, 0)' : colors.BLACK,
       position: 'relative',
       width: props.width || '100%',
       height: props.height || 'unset',
@@ -379,6 +381,7 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
   return (
     <Root
       id={'vertical-menu-' + props.title}
+      transparentBg={Boolean(props.transparentBg)}
       backgroundColor={props.backgroundColor ?? colors.BLACK}
       borderColor={props.borderColor ?? colors.WHITE}
       width={props.width}

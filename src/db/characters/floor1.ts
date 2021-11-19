@@ -234,5 +234,59 @@ export const init = () => {
     animationState: AnimationState.IDLE,
   };
 
+  exp.Floor1DNDPlayer1 = {
+    name: 'DNDPlayer1',
+    nameLabel: 'Tabletop Player',
+    spriteBase: 'guy3',
+    talkTrigger: 'Floor1East2_DNDPlayer1',
+    facing: Facing.RIGHT_UP,
+    animationState: AnimationState.IDLE,
+    overworldAi: createWalkerAI(['MarkerPaceA', 'MarkerPaceB'], {
+      pauseDurationMs: 2000,
+      onReachDestination: ch => {
+        characterSetFacing(ch, Facing.RIGHT_UP);
+      },
+    }),
+  };
+  exp.Floor1DNDPlayer2 = {
+    name: 'DNDPlayer2',
+    nameLabel: 'Tabletop Player',
+    spriteBase: 'guy7',
+    talkTrigger: 'Floor1East2_DNDPlayer2',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    overworldAi: createWalkerAI(['Marker2PaceA', 'Marker2PaceB'], {
+      pauseDurationMs: 5000,
+      onReachDestination: ch => {
+        characterSetFacing(ch, Facing.LEFT_DOWN);
+      },
+    }),
+  };
+  exp.Floor1DNDPlayer3 = {
+    name: 'DNDPlayer3',
+    nameLabel: 'Tabletop Player',
+    spriteBase: 'guy2',
+    talkTrigger: 'Floor1East2_DNDPlayer3',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+  };
+  exp.Floor1DNDPlayer4 = {
+    name: 'DNDPlayer4',
+    nameLabel: 'Tabletop Player',
+    spriteBase: 'girl7',
+    talkTrigger: 'Floor1East2_DNDPlayer4',
+    facing: Facing.RIGHT_UP,
+    animationState: AnimationState.IDLE,
+  };
+
+  exp.Floor1ZagPlayer = {
+    name: 'ZagPlayer',
+    nameLabel: 'Zag Player',
+    spriteBase: 'guy10',
+    talkTrigger: 'Floor1East2_ZagPlayer',
+    facing: Facing.RIGHT_UP,
+    animationState: AnimationState.IDLE,
+  };
+
   return exp;
 };

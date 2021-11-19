@@ -89,5 +89,6 @@ export const init = () => {
       golems: 0,
       president: 0,
     },
+    stores: {},
   };
 };

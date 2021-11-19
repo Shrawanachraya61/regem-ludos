@@ -95,12 +95,8 @@ describe('Menus', () => {
       </AppShim>
     );
 
-    expect(wrapper.container.textContent).toMatch(/Party Member/);
+    expect(wrapper.container.textContent).toMatch(/Arrows to change character/);
     expect(wrapper.container.textContent).toMatch(/Ada/);
-    expect(wrapper.container.textContent).toMatch(/Equipment/);
-    expect(wrapper.container.textContent).toMatch(/Weapon/);
-    expect(wrapper.container.textContent).toMatch(/Armor/);
-    expect(wrapper.container.textContent).toMatch(/Accessory/);
   });
 
   test('The MenuJournal component renders without errors', () => {

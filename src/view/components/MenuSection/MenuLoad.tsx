@@ -5,7 +5,11 @@ import { hideSection, showModal } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize } from 'view/elements/Card';
 import { pause, unpause } from 'controller/loop';
-import { isCancelKey, getCancelKeyLabel } from 'controller/events';
+import {
+  isCancelKey,
+  getCancelKeyLabel,
+  getConfirmKeyLabel,
+} from 'controller/events';
 import { useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
 import {
@@ -58,7 +62,6 @@ const LoadSection = (props: ILoadSectionProps) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleLoadClick = (saveIndex: number) => {
-    console.log('LOAD GAME', saveIndex);
     if (props.onSaveClicked) {
       props.onSaveClicked(saves[saveIndex]);
     } else {
@@ -87,24 +90,29 @@ const LoadSection = (props: ILoadSectionProps) => {
   });
 
   return (
-    <Card size={CardSize.LARGE}>
-      <ContentSpacer id="save-spacer">
-        <VerticalMenu
-          title="Saved Games"
-          width="100%"
-          open={true}
-          isInactive={modalVisible}
-          items={saves.map((save: ISave, i: number) => {
-            return {
-              label: <SaveGameListItem save={save} i={i} />,
-              value: i,
-            };
-          })}
-          onItemClickSound="menu_select"
-          onItemClick={handleLoadClick}
-        />
-      </ContentSpacer>
-    </Card>
+    <div>
+      <p style={{ textAlign: 'center' }}>
+        Press {getConfirmKeyLabel()} to load a saved game.
+      </p>
+      <Card size={CardSize.LARGE}>
+        <ContentSpacer id="save-spacer">
+          <VerticalMenu
+            title="Saved Games"
+            width="100%"
+            open={true}
+            isInactive={modalVisible}
+            items={saves.map((save: ISave, i: number) => {
+              return {
+                label: <SaveGameListItem save={save} i={i} />,
+                value: i,
+              };
+            })}
+            onItemClickSound="menu_select"
+            onItemClick={handleLoadClick}
+          />
+        </ContentSpacer>
+      </Card>
+    </div>
   );
 };
 

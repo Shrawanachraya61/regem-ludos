@@ -16,6 +16,8 @@ interface TileTemplate {
 const exp = {} as Record<string, TileTemplate>;
 const replacementTemplates = {} as Record<string, string>;
 
+(window as any).tileTemplates = exp;
+
 export const get = (key: string): TileTemplate => {
   const result = exp[key];
   if (!result) {
@@ -47,49 +49,135 @@ export const getReplacementTemplate = (key: string): TileTemplate | null => {
   };
 };
 
+const createDoubleSlidingDoors = (
+  doorName: string,
+  animBase: string,
+  forwardSpriteBase: string,
+  backSpriteBase: string
+) => {
+  const animNames = [
+    'bck_close1',
+    'bck_close2',
+    'fwd_close1',
+    'fwd_close2',
+    'bck_open1',
+    'bck_open2',
+    'fwd_open1',
+    'fwd_open2',
+  ];
+  const tileTemplateNames = [
+    'BCK_CLOSED1',
+    'BCK_CLOSED2',
+    'FWD_CLOSED1',
+    'FWD_CLOSED2',
+    'BCK_OPEN1',
+    'BCK_OPEN2',
+    'FWD_OPEN1',
+    'FWD_OPEN2',
+  ];
+
+  for (let i = 0; i < animNames.length; i++) {
+    const animName = animNames[i];
+    const tileTemplateName = tileTemplateNames[i];
+
+    exp[doorName + '_' + tileTemplateName] = {
+      baseSprite: tileTemplateName.includes('BCK')
+        ? backSpriteBase
+        : forwardSpriteBase,
+      animName: animBase + '_' + animName,
+      isWall: i < 4,
+    };
+  }
+  replacementTemplates[backSpriteBase] = doorName + '_BCK_CLOSED1';
+  replacementTemplates[forwardSpriteBase] = doorName + '_FWD_CLOSED1';
+};
+
+const createSlidingDoors = (
+  doorName: string,
+  animBase: string,
+  forwardSpriteBase: string,
+  backSpriteBase: string
+) => {
+  const animNames = ['bck_close', 'fwd_close', 'bck_open', 'fwd_open'];
+  const tileTemplateNames = [
+    'BCK_CLOSED',
+    'FWD_CLOSED',
+    'BCK_OPEN',
+    'FWD_OPEN',
+  ];
+
+  for (let i = 0; i < animNames.length; i++) {
+    const animName = animNames[i];
+    const tileTemplateName = tileTemplateNames[i];
+
+    exp[doorName + '_' + tileTemplateName] = {
+      baseSprite: tileTemplateName.includes('BCK')
+        ? backSpriteBase
+        : forwardSpriteBase,
+      animName: animBase + '_' + animName,
+      isWall: i < 2,
+    };
+  }
+  replacementTemplates[backSpriteBase] = doorName + '_BCK_CLOSED';
+  replacementTemplates[forwardSpriteBase] = doorName + '_FWD_CLOSED';
+};
+
 export const init = () => {
-  exp.RED_DOOR_BCK_CLOSED1 = {
-    baseSprite: 'walls_14',
-    animName: 'walls-anims_red_door_bck_close1',
-    isWall: true,
-  };
-  replacementTemplates.walls_14 = 'RED_DOOR_BCK_CLOSED1';
-  exp.RED_DOOR_BCK_CLOSED2 = {
-    baseSprite: 'walls_14',
-    animName: 'walls-anims_red_door_bck_close2',
-    isWall: true,
-  };
-  exp.RED_DOOR_FWD_CLOSED1 = {
-    baseSprite: 'walls_13',
-    animName: 'walls-anims_red_door_fwd_close1',
-    isWall: true,
-  };
-  replacementTemplates.walls_13 = 'RED_DOOR_FWD_CLOSED1';
-  exp.RED_DOOR_FWD_CLOSED2 = {
-    baseSprite: 'walls_13',
-    animName: 'walls-anims_red_door_fwd_close2',
-    isWall: true,
-  };
-  exp.RED_DOOR_BCK_OPEN1 = {
-    baseSprite: 'walls_14',
-    animName: 'walls-anims_red_door_bck_open1',
-    isWall: false,
-  };
-  exp.RED_DOOR_BCK_OPEN2 = {
-    baseSprite: 'walls_14',
-    animName: 'walls-anims_red_door_bck_open2',
-    isWall: false,
-  };
-  exp.RED_DOOR_FWD_OPEN1 = {
-    baseSprite: 'walls_13',
-    animName: 'walls-anims_red_door_fwd_open1',
-    isWall: false,
-  };
-  exp.RED_DOOR_FWD_OPEN2 = {
-    baseSprite: 'walls_13',
-    animName: 'walls-anims_red_door_fwd_open2',
-    isWall: false,
-  };
+  createSlidingDoors(
+    'WOOD_DOOR',
+    'walls-anims_wood_door',
+    'walls_23',
+    'walls_24'
+  );
+  createDoubleSlidingDoors(
+    'RED_DOOR',
+    'walls-anims_red_door',
+    'walls_13',
+    'walls_14'
+  );
+
+  // exp.RED_DOOR_BCK_CLOSED1 = {
+  //   baseSprite: 'walls_14',
+  //   animName: 'walls-anims_red_door_bck_close1',
+  //   isWall: true,
+  // };
+  // replacementTemplates.walls_14 = 'RED_DOOR_BCK_CLOSED1';
+  // exp.RED_DOOR_BCK_CLOSED2 = {
+  //   baseSprite: 'walls_14',
+  //   animName: 'walls-anims_red_door_bck_close2',
+  //   isWall: true,
+  // };
+  // exp.RED_DOOR_FWD_CLOSED1 = {
+  //   baseSprite: 'walls_13',
+  //   animName: 'walls-anims_red_door_fwd_close1',
+  //   isWall: true,
+  // };
+  // replacementTemplates.walls_13 = 'RED_DOOR_FWD_CLOSED1';
+  // exp.RED_DOOR_FWD_CLOSED2 = {
+  //   baseSprite: 'walls_13',
+  //   animName: 'walls-anims_red_door_fwd_close2',
+  //   isWall: true,
+  // };
+  // exp.RED_DOOR_BCK_OPEN1 = {
+  //   baseSprite: 'walls_14',
+  //   animName: 'walls-anims_red_door_bck_open1',
+  //   isWall: false,
+  // };
+  // exp.RED_DOOR_BCK_OPEN2 = {
+  //   baseSprite: 'walls_14',
+  //   animName: 'walls-anims_red_door_bck_open2',
+  //   isWall: false,
+  // };
+  // exp.RED_DOOR_FWD_OPEN1 = {
+  //   baseSprite: 'walls_13',
+  //   animName: 'walls-anims_red_door_fwd_open1',
+  //   isWall: false,
+  // };
+  // exp.RED_DOOR_FWD_OPEN2 = {
+  //   baseSprite: 'walls_13',
+  //   animName: 'walls-anims_red_door_fwd_open2',
+  //   isWall: false,
+  // };
 
   exp.RED_DOOR_BCKL_CLOSED = {
     baseSprite: 'walls_14',

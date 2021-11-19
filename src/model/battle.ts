@@ -651,10 +651,10 @@ export const battlePauseTimers = (
   battle: Battle,
   characters?: BattleCharacter[]
 ) => {
-  console.trace(
-    'BATTLE PAUSE',
-    characters ?? battle.allies.concat(battle.enemies)
-  );
+  // console.trace(
+  //   'BATTLE PAUSE',
+  //   characters ?? battle.allies.concat(battle.enemies)
+  // );
   battle.itemTimer.pauseOverride();
   (characters ?? battle.allies.concat(battle.enemies)).forEach(
     (bCh: BattleCharacter) => {
