@@ -1,0 +1,10 @@
+@asdf
++?is(dol):{
+  Ada: "hello"
+}
++?is(dol):{
+  Ada: "hello"
+}
+asdfhappy2: "pizza"
++:happy('ada');
+Ada: "pizza"
