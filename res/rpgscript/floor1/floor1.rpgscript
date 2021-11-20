@@ -520,7 +520,7 @@ Sigma: "<cascade-letters>......"
 +endConversation();
 
 #Floor1East2_DNDPlayer1
-action,?once('cd740b46'):Floor1East2_DNDPlayer1_1
+action,?once('deac222b'):Floor1East2_DNDPlayer1_1
 action,Floor1East2_DNDPlayer1_2
 @Floor1East2_DNDPlayer1_1
 +setConversation(Ada);
@@ -551,7 +551,7 @@ DNDPlayer2: "I wish that dude would finish his turn already."
 +endConversation();
 
 #Floor1East2_DNDPlayer3
-action,?once('ee70811d'):Floor1East2_DNDPlayer3_1
+action,?once('738a96f2'):Floor1East2_DNDPlayer3_1
 action,Floor1East2_DNDPlayer3_2
 @Floor1East2_DNDPlayer3_1
 +setConversation(Ada);
@@ -572,8 +572,8 @@ DNDPlayer3: "You know, I kinda got hungry all of a sudden."
 +endConversation();
 
 #Floor1East2_DNDPlayer4
-action,?once('9a707c00'):Floor1East2_DNDPlayer4_1
-action,?once('8a2354e1'):Floor1East2_DNDPlayer4_2
+action,?once('42584971'):Floor1East2_DNDPlayer4_1
+action,?once('ed0864bd'):Floor1East2_DNDPlayer4_2
 action,Floor1East2_DNDPlayer4_3
 @Floor1East2_DNDPlayer4_1
 +setConversation(Ada);

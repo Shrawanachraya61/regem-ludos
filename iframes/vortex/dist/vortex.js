@@ -188,7 +188,7 @@ Module['FS_createPath']('/assets', 'intro', true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/assets/explosion2.png", "start": 0, "end": 7038, "audio": 0}, {"filename": "/assets/player_bullet_big.png", "start": 7038, "end": 20830, "audio": 0}, {"filename": "/assets/black_hole_right_up.png", "start": 20830, "end": 31318, "audio": 0}, {"filename": "/assets/player_ship_armored.png", "start": 31318, "end": 58486, "audio": 0}, {"filename": "/assets/vortex_shield.wav", "start": 58486, "end": 108638, "audio": 1}, {"filename": "/assets/diamond.png", "start": 108638, "end": 135394, "audio": 0}, {"filename": "/assets/yes.png", "start": 135394, "end": 151236, "audio": 0}, {"filename": "/assets/monofonto.ttf", "start": 151236, "end": 184848, "audio": 0}, {"filename": "/assets/stars.png", "start": 184848, "end": 185044, "audio": 0}, {"filename": "/assets/vortex_level_ready.wav", "start": 185044, "end": 303140, "audio": 1}, {"filename": "/assets/player_ship_boost.png", "start": 303140, "end": 329048, "audio": 0}, {"filename": "/assets/white.png", "start": 329048, "end": 329186, "audio": 0}, {"filename": "/assets/vortex_invincible_off.wav", "start": 329186, "end": 592866, "audio": 1}, {"filename": "/assets/vortex_no_bonus.wav", "start": 592866, "end": 611924, "audio": 1}, {"filename": "/assets/black_hole_left_up.png", "start": 611924, "end": 623081, "audio": 0}, {"filename": "/assets/vortex_lazer_big.wav", "start": 623081, "end": 662645, "audio": 1}, {"filename": "/assets/black_hole_right_down.png", "start": 662645, "end": 673970, "audio": 0}, {"filename": "/assets/vortex_armor.wav", "start": 673970, "end": 765882, "audio": 1}, {"filename": "/assets/explosion.png", "start": 765882, "end": 785619, "audio": 0}, {"filename": "/assets/missile1.png", "start": 785619, "end": 786074, "audio": 0}, {"filename": "/assets/vortex_full_shield.wav", "start": 786074, "end": 1426454, "audio": 1}, {"filename": "/assets/sprites.txt", "start": 1426454, "end": 1428993, "audio": 0}, {"filename": "/assets/capsule_shatter.png", "start": 1428993, "end": 1441394, "audio": 0}, {"filename": "/assets/vortex_level_lose.wav", "start": 1441394, "end": 1648522, "audio": 1}, {"filename": "/assets/capsule.png", "start": 1648522, "end": 1677238, "audio": 0}, {"filename": "/assets/star.png", "start": 1677238, "end": 1688713, "audio": 0}, {"filename": "/assets/asteroid2.png", "start": 1688713, "end": 1710143, "audio": 0}, {"filename": "/assets/asteroid1.png", "start": 1710143, "end": 1757662, "audio": 0}, {"filename": "/assets/candy.png", "start": 1757662, "end": 1770181, "audio": 0}, {"filename": "/assets/player_ship.png", "start": 1770181, "end": 1793432, "audio": 0}, {"filename": "/assets/intro_sprites.txt", "start": 1793432, "end": 1793579, "audio": 0}, {"filename": "/assets/heart.png", "start": 1793579, "end": 1811425, "audio": 0}, {"filename": "/assets/vortex_alien_ship.wav", "start": 1811425, "end": 1855161, "audio": 1}, {"filename": "/assets/vortex_lazer.wav", "start": 1855161, "end": 1888551, "audio": 1}, {"filename": "/assets/vortex_wave_completed.wav", "start": 1888551, "end": 2071775, "audio": 1}, {"filename": "/assets/vortex_powerup_gone.wav", "start": 2071775, "end": 2099179, "audio": 1}, {"filename": "/assets/no.png", "start": 2099179, "end": 2113712, "audio": 0}, {"filename": "/assets/vortex_item_despawn.wav", "start": 2113712, "end": 2145526, "audio": 1}, {"filename": "/assets/black_hole_left_down.png", "start": 2145526, "end": 2155943, "audio": 0}, {"filename": "/assets/vortex_metal_hit1.wav", "start": 2155943, "end": 2411787, "audio": 1}, {"filename": "/assets/vortex_new_game.wav", "start": 2411787, "end": 2642379, "audio": 1}, {"filename": "/assets/vortex_invincible.wav", "start": 2642379, "end": 2903951, "audio": 1}, {"filename": "/assets/player_ship_armored_boost.png", "start": 2903951, "end": 2933438, "audio": 0}, {"filename": "/assets/shooting_star.png", "start": 2933438, "end": 2947846, "audio": 0}, {"filename": "/assets/explosion.wav", "start": 2947846, "end": 3018432, "audio": 1}, {"filename": "/assets/red.png", "start": 3018432, "end": 3018570, "audio": 0}, {"filename": "/assets/vortex_item_get.wav", "start": 3018570, "end": 3034704, "audio": 1}, {"filename": "/assets/alien_ship.png", "start": 3034704, "end": 3063863, "audio": 0}, {"filename": "/assets/mine.png", "start": 3063863, "end": 3085366, "audio": 0}, {"filename": "/assets/invisible.png", "start": 3085366, "end": 3085486, "audio": 0}, {"filename": "/assets/vortex_level_lose.mp3", "start": 3085486, "end": 3092737, "audio": 1}, {"filename": "/assets/vortex_oh_yeah.wav", "start": 3092737, "end": 3279129, "audio": 1}, {"filename": "/assets/vortex_explosion_player.wav", "start": 3279129, "end": 3391205, "audio": 1}, {"filename": "/assets/player_shield.png", "start": 3391205, "end": 3399458, "audio": 0}, {"filename": "/assets/vortex_metal_hit2.wav", "start": 3399458, "end": 3655302, "audio": 1}, {"filename": "/assets/vortex_star_get.wav", "start": 3655302, "end": 3685352, "audio": 1}, {"filename": "/assets/vortex_no.wav", "start": 3685352, "end": 3867360, "audio": 1}, {"filename": "/assets/anims.txt", "start": 3867360, "end": 3874128, "audio": 0}, {"filename": "/assets/asteroid3.png", "start": 3874128, "end": 3881502, "audio": 0}, {"filename": "/assets/vortex_engine.wav", "start": 3881502, "end": 3918036, "audio": 1}, {"filename": "/assets/player_bullet.png", "start": 3918036, "end": 3919120, "audio": 0}, {"filename": "/assets/enemy_bullet.png", "start": 3919120, "end": 3920176, "audio": 0}, {"filename": "/assets/vortex_armor_get.wav", "start": 3920176, "end": 3986928, "audio": 1}, {"filename": "/assets/asteroid128.png", "start": 3986928, "end": 4234924, "audio": 0}, {"filename": "/assets/intro_sounds.txt", "start": 4234924, "end": 4234960, "audio": 0}, {"filename": "/assets/black_hole.png", "start": 4234960, "end": 4309963, "audio": 0}, {"filename": "/assets/sounds.txt", "start": 4309963, "end": 4311236, "audio": 0}, {"filename": "/assets/vortex_yes.wav", "start": 4311236, "end": 4357178, "audio": 1}, {"filename": "/assets/steel_ball.png", "start": 4357178, "end": 4391058, "audio": 0}, {"filename": "/assets/vortex_shield_hit.wav", "start": 4391058, "end": 4412288, "audio": 1}, {"filename": "/assets/vortex_score_add.wav", "start": 4412288, "end": 4428226, "audio": 1}, {"filename": "/assets/vortex.wav", "start": 4428226, "end": 14777054, "audio": 1}, {"filename": "/assets/blue.png", "start": 14777054, "end": 14777192, "audio": 0}, {"filename": "/assets/vortex_asteroid_explosion.wav", "start": 14777192, "end": 14809888, "audio": 1}, {"filename": "/assets/black.png", "start": 14809888, "end": 14810021, "audio": 0}, {"filename": "/assets/intro/intro_sprites.txt", "start": 14810021, "end": 14810186, "audio": 0}, {"filename": "/assets/intro/cpp_splash_bg.png", "start": 14810186, "end": 14817060, "audio": 0}, {"filename": "/assets/intro/cpp_splash_black.png", "start": 14817060, "end": 14817236, "audio": 0}, {"filename": "/assets/intro/cpp_splash_fg.png", "start": 14817236, "end": 14819652, "audio": 0}, {"filename": "/assets/intro/intro_sounds.txt", "start": 14819652, "end": 14819694, "audio": 0}, {"filename": "/assets/intro/cpp_intro.wav", "start": 14819694, "end": 15331472, "audio": 1}], "remote_package_size": 15331472, "package_uuid": "743720b8-0cdd-4eac-934b-c2e417891193"});
+   loadPackage({"files": [{"filename": "/assets/explosion2.png", "start": 0, "end": 7038, "audio": 0}, {"filename": "/assets/player_bullet_big.png", "start": 7038, "end": 20830, "audio": 0}, {"filename": "/assets/black_hole_right_up.png", "start": 20830, "end": 31318, "audio": 0}, {"filename": "/assets/player_ship_armored.png", "start": 31318, "end": 58486, "audio": 0}, {"filename": "/assets/vortex_shield.wav", "start": 58486, "end": 108638, "audio": 1}, {"filename": "/assets/diamond.png", "start": 108638, "end": 135394, "audio": 0}, {"filename": "/assets/yes.png", "start": 135394, "end": 151236, "audio": 0}, {"filename": "/assets/monofonto.ttf", "start": 151236, "end": 184848, "audio": 0}, {"filename": "/assets/stars.png", "start": 184848, "end": 185044, "audio": 0}, {"filename": "/assets/vortex_level_ready.wav", "start": 185044, "end": 303140, "audio": 1}, {"filename": "/assets/player_ship_boost.png", "start": 303140, "end": 329048, "audio": 0}, {"filename": "/assets/white.png", "start": 329048, "end": 329186, "audio": 0}, {"filename": "/assets/vortex_invincible_off.wav", "start": 329186, "end": 592866, "audio": 1}, {"filename": "/assets/vortex_no_bonus.wav", "start": 592866, "end": 611924, "audio": 1}, {"filename": "/assets/black_hole_left_up.png", "start": 611924, "end": 623081, "audio": 0}, {"filename": "/assets/vortex_lazer_big.wav", "start": 623081, "end": 662645, "audio": 1}, {"filename": "/assets/black_hole_right_down.png", "start": 662645, "end": 673970, "audio": 0}, {"filename": "/assets/vortex_armor.wav", "start": 673970, "end": 765882, "audio": 1}, {"filename": "/assets/explosion.png", "start": 765882, "end": 785619, "audio": 0}, {"filename": "/assets/missile1.png", "start": 785619, "end": 786074, "audio": 0}, {"filename": "/assets/vortex_full_shield.wav", "start": 786074, "end": 1426454, "audio": 1}, {"filename": "/assets/sprites.txt", "start": 1426454, "end": 1428993, "audio": 0}, {"filename": "/assets/capsule_shatter.png", "start": 1428993, "end": 1441394, "audio": 0}, {"filename": "/assets/vortex_level_lose.wav", "start": 1441394, "end": 1648522, "audio": 1}, {"filename": "/assets/capsule.png", "start": 1648522, "end": 1677238, "audio": 0}, {"filename": "/assets/star.png", "start": 1677238, "end": 1688713, "audio": 0}, {"filename": "/assets/asteroid2.png", "start": 1688713, "end": 1710143, "audio": 0}, {"filename": "/assets/asteroid1.png", "start": 1710143, "end": 1757662, "audio": 0}, {"filename": "/assets/candy.png", "start": 1757662, "end": 1770181, "audio": 0}, {"filename": "/assets/player_ship.png", "start": 1770181, "end": 1793432, "audio": 0}, {"filename": "/assets/intro_sprites.txt", "start": 1793432, "end": 1793579, "audio": 0}, {"filename": "/assets/heart.png", "start": 1793579, "end": 1811425, "audio": 0}, {"filename": "/assets/vortex_alien_ship.wav", "start": 1811425, "end": 1855161, "audio": 1}, {"filename": "/assets/vortex_lazer.wav", "start": 1855161, "end": 1888551, "audio": 1}, {"filename": "/assets/vortex_wave_completed.wav", "start": 1888551, "end": 2071775, "audio": 1}, {"filename": "/assets/vortex_powerup_gone.wav", "start": 2071775, "end": 2099179, "audio": 1}, {"filename": "/assets/no.png", "start": 2099179, "end": 2113712, "audio": 0}, {"filename": "/assets/vortex_item_despawn.wav", "start": 2113712, "end": 2145526, "audio": 1}, {"filename": "/assets/black_hole_left_down.png", "start": 2145526, "end": 2155943, "audio": 0}, {"filename": "/assets/vortex_metal_hit1.wav", "start": 2155943, "end": 2411787, "audio": 1}, {"filename": "/assets/vortex_new_game.wav", "start": 2411787, "end": 2642379, "audio": 1}, {"filename": "/assets/vortex_invincible.wav", "start": 2642379, "end": 2903951, "audio": 1}, {"filename": "/assets/player_ship_armored_boost.png", "start": 2903951, "end": 2933438, "audio": 0}, {"filename": "/assets/shooting_star.png", "start": 2933438, "end": 2947846, "audio": 0}, {"filename": "/assets/explosion.wav", "start": 2947846, "end": 3018432, "audio": 1}, {"filename": "/assets/red.png", "start": 3018432, "end": 3018570, "audio": 0}, {"filename": "/assets/vortex_item_get.wav", "start": 3018570, "end": 3034704, "audio": 1}, {"filename": "/assets/alien_ship.png", "start": 3034704, "end": 3063863, "audio": 0}, {"filename": "/assets/mine.png", "start": 3063863, "end": 3085366, "audio": 0}, {"filename": "/assets/invisible.png", "start": 3085366, "end": 3085486, "audio": 0}, {"filename": "/assets/vortex_level_lose.mp3", "start": 3085486, "end": 3092737, "audio": 1}, {"filename": "/assets/vortex_oh_yeah.wav", "start": 3092737, "end": 3279129, "audio": 1}, {"filename": "/assets/vortex_explosion_player.wav", "start": 3279129, "end": 3391205, "audio": 1}, {"filename": "/assets/player_shield.png", "start": 3391205, "end": 3399458, "audio": 0}, {"filename": "/assets/vortex_metal_hit2.wav", "start": 3399458, "end": 3655302, "audio": 1}, {"filename": "/assets/vortex_star_get.wav", "start": 3655302, "end": 3685352, "audio": 1}, {"filename": "/assets/vortex_no.wav", "start": 3685352, "end": 3867360, "audio": 1}, {"filename": "/assets/anims.txt", "start": 3867360, "end": 3874128, "audio": 0}, {"filename": "/assets/asteroid3.png", "start": 3874128, "end": 3881502, "audio": 0}, {"filename": "/assets/vortex_engine.wav", "start": 3881502, "end": 3918036, "audio": 1}, {"filename": "/assets/player_bullet.png", "start": 3918036, "end": 3919120, "audio": 0}, {"filename": "/assets/enemy_bullet.png", "start": 3919120, "end": 3920176, "audio": 0}, {"filename": "/assets/vortex_armor_get.wav", "start": 3920176, "end": 3986928, "audio": 1}, {"filename": "/assets/asteroid128.png", "start": 3986928, "end": 4234924, "audio": 0}, {"filename": "/assets/intro_sounds.txt", "start": 4234924, "end": 4234960, "audio": 0}, {"filename": "/assets/black_hole.png", "start": 4234960, "end": 4309963, "audio": 0}, {"filename": "/assets/sounds.txt", "start": 4309963, "end": 4311236, "audio": 0}, {"filename": "/assets/vortex_yes.wav", "start": 4311236, "end": 4357178, "audio": 1}, {"filename": "/assets/steel_ball.png", "start": 4357178, "end": 4391058, "audio": 0}, {"filename": "/assets/vortex_shield_hit.wav", "start": 4391058, "end": 4412288, "audio": 1}, {"filename": "/assets/vortex_score_add.wav", "start": 4412288, "end": 4428226, "audio": 1}, {"filename": "/assets/vortex.wav", "start": 4428226, "end": 14777054, "audio": 1}, {"filename": "/assets/blue.png", "start": 14777054, "end": 14777192, "audio": 0}, {"filename": "/assets/vortex_asteroid_explosion.wav", "start": 14777192, "end": 14809888, "audio": 1}, {"filename": "/assets/black.png", "start": 14809888, "end": 14810021, "audio": 0}, {"filename": "/assets/intro/intro_sprites.txt", "start": 14810021, "end": 14810186, "audio": 0}, {"filename": "/assets/intro/cpp_splash_bg.png", "start": 14810186, "end": 14817060, "audio": 0}, {"filename": "/assets/intro/cpp_splash_black.png", "start": 14817060, "end": 14817236, "audio": 0}, {"filename": "/assets/intro/cpp_splash_fg.png", "start": 14817236, "end": 14819652, "audio": 0}, {"filename": "/assets/intro/intro_sounds.txt", "start": 14819652, "end": 14819694, "audio": 0}, {"filename": "/assets/intro/cpp_intro.wav", "start": 14819694, "end": 15331472, "audio": 1}], "remote_package_size": 15331472, "package_uuid": "39faa54f-b312-4cd5-9dc5-c2b438ff25ab"});
   
   })();
   
@@ -9350,13 +9350,10 @@ var _setKeyUp = Module["_setKeyUp"] = createExportWrapper("setKeyUp");
 var _setKeyStatus = Module["_setKeyStatus"] = createExportWrapper("setKeyStatus");
 
 /** @type {function(...*):?} */
-var _malloc = Module["_malloc"] = createExportWrapper("malloc");
-
-/** @type {function(...*):?} */
 var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
-var _realloc = Module["_realloc"] = createExportWrapper("realloc");
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
 /** @type {function(...*):?} */
 var _testSetjmp = Module["_testSetjmp"] = createExportWrapper("testSetjmp");
@@ -9365,10 +9362,13 @@ var _testSetjmp = Module["_testSetjmp"] = createExportWrapper("testSetjmp");
 var _saveSetjmp = Module["_saveSetjmp"] = createExportWrapper("saveSetjmp");
 
 /** @type {function(...*):?} */
-var _strstr = Module["_strstr"] = createExportWrapper("strstr");
+var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
-var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
+var _realloc = Module["_realloc"] = createExportWrapper("realloc");
+
+/** @type {function(...*):?} */
+var _strstr = Module["_strstr"] = createExportWrapper("strstr");
 
 /** @type {function(...*):?} */
 var _emscripten_GetProcAddress = Module["_emscripten_GetProcAddress"] = createExportWrapper("emscripten_GetProcAddress");
@@ -9428,21 +9428,10 @@ var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = createExportWrapper("dynCall_i
 var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = createExportWrapper("dynCall_iiiiiijj");
 
 
-function invoke_viiii(index,a1,a2,a3,a4) {
+function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
-    wasmTable.get(index)(a1,a2,a3,a4);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0 && e !== 'longjmp') throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_iii(index,a1,a2) {
-  var sp = stackSave();
-  try {
-    return wasmTable.get(index)(a1,a2);
+    return wasmTable.get(index)(a1);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0 && e !== 'longjmp') throw e;
@@ -9483,17 +9472,6 @@ function invoke_vi(index,a1) {
   }
 }
 
-function invoke_ii(index,a1) {
-  var sp = stackSave();
-  try {
-    return wasmTable.get(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0 && e !== 'longjmp') throw e;
-    _setThrew(1, 0);
-  }
-}
-
 function invoke_viii(index,a1,a2,a3) {
   var sp = stackSave();
   try {
@@ -9509,6 +9487,17 @@ function invoke_vii(index,a1,a2) {
   var sp = stackSave();
   try {
     wasmTable.get(index)(a1,a2);
+  } catch(e) {
+    stackRestore(sp);
+    if (e !== e+0 && e !== 'longjmp') throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_iii(index,a1,a2) {
+  var sp = stackSave();
+  try {
+    return wasmTable.get(index)(a1,a2);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0 && e !== 'longjmp') throw e;
@@ -9553,6 +9542,17 @@ function invoke_i(index) {
   var sp = stackSave();
   try {
     return wasmTable.get(index)();
+  } catch(e) {
+    stackRestore(sp);
+    if (e !== e+0 && e !== 'longjmp') throw e;
+    _setThrew(1, 0);
+  }
+}
+
+function invoke_viiii(index,a1,a2,a3,a4) {
+  var sp = stackSave();
+  try {
+    wasmTable.get(index)(a1,a2,a3,a4);
   } catch(e) {
     stackRestore(sp);
     if (e !== e+0 && e !== 'longjmp') throw e;
