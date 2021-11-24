@@ -95,7 +95,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="112" name="MarkerPlayer" gid="194" x="152.5" y="419.5" width="32" height="32"/>
+  <object id="112" name="MarkerPlayer" gid="194" x="233.5" y="44.5" width="32" height="32"/>
   <object id="113" name="MarkerDoorFromVR2" gid="194" x="76" y="428" width="32" height="32"/>
   <object id="114" name="MarkerAda0" gid="194" x="108" y="416" width="32" height="32"/>
   <object id="117" name="TagMarkerPurple" gid="194" x="376" y="412" width="32" height="32"/>
@@ -164,8 +164,8 @@
   <object id="177" name="#floor1-tut-transition-from-vr3-to-vr3-east" x="480.5" y="223.5" width="31.5" height="34.5"/>
   <object id="178" x="413" y="185"/>
   <object id="179" name="#floor1-tut-rdy-to-lvl-up" x="256.5" y="12.5" width="21" height="57"/>
-  <object id="180" name="MarkerLevelAda" gid="194" x="300.5" y="29.5" width="32" height="32"/>
-  <object id="181" name="MarkerLevelConscience" gid="194" x="301" y="57" width="32" height="32"/>
+  <object id="180" name="MarkerLevelAda" gid="194" x="297" y="49" width="32" height="32"/>
+  <object id="181" name="MarkerLevelConscience" gid="194" x="297" y="33" width="32" height="32"/>
   <object id="182" name="#floor1-tut-transition-from-VR3-to-VRPreBoss" x="433" y="17" width="30.5" height="47.5"/>
   <object id="183" name="MarkerFromPreBoss" gid="194" x="428.5" y="41.5" width="32" height="32"/>
  </objectgroup>

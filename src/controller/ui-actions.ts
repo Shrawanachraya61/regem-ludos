@@ -18,6 +18,7 @@ import {
   NotificationState,
   IQuestState,
   IItemStoreState,
+  IInfoStats,
 } from 'model/store';
 import {
   ArcadeGamePath,
@@ -121,6 +122,9 @@ const resolvers: { [key: string]: MutationFunction } = {
   },
   setStoreState: (newState: AppState, payload: Partial<IItemStoreState>) => {
     Object.assign(newState.store, payload);
+  },
+  setInfoStatsState: (newState: AppState, payload: Partial<IInfoStats>) => {
+    Object.assign(newState.infoStats, payload);
   },
   addRoomUiParticle: (newState: AppState, payload: Particle) => {
     newState.room.particles = [...newState.room.particles, payload];
@@ -731,4 +735,21 @@ export const hideStoreSection = () => {
   }
 
   hideSection(AppSection.Store);
+};
+
+export const showInfoStatsSection = (onClose: () => void) => {
+  const payload = {
+    onClose,
+  };
+  getUiInterface().dispatch({
+    action: 'setInfoStatsState',
+    payload,
+  });
+  showSection(AppSection.InfoStats, false);
+  playSoundName('menu_choice_open');
+};
+
+export const hideInfoStatsSection = () => {
+  hideSection(AppSection.InfoStats);
+  playSoundName('menu_choice_close');
 };

@@ -22,7 +22,7 @@ import VerticalMenu from 'view/elements/VerticalMenu';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import SaveGameListItem from '../SaveGameListItem';
-import { fadeIn, fadeOut } from 'controller/scene-commands';
+import { fadeIn, fadeOut } from 'controller/scene/scene-commands';
 
 const Root = style('div', {
   position: 'absolute',

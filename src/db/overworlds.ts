@@ -17,6 +17,7 @@ import * as floor1Primary from 'map/floor1-primary.json';
 import * as floor1West1 from 'map/floor1-west1.json';
 import * as floor1West2 from 'map/floor1-west2.json';
 import * as floor1East1 from 'map/floor1-east1.json';
+import * as floor1East1Storage from 'map/floor1-east1-storage.json';
 import * as floor1East2 from 'map/floor1-east2.json';
 import * as floor1TutEntrance from 'map/floor1-tut-entrance.json';
 import * as floor1TutExit from 'map/floor1-tut-exit.json';
@@ -48,6 +49,7 @@ const overworldToRoom = {
   floor1West1,
   floor1West2,
   floor1East1,
+  floor1East1Storage,
   floor1East2,
   floor1TutEntrance,
   floor1TutExit,
@@ -185,6 +187,10 @@ export const init = async () => {
   Object.assign(exp.floor1East1 ?? {}, {
     backgroundColor: colors.BLACK,
     music: 'music_store',
+  });
+  Object.assign(exp.floor1East1Storage ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_snoop',
   });
   Object.assign(exp.floor1East2 ?? {}, {
     backgroundColor: colors.BLACK,

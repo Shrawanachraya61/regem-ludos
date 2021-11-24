@@ -26,7 +26,7 @@ import {
   pushEmptyKeyHandler,
 } from 'controller/events';
 import { getUiInterface, uiInterface } from 'view/ui';
-import { playSound } from 'controller/scene-commands';
+import { playSound } from 'controller/scene/scene-commands';
 import { playSoundName } from 'model/sound';
 import GearIcon from 'view/icons/Gear';
 import MenuIcon from 'view/icons/Menu';

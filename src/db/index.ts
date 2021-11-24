@@ -14,6 +14,7 @@ import { init as initStores } from './stores';
 import { init as initSaves } from './saves';
 import { init as initScripts } from './scripts';
 import { init as initPersistentEffects } from './persistent-effects';
+import { init as initHighScores } from './games';
 import { Scene } from 'model/scene';
 
 export default async (scene: Scene) => {
@@ -33,4 +34,5 @@ export default async (scene: Scene) => {
   initSaves();
   await initScripts(scene);
   initOverworlds();
+  initHighScores();
 };

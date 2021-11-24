@@ -38,8 +38,6 @@ const LowerRoot = style('div', {
   alignItems: 'flex-start',
   width: 'calc(100% + 2px)',
   margin: '8px',
-  // height: '532px',
-  // height: '100%',
 });
 
 const CharacterSelectWrapper = style('div', {
@@ -105,7 +103,7 @@ const EquipmentPreviewStatsItem = style('div', {
 });
 
 const ItemSelectWrapper = style('div', {
-  width: '45%',
+  width: '55%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -202,7 +200,7 @@ const IconContainerSmall = style('div', () => {
   return {
     width: '24px',
     position: 'absolute',
-    left: '14px',
+    left: '50px',
     top: '5px',
   };
 });
@@ -467,14 +465,10 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
               title="Equipment"
               width="100%"
               height="268px"
-              // maxHeight={parseInt(MAX_HEIGHT) - 128 + 'px'}
               open={true}
               isCursorSelectInactive={!equipTypeActive}
               isInactive={!menuState.selectedCharacter}
               hideCloseBox={true}
-              // style={{
-              //   opacity: !menuState.selectedCharacter ? '0.5' : '1',
-              // }}
               items={[
                 EquipmentType.WEAPON,
                 EquipmentType.ARMOR,
@@ -579,22 +573,10 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                     payload: undefined,
                   });
                 }
-                // if (characterGetEquippedItem
               }}
               onClose={() => {
                 props.onClose();
               }}
-              // onClose={() => {
-              //   dispatch({
-              //     type: 'SET_CHARACTER',
-              //     payload: undefined,
-              //   });
-              //   dispatch({
-              //     type: 'SET_EQUIPMENT_TYPE',
-              //     payload: undefined,
-              //   });
-              // }}
-              // onCloseSound="menu_choice_close"
               backgroundColor={colors.BLACK}
             />
           </EquipmentTypeSelectWrapper>
@@ -603,14 +585,11 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
           <VerticalMenu
             title="Items"
             width="100%"
-            // height="100%"
             height="268px"
+            maxHeight="226px"
             open={true}
             resetCursor={itemCursorReset}
             isCursorSelectInactive={!itemActive}
-            // style={{
-            //   opacity: !menuState.selectedEquipmentType ? '0.5' : '1',
-            // }}
             items={filteredItems.map(item => {
               const Icon = item?.icon ? getIcon(item.icon) : null;
               return {
@@ -631,7 +610,9 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                     <IconContainerSmall>
                       {Icon ? <Icon color={colors.WHITE} /> : null}
                     </IconContainerSmall>
-                    <div style={{ marginLeft: '36px' }}>{item.label}</div>
+                    <div style={{ marginLeft: 'calc(26px + 48px)' }}>
+                      {item.label}
+                    </div>
                   </div>
                 ),
                 value: item,
@@ -669,14 +650,8 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                 type: 'SET_HOVERED_ITEM',
                 payload: val,
               });
-              // reRender();
-              // dispatch({
-              //   type: 'SET_HOVERED_ITEM',
-              //   payload: undefined,
-              // });
             }}
             onItemHover={(val: Item) => {
-              console.log('SET HOVERED ITEM', val);
               dispatch({
                 type: 'SET_HOVERED_ITEM',
                 payload: val,

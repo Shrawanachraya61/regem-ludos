@@ -39,7 +39,7 @@ import {
 } from 'model/generics';
 import { CharacterFollower } from 'view/elements/CharacterFollower';
 import { sceneIsPlaying, skipCurrentScript } from 'controller/scene-management';
-import { panCameraBackToPlayer } from 'controller/scene-commands';
+import { panCameraBackToPlayer } from 'controller/scene/scene-commands';
 import { pause, unpause } from 'controller/loop';
 
 export enum PortraitActiveState {

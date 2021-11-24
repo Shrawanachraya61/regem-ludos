@@ -29,7 +29,7 @@ import commands, {
   fadeOut,
   spawnParticleAtCharacter,
   spawnParticleAtMarker,
-} from 'controller/scene-commands';
+} from 'controller/scene/scene-commands';
 import {
   Point,
   facingToIncrements,
@@ -145,6 +145,32 @@ export const createWalkerAI = (
             }
           });
         });
+        characterAddTimer(ch, t);
+      }
+    },
+  };
+
+  return ai;
+};
+
+export const createIntervalAI = (ms: number, cb: (ch: Character) => void) => {
+  const ai: OverworldAI = {
+    onCreate: (ch: Character) => {
+      ch.aiState.isWaiting = true;
+      const t = new Timer(ms);
+      t.awaits.push(() => {
+        ch.aiState.isWaiting = false;
+      });
+      characterAddTimer(ch, t);
+    },
+    update: (ch: Character) => {
+      if (!ch.aiState.isWaiting) {
+        ch.aiState.isWaiting = true;
+        const t = new Timer(ms);
+        t.awaits.push(() => {
+          ch.aiState.isWaiting = false;
+        });
+        cb(ch);
         characterAddTimer(ch, t);
       }
     },

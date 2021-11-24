@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="133">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="137">
  <editorsettings>
   <export target="../src/map/floor1-atrium.json" format="json"/>
  </editorsettings>
@@ -19,7 +19,7 @@
   <image source="../res/walls128.png" width="256" height="256"/>
  </tileset>
  <tileset firstgid="353" source="../res/props-dynamic.tiled-sheet.tsx"/>
- <tileset firstgid="360" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+ <tileset firstgid="361" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../res/props_small.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tiles" width="32" height="32">
@@ -112,8 +112,8 @@
   <object id="63" name="MarkerJasonA" gid="194" x="443.5" y="74.5" width="32" height="32"/>
   <object id="64" name="MarkerDoorTutTile" gid="194" x="456" y="40" width="32" height="32"/>
   <object id="65" name="MarkerTTTMachine" gid="194" x="56" y="248" width="32" height="32"/>
-  <object id="66" gid="362" x="340" y="320" width="32" height="32"/>
-  <object id="67" gid="362" x="308" y="320" width="32" height="32"/>
+  <object id="66" gid="363" x="340" y="320" width="32" height="32"/>
+  <object id="67" gid="363" x="308" y="320" width="32" height="32"/>
   <object id="68" name="Floor1PingPongGuyA" gid="193" x="152" y="260" width="32" height="32"/>
   <object id="69" name="Floor1PingPongGuyB" gid="193" x="152" y="316" width="32" height="32"/>
   <object id="70" name="#floor1-atrium-TicTacToeMachine" x="44" y="224" width="32" height="60"/>
@@ -132,34 +132,36 @@
   <object id="88" name="FloorAtriumWalkingNPC" gid="193" x="100.375" y="142.125" width="32" height="32"/>
   <object id="89" name="MarkerAdaNPC1NPC2" gid="194" x="210.25" y="91.75" width="32" height="32"/>
   <object id="93" type="front" gid="357" x="309.5" y="4.5" width="49" height="35"/>
-  <object id="94" name="#floor1-atriumOpenNorthDoor" x="9.5" y="82.5" width="40" height="53"/>
+  <object id="94" name="#floor1-atriumOpenNorthDoor" x="9.5" y="84.5" width="40" height="46.5"/>
   <object id="95" name="MarkerDoorNorth1" gid="194" x="27" y="119" width="32" height="32"/>
   <object id="96" name="MarkerDoorNorth2" gid="194" x="27.5" y="102.5" width="32" height="32"/>
-  <object id="97" gid="363" x="433" y="297" width="32" height="32"/>
-  <object id="98" gid="363" x="434" y="252" width="32" height="32"/>
-  <object id="99" gid="360" x="432" y="224" width="32" height="32"/>
-  <object id="100" gid="360" x="283" y="317" width="32" height="32"/>
+  <object id="97" gid="364" x="433" y="297" width="32" height="32"/>
+  <object id="98" gid="364" x="434" y="252" width="32" height="32"/>
   <object id="101" name="#floor1-transitionToPrimaryFromAtrium" x="-16" y="63.5" width="25" height="75.5"/>
   <object id="102" name="MarkerFromPrimary" gid="197" x="58.5" y="115.5" width="32" height="32"/>
-  <object id="103" type="20" gid="362" x="412" y="42" width="32" height="32"/>
-  <object id="104" type="24" gid="371" x="416" y="24" width="32" height="32"/>
+  <object id="103" type="20" gid="363" x="412" y="42" width="32" height="32"/>
+  <object id="104" type="24" gid="372" x="416" y="24" width="32" height="32"/>
   <object id="109" name="#floor1-OpenRedDoorsFWD" x="470" y="118" width="35.5" height="52"/>
   <object id="110" name="MarkerRedDoorFWD1" gid="194" x="491" y="151" width="32" height="32"/>
   <object id="111" name="MarkerRedDoorFWD2" gid="194" x="490" y="135.5" width="32" height="32"/>
-  <object id="113" gid="373" x="313.5" y="32.5" width="32" height="32"/>
-  <object id="114" gid="373" x="360.5" y="31.5" width="32" height="32"/>
+  <object id="113" gid="374" x="313.5" y="32.5" width="32" height="32"/>
+  <object id="114" gid="374" x="360.5" y="31.5" width="32" height="32"/>
   <object id="116" name="MarkerDoorTut2" gid="198" x="464" y="38" width="32" height="32"/>
   <object id="117" name="MarkerDeskEmployeeWalk2" gid="194" x="344" y="306" width="32" height="32"/>
-  <object id="118" type="front" gid="370" x="30.5" y="7.5" width="32" height="32"/>
-  <object id="119" type="front" gid="371" x="53.5" y="12.5" width="32" height="32"/>
-  <object id="120" type="front" gid="371" x="54.5" y="-2.5" width="32" height="32"/>
+  <object id="118" type="front" gid="371" x="30.5" y="7.5" width="32" height="32"/>
+  <object id="119" type="front" gid="372" x="53.5" y="12.5" width="32" height="32"/>
+  <object id="120" type="front" gid="372" x="54.5" y="-2.5" width="32" height="32"/>
   <object id="122" name="#floor1-transitionToFloor1East1FromFloor1Atrium" x="504" y="117.5" width="18.5" height="51.5"/>
   <object id="124" name="MarkerFromEast1" gid="194" x="464.5" y="141.5" width="32" height="32"/>
-  <object id="125" type="24" gid="371" x="400" y="24" width="32" height="32"/>
-  <object id="127" type="24" gid="370" x="392" y="34" width="32" height="32"/>
-  <object id="128" type="24" gid="370" x="392" y="50" width="32" height="32"/>
-  <object id="130" type="front" gid="371" x="82" y="26" width="32" height="32"/>
-  <object id="131" type="front" gid="370" x="58.5" y="35.5" width="32" height="32"/>
-  <object id="132" name="#floor1Atrium-SnackVending" x="28.5" y="61.5" width="34.5" height="19.5"/>
+  <object id="125" type="24" gid="372" x="400" y="24" width="32" height="32"/>
+  <object id="127" type="24" gid="371" x="392" y="34" width="32" height="32"/>
+  <object id="128" type="24" gid="371" x="392" y="50" width="32" height="32"/>
+  <object id="130" type="front" gid="372" x="82" y="26" width="32" height="32"/>
+  <object id="131" type="front" gid="371" x="58.5" y="35.5" width="32" height="32"/>
+  <object id="132" name="#floor1Atrium-SnackVending" x="28.5" y="61.5" width="36" height="16.5"/>
+  <object id="133" type="front" gid="361" x="430" y="222" width="32" height="32"/>
+  <object id="134" type="front" gid="361" x="284" y="318" width="32" height="32"/>
+  <object id="135" name="MarkerGreeterA" gid="194" x="213.5" y="158.5" width="32" height="32"/>
+  <object id="136" name="MarkerGreeterB" gid="194" x="260" y="158" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -1,0 +1,324 @@
+// Quest is started with this trigger.
+// Quest started with #AtriumPingPongSearcher
+// Step 0 completed with #floor1-atrium-greeter-employee
+// Step 1 completed with
+// Step 2 completed with
+// Step 3 completed with
+// Step 4 completed with #Floor1East1Storage_Employee -> @Floor1East1Storage_Employee_questActive
+// Step 5 completed with 
+// Step 6 completed with #Floor1East1Storage_Employee -> @Floor1East1Storage_Employee_questActiveCheckEmployeeVest
+// Step 7 completed with #floor1-AtriumPingPongSearcher -> @floor1-AtriumPingPongSearcher_finishQuest
+
+#floor1-AtriumPingPongSearcher
+action,?once():floor1-AtriumPingPongSearcher_startQuest
+action,?func(questStepLT, PingPong, 7):floor1-AtriumPingPongSearcher_askIfQuestCompleted
+action,?func(questStepEQ, PingPong, 7):floor1-AtriumPingPongSearcher_finishQuest
+// Getting here should imply that the PingPong quest is completed.
+action,floor1-AtriumPingPongSearcher_default
+@floor1-AtriumPingPongSearcher_startQuest
+  +lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
+  +setConversation(Ada);
+  Floor1AtriumPingPongSearcher: "<cascade>I <cascade italic>really<cascade> wanted to play ping pong, but I can't find any spare balls and paddles."
+  +lookAtCharacter(Floor1AtriumPingPongSearcher, Floor1PingPongGuyA);
+  +:sad(Floor1AtriumPingPongSearcher);
+  +panCameraToFitCharacters(500, true, Ada, Floor1PingPongGuyA);
+  Floor1AtriumPingPongSearcher: "And those two guys over there have been playing for a long time."
+  +panCameraBackToPlayer();
+  +:teardrop(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
+  +:question(Ada);
+  Ada: "Did you ask an employee?"
+  +:jump(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Heavens no!"
+  Floor1AtriumPingPongSearcher: "I have <cascade-letters>waaayyyy</> too much <color=LIGHTBLUE shake>anxiety</> to do that."
+  +setFacing(Ada, right);
+  +:shakeZ(Ada);
+  Ada: "But you just said you asked those boys to play."
+  +lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
+  +:teardrop(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "That's different!"
+  Floor1AtriumPingPongSearcher: "Boys are stupid."
+  +:bored(Ada);
+  Ada: "<scale=0.75 cascade-letters>Indeed they are."
+  Ada: "I suppose I could ask in your stead, if you would like."
+  +:jump(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Oh would you!  That would be great!"
+  +startQuest(PingPong);
+  +endConversation();
+@floor1-AtriumPingPongSearcher_askIfQuestCompleted
+  +lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
+  +setConversation(Ada);
+  +:question(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Did you find some <color=BLUE>Ping Pong Equipment</>?"
+  +:shakeZ(Ada);
+  Ada: "Not yet."
+  +removeItem(PingPongEquipment);
+  Floor1AtriumPingPongSearcher: "Dang. I <cascade-letters>reaalllyyyy</> wanna play."
+  +endConversation();
+@floor1-AtriumPingPongSearcher_finishQuest
+  +lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
+  +setConversation(Ada);
+  +:question(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Did you find some <color=BLUE>Ping Pong Equipment</>?"
+  +:happy(Ada);
+  Ada: "As a matter of fact I have."
+  +removeItem(PingPongEquipment);
+  +:heart(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Wow, you really did it!"
+  Floor1AtriumPingPongSearcher: "Now I just need a partner to play with."
+  +completeQuestStep(PingPong, 7);
+  +endConversation();
+@floor1-AtriumPingPongSearcher_default
+  +lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
+  +setConversation(Ada);
+  +:heart(Floor1AtriumPingPongSearcher);
+  Floor1AtriumPingPongSearcher: "Oh it's you!"
+  Floor1AtriumPingPongSearcher: "Thanks for getting my equipment."
+  Floor1AtriumPingPongSearcher: "Now I just need a partner to play with."
+  +endConversation();
+
+// Called as part of the Greeter Employee's dialog as a part of this quest
+@floor1AtriumGreeterEmployeePingPong
++lookAtEachOther(Ada, AtriumGreeterEmployee);
++setConversation(Ada);
++:question(Ada);
+Ada: "Excuse me, I have a small question."
++:question(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "What can I do for you."
++:shakeZ(Ada);
++setFacing(Ada, left);
+Ada: "You seem to be missing a couple of balls and paddles over at the ping pong tables."
++lookAtEachOther(Ada, AtriumGreeterEmployee);
++:shakeZ(Ada);
+Ada: "Do you know where I could find some more?"
++:question(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "You're looking for a set of <color=BLUE>Ping Pong Equipment</>?"
++:nervous(AtriumGreeterEmployee);
++lookAtEachOther(Ada, AtriumGreeterEmployee);
+AtriumGreeterEmployee: "I... uh... don't think I can help you.  You'll have to ask somebody else."
++:teardrop(Ada);
+Ada: "You seem... nervous.  Is there something wrong?"
++:exclaim(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "No!  No, of course not."
++:sigh(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "I'm just the greeter employee!" 
++:shakeZ(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "I do my job just like everyone else!"
+AtriumGreeterEmployee: "<scale=0.75>But I don't know a lot about this post.</>"
++:shakeZ(AtriumGreeterEmployee);
+AtriumGreeterEmployee: "Go ask the employee manning the prize counter on this floor, he might know."
++:bored(Ada);
+Ada: "Very well..."
++completeQuestStep(PingPong, 0);
++endConversation();
+
+// Called in the prize employee's talk trigger as part of this quest
+@Floor1East1PrizeEmployee_PingPongQuestNotStarted
++stopAi(Shopkeep);
++setConversation(Ada);
++walkToMarker(Ada, MarkerAdaShopkeep);
++lookAtEachOther(ada,shopkeep);
+Shopkeep: "Hello there!  You look like you need something from the <color=ORANGE scale=1.33>Regem Ludos</> prize counter!"
++:bored(Ada);
+Ada: "As a matter of fact I do."
+Ada: "I am looking for a set of <color=BLUE>Ping Pong Equipment</>.  Do you happen to have that here?"
++setFacing(Shopkeep, down);
++:shakeZ(Shopkeep);
+Shopkeep: "<color=BLUE cascade-letters>Ping Pong Equipment</>..."
++setFacing(Shopkeep, leftdown);
+Shopkeep: "<cascade-letters>........"
++setFacing(Shopkeep, left);
+Shopkeep: "<cascade-letters>........"
++setFacing(Shopkeep, leftdown);
+Shopkeep: "<cascade-letters>........"
++:question(Ada);
+Ada: "Sir...?"
++:smallPause();
++setFacing(Shopkeep, down);
+Shopkeep: "<cascade-letters>..."
++setFacing(Shopkeep, leftdown);
+Shopkeep: "<cascade-letters>....."
++setFacing(Shopkeep, left);
+Shopkeep: "<cascade-letters>........"
++lookAtEachOther(Ada, Shopkeep);
++shakeScreen(250, true);
++:jump(Shopkeep);
++:bumpX(Ada, 2);
++:exclaim(Ada);
+Ada: "Ah!"
++:exclaim(Shopkeep);
+Shopkeep: "I just remembered!"
++:sigh(Ada);
++:shakeZ(Shopkeep);
+Shopkeep: "We certainly don't have any <color=BLUE>Ping Pong Equipment</> at the prize counter, no."
++:teardrop(Shopkeep);
+Shopkeep: "It's a very hot commodity.  People would just steal it, of course."
++:question(Ada);
+Ada: "Well... do you know where I could find it?"
++:teardrop(Shopkeep);
+Shopkeep: "If there aren't any paddles at the ping pong tables now, I'm afraid your out of luck."
+Shopkeep: "We'd have to pull it out of storage or something."
++:question(Ada);
+Ada: "Could you do that for me please?"
++:exclaim(Shopkeep);
+Shopkeep: "Of course not!"
+Shopkeep: "My job is to stand here and offer the wonderful prizes of the <color=ORANGE scale=1.33>Regem Ludos</> prize counter!"
++:jump(Shopkeep);
+Shopkeep: "I wont leave my post at your humble request!"
+Shopkeep: "You'll have to find those paddles elsewhere, I'm afraid."
+Ada: "<cascade-letters>......"
++setFacing(Ada, rightdown);
+Ada: "It seems I must resort to reasoning with <color=LIGHTRED>those boys</> who are hoarding the paddles."
+Ada: "I am certainly not <italic>keen</> on that."
++completeQuestStep(PingPong, 1);
++endConversation();
+
+#Floor1East1Storage_Employee
+// Step first modifies the quest step to 4
+step-first,?func(questStepEQ, PingPong, 3):Floor1East1Storage_Employee_questActive
+step-first,?func(questStepLT, 3):Floor1East1Storage_Employee_questNotActive
+step-first,?func(questNotStarted, PingPong):Floor1East1Storage_Employee_questNotActive
+// Checks if Ada has EmployeeVest, if true, modifies quest step to 6
+action,?func(questStepEQ, PingPong, 5):Floor1East1Storage_Employee_questActiveCheckEmployeeVest
+action,Floor1East1Storage_Employee_default
+@Floor1East1Storage_Employee_questNotActive
++setConversation(Ada);
++lookAtEachOther(Ada, Employee);
++panCameraRelativeToPlayer(-50, 50);
+Employee: "Oh, hello."
+Employee: "You got a password for me?"
++awaitChoice('Password.', 'Pizza.', 'I do not have a password.');
++?lt(lastChoiceIndex, 2):{
+  +playSound(terminal_cancel);
+  +:shakeZ(Employee);
+  Employee: "Wrong answer.  I gotta kick you outta here."
+  +:smirk(Employee);
+  Employee: "Gotta take a little tax too for my time."
+  +walkToMarker(Employee, MarkerWalkEmployee);
+  +panCameraBackToPlayer();
+  :floor1-transitionToEast1FromEast1Storage();
+  +setConversation(Ada);
+  +modifyTickets(-5);
+}
++?eq(lastChoiceIndex, 2):{
+  +:shakeZ(Employee);
+  Employee: "Well, at least you're honest."
+  +:sad(Employee);
+  Employee: "I gotta kick you out anyway though."
+  +panCameraBackToPlayer();
+  :floor1-transitionToEast1FromEast1Storage();
+}
++endConversation();
+@Floor1East1Storage_Employee_questActive
++setConversation(Ada);
++lookAtEachOther(Ada, Employee);
++panCameraRelativeToPlayer(-50, 50);
+Employee: "Oh, hello."
+Employee: "You got a password for me?"
++awaitChoice('Fooza.', 'Blarg.', 'Zoofa.', 'I do not have a password.');
++?lt(lastChoiceIndex, 2):{
+  +playSound(terminal_cancel);
+  +:shakeZ(Employee);
+  Employee: "Wrong answer.  I gotta kick you outta here."
+  +:smirk(Employee);
+  Employee: "Gotta take a little tax too for my time."
+  +walkToMarker(Employee, MarkerWalkEmployee);
+  +panCameraBackToPlayer();
+  :floor1-transitionToEast1FromEast1Storage();
+  +setConversation(Ada);
+  +modifyTickets(-5);
+}
++?eq(lastChoiceIndex, 2):{
+  +completeQuestStep(PingPong, 4);
+  +playSound(terminal_beep);
+  Employee: "Yeah, that's right.  You can come in."
+  Ada: "Who are you?  An employee of this place?"
+  Employee: "Yeah.  Just chillin' back here for now."
+  +:question(Employee);
+  Employee: "Anyway you said you wanted something?  Ping Pong Equipment?"
+  Employee: "Yeah I could probably find some in here for you."
+  +:smirk(Employee);
+  Employee: "It won't be free, of course."
+  +:teardrop(Ada);
+  Ada: "What do you want?"
+  +setFacing(Employee, down);
+  +:shakeZ(Employee);
+  Employee: "Well, you might have noticed I'm not wearing the officially-sanctioned <color=BLUE>Regem Ludos Vest</>."
+  +lookAtEachOther(Ada, Employee);
+  +:smallPause();
+  Employee: "I kinda lost it this morning. It got stuck in the elevator shaft somewhere.  Anyway I'm sure it's gone."
+  Employee: "Problem is, they don't like it when an employee is walkin' around the floor without that particular vest."
+  +:sad(Employee);
+  Employee: "Last guy it happened to, we still don't know what happened to him."
+  Employee: "So I need you to go get me one."
+  +:angry(Ada);
+  Ada: "Where am I supposed to acquire something like that?"
+  +:shakeZ(Employee);
+  Employee: "Oh, somebody out there is sellin' it.  I guarantee."
+  Employee: "Just keep lookin' around, I'm sure you'll find it somewhere."
+  +:teardrop(Ada);
+  Ada: "Look, I do not really have <italic>time</> for this."
+  Ada: "Can I just have the ping pong equipment and then bring you a vest when I come back?"
+  +:serious(Employee);
+  Employee: "You mean, <italic>if</> you come back."
+  Employee: "Listen, hun, I wasn't born yesterday.  You look like the type to fleece a toddler."
+  +:angry(Ada);
+  Ada: "Excuse me!"
+  +:jump(Employee);
+  Employee: "Just do what I ask and I'll get you your ping pong stuff."
+  Employee: "That's the <color=YELLOW cascade-letters>deal</>, take it or leave it."
+  +:angry(Ada);
+  +:bumpY(Ada, -2);
+  Ada: "If anyone is doing the <italic>fleecing</> here, it is you."
+  +:happy(Employee);
+  +setFacing(Ada, rightup);
+  +:grumpy(Ada);
+  +panCameraBackToPlayer();
+}
++?eq(lastChoiceIndex, 3):{
+  +:shakeZ(Employee);
+  Employee: "Well, at least you're honest."
+  +:sad(Employee);
+  Employee: "I gotta kick you out anyway though."
+  +panCameraBackToPlayer();
+  :floor1-transitionToEast1FromEast1Storage();
+}
++endConversation();
+
+@Floor1East1Storage_Employee_default
++lookAtEachOther(Ada, Employee);
++setConversation(Ada);
++:shakeZ(Employee);
+Employee: "Oh, hello."
++:question(Employee);
+Employee: "Did you want something else?"
++:shakeZ(Ada);
+Ada: "No, I do not require anything else from you."
++endConversation();
+
+@Floor1East1Storage_Employee_questActiveCheckEmployeeVest
++lookAtEachOther(Ada, Employee);
++setConversation(Ada);
++:shakeZ(Employee);
+Employee: "Oh, hello."
++:question(Employee);
+Employee: "Did you get an <color=BLUE>Employee Vest</> for me?"
++?with(EmployeeVest):{
+  +completeQuestStep(PingPong, 6);
+  +:shakeZ(Ada);
+  Ada: "Yes.  I have it right here."
+  +walkToMarker(Ada, MarkerWalkInside);
+  +removeItem(EmployeeVest);
+  Employee: "Ah.  Yes, this is indeed the real deal."
+  Employee: "And a deal is a deal, my old boss always said."
+  Employee: "I've got your <color=BLUE>Ping Pong Equipment</> right here."
+  +acquireQuestItem(PingPongEquipment);
+  Employee: "It was a pleasure doing <italic>business</> with you."
+}
++?isnot(with(EmployeeVest)):{
+  +:shakeZ(Ada);
+  Ada: "No.  I have not acquired one yet."
+  +:teardrop(Employee);
+  Employee: "Well, ah, you better get workin' on that, huh?"
+}
++endConversation();

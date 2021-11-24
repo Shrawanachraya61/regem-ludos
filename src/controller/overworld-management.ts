@@ -67,7 +67,7 @@ import {
   createAndCallScript,
   sceneIsPlaying,
 } from 'controller/scene-management';
-import { setCharacterAtMarker } from 'controller/scene-commands';
+import { setCharacterAtMarker } from 'controller/scene/scene-commands';
 import {
   getTrigger,
   scriptExists,

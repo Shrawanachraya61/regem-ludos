@@ -44,7 +44,8 @@ import { runMainLoop, unpause } from './loop';
 import { renderUi } from 'view/ui';
 import { showSection } from './ui-actions';
 import { AppSection } from 'model/store';
-import { getLastUpdatedQuests, resetLastUpdatedQuests } from './quest';
+import { getLastUpdatedQuests, resetLastUpdatedQuests } from 'model/quest';
+import { getScores, ILeaderboardEntry, setLeaderboard } from 'model/scores';
 
 const APP_LS_PREFIX = 'regem_ludos_';
 const APP_SETTINGS_KEY = 'settings';
@@ -86,14 +87,7 @@ export interface ISave {
     battlePositions: number[];
     partyStorage: ICharacterSave[];
   };
-  highScores: {
-    ticTacToe: number;
-    invaderz: number;
-    elasticity: number;
-    vortex: number;
-    golems: number;
-    president: number;
-  };
+  leaderboards: Record<string, ILeaderboardEntry[]>;
   stores: Record<string, IItemStoreSave>;
 }
 
@@ -234,14 +228,7 @@ export const loadSaveListFromLS = (): ISave[] => {
             battlePositions: save.player.battlePositions ?? [],
             partyStorage: save.player.partyStorage ?? [],
           },
-          highScores: {
-            ticTacToe: save?.highScores?.ticTacToe ?? 0,
-            invaderz: save?.highScores?.invaderz ?? 0,
-            elasticity: save?.highScores?.elasticity ?? 0,
-            vortex: save?.highScores?.vortex ?? 0,
-            golems: save?.highScores?.golems ?? 0,
-            president: save?.highScores?.president ?? 0,
-          },
+          leaderboards: save?.leaderboards,
           stores: Object.assign({}, save?.stores ?? {}),
         };
       }
@@ -288,6 +275,12 @@ export const createSave = (params: {
   const scene = getCurrentScene();
   const player = getCurrentPlayer();
 
+  const scores = getScores();
+  const leaderboards: Record<string, ILeaderboardEntry[]> = {};
+  for (const i in scores) {
+    leaderboards[i] = scores[i].leaderboard;
+  }
+
   const save: ISave = {
     id: params.saveId,
     debug: true,
@@ -319,14 +312,7 @@ export const createSave = (params: {
         player.partyStorage.indexOf(ch as Character)
       ),
     },
-    highScores: {
-      ticTacToe: 0,
-      invaderz: 0,
-      elasticity: 0,
-      vortex: 0,
-      golems: 0,
-      president: 0,
-    },
+    leaderboards,
     stores: getItemStores(),
   };
 
@@ -398,6 +384,12 @@ const loadGame = (save: ISave) => {
   resetLastUpdatedQuests(save.questsUpdated);
 
   setItemStores(save.stores ?? {});
+
+  if (save.leaderboards) {
+    for (const i in save.leaderboards) {
+      setLeaderboard(i, save.leaderboards[i]);
+    }
+  }
 
   player.tokens = save.player.tokens;
   player.tickets = save.player.tickets;

@@ -21,7 +21,7 @@ import {
 } from 'controller/save-management';
 import MainMenu from 'view/components/MainMenu';
 import { initEvents } from 'controller/events';
-import { playMusic, playSound } from 'controller/scene-commands';
+import { playMusic, playSound } from 'controller/scene/scene-commands';
 import { mountUi } from 'view/ui';
 
 const SCALE = 4;

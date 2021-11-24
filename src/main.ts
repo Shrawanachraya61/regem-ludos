@@ -53,7 +53,7 @@ import { playMusic, loadSoundSpritesheet } from 'model/sound';
 import { get as getItem } from 'db/items';
 import { colors } from 'view/style';
 import { useEffect } from 'preact/hooks';
-import { beginQuest } from 'controller/quest';
+import { beginQuest } from 'model/quest';
 import { getIfExists as getSave } from 'db/saves';
 import { initConsole } from 'view/console';
 

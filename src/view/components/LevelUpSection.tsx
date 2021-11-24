@@ -7,7 +7,7 @@ import DialogBox from 'view/elements/DialogBox';
 import MenuBox from 'view/elements/MenuBox';
 import { colors, style } from 'view/style';
 import { getUiInterface } from 'view/ui';
-import { playSound } from 'controller/scene-commands';
+import { playSound } from 'controller/scene/scene-commands';
 import { timeoutPromise } from 'utils';
 import {
   getAuxKeyLabel,

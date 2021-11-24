@@ -85,4 +85,67 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
       },
     ],
   };
+
+  exp.PingPong = {
+    label: 'The Ping Pong Girl',
+    summary: "A girl by the ping pong tables can't find any extra equipment.",
+    description:
+      'A girl is moping around the ping pong tables in the atrium lamenting the fact that there are no extra balls and paddles.  There has to be some ping pong equipment somewhere in this arcade, right?',
+    questStartScriptKey: 'quest_floor1PingPongGirl',
+    questEndScriptKey: 'quest_floor1PingPongGirl_complete',
+    icon: 'star',
+    iconColor: colors.WHITE,
+    experienceReward: 3,
+    ticketsReward: 10,
+    itemsReward: () => [],
+    steps: [
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_0',
+        label: 'Speak to the greeter employee.',
+        description:
+          'Speak with the employee greeting people at the entrance to see if she knows where to get ping pong equipment.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_1',
+        label: 'Speak to the employee at the prize counter on floor 1.',
+        description:
+          'Speak with the employee at the prize counter to see if they have some ping pong equipment.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_2',
+        label: 'Speak to the boys playing Ping Pong in the atrium on floor 1.',
+        description:
+          'It seems that there is no extra equipment available right now.  Try to get the boys to share their paddles.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_3',
+        label: 'Meet the secretive person by the elevator on floor 1.',
+        description:
+          'Somebody approached and said that they know of a way to get ping pong equipment.  Speak with this individual by the elevator on floor 1.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_4',
+        label: 'Enter the secret storage room near the floor 1 prize counter.',
+        description:
+          'Apparantly there is a secret storage room accessible via a door on the south wall of the room on floor 1 with the prize counter.  Find it and give the password "ZOOFA" to whomever is inside.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_5',
+        label:
+          "Get an employee's vest and give it to the employee in the storage room.",
+        description:
+          'An employee inside the storage room requires an Employee Vest before he will help.  Find this item.  He mentioned that "somebody is selling it somewhere."',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_6',
+        label: 'Return to the employee in the storage room.',
+        description: 'Give the employee in the storage room the Employee Vest.',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_7',
+        label: 'Return to the Ping Pong Girl.',
+        description: 'Give the Ping Pong Equipment to the Ping Pong Girl.',
+      },
+    ],
+  };
 };

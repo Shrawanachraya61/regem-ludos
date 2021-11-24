@@ -10,7 +10,7 @@ import {
   getLastUpdatedQuests,
   questIsCompleted,
   resetLastUpdatedQuests,
-} from 'controller/quest';
+} from 'model/quest';
 import { Scene } from 'model/scene';
 import { QuestTemplateWithName } from 'db/quests';
 import { getIcon } from 'view/icons';
@@ -153,7 +153,14 @@ const MenuJournal = (props: IMenuJournalProps) => {
                 <p>You have completed this quest.</p>
               ) : (
                 <>
-                  <p>{selectedQuestStep?.label ?? ''}</p>
+                  <p
+                    style={{
+                      fontSize: '20px',
+                      marginTop: '0px',
+                    }}
+                  >
+                    {selectedQuestStep?.label ?? ''}
+                  </p>
                   <p>{selectedQuestStep?.description ?? ''}</p>
                 </>
               )}

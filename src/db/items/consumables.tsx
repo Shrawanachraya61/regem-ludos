@@ -11,7 +11,7 @@ import { pause, unpause } from 'controller/loop';
 import {
   callScript,
   spawnParticleAtCharacter,
-} from 'controller/scene-commands';
+} from 'controller/scene/scene-commands';
 import {
   hideBattleEffect,
   hideModal,

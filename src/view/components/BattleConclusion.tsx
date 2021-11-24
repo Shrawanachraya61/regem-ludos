@@ -11,7 +11,7 @@ import ProgressBar from 'view/elements/ProgressBar';
 import { characterGetExperiencePct, characterGetLevel } from 'model/character';
 import { timeoutPromise } from 'utils';
 import { playSoundName } from 'model/sound';
-import { fadeIn, fadeOut, playSound } from 'controller/scene-commands';
+import { fadeIn, fadeOut, playSound } from 'controller/scene/scene-commands';
 import { playerAddItem } from 'model/player';
 import MenuBox from 'view/elements/MenuBox';
 import { CardSize, sizes as cardSizes } from 'view/elements/Card';

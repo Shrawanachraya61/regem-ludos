@@ -5,7 +5,7 @@ import { AppSection, ModalSection } from 'model/store';
 import Card, { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import { colors, style } from 'view/style';
 import { getUiInterface } from 'view/ui';
-import { playSound } from 'controller/scene-commands';
+import { playSound } from 'controller/scene/scene-commands';
 import { timeoutPromise } from 'utils';
 
 import VerticalMenu from 'view/elements/VerticalMenu';

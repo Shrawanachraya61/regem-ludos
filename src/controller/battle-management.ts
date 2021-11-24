@@ -129,7 +129,7 @@ import {
   fadeOut,
   panCameraBackToPlayer,
   panCameraRelativeToPlayer,
-} from './scene-commands';
+} from 'controller/scene/scene-commands';
 import {
   Timer,
   Transform,

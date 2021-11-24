@@ -322,11 +322,17 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
           (!ev.repeat && isConfirmKey(ev.code)) ||
           (props.useSpaceBarConfirm && ev.key === ' ')
         ) {
+          if (ev.repeat) {
+            return;
+          }
           dispatch({ type: 'Select' });
           if (props.onItemClickSound) {
             playSoundName(props.onItemClickSound);
           }
         } else if (isCancelKey(ev.code)) {
+          if (ev.repeat) {
+            return;
+          }
           if (props.onClose) {
             if (props.onCloseSound) {
               playSoundName(props.onCloseSound);
@@ -334,6 +340,9 @@ const VerticalMenu = function <T>(props: IVerticalMenuProps<T>): h.JSX.Element {
             props.onClose();
           }
         } else if (isAuxKey(ev.code)) {
+          if (ev.repeat) {
+            return;
+          }
           if (props.onAuxClick) {
             if (props.onAuxClickSound) {
               playSoundName(props.onAuxClickSound);

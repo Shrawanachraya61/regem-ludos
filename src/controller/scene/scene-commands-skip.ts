@@ -23,7 +23,7 @@ import {
   playerModifyTickets,
 } from 'model/player';
 import { ParticleTemplate } from 'model/particle';
-import SC from './scene-commands';
+import SC from 'controller/scene/scene-commands';
 import {
   hideConversation,
   setCutsceneText,

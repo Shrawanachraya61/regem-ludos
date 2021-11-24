@@ -14,8 +14,8 @@ import {
   getCurrentScene,
 } from 'model/generics';
 import { roomGetCharacterByName } from 'model/room';
-import sceneCommands, { setStorage } from './scene-commands';
-import sceneCommandsSkip from './scene-commands-skip';
+import sceneCommands, { setStorage } from 'controller/scene/scene-commands';
+import sceneCommandsSkip from 'controller/scene/scene-commands-skip';
 import { playerHasItem } from 'model/player';
 import { getIfExists as getCharacterTemplate } from 'db/characters';
 import { getIfExists as getQuest } from 'db/quests';
@@ -24,9 +24,10 @@ import {
   questIsActive,
   questIsCompleted,
   questIsNotStarted,
-} from './quest';
+} from 'model/quest';
 import { getUiInterface } from 'view/ui';
 import { AppSection } from 'model/store';
+import ConditionalFuncs from './scene/scene-conditionals';
 
 // if you increase this, you have to change the arg matcher to check for the length
 // of the integer string (number of decimal places) rather than just assuming it's 1
@@ -313,77 +314,20 @@ export const evalCondition = (
       return itemName && playerHasItem(player, itemName);
     } else if (type === 'func') {
       const funcName = args[0] ?? '';
-      const funcArg: string = args[1] ?? '';
-      const funcArg2: string = args[2] ?? '';
-      if (funcName === 'questActive') {
-        const quest = getQuest(funcArg);
-        if (!quest) {
-          console.error(
-            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
-          );
-          return false;
-        }
 
-        return questIsActive(scene, quest);
-      } else if (funcName === 'questNotStarted') {
-        const quest = getQuest(funcArg);
-        if (!quest) {
-          console.error(
-            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
-          );
-          return false;
-        }
+      const restArgs = args.slice(1);
+      const func = ConditionalFuncs[funcName];
 
-        return questIsNotStarted(scene, quest);
-      } else if (funcName === 'questCompleted') {
-        const quest = getQuest(funcArg);
-        if (!quest) {
-          console.error(
-            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
-          );
-          return false;
-        }
-
-        const compl = questIsCompleted(scene, quest);
-        return compl;
-      } else if (
-        funcName === 'questStepGT' ||
-        funcName === 'questStepLT' ||
-        funcName === 'questStepEQ'
-      ) {
-        const quest = getQuest(funcArg);
-        if (!quest) {
-          console.error(
-            `Error in conditional.  Cannot check questActive.  No quest with name: ${funcArg}`
-          );
-          return false;
-        }
-        const step = getCurrentQuestStep(scene, funcArg);
-
-        if (questIsCompleted(scene, quest)) {
-          return false;
-        }
-
-        if (funcName === 'questStepEQ') {
-          return step?.i === parseInt(funcArg2);
-        }
-
-        return funcName === 'questStepGT'
-          ? (step?.i ?? Infinity) > parseInt(funcArg2)
-          : (step?.i ?? Infinity) < parseInt(funcArg2);
-      } else if (funcName === 'inParty') {
-        const player = getCurrentPlayer();
-        const chName = funcArg.toLowerCase();
-        return Boolean(
-          player.party.find(ch => ch.name.toLowerCase() === chName)
+      if (!func) {
+        console.error(
+          'Error in conditional.  func condition is not registered: ' +
+            funcName,
+          args
         );
+        return false;
       }
 
-      console.error(
-        'Error in conditional.  func condition is not registered: ' + funcName,
-        args
-      );
-      return false;
+      return func(...restArgs);
     }
     return false;
   }

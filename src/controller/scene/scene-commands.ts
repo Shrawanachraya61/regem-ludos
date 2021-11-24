@@ -20,6 +20,8 @@ import {
   hideSections,
   showStoreSection,
   hideStoreSection,
+  showInfoStatsSection,
+  hideInfoStatsSection,
 } from 'controller/ui-actions';
 import { AppSection, CutsceneSpeaker } from 'model/store';
 import {
@@ -114,7 +116,7 @@ import {
 import {
   getReturnToOverworldBattleCompletionCB,
   transitionToBattle,
-} from './battle-management';
+} from '../battle-management';
 import {
   createEmotionBubbleParticle,
   createRiseParticle,
@@ -125,13 +127,13 @@ import {
 import { battlePauseTimers, battleUnpauseTimers } from 'model/battle';
 import { sceneAddPostSceneCallback, sceneStopWaitingUntil } from 'model/scene';
 import { createTileRenderObject } from 'model/render-object';
-import { pause, unpause } from './loop';
+import { pause, unpause } from '../loop';
 import { getScreenSize } from 'model/canvas';
 import {
   beginQuest as beginQuestFromManagement,
   completeQuestStep as completeQuestStepFromManagement,
   questIsCompleted,
-} from './quest';
+} from 'model/quest';
 import { getIfExists as getStore } from 'db/stores';
 
 /**
@@ -266,6 +268,11 @@ export const setConversation2 = (
   if (!actorNameRight) {
     console.error('No right actor specified.');
     return;
+  }
+
+  const appState = getUiInterface().appState;
+  if (appState.cutscene.visible) {
+    showConversation();
   }
 
   playSoundName('dialog_woosh');
@@ -2396,11 +2403,26 @@ export const showUISection = (sectionName: string, ...args: any[]) => {
     });
     return waitUntil();
   } else if (sectionName === 'Modal') {
-    console.log('SHOW MODAL SECTION', args);
     showModal(args[0], {
       onClose: () => {
         sceneStopWaitingUntil(getCurrentScene());
       },
+    });
+    return waitUntil();
+  } else if (sectionName === 'InfoStats') {
+    setCutsceneSkipEnabled(false);
+
+    none();
+
+    showInfoStatsSection(() => {
+      hideInfoStatsSection();
+      unpause();
+
+      setCutsceneSkipEnabled(true);
+      hideStoreSection();
+      sceneStopWaitingUntil(getCurrentScene());
+      const scene = getCurrentScene();
+      scene.inputDisabled = false;
     });
     return waitUntil();
   }

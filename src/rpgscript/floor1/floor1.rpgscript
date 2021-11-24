@@ -381,8 +381,11 @@ action,this
 
 #floor1-show-soda-machine-store
 action,this
+step-first,floor1-show-soda-machine-store_step
 @this
 +showStore(SODA_VENDING_MACHINE);
+@floor1-show-soda-machine-store_step
++setCharacterText('Press Action (X) to use Vending Machine.');
 
 // Sorry my brain switches to backwards mode sometimes *shrug*
 #floor1-transitionFromFloor1West2ToFloor1East2
@@ -421,16 +424,20 @@ action,this
 }
 
 #Floor1East1PrizeEmployee
-action,?func(questNotStarted, Tutorial):Floor1East1PrizeEmployee-questNotStarted
+action,?func(questStepEQ, PingPong, 1):Floor1East1PrizeEmployee_PingPongQuestNotStarted
+action,?func(questNotStarted, Tutorial):Floor1East1PrizeEmployee-tutNotStarted
 action,Floor1East1PrizeEmployee-default
-step-first,?all(func(questCompleted, Tutorial), once('a1c3aa56')):Floor1East1PrizeEmployee-questCompleted
+step-first,?all(func(questCompleted, Tutorial), once('a1c3aa56')):Floor1East1PrizeEmployee-tutCompleted
 @Floor1East1PrizeEmployee-default
++stopAi(Shopkeep);
 +setConversation(Ada);
 +walkToMarker(Ada, MarkerAdaShopkeep);
 +lookAtEachOther(ada,shopkeep);
 Shopkeep: "Please take a look at our wares."
 +endConversation();
-@Floor1East1PrizeEmployee-questNotStarted
++resetAi(Shopkeep);
+@Floor1East1PrizeEmployee-tutNotStarted
++stopAi(Shopkeep);
 +setConversation(Ada);
 +walkToMarker(Ada, MarkerAdaShopkeep);
 +lookAtEachOther(ada,shopkeep);
@@ -440,7 +447,9 @@ Ada: "I do not have one of those."
 Shopkeep: "Oh, I'm sorry then, I can't help you."
 Shopkeep: "You'll have to get one before you can purchase any prizes from the <color=ORANGE scale=1.33>Regem Ludos</> prize counter."
 +endConversation();
-@Floor1East1PrizeEmployee-questCompleted
++resetAi(Shopkeep);
+@Floor1East1PrizeEmployee-tutCompleted
++stopAi(Shopkeep);
 +setConversation(Ada);
 +panCameraToFitCharacters(500,false,ada,shopkeep);
 +:exclaim(Shopkeep);
@@ -496,6 +505,7 @@ Shopkeep: "I have <shake>no idea</> what she wants!</>"
 +:teardrop(Shopkeep);
 Shopkeep: "Anyway, if you would like to purchase a wonderful prize, you need only speak to me again."
 +endConversation();
++resetAi(Shopkeep);
 
 #Floor1East1Sigma
 action,this
@@ -638,6 +648,7 @@ action,Floor1East2_ZagMachineAction
 +runArcadeCabinetGame(ZAG);
 +fadeIn(50);
 +setAtMarker(Ada, MarkerZagMachine);
++endConversation();
 
 #Floor1East2_ZagPlayer
 action,this
@@ -651,4 +662,86 @@ ZagPlayer: "Although, I'm not sure it's too popular.  It's tucked away over here
 +:happy(ZagPlayer);
 ZagPlayer: "Oh well, less players means better opportunity for me to get a high score!"
 +endConversation();
+
+#Floor1West1_Employee
+action,?once():Floor1West1_Employee_1
+action,Floor1West1_Employee_2
+@Floor1West1_Employee_1
++setConversation(Ada);
++lookAtEachOther(Ada, Employee);
++:question(Ada);
+Ada: "Excuse me.  What is this area?"
++:shakeZ(Employee);
+Employee: "What a good-looking question!"
+Employee: "You are standing in the <color=YELLOW>Primary Information Kiosk Zone</>."
++:spin(Employee);
++:exclaim(Employee);
++lookAtEachOther(Ada, Employee);
+Employee: "In here you can do a bunch of administrative tasks oriented around the <color=ORANGE>Regem Ludos Arcade</>."
++:surprised(Ada);
+Ada: "What is that supposed to mean?"
++:exclaim(Employee);
+Employee: "Well, for starters we've got a save point in here, as well as a <color=BLUE>Personal Upgrade Kiosk</>."
+Employee: "And of course..."
++none();
++panCameraRelativeToPlayer(-50, 50);
++setFacing(Ada, leftdown);
++setFacing(Employee, leftdown);
+Employee: "Using the kiosks over there you can see the high scores for all the games in this facility! <scale=0.75>Where applicable, of course."
++:jump(Employee);
+Employee: "If you play each game well enough, you might very well see yourself on those lists."
+Employee: "You might even become as legendary as that <color=PURPLE>Erran Valley</> student, <color=ORANGE>Carl-Arnold</>."
+Employee: "You'll find him at the tippy top of all those lists right now."
++panCameraBackToPlayer();
++lookAtEachOther(Ada, Employee);
++?func(questNotCompleted, Tutorial):{
+  Employee: "I see you don't have a <color=BLUE>Haptic Bracer</> yet.  You'll need that to have an entry in the scoring leaderboards."
+}
++?func(questCompleted, Tutorial):{
+  Employee: "Just walk up to one of the kiosks and your <color=BLUE>Haptic Bracer</> will allow you to access them."
+}
++endConversation();
+@Floor1West1_Employee_2
++setConversation(Ada);
++lookAtEachOther(Ada, Employee);
++?func(questNotCompleted, Tutorial):{
+  Employee: "I see you don't have a <color=BLUE>Haptic Bracer</> yet.  You'll need that to use these kiosks."
+}
++?func(questCompleted, Tutorial):{
+  Employee: "Just walk up to one of the kiosks and your <color=BLUE>Haptic Bracer</> will allow you to access them."
+}
++endConversation();
+
+@floor1East1Storage
++?func(questCompleted, PingPong):{
+  +despawnCharacter(Employee);
+}
+
+#floor1-transitionToEast1StorageFromEast1
+step,this
+@this
++:utils-change-room(floor1East1Storage, MarkerFromEast1);
+
+#floor1-transitionToEast1FromEast1Storage
+step,this
+@this
++:utils-change-room(floor1East1, MarkerFromStorage);
+
+#floor1-east1OpenStorageDoor
+action,this
+@this
++setUnskippableConversation(Ada);
++playSound(sliding_door_open);
++:openDoor(MarkerDoorStorage, DARK_BLOCK_BCK);
++endConversation();
+
+#floor1-east1StorageOpenStorageDoor
+step-first,this
+step-off,floor1-east1StorageOpenStorageDoor_off
+@this
++playSound(sliding_door_open);
++:openDoor(MarkerDoor, DARK_BLOCK_BCK);
+@floor1-east1StorageOpenStorageDoor_off
++playSound(sliding_door_close);
++:closeDoor(MarkerDoor, DARK_BLOCK_BCK);
 

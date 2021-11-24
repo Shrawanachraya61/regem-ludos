@@ -32,8 +32,9 @@ import { initiateBattle } from 'controller/battle-management';
 import { get as getBattle } from 'db/encounters';
 import { get as getQuest } from 'db/quests';
 import QuestSection from './components/QuestSection';
-import { questIsCompleted } from 'controller/quest';
+import { questIsCompleted } from 'model/quest';
 import ItemStoreSection from './components/ItemStoreSection';
+import InfoStatsSection from './components/InfoStats';
 
 interface UIInterface {
   appState: AppState;
@@ -120,6 +121,9 @@ const App = () => {
       }
       case AppSection.Store: {
         return <ItemStoreSection key={key} />;
+      }
+      case AppSection.InfoStats: {
+        return <InfoStatsSection key={key} />;
       }
       case AppSection.Menu: {
         return <MenuSection key={key} />;

@@ -18,6 +18,7 @@ export enum AppSection {
   LevelUp = 'level-up',
   Quest = 'quest',
   Store = 'store',
+  InfoStats = 'info-stats',
 }
 
 export enum CutsceneSpeaker {
@@ -141,6 +142,10 @@ export interface NotificationState {
   timeoutId?: number;
 }
 
+export interface IInfoStats {
+  onClose: () => void;
+}
+
 export interface AppState {
   sections: AppSection[];
   room: IRoomState;
@@ -157,6 +162,7 @@ export interface AppState {
   quest: IQuestState;
   store: IItemStoreState;
   notifications: NotificationState[];
+  infoStats: IInfoStats;
 }
 
 export const AppStateInitial: AppState = {
@@ -237,4 +243,7 @@ export const AppStateInitial: AppState = {
     storeName: '',
   },
   notifications: [],
+  infoStats: {
+    onClose: () => {},
+  },
 };

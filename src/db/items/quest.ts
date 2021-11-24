@@ -8,4 +8,12 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     type: ItemType.QUEST,
     icon: 'bracer',
   };
+
+  exp.PingPongEquipment = {
+    label: 'Ping Pong Equipment',
+    description:
+      'A standard set of Ping Pong equipment includes two rubber-shielded paddles (one side red, one side blue) and a shiny, three-star ping pong ball.',
+    type: ItemType.QUEST,
+    icon: 'star',
+  };
 };

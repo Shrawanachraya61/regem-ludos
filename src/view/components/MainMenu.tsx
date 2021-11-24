@@ -23,7 +23,7 @@ import {
 import { renderUi } from 'view/ui';
 import { runMainLoop } from 'controller/loop';
 import { ISave, loadSavedGame } from 'controller/save-management';
-import { beginQuest } from 'controller/quest';
+import { beginQuest } from 'model/quest';
 
 const setupGame = async () => {
   setTimeLoaded(+new Date());

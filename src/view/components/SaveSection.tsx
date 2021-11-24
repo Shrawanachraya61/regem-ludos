@@ -28,7 +28,7 @@ import { sceneStopWaitingUntil } from 'model/scene';
 import { getCurrentScene } from 'model/generics';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
-import { playSound } from 'controller/scene-commands';
+import { playSound } from 'controller/scene/scene-commands';
 import SaveGameListItem from 'view/components/SaveGameListItem';
 
 const MAX_SAVES = 4;

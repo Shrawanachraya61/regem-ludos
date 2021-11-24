@@ -20,7 +20,7 @@ import {
 import { hideArcadeGame, hideSection } from 'controller/ui-actions';
 import { AppSection } from 'model/store';
 import { pause, unpause } from 'controller/loop';
-import { questIsCompleted } from 'controller/quest';
+import { questIsCompleted } from 'model/quest';
 import { getIfExists as getQuest } from 'db/quests';
 
 registerArcadeGameMeta(ArcadeGamePath.TIC_TAC_TOE, {

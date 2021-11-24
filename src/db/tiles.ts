@@ -53,7 +53,8 @@ const createDoubleSlidingDoors = (
   doorName: string,
   animBase: string,
   forwardSpriteBase: string,
-  backSpriteBase: string
+  backSpriteBase: string,
+  skipTemplateReplace?: boolean
 ) => {
   const animNames = [
     'bck_close1',
@@ -88,6 +89,10 @@ const createDoubleSlidingDoors = (
       isWall: i < 4,
     };
   }
+
+  if (skipTemplateReplace) {
+    return;
+  }
   replacementTemplates[backSpriteBase] = doorName + '_BCK_CLOSED1';
   replacementTemplates[forwardSpriteBase] = doorName + '_FWD_CLOSED1';
 };
@@ -96,7 +101,8 @@ const createSlidingDoors = (
   doorName: string,
   animBase: string,
   forwardSpriteBase: string,
-  backSpriteBase: string
+  backSpriteBase: string,
+  skipTemplateReplace?: boolean
 ) => {
   const animNames = ['bck_close', 'fwd_close', 'bck_open', 'fwd_open'];
   const tileTemplateNames = [
@@ -118,6 +124,10 @@ const createSlidingDoors = (
       isWall: i < 2,
     };
   }
+
+  if (skipTemplateReplace) {
+    return;
+  }
   replacementTemplates[backSpriteBase] = doorName + '_BCK_CLOSED';
   replacementTemplates[forwardSpriteBase] = doorName + '_FWD_CLOSED';
 };
@@ -134,6 +144,13 @@ export const init = () => {
     'walls-anims_red_door',
     'walls_13',
     'walls_14'
+  );
+  createSlidingDoors(
+    'DARK_BLOCK',
+    'walls-anims_dark_block',
+    'walls_36',
+    'walls_36',
+    true
   );
 
   // exp.RED_DOOR_BCK_CLOSED1 = {
@@ -423,4 +440,13 @@ export const init = () => {
     },
   };
   replacementTemplates.floors_61 = 'BRIDGE_FLOOR_FLICKER';
+
+  exp.SQUARE_MACHINE = {
+    baseSprite: 'props_37',
+    animName: 'props-anims-square-machine',
+    isWall: true,
+    isProp: true,
+    size: [32, 64],
+  };
+  replacementTemplates.props_37 = 'SQUARE_MACHINE';
 };

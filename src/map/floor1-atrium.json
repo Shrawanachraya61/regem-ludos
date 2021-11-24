@@ -235,7 +235,7 @@
                  "y":248
                 }, 
                 {
-                 "gid":362,
+                 "gid":363,
                  "height":32,
                  "id":66,
                  "name":"",
@@ -247,7 +247,7 @@
                  "y":320
                 }, 
                 {
-                 "gid":362,
+                 "gid":363,
                  "height":32,
                  "id":67,
                  "name":"",
@@ -471,7 +471,7 @@
                  "y":4.5
                 }, 
                 {
-                 "height":53,
+                 "height":46.5,
                  "id":94,
                  "name":"#floor1-atriumOpenNorthDoor",
                  "rotation":0,
@@ -479,7 +479,7 @@
                  "visible":true,
                  "width":40,
                  "x":9.5,
-                 "y":82.5
+                 "y":84.5
                 }, 
                 {
                  "gid":194,
@@ -506,7 +506,7 @@
                  "y":102.5
                 }, 
                 {
-                 "gid":363,
+                 "gid":364,
                  "height":32,
                  "id":97,
                  "name":"",
@@ -518,7 +518,7 @@
                  "y":297
                 }, 
                 {
-                 "gid":363,
+                 "gid":364,
                  "height":32,
                  "id":98,
                  "name":"",
@@ -528,30 +528,6 @@
                  "width":32,
                  "x":434,
                  "y":252
-                }, 
-                {
-                 "gid":360,
-                 "height":32,
-                 "id":99,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":432,
-                 "y":224
-                }, 
-                {
-                 "gid":360,
-                 "height":32,
-                 "id":100,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":283,
-                 "y":317
                 }, 
                 {
                  "height":75.5,
@@ -577,7 +553,7 @@
                  "y":115.5
                 }, 
                 {
-                 "gid":362,
+                 "gid":363,
                  "height":32,
                  "id":103,
                  "name":"",
@@ -589,7 +565,7 @@
                  "y":42
                 }, 
                 {
-                 "gid":371,
+                 "gid":372,
                  "height":32,
                  "id":104,
                  "name":"",
@@ -636,7 +612,7 @@
                  "y":135.5
                 }, 
                 {
-                 "gid":373,
+                 "gid":374,
                  "height":32,
                  "id":113,
                  "name":"",
@@ -648,7 +624,7 @@
                  "y":32.5
                 }, 
                 {
-                 "gid":373,
+                 "gid":374,
                  "height":32,
                  "id":114,
                  "name":"",
@@ -684,7 +660,7 @@
                  "y":306
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":118,
                  "name":"",
@@ -696,7 +672,7 @@
                  "y":7.5
                 }, 
                 {
-                 "gid":371,
+                 "gid":372,
                  "height":32,
                  "id":119,
                  "name":"",
@@ -708,7 +684,7 @@
                  "y":12.5
                 }, 
                 {
-                 "gid":371,
+                 "gid":372,
                  "height":32,
                  "id":120,
                  "name":"",
@@ -743,7 +719,7 @@
                  "y":141.5
                 }, 
                 {
-                 "gid":371,
+                 "gid":372,
                  "height":32,
                  "id":125,
                  "name":"",
@@ -755,7 +731,7 @@
                  "y":24
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":127,
                  "name":"",
@@ -767,7 +743,7 @@
                  "y":34
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":128,
                  "name":"",
@@ -779,7 +755,7 @@
                  "y":50
                 }, 
                 {
-                 "gid":371,
+                 "gid":372,
                  "height":32,
                  "id":130,
                  "name":"",
@@ -791,7 +767,7 @@
                  "y":26
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":131,
                  "name":"",
@@ -803,15 +779,63 @@
                  "y":35.5
                 }, 
                 {
-                 "height":19.5,
+                 "height":16.5,
                  "id":132,
                  "name":"#floor1Atrium-SnackVending",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":34.5,
+                 "width":36,
                  "x":28.5,
                  "y":61.5
+                }, 
+                {
+                 "gid":361,
+                 "height":32,
+                 "id":133,
+                 "name":"",
+                 "rotation":0,
+                 "type":"front",
+                 "visible":true,
+                 "width":32,
+                 "x":430,
+                 "y":222
+                }, 
+                {
+                 "gid":361,
+                 "height":32,
+                 "id":134,
+                 "name":"",
+                 "rotation":0,
+                 "type":"front",
+                 "visible":true,
+                 "width":32,
+                 "x":284,
+                 "y":318
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":135,
+                 "name":"MarkerGreeterA",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":213.5,
+                 "y":158.5
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":136,
+                 "name":"MarkerGreeterB",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":260,
+                 "y":158
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -820,7 +844,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":133,
+ "nextobjectid":137,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -897,7 +921,7 @@
         }, 
         {
          "columns":16,
-         "firstgid":360,
+         "firstgid":361,
          "image":"..\/..\/res\/props_small.png",
          "imageheight":512,
          "imagewidth":512,

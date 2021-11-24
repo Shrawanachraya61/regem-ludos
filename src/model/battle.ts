@@ -12,7 +12,7 @@ import {
   characterGetPosCenterPx,
   characterGetPosTopLeftPx,
 } from './character';
-import { setAtMarker } from 'controller/scene-commands';
+import { setAtMarker } from 'controller/scene/scene-commands';
 import { getCurrentPlayer, getNow } from './generics';
 import { BattleActionType, SwingType } from 'controller/battle-actions';
 import { Animation } from 'model/animation';

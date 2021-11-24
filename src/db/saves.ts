@@ -81,14 +81,7 @@ export const init = () => {
       party: [0],
       battlePositions: [0],
     },
-    highScores: {
-      ticTacToe: 0,
-      invaderz: 0,
-      elasticity: 0,
-      vortex: 0,
-      golems: 0,
-      president: 0,
-    },
+    leaderboards: {},
     stores: {},
   };
 };

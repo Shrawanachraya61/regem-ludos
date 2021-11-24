@@ -1,6 +1,6 @@
 import { BattleActions } from 'controller/battle-actions';
-import { setAtMarker } from 'controller/scene-commands';
-import { createWalkerAI } from 'db/overworld-ai';
+import { setAtMarker } from 'controller/scene/scene-commands';
+import { createIntervalAI, createWalkerAI } from 'db/overworld-ai';
 import { battleStatsCreate } from 'model/battle';
 import {
   AnimationState,
@@ -8,9 +8,11 @@ import {
   CharacterTemplate,
   WeaponEquipState,
   characterSetFacing,
+  Character,
 } from 'model/character';
 import { getCurrentRoom } from 'model/generics';
 import { roomRemoveCharacter } from 'model/room';
+import { randInArr } from 'utils';
 
 export const init = () => {
   const exp = {} as { [key: string]: CharacterTemplate };
@@ -124,7 +126,7 @@ export const init = () => {
 
   exp.Floor1AtriumPingPongSearcher = {
     name: 'Floor1AtriumPingPongSearcher',
-    nameLabel: 'Distressed Girl',
+    nameLabel: 'Ping Pong Girl',
     spriteBase: 'girl2',
     facing: Facing.RIGHT_DOWN,
     animationState: AnimationState.IDLE,
@@ -138,6 +140,12 @@ export const init = () => {
     talkTrigger: 'floor1-atrium-greeter-employee',
     facing: Facing.LEFT_DOWN,
     animationState: AnimationState.IDLE,
+    overworldAi: createWalkerAI(['MarkerGreeterA', 'MarkerGreeterB'], {
+      pauseDurationMs: 3500,
+      onReachDestination: ch => {
+        characterSetFacing(ch, Facing.LEFT_DOWN);
+      },
+    }),
   };
 
   exp.Floor1AtriumNPC1 = {
@@ -232,6 +240,9 @@ export const init = () => {
     talkTrigger: 'Floor1East1PrizeEmployee',
     facing: Facing.RIGHT_DOWN,
     animationState: AnimationState.IDLE,
+    overworldAi: createIntervalAI(2000, (ch: Character) => {
+      characterSetFacing(ch, randInArr([Facing.LEFT_UP, Facing.RIGHT_DOWN]));
+    }),
   };
 
   exp.Floor1DNDPlayer1 = {
@@ -286,6 +297,46 @@ export const init = () => {
     talkTrigger: 'Floor1East2_ZagPlayer',
     facing: Facing.RIGHT_UP,
     animationState: AnimationState.IDLE,
+  };
+
+  exp.Floor1SaveRoomEmployee = {
+    name: 'Employee',
+    nameLabel: 'Employee',
+    spriteBase: 'employee-guy',
+    talkTrigger: 'Floor1West1_Employee',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    overworldAi: createIntervalAI(2000, (ch: Character) => {
+      characterSetFacing(
+        ch,
+        randInArr([
+          Facing.LEFT_DOWN,
+          Facing.LEFT,
+          Facing.DOWN,
+          Facing.RIGHT_DOWN,
+        ])
+      );
+    }),
+  };
+
+  exp.Floor1StorageEmployee = {
+    name: 'Employee',
+    nameLabel: 'Storage Employee',
+    spriteBase: 'employee-guy5',
+    talkTrigger: 'Floor1East1Storage_Employee',
+    facing: Facing.RIGHT_UP,
+    animationState: AnimationState.IDLE,
+    // overworldAi: createIntervalAI(2000, (ch: Character) => {
+    //   characterSetFacing(
+    //     ch,
+    //     randInArr([
+    //       Facing.LEFT_DOWN,
+    //       Facing.LEFT,
+    //       Facing.DOWN,
+    //       Facing.RIGHT_DOWN,
+    //     ])
+    //   );
+    // }),
   };
 
   return exp;
