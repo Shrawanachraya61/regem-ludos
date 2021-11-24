@@ -99,3 +99,4 @@ Music,music_tutorial,music/tutorial.mp3
 Music,music_tutorial_dungeon,music/tutorial_dungeon.mp3
 Music,music_pre_tense_battle,music/pre_tense_battle.mp3
 Music,music_store,music/store.mp3
+Music,music_snoop,music/snoop.mp3

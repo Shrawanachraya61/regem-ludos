@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.2" name="props-dynamic" tilewidth="177" tileheight="108" tilecount="7" columns="0">
+<tileset version="1.5" tiledversion="1.7.2" name="props-dynamic" tilewidth="177" tileheight="108" tilecount="8" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="32" height="64" source="tree1.png"/>
@@ -21,5 +21,8 @@
  </tile>
  <tile id="6">
   <image width="92" height="58" source="iso-text/prizes_here.png"/>
+ </tile>
+ <tile id="7">
+  <image width="84" height="49" source="iso-text/flags.png"/>
  </tile>
 </tileset>
