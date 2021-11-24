@@ -49,8 +49,8 @@
 +waitMS(750);
 
 #utils-kiosk-stats-activate
-step,this
-action,utils-kiosk-status-activate-action
+step-first,?with(Haptic Bracer):this
+action,?with(Haptic Bracer):utils-kiosk-status-activate-action
 @this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
 @utils-kiosk-status-activate-action
@@ -62,6 +62,50 @@ action,utils-kiosk-status-activate-action
 step,this
 @this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
+
+#utils-kioskStats
+step-first,?with(Haptic Bracer):utils-kioskStats_on
+step-off,?with(Haptic Bracer):utils-kioskStats_off
+action,?with(Haptic Bracer):utils-kioskStats_action
+step-first,utils-kioskStats_no_bracer
+action,utils-kioskStats_action_cancel
+@utils-kioskStats_on
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskStats_off
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
+@utils-kioskStats_action
++pauseOverworld();
++playSound(blip);
++showUISection(LevelUp);
+@utils-kioskStats_no_bracer
++setCharacterText('This kiosk requires a Haptic Bracer.');
+@utils-kioskStats_action_cancel
++playSound(terminal_cancel);
+
+#utils-kioskSavePoint
+step-first,utils-kioskSavePoint_on
+step-off,utils-kioskSavePoint_off
+action,utils-kioskSavePoint_action
+@utils-kioskSavePoint_on
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskSavePoint_off
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+@utils-kioskSavePoint_action
++pauseOverworld();
++playSound(blip);
++showUISection(Save);
+
+#utils-kioskInfoStats
+step-first,utils-kioskInfoStats_on
+action,utils-kioskInfoStats_action
+@utils-kioskInfoStats_on
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskInfoStats_action
++pauseOverworld();
++playSound(blip);
++showUISection(InfoStats);
 
 #utils-save-point-activate
 step,this
@@ -82,7 +126,7 @@ step,this
 step-first,this
 action,utils-heal-pool-action
 @this
-+setCharacterText('Press (X) to imbibe the liquid in the pool.');
++setCharacterText('Press Action (X) to imbibe the liquid in the pool.');
 @utils-heal-pool-action
 +playSound(rez);
 // +changeTileAtMarker(MarkerHealPool, HEAL_POOL_INACTIVE);
@@ -209,6 +253,27 @@ action,utils-heal-pool-action
 +waitMS(33);
 +setFacing([ARG0], 'left');
 +waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+
+// ARG0 = name of character to look around
+@lookAroundQuestion
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(200);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(200);
 +setFacing([ARG0], 'leftdown');
 +waitMS(33);
 +setFacing([ARG0], 'down');

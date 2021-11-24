@@ -22,7 +22,7 @@ import {
   getCurrentQuestStep,
   questIsCompleted,
   questIsNotStarted,
-} from 'controller/quest';
+} from 'model/quest';
 
 beforeAll(async () => {
   // enableConsole();

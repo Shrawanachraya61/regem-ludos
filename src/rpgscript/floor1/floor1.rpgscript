@@ -530,7 +530,7 @@ Sigma: "<cascade-letters>......"
 +endConversation();
 
 #Floor1East2_DNDPlayer1
-action,?once():Floor1East2_DNDPlayer1_1
+action,?once('6d14dafb'):Floor1East2_DNDPlayer1_1
 action,Floor1East2_DNDPlayer1_2
 @Floor1East2_DNDPlayer1_1
 +setConversation(Ada);
@@ -561,7 +561,7 @@ DNDPlayer2: "I wish that dude would finish his turn already."
 +endConversation();
 
 #Floor1East2_DNDPlayer3
-action,?once():Floor1East2_DNDPlayer3_1
+action,?once('09351817'):Floor1East2_DNDPlayer3_1
 action,Floor1East2_DNDPlayer3_2
 @Floor1East2_DNDPlayer3_1
 +setConversation(Ada);
@@ -582,8 +582,8 @@ DNDPlayer3: "You know, I kinda got hungry all of a sudden."
 +endConversation();
 
 #Floor1East2_DNDPlayer4
-action,?once():Floor1East2_DNDPlayer4_1
-action,?once():Floor1East2_DNDPlayer4_2
+action,?once('56583b45'):Floor1East2_DNDPlayer4_1
+action,?once('f01fb772'):Floor1East2_DNDPlayer4_2
 action,Floor1East2_DNDPlayer4_3
 @Floor1East2_DNDPlayer4_1
 +setConversation(Ada);
@@ -664,7 +664,7 @@ ZagPlayer: "Oh well, less players means better opportunity for me to get a high 
 +endConversation();
 
 #Floor1West1_Employee
-action,?once():Floor1West1_Employee_1
+action,?once('88c5e1cb'):Floor1West1_Employee_1
 action,Floor1West1_Employee_2
 @Floor1West1_Employee_1
 +setConversation(Ada);

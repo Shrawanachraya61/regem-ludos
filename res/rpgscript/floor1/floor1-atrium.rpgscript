@@ -111,6 +111,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +playSound('blip');
   +waitMS(1000);
   Atrium Desk Employee: "Excellent, <delay=500 cascade> I've set up a profile for you."
+  Atrium Desk Employee: "And you said that you prefer <color=YELLOW>Ada</>?  I've set that as your nickname."
   +:wink(Atrium Desk Employee);
   +:spin(Atrium Desk Employee);
   Atrium Desk Employee: "Please allow me to give you a rundown of our facility."
@@ -241,6 +242,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +callScript('utils-stop-Conscience-dialogue');
   +endConversation();
   +setStorage(quest_floor1-atrium_acquire-haptic-bracer);
+  +resetAi(AtriumGreeterEmployee);
 @floor1-atrium-desk-employee2
   +lookAtEachOther('Ada','Atrium Desk Employee');
   +setConversation('Ada');
@@ -348,6 +350,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
 
 #floor1-atrium-greeter-employee
   step-first,?once('e4f5209f'):floor1-atrium-greeter-employee-step
+  action,?func(questStepEQ, PingPong, 0):floor1AtriumGreeterEmployeePingPong
   action,?once('707117f7'):this
   action,floor1-atrium-greeter-employee2
 @this
@@ -368,6 +371,7 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +endConversation();
 @floor1-atrium-greeter-employee-step
   +setConversation(Ada);
+  +stopAi(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Hello there!"
   +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
   AtriumGreeterEmployee: "<cascade>Welcome to the <color=BLUE>Regem Ludos Arcade</>!"
@@ -421,32 +425,6 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +:utils-stop-Conscience-dialogue();
   +endConversation(500, true);
 
-#floor1-AtriumPingPongSearcher
-action,this
-@this
-+lookAtEachOther(Ada, Floor1AtriumPingPongSearcher);
-+setConversation(Ada);
-Floor1AtriumPingPongSearcher: "<cascade>I <cascade italic>really<cascade> wanted to play ping pong, but I can't find any spare balls and paddles."
-+lookAtCharacter(Floor1AtriumPingPongSearcher, Floor1PingPongGuyA);
-+:sad(Floor1AtriumPingPongSearcher);
-+panCameraToFitCharacters(500, true, Ada, Floor1PingPongGuyA);
-Floor1AtriumPingPongSearcher: "And those two guys over there have been playing for a long time."
-+panCameraBackToPlayer();
-+:teardrop(Floor1AtriumPingPongSearcher);
-Floor1AtriumPingPongSearcher: "They won't let me borrow a paddle though, even though I asked."
-+endConversation();
-
-#floor1-bowling-girl
-action,this
-@this
-+lookAtEachOther(Ada, Floor1BowlingGirl);
-+setConversation(Ada);
-Floor1BowlingGirl: "I just realized that bowling is kinda like golf."
-Floor1BowlingGirl: "<cascade>Not like physically or anything -- I mean sheesh, those bowling balls are super heavy -- but like, in the <italic>game sense."
-Floor1BowlingGirl: "In both games you gotta pick a starting point, spin, and aiming direction."
-Floor1BowlingGirl: "Feels like everything's got a connection sometimes, you know."
-+endConversation();
-
 #floor1-AtriumNPC1NPC2
 action,this
 @this
@@ -486,3 +464,11 @@ action,this
 +lookAtEachOther(Ada, FloorAtriumWalkingNPC);
 FloorAtriumWalkingNPC: "Sometimes I just like to come in here and walk around."
 +endConversation();
+
+#floor1Atrium-SnackVending
+action,this
+step-first,floor1Atrium-SnackVending_step
+@this
++showStore(SNACK_VENDING_MACHINE);
+@floor1Atrium-SnackVending_step
++setCharacterText('Press Action (X) to use Vending Machine.');

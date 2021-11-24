@@ -1087,9 +1087,12 @@ Conscience: "Since you're such a shut-in nerd, whatever gets you out of the hous
 #floor1-tut-rdy-to-lvl-up
 step-first,?once('2c096f23'):this
 @this
++setConversation(Ada);
 +:utils-start-Conscience-dialogue();
-+walkToMarker(Conscience, MarkerLevelConscience, 0, 0, false);
++walkToMarker(Conscience, MarkerLevelConscience, 0, 0, true);
 +walkToMarker(Ada, MarkerLevelAda);
++setFacing(Ada, rightdown);
++setFacing(Conscience, rightdown);
 Ada: "This terminal looks slightly different from the others."
 +:question(Conscience);
 Conscience: "Yeah, it does.  I wonder what it's for?"
@@ -1098,14 +1101,21 @@ Conscience: "Yeah, it does.  I wonder what it's for?"
 Ada: "Have you noticed that we have been acquiring <color=BLUE>experience</> from the battles we fight?"
 +:lightbulb(Conscience);
 Conscience: "Oh, yeah!  You think we can use this terminal to level up or something?"
-+setFacing(Ada, rightup);
++:teardrop(Ada);
++setFacing(Ada, down);
++waitMS(50);
++setFacing(Ada, leftdown);
 +:minorPause();
-Ada: "Not that I am particularly invested in this particular world..."
+Ada: "Not that I am particularly invested in this VR game..."
++setFacing(Ada, left);
++waitMS(50);
++setFacing(Ada, leftup);
++waitMS(50);
 +lookAtEachOther(Ada, Conscience);
 +:minorPause();
 Ada: "But I certainly would not mind some more power."
 +:angry(Ada);
-Ada: "Specifically if it gets me out of here with less effort."
+Ada: "Specifically if it gets me out of here with less <italic>effort</>."
 +:exclaim(Conscience);
 Conscience: "It wouldn't hurt to try, would it?"
 +:utils-stop-Conscience-dialogue();

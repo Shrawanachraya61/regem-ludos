@@ -27,7 +27,7 @@ import MenuLoad from 'view/components/MenuSection/MenuLoad';
 import { sceneCreate } from 'model/scene';
 import initDb from 'db';
 import { AppStateInitial } from 'model/store';
-import { beginQuest } from 'controller/quest';
+import { beginQuest } from 'model/quest';
 
 beforeEach(async () => {
   const scene = sceneCreate();
