@@ -514,6 +514,7 @@ export const drawRoom = (
       visible,
       isMarker,
       isTrigger,
+      isFloor,
       polygon,
     } = room.renderObjects[i];
     if (!visible) {
@@ -523,6 +524,10 @@ export const drawRoom = (
     if (isPaused) {
       if (character) {
         drawCharacter(character);
+      } else if (sprite && !isFloor && !isMarker && !isTrigger) {
+        drawSprite(sprite, px as number, py as number);
+      } else if (anim) {
+        drawAnimation(anim, px as number, py as number);
       }
     } else {
       if (isMarker) {

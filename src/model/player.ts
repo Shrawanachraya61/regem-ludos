@@ -40,7 +40,7 @@ export const playerCreate = (leaderTemplate: CharacterTemplate): Player => {
       getItemStrict('Muffin'),
       getItemStrict('DilutedAcidicCompound'),
       getItemStrict('DilutedAcidicCompound'),
-      // getItemStrict('HapticBracer'),
+      getItemStrict('HapticBracer'),
     ],
     // backpack: [],
     party: [leader],

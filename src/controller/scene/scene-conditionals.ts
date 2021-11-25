@@ -82,7 +82,7 @@ const questStepLT = (questName: string, stepNumber: string | number) => {
   const quest = getQuest(questName);
   if (!quest) {
     console.error(
-      `Error in conditional.  Cannot check questStepGT.  No quest with name: ${questName}`
+      `Error in conditional.  Cannot check questStepLT.  No quest with name: ${questName}`
     );
     return false;
   }
@@ -101,7 +101,7 @@ const questStepEQ = (questName: string, stepNumber: string | number) => {
   const quest = getQuest(questName);
   if (!quest) {
     console.error(
-      `Error in conditional.  Cannot check questStepGT.  No quest with name: ${questName}`
+      `Error in conditional.  Cannot check questStepEQ.  No quest with name: ${questName}`
     );
     return false;
   }

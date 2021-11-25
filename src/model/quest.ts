@@ -102,7 +102,7 @@ export const completeQuest = ((window as any).completeQuest = (
   }
 });
 
-export const completeQuestStep = (
+export const completeQuestStep = ((window as any).completeQuestStep = (
   scene: Scene,
   questName: string,
   ind: number
@@ -117,7 +117,7 @@ export const completeQuestStep = (
           scene.storage[step.completedScriptKey as string] = true;
 
           pushLastUpdatedQuest(questName);
-          if (i < quest.steps.length - 1) {
+          if (i >= ind && i < quest.steps.length - 1) {
             return;
           }
         }
@@ -132,7 +132,7 @@ export const completeQuestStep = (
   } else {
     console.error('cannot completeQuestStep, quest not found:', questName);
   }
-};
+});
 
 export const getCurrentQuestStep = (scene: Scene, questName: string) => {
   const quest = getIfExists(questName);

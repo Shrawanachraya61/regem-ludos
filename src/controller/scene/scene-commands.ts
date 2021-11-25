@@ -493,8 +493,10 @@ export const setFromDialog = (chName: string) => {
  * Waits for the specified number of milliseconds, ignoring all user input until that time.
  *
  * The `cb` argument is not to be used in rpgscript, and only for internal use.
+ * The `isAbsolute` argument is used to tell the interpreter that this should not be affected
+ *   by the cutscene speed multiplier
  */
-export const waitMS = (ms: number, cb?: () => void) => {
+export const waitMS = (ms: number, cb?: () => void, isAbsolute?: boolean) => {
   const scene = getCurrentScene();
   scene.isWaitingForTime = true;
   clearTimeout(scene.waitTimeoutId);
@@ -507,7 +509,7 @@ export const waitMS = (ms: number, cb?: () => void) => {
   };
   scene.waitTimeoutId = setTimeout(
     scene.waitTimeoutCb,
-    ms * (1 / getCutsceneSpeedMultiplier())
+    ms * (isAbsolute ? 1 : 1 / getCutsceneSpeedMultiplier())
   ) as any;
   return true;
 };
@@ -1837,9 +1839,9 @@ export const removeItem = (itemName: string, itemText?: string) => {
 /**
  * Add/remove Tokens from the player, and show a dialogue indicating how much was gained/lost.
  */
-export const modifyTokens = (amount: number) => {
+export const modifyTokens = (amount: number | string) => {
   const player = getCurrentPlayer();
-  playerModifyTokens(player, amount);
+  playerModifyTokens(player, parseInt(amount as string));
   if (amount >= 0) {
     playSoundName('token_get');
     return playDialogue('Narrator', `Gained ${amount} Regem Ludos Tokens.`);
@@ -1852,9 +1854,9 @@ export const modifyTokens = (amount: number) => {
 /**
  * Add/remove Tickets from the player, and show a dialogue indicating how much was gained/lost.
  */
-export const modifyTickets = (amount: number) => {
+export const modifyTickets = (amount: number | string) => {
   const player = getCurrentPlayer();
-  playerModifyTickets(player, amount);
+  playerModifyTickets(player, parseInt(amount as string));
   if (amount >= 0) {
     return playDialogue('Narrator', `Gained ${amount} Prize Tickets.`);
   } else {
@@ -2628,7 +2630,7 @@ export const floor1TutToggleColorDoors = (
   color: string,
   shouldChangeState: string
 ) => {
-  const changeState = shouldChangeState === 'true';
+  const changeState = shouldChangeState;
 
   if (changeState) {
     const key = `tut_vr_${color.toLowerCase()}_doors`;

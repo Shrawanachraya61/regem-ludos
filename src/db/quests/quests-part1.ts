@@ -119,30 +119,36 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
       },
       {
         completedScriptKey: 'quest_floor1PingPongGirl_3',
+        label: 'Keep searching for Ping Pong Equipment.',
+        description:
+          'The boys will not give up their paddles, but there has to be someone around here who knows how to get more equipment...',
+      },
+      {
+        completedScriptKey: 'quest_floor1PingPongGirl_4',
         label: 'Meet the secretive person by the elevator on floor 1.',
         description:
           'Somebody approached and said that they know of a way to get ping pong equipment.  Speak with this individual by the elevator on floor 1.',
       },
       {
-        completedScriptKey: 'quest_floor1PingPongGirl_4',
+        completedScriptKey: 'quest_floor1PingPongGirl_5',
         label: 'Enter the secret storage room near the floor 1 prize counter.',
         description:
           'Apparantly there is a secret storage room accessible via a door on the south wall of the room on floor 1 with the prize counter.  Find it and give the password "ZOOFA" to whomever is inside.',
       },
       {
-        completedScriptKey: 'quest_floor1PingPongGirl_5',
+        completedScriptKey: 'quest_floor1PingPongGirl_6',
         label:
           "Get an employee's vest and give it to the employee in the storage room.",
         description:
-          'An employee inside the storage room requires an Employee Vest before he will help.  Find this item.  He mentioned that "somebody is selling it somewhere."',
+          'An employee inside the storage room requires an Employee Vest before he will help. He mentioned that "somebody is bound to be selling it somewhere."',
       },
       {
-        completedScriptKey: 'quest_floor1PingPongGirl_6',
+        completedScriptKey: 'quest_floor1PingPongGirl_7',
         label: 'Return to the employee in the storage room.',
         description: 'Give the employee in the storage room the Employee Vest.',
       },
       {
-        completedScriptKey: 'quest_floor1PingPongGirl_7',
+        completedScriptKey: 'quest_floor1PingPongGirl_8',
         label: 'Return to the Ping Pong Girl.',
         description: 'Give the Ping Pong Equipment to the Ping Pong Girl.',
       },

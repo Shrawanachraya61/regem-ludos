@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="195">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="197">
  <editorsettings>
   <export target="../src/map/floor1-east2.json" format="json"/>
  </editorsettings>
@@ -19,7 +19,7 @@
   <image source="../res/walls128.png" width="256" height="256"/>
  </tileset>
  <tileset firstgid="353" source="../res/props-dynamic.tiled-sheet.tsx"/>
- <tileset firstgid="360" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+ <tileset firstgid="361" name="props_small" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../res/props_small.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tiles" width="32" height="32">
@@ -106,38 +106,38 @@
   <object id="142" name="MarkerRedDoorBCK2" gid="194" x="393.5" y="328.5" width="32" height="32"/>
   <object id="143" name="#floor1-transitionToFloor1East1FromFloor2East2" x="367" y="328" width="32.5" height="23"/>
   <object id="144" name="MarkerFromEast1" gid="194" x="386" y="298" width="32" height="32"/>
-  <object id="146" type="front" gid="384" x="112.5" y="-6.5" width="32" height="32"/>
-  <object id="147" type="40" gid="386" x="209" y="-7" width="32" height="32"/>
-  <object id="148" type="front" gid="388" x="160.5" y="-6.5" width="32" height="32"/>
-  <object id="149" type="11" gid="407" x="191.5" y="66.5" width="32" height="32"/>
-  <object id="150" type="24" gid="407" x="138.5" y="49.5" width="32" height="32"/>
-  <object id="151" type="16" gid="423" x="131.5" y="62.5" width="32" height="32"/>
-  <object id="152" type="24" gid="423" x="208" y="46" width="32" height="32"/>
-  <object id="153" type="22" gid="401" x="124.5" y="7.5" width="32" height="32"/>
-  <object id="154" type="22" gid="397" x="105" y="9" width="32" height="32"/>
-  <object id="155" type="22" gid="399" x="202" y="8" width="32" height="32"/>
-  <object id="157" type="22" gid="397" x="137" y="9" width="32" height="32"/>
-  <object id="158" type="16" gid="422" x="135" y="65" width="32" height="32"/>
-  <object id="159" type="16" gid="422" x="138.5" y="63.5" width="32" height="32"/>
-  <object id="161" gid="380" x="222" y="74" width="32" height="32"/>
-  <object id="162" gid="379" x="160.5" y="71.5" width="32" height="32"/>
-  <object id="165" gid="382" x="222" y="76" width="32" height="32"/>
-  <object id="166" type="12" gid="407" x="159" y="67" width="32" height="32"/>
-  <object id="167" type="18" gid="421" x="175.5" y="58.5" width="32" height="32"/>
-  <object id="168" type="22" gid="389" x="310" y="58" width="32" height="32"/>
-  <object id="169" type="16" gid="390" x="121.5" y="64.5" width="32" height="32"/>
-  <object id="170" type="22" gid="390" x="204.5" y="61.5" width="32" height="32"/>
-  <object id="171" type="30" gid="389" x="145" y="43" width="32" height="32"/>
-  <object id="172" type="6" gid="420" x="150.5" y="25.5" width="32" height="32"/>
-  <object id="173" type="6" gid="420" x="118.5" y="25.5" width="32" height="32"/>
-  <object id="174" type="6" gid="420" x="214.5" y="25.5" width="32" height="32"/>
-  <object id="175" type="6" gid="418" x="134.5" y="25.5" width="32" height="32"/>
-  <object id="176" type="11" gid="418" x="143.5" y="18.5" width="32" height="32"/>
-  <object id="177" type="11" gid="418" x="207.5" y="18.5" width="32" height="32"/>
-  <object id="178" type="11" gid="418" x="111.5" y="18.5" width="32" height="32"/>
-  <object id="179" type="11" gid="418" x="127.5" y="18.5" width="32" height="32"/>
-  <object id="180" type="8" gid="415" x="104" y="76" width="32" height="32"/>
-  <object id="181" type="7" gid="414" x="271.5" y="104.5" width="32" height="32"/>
+  <object id="146" type="front" gid="385" x="112.5" y="-6.5" width="32" height="32"/>
+  <object id="147" type="40" gid="387" x="209" y="-7" width="32" height="32"/>
+  <object id="148" type="front" gid="389" x="160.5" y="-6.5" width="32" height="32"/>
+  <object id="149" type="11" gid="408" x="191.5" y="66.5" width="32" height="32"/>
+  <object id="150" type="24" gid="408" x="138.5" y="49.5" width="32" height="32"/>
+  <object id="151" type="16" gid="424" x="131.5" y="62.5" width="32" height="32"/>
+  <object id="152" type="24" gid="424" x="208" y="46" width="32" height="32"/>
+  <object id="153" type="22" gid="402" x="124.5" y="7.5" width="32" height="32"/>
+  <object id="154" type="22" gid="398" x="105" y="9" width="32" height="32"/>
+  <object id="155" type="22" gid="400" x="202" y="8" width="32" height="32"/>
+  <object id="157" type="22" gid="398" x="137" y="9" width="32" height="32"/>
+  <object id="158" type="16" gid="423" x="135" y="65" width="32" height="32"/>
+  <object id="159" type="16" gid="423" x="138.5" y="63.5" width="32" height="32"/>
+  <object id="161" gid="381" x="222" y="74" width="32" height="32"/>
+  <object id="162" gid="380" x="160.5" y="71.5" width="32" height="32"/>
+  <object id="165" gid="383" x="222" y="76" width="32" height="32"/>
+  <object id="166" type="12" gid="408" x="159" y="67" width="32" height="32"/>
+  <object id="167" type="18" gid="422" x="175.5" y="58.5" width="32" height="32"/>
+  <object id="168" type="22" gid="390" x="310" y="58" width="32" height="32"/>
+  <object id="169" type="16" gid="391" x="121.5" y="64.5" width="32" height="32"/>
+  <object id="170" type="22" gid="391" x="204.5" y="61.5" width="32" height="32"/>
+  <object id="171" type="30" gid="390" x="145" y="43" width="32" height="32"/>
+  <object id="172" type="6" gid="421" x="150.5" y="25.5" width="32" height="32"/>
+  <object id="173" type="6" gid="421" x="118.5" y="25.5" width="32" height="32"/>
+  <object id="174" type="6" gid="421" x="214.5" y="25.5" width="32" height="32"/>
+  <object id="175" type="6" gid="419" x="134.5" y="25.5" width="32" height="32"/>
+  <object id="176" type="11" gid="419" x="143.5" y="18.5" width="32" height="32"/>
+  <object id="177" type="11" gid="419" x="207.5" y="18.5" width="32" height="32"/>
+  <object id="178" type="11" gid="419" x="111.5" y="18.5" width="32" height="32"/>
+  <object id="179" type="11" gid="419" x="127.5" y="18.5" width="32" height="32"/>
+  <object id="180" type="8" gid="416" x="104" y="76" width="32" height="32"/>
+  <object id="181" type="7" gid="415" x="271.5" y="104.5" width="32" height="32"/>
   <object id="182" name="Floor1DNDPlayer1" gid="193" x="148" y="90" width="32" height="32"/>
   <object id="183" name="MarkerPaceA" gid="194" x="179.5" y="88.5" width="32" height="32"/>
   <object id="184" name="MarkerPaceB" gid="194" x="139.5" y="90.5" width="32" height="32"/>
@@ -146,10 +146,12 @@
   <object id="187" name="Floor1DNDPlayer4" gid="193" x="198" y="86" width="32" height="32"/>
   <object id="188" name="Marker2PaceA" gid="194" x="148.5" y="41.5" width="32" height="32"/>
   <object id="189" name="Marker2PaceB" gid="194" x="210" y="38" width="32" height="32"/>
-  <object id="190" type="8" gid="415" x="345" y="249" width="32" height="32"/>
+  <object id="190" type="8" gid="416" x="345" y="249" width="32" height="32"/>
   <object id="191" name="#Floor1East2_ZagMachine" x="364" y="78.5" width="68" height="16.5"/>
   <object id="192" name="MarkerZagMachine" gid="194" x="375" y="87" width="32" height="32"/>
-  <object id="193" type="8" gid="408" x="311.5" y="86.5" width="32" height="32"/>
+  <object id="193" type="8" gid="409" x="311.5" y="86.5" width="32" height="32"/>
   <object id="194" name="Floor1ZagPlayer" gid="193" x="344.5" y="87.5" width="32" height="32"/>
+  <object id="195" name="#Floor1ShadyPerson" x="300.5" y="109.5" width="18" height="98"/>
+  <object id="196" name="Floor1ShadyPerson" gid="193" x="284" y="202" width="32" height="32"/>
  </objectgroup>
 </map>

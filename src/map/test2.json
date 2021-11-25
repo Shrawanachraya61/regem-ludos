@@ -492,8 +492,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":81.5,
-                 "y":402.5
+                 "x":278.5,
+                 "y":511.5
                 }, 
                 {
                  "height":69.125,
@@ -575,6 +575,18 @@
                  "width":28,
                  "x":24,
                  "y":356
+                }, 
+                {
+                 "gid":201,
+                 "height":32,
+                 "id":87,
+                 "name":"ItemTicketCache10",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":243,
+                 "y":521
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -583,7 +595,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":87,
+ "nextobjectid":88,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

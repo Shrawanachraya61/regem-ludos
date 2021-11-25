@@ -42,8 +42,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":233.5,
-                 "y":44.5
+                 "x":147,
+                 "y":155
                 }, 
                 {
                  "gid":194,
@@ -406,7 +406,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON1"
+                         "value":"ENCOUNTER_TUT_DUNGEON2"
                         }, 
                         {
                          "name":"overworldAi",
@@ -452,7 +452,7 @@
                         {
                          "name":"encounterName",
                          "type":"string",
-                         "value":"ENCOUNTER_TUT_DUNGEON2"
+                         "value":"ENCOUNTER_TUT_DUNGEON3"
                         }, 
                         {
                          "name":"overworldAi",
@@ -528,19 +528,19 @@
                  "gid":201,
                  "height":32,
                  "id":173,
-                 "name":"ItemFeeblePotion",
+                 "name":"ItemStarterArmor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":444,
-                 "y":332
+                 "x":445,
+                 "y":333
                 }, 
                 {
                  "gid":201,
                  "height":32,
                  "id":174,
-                 "name":"ItemStrongPotion",
+                 "name":"ItemMantleOfQuickness",
                  "rotation":0,
                  "type":"",
                  "visible":true,

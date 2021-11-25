@@ -820,20 +820,24 @@ export const applyArmorDamage = (
   let nextDamageAmount = damage;
   let armorReduced = false;
   if (isPierce) {
-    playSoundName('battle_armor_broken');
     console.log('BROKE ARMOR WITH PIERCE ATTACK!');
-    victim.armor--;
-    armorReduced = true;
+    if (victim.armor > 0) {
+      playSoundName('battle_armor_broken');
+      victim.armor--;
+      armorReduced = true;
+    }
     nextDamageAmount = 0;
   } else if (victim.armorTimer.isComplete()) {
     playSoundName('battle_armor_hit');
     victim.armorTimer.start();
     nextDamageAmount = 0;
   } else {
-    playSoundName('battle_armor_broken');
     console.log('BROKE ARMOR WITH SIMULTANEOUS ATTACK!');
-    victim.armor--;
-    armorReduced = true;
+    if (victim.armor > 0) {
+      playSoundName('battle_armor_broken');
+      victim.armor--;
+      armorReduced = true;
+    }
   }
 
   if (armorReduced) {
@@ -1057,6 +1061,13 @@ export const resetCooldownTimer = (bCh: BattleCharacter) => {
 
     console.log('RESET COOLDOWN TIMER', bCh.ch.name, newTime, cdr, speed);
     bCh.actionTimer.start(newTime);
+    if (
+      battleCharacterIsStaggered(bCh) ||
+      battleCharacterIsChanneling(bCh) ||
+      battleCharacterIsCasting(bCh)
+    ) {
+      bCh.actionTimer.pause();
+    }
   }
 };
 

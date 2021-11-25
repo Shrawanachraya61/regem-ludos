@@ -366,8 +366,20 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":477,
-                 "y":263
+                 "x":465.5,
+                 "y":264.5
+                }, 
+                {
+                 "gid":201,
+                 "height":32,
+                 "id":196,
+                 "name":"ItemTicketCache10",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":486.5,
+                 "y":263.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -376,7 +388,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":196,
+ "nextobjectid":197,
  "orientation":"isometric",
  "properties":[
         {

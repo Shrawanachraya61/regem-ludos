@@ -95,7 +95,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects">
-  <object id="112" name="MarkerPlayer" gid="194" x="233.5" y="44.5" width="32" height="32"/>
+  <object id="112" name="MarkerPlayer" gid="194" x="147" y="155" width="32" height="32"/>
   <object id="113" name="MarkerDoorFromVR2" gid="194" x="76" y="428" width="32" height="32"/>
   <object id="114" name="MarkerAda0" gid="194" x="108" y="416" width="32" height="32"/>
   <object id="117" name="TagMarkerPurple" gid="194" x="376" y="412" width="32" height="32"/>
@@ -128,7 +128,7 @@
   <object id="165" name="#utils-save-point-deactivate" x="88" y="432" width="68" height="68"/>
   <object id="166" name="TutRobotRoamer1" gid="193" x="228" y="204" width="32" height="32">
    <properties>
-    <property name="encounterName" value="ENCOUNTER_TUT_DUNGEON1"/>
+    <property name="encounterName" value="ENCOUNTER_TUT_DUNGEON2"/>
     <property name="overworldAi" value="ROAM_WALK_UP_DOWN"/>
    </properties>
   </object>
@@ -140,7 +140,7 @@
   </object>
   <object id="168" name="TutRobotRoamer1" gid="193" x="368.5" y="245.5" width="32" height="32">
    <properties>
-    <property name="encounterName" value="ENCOUNTER_TUT_DUNGEON2"/>
+    <property name="encounterName" value="ENCOUNTER_TUT_DUNGEON3"/>
     <property name="overworldAi" value="ROAM_WALK_RIGHTUP_LEFTDOWN"/>
    </properties>
   </object>
@@ -157,8 +157,8 @@
    </properties>
   </object>
   <object id="172" name="ItemPotion" gid="201" x="444" y="476" width="32" height="32"/>
-  <object id="173" name="ItemFeeblePotion" gid="201" x="444" y="332" width="32" height="32"/>
-  <object id="174" name="ItemStrongPotion" gid="201" x="172" y="12" width="32" height="32"/>
+  <object id="173" name="ItemStarterArmor" gid="201" x="445" y="333" width="32" height="32"/>
+  <object id="174" name="ItemMantleOfQuickness" gid="201" x="172" y="12" width="32" height="32"/>
   <object id="175" name="ItemQuartzRezGem" gid="201" x="236" y="28" width="32" height="32"/>
   <object id="176" name="MarkerSpotSavePoint" gid="194" x="122.5" y="451.5" width="32" height="32"/>
   <object id="177" name="#floor1-tut-transition-from-vr3-to-vr3-east" x="480.5" y="223.5" width="31.5" height="34.5"/>

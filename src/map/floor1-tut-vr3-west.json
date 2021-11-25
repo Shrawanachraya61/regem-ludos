@@ -354,7 +354,7 @@
                  "gid":201,
                  "height":32,
                  "id":158,
-                 "name":"ItemTrainingBow",
+                 "name":"ItemFastBow",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -430,6 +430,18 @@
                  "width":32,
                  "x":324.5,
                  "y":443.5
+                }, 
+                {
+                 "gid":201,
+                 "height":32,
+                 "id":163,
+                 "name":"ItemTicketCache10",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":446,
+                 "y":78
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -438,7 +450,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":162,
+ "nextobjectid":166,
  "orientation":"isometric",
  "properties":[
         {

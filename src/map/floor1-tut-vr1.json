@@ -149,6 +149,30 @@
                  "width":32,
                  "x":182,
                  "y":240
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":74,
+                 "name":"MarkerJasonExamineConscience",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":205.5,
+                 "y":346.5
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":75,
+                 "name":"MarkerJasonExamineConsciencePre",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":202,
+                 "y":296
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -157,7 +181,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":74,
+ "nextobjectid":76,
  "orientation":"isometric",
  "properties":[
         {

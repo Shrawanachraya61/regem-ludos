@@ -70,6 +70,7 @@ const DescriptionBody = style('div', {
   margin: '2px 0px',
   padding: '16px',
   height: 'calc(100% - 128px)',
+  overflowY: 'auto',
 });
 
 const newIconBob = keyframes({
@@ -159,7 +160,8 @@ const MenuJournal = (props: IMenuJournalProps) => {
                       marginTop: '0px',
                     }}
                   >
-                    {selectedQuestStep?.label ?? ''}
+                    {selectedQuestStep?.label ?? ''}{' '}
+                    {`(Step: ${selectedQuestStep?.i})`}
                   </p>
                   <p>{selectedQuestStep?.description ?? ''}</p>
                 </>

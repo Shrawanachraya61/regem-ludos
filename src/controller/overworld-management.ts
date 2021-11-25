@@ -408,13 +408,21 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
     const ch = room.characters[i];
     const [chX, chY] = characterGetPosBottom(ch);
     if (ch.talkTrigger && characterCollidesWithPoint(leader, [chX, chY, 16])) {
-      const scriptCaller = invokeTrigger(
-        getCurrentScene(),
+      const scriptCaller = getScriptCallerForTrigger(
         ch.talkTrigger,
         TriggerType.ACTION
       );
+      // const scriptCaller = invokeTrigger(
+      //   getCurrentScene(),
+      //   ch.talkTrigger,
+      //   TriggerType.ACTION,
+      //   true
+      // );
       if (scriptCaller !== null) {
         characterStopAi(ch);
+
+        // HACK: invokes the trigger once keys for talking
+        // invokeTrigger(getCurrentScene(), ch.talkTrigger, TriggerType.ACTION);
 
         if (
           roomDoCharactersOccupySameTile(room, ch, leader) ||
@@ -428,7 +436,6 @@ const checkAndCallTalkTrigger = async (): Promise<boolean> => {
             );
           }
         }
-        // playSoundName('dialog_start');
         await callTriggerScriptCaller(scriptCaller, {
           hideUi: true,
           disableKeys: true,

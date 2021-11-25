@@ -523,7 +523,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     const y: number = tiledProp.y - 32 * 2 + 16;
 
     const prop: Prop = {
-      id: `prop,${x},${y}`,
+      // id: `prop,${x},${y}`,
+      id: room.name + '_' + tiledProp.id,
       x,
       y,
       sprite: 'props_31', // the Present/Gift sprite
@@ -561,7 +562,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       p => p.name === 'encounterName'
     );
     if (customEncounterName) {
-      const roamerName = chTemplate.name + ',' + tiledObject.id;
+      const roamerName = (room.name =
+        '_' + chTemplate.name + '_' + tiledObject.id);
       const scene = getCurrentScene();
 
       if (sceneIsEncounterDefeated(scene, roamerName, room.name)) {
@@ -707,7 +709,7 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       } else if (isTreasure) {
         addTreasure(object);
       } else if (object.name && object.name.slice(0, 4) !== 'Prop') {
-        //HACK this breaks if a character is named Prop...
+        //HACK this breaks if a character is named something that starts with Prop...
         addCharacter(object);
       } else {
         addProp(object);

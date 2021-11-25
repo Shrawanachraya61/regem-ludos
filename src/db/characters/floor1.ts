@@ -326,17 +326,16 @@ export const init = () => {
     talkTrigger: 'Floor1East1Storage_Employee',
     facing: Facing.RIGHT_UP,
     animationState: AnimationState.IDLE,
-    // overworldAi: createIntervalAI(2000, (ch: Character) => {
-    //   characterSetFacing(
-    //     ch,
-    //     randInArr([
-    //       Facing.LEFT_DOWN,
-    //       Facing.LEFT,
-    //       Facing.DOWN,
-    //       Facing.RIGHT_DOWN,
-    //     ])
-    //   );
-    // }),
+  };
+
+  exp.Floor1ShadyPerson = {
+    name: 'ShadyPerson',
+    nameLabel: 'Inconspicuous Patron',
+    spriteBase: 'girl4',
+    talkTrigger: 'Floor1ShadyPerson',
+    facing: Facing.RIGHT_DOWN,
+    animationState: AnimationState.IDLE,
+    speed: 2.5,
   };
 
   return exp;

@@ -3,6 +3,7 @@ import { h } from 'preact';
 import ArmorIcon from './Armor';
 import ArrowIcon from './Arrow';
 import BattleGearIcon from './BattleGear';
+import BowIcon from './Bow';
 import BraceletIcon from './Bracelet';
 import BracerIcon from './Bracer';
 import CircleIcon from './Circle';
@@ -48,6 +49,7 @@ const icons = {
   armor: ArmorIcon,
   arrow: ArrowIcon,
   battleGear: BattleGearIcon,
+  bow: BowIcon,
   bracelet: BraceletIcon,
   bracer: BracerIcon,
   circle: CircleIcon,

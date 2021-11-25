@@ -20,7 +20,7 @@ import { ItemTemplate, ItemType, WeaponType } from '.';
 
 const COOLDOWN_MOD = 1;
 
-export const initBattleActions = (): Record<string, BattleAction> => {
+export const initBattleActions = () => {
   const exp = {
     NoWeapon: {
       name: '(No weapon)',
@@ -93,6 +93,28 @@ export const initBattleActions = (): Record<string, BattleAction> => {
       },
     },
     TrainingBowShoot: {
+      name: 'Shoot Bow',
+      description: 'Fire at the ranged target.',
+      cooldown: 2500 * COOLDOWN_MOD,
+      type: BattleActionType.RANGED,
+      meta: {
+        ranges: [RangeType.NORMAL],
+      },
+      cb: async function (battle: Battle, bCh: BattleCharacter): Promise<void> {
+        const baseDamage = 2;
+        const baseStagger = 1;
+        const target = getTarget(battle, bCh);
+        if (target) {
+          await doRange(battle, this, bCh, target, {
+            baseDamage,
+            baseStagger,
+            rangeType:
+              this.meta?.ranges?.[bCh.actionStateIndex] ?? RangeType.NORMAL,
+          });
+        }
+      },
+    },
+    TrainingBowShoot2: {
       name: 'Shoot Bow',
       description: 'Fire at the ranged target.',
       cooldown: 3500 * COOLDOWN_MOD,
@@ -183,5 +205,14 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     weaponType: WeaponType.SWORD,
     skills: [battleActions.TrainingSwordSwingPlus],
     icon: 'sword',
+  };
+  exp.FastBow = {
+    label: 'Fast Bow',
+    description:
+      'A version of the Training Bow that can be fired twice instead of once per round at the cost of a slightly-longer cooldown.',
+    type: ItemType.WEAPON,
+    weaponType: WeaponType.BOW,
+    skills: [battleActions.TrainingBowShoot2],
+    icon: 'bow',
   };
 };

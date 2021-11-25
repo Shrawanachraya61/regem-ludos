@@ -114,7 +114,7 @@ const build = async () => {
     htmlMin
   );
   await execAsync(
-    `cp .build/index.html dist && cp .build/main.js dist && cp -r .build/res dist`
+    `cp .build/index.html dist && cp .build/main.js dist && cp -r .build/res dist && cp menu.html dist`
   );
 
   console.log('\nZip (command line)...');

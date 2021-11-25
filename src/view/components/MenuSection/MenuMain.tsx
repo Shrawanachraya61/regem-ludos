@@ -29,6 +29,8 @@ import CharacterStatus from '../CharacterStatus';
 import MenuLoad from './MenuLoad';
 import MenuStatus from './MenuStatus';
 
+const MAX_HEIGHT = '600px';
+
 const Root = style('div', {
   position: 'absolute',
   top: '0px',
@@ -52,6 +54,7 @@ const InnerRoot = style('div', {
   alignItems: 'flex-start',
   backgroundColor: colors.BGGREY,
   position: 'relative',
+  height: MAX_HEIGHT,
 });
 
 const MenuBackground = style('div', () => {
@@ -97,11 +100,13 @@ const InnerSection = style('div', {
 });
 
 const SaveInfoArea = style('div', {
+  position: 'absolute',
   display: 'flex',
   justifyContent: 'flex-end',
   flexDirection: 'column',
-  height: '247px',
   boxSizing: 'border-box',
+  bottom: '2px',
+  width: '100%',
 });
 const CurrencyInfoArea = style('div', {
   background: colors.DARKRED,
@@ -370,6 +375,8 @@ const MenuSection = () => {
           <div
             style={{
               width: '40%',
+              height: '100%',
+              position: 'relative',
             }}
           >
             <VerticalMenu

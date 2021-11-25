@@ -62,6 +62,7 @@ export const updateScene = (scene: Scene): void => {
     let cmd: CommandWithBlock | null = null;
     while ((cmd = scene.currentScript.getNextCommand()) !== null) {
       if (cmd.block.conditionalResult === undefined) {
+        const prevOnceKeysToCommit = scene.onceKeysToCommit.slice();
         cmd.block.conditionalResult = evalCondition(
           scene,
           cmd.conditional,
@@ -69,6 +70,11 @@ export const updateScene = (scene: Scene): void => {
           undefined,
           cmd.i
         );
+        // If any part of this conditional isn't true, then no `once` keys should
+        // be marked as committed, otherwise combo `once` isn't possible
+        if (!cmd.block.conditionalResult) {
+          scene.onceKeysToCommit = prevOnceKeysToCommit;
+        }
         // console.log(
         //   'EVAL',
         //   cmd.i,
@@ -349,6 +355,9 @@ export const invokeTrigger = (
       if (scriptCall.type === type) {
         scene.currentTrigger = trigger;
         scene.currentTriggerType = type;
+
+        const prevOnceKeysToCommit = scene.onceKeysToCommit.slice();
+
         const c = evalCondition(
           scene,
           scriptCall.condition,
@@ -356,6 +365,7 @@ export const invokeTrigger = (
           type,
           i
         );
+
         // type !== 'step' &&
         //   type !== 'step-first' &&
         //   console.log('CONDITION', scriptCall.condition, scriptCall.type, c);
@@ -367,6 +377,9 @@ export const invokeTrigger = (
             scene.currentTriggerType = null;
           };
         } else {
+          // If any part of this conditional isn't true, then no `once` keys should
+          // be marked as committed, otherwise combo `once` isn't possible
+          scene.onceKeysToCommit = prevOnceKeysToCommit;
           scene.currentTrigger = null;
           scene.currentTriggerType = null;
         }

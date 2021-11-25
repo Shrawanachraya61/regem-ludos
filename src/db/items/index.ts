@@ -4,6 +4,7 @@ import { init as initAccessories } from './accessories';
 import { init as initConsumables } from './consumables';
 import { init as initVending } from './overworld-consumables/vending';
 import { init as initArmor } from './armor';
+import { init as initAcquirable } from './acquirable';
 
 import { BattleAction } from 'controller/battle-actions';
 import { BattleStats } from 'model/battle';
@@ -74,6 +75,7 @@ export const init = () => {
   initConsumables(exp);
   initVending(exp);
   initArmor(exp);
+  initAcquirable(exp);
 
   for (const i in exp) {
     const item = exp[i];

@@ -836,6 +836,18 @@
                  "width":32,
                  "x":260,
                  "y":158
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":137,
+                 "name":"MarkerPingPongB",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":137,
+                 "y":217
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -844,7 +856,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":137,
+ "nextobjectid":138,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

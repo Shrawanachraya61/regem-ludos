@@ -313,15 +313,23 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +endConversation();
 
 #floor1-Floor1PingPongGuyA
-  action,?once('29678c13'):this
+  action,?all(once('has_spoken_to_ping_pong_guys_during_quest'),func(questStepEQ, PingPong, 2)):Floor1AtriumPingPongGuysQuest
+  action,?once('has_spoken_to_ping_pong_guys'):floor1-Floor1PingPongGuyAFirst
   action,floor1-Floor1PingPongGuyA2
-@this
+@floor1-Floor1PingPongGuyAFirst
   +setAiState(Floor1PingPongGuyA, pingpong_interrupted, true);
   +setAiState(Floor1PingPongGuyB, pingpong_interrupted, true);
   +lookAtEachOther(Ada, Floor1PingPongGuyB);
   +lookAtEachOther(Ada, Floor1PingPongGuyA);
   +setConversation(Ada);
   +panCameraToFitCharacters(500, false, Ada, Floor1PingPongGuyA, Floor1PingPongGuyB);
+  +:floor1-Floor1PingPongGuysConvo();
+  +panCameraBackToPlayer(500);
+  +endConversation();
+  +setAiState(Floor1PingPongGuyA, pingpong_interrupted, false);
+  +setAiState(Floor1PingPongGuyB, pingpong_interrupted, false);
+  +setAiState(Floor1PingPongGuyB, pingpong_reset, true);
+@floor1-Floor1PingPongGuysConvo
   Floor1PingPongGuyA: "Hey there!"
   +:question(Floor1PingPongGuyA);
   Floor1PingPongGuyA: "You wanna play some ping pong or something?"
@@ -335,11 +343,6 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Floor1PingPongGuyB: "<cascade> You agreed to this <color=BLUE>best of 99<cascade>, and by golly you're gonna finish it!"
   +:teardrop(Floor1PingPongGuyA);
   Floor1PingPongGuyA: "Alright, whatever.  It's your serve."
-  +panCameraBackToPlayer(500);
-  +endConversation();
-  +setAiState(Floor1PingPongGuyA, pingpong_interrupted, false);
-  +setAiState(Floor1PingPongGuyB, pingpong_interrupted, false);
-  +setAiState(Floor1PingPongGuyB, pingpong_reset, true);
 @floor1-Floor1PingPongGuyA2
   +setConversation(Ada);
   +lookAtCharacter(Ada, Floor1PingPongGuyA);

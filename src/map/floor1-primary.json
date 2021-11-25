@@ -336,7 +336,7 @@
                  "y":394.5
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":131,
                  "name":"PropElevatorLight1",
@@ -348,7 +348,7 @@
                  "y":405.5
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":132,
                  "name":"PropElevatorLight2",
@@ -360,7 +360,7 @@
                  "y":405.5
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":133,
                  "name":"PropElevatorLight3",
@@ -396,7 +396,7 @@
                  "y":412
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":136,
                  "name":"PropDoorLight1",
@@ -408,7 +408,7 @@
                  "y":414
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":137,
                  "name":"PropDoorLight2",
@@ -420,7 +420,7 @@
                  "y":416
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":138,
                  "name":"PropDoorLight3",
@@ -432,7 +432,7 @@
                  "y":422
                 }, 
                 {
-                 "gid":379,
+                 "gid":380,
                  "height":32,
                  "id":140,
                  "name":"PropDoorLight4",
@@ -468,7 +468,7 @@
                  "y":451.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":144,
                  "name":"",
@@ -480,7 +480,7 @@
                  "y":335.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":145,
                  "name":"",
@@ -492,7 +492,7 @@
                  "y":319.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":146,
                  "name":"",
@@ -504,7 +504,7 @@
                  "y":303.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":147,
                  "name":"",
@@ -516,7 +516,7 @@
                  "y":287.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":148,
                  "name":"",
@@ -528,7 +528,7 @@
                  "y":271.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":149,
                  "name":"",
@@ -540,7 +540,7 @@
                  "y":255.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":150,
                  "name":"",
@@ -552,7 +552,7 @@
                  "y":239.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":151,
                  "name":"",
@@ -564,7 +564,7 @@
                  "y":223.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":152,
                  "name":"",
@@ -576,7 +576,7 @@
                  "y":207.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":153,
                  "name":"",
@@ -588,7 +588,7 @@
                  "y":191.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":154,
                  "name":"",
@@ -600,7 +600,7 @@
                  "y":175.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":155,
                  "name":"",
@@ -612,7 +612,7 @@
                  "y":159.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":156,
                  "name":"",
@@ -624,7 +624,7 @@
                  "y":143.5
                 }, 
                 {
-                 "gid":370,
+                 "gid":371,
                  "height":32,
                  "id":157,
                  "name":"",
@@ -634,6 +634,18 @@
                  "width":32,
                  "x":326.5,
                  "y":127.5
+                }, 
+                {
+                 "gid":193,
+                 "height":32,
+                 "id":165,
+                 "name":"Floor1ShadyPerson",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":89.5,
+                 "y":448.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -642,7 +654,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":165,
+ "nextobjectid":166,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -719,7 +731,7 @@
         }, 
         {
          "columns":16,
-         "firstgid":360,
+         "firstgid":361,
          "image":"..\/..\/res\/props_small.png",
          "imageheight":512,
          "imagewidth":512,
