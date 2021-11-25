@@ -1,3 +1,8 @@
+@floor1Primary
++?isnot(func(questStepEQ, PingPong, 4)):{
+  +despawnCharacter(ShadyPerson);
+}
+
 #floor1-OpenRedDoorsFWD
 step-first,floor1-OpenRedDoorsFWDOpen
 step-off,floor1-OpenRedDoorsFWDClose
@@ -424,7 +429,7 @@ action,this
 }
 
 #Floor1East1PrizeEmployee
-action,?func(questStepEQ, PingPong, 1):Floor1East1PrizeEmployee_PingPongQuestNotStarted
+action,?func(questStepEQ, PingPong, 1):Floor1East1PrizeEmployee_PingPongQuest
 action,?func(questNotStarted, Tutorial):Floor1East1PrizeEmployee-tutNotStarted
 action,Floor1East1PrizeEmployee-default
 step-first,?all(func(questCompleted, Tutorial), once('a1c3aa56')):Floor1East1PrizeEmployee-tutCompleted
@@ -434,6 +439,7 @@ step-first,?all(func(questCompleted, Tutorial), once('a1c3aa56')):Floor1East1Pri
 +walkToMarker(Ada, MarkerAdaShopkeep);
 +lookAtEachOther(ada,shopkeep);
 Shopkeep: "Please take a look at our wares."
+Conscience: "TODO: Create Floor1 Prize Store."
 +endConversation();
 +resetAi(Shopkeep);
 @Floor1East1PrizeEmployee-tutNotStarted

@@ -190,18 +190,66 @@ Atrium Employee Jason: "I apologize, I must have missed you."
 +waitMS(200);
 +:teardrop(Conscience);
 Conscience: "Uh, I kinda snuck in here, so don't worry about it."
++:shakeZ(Atrium Employee Jason);
+Atrium Employee Jason: "Hmm..."
++walkToMarker(Atrium Employee Jason, MarkerJasonExamineConsciencePre);
++lookAtEachOther('Conscience', 'Atrium Employee Jason');
++:surprised(Atrium Employee Jason);
+Atrium Employee Jason: "There's something weird going on with your avatar."
++:teardrop(Conscience);
++setFacing(Conscience, rightdown);
+Conscience: "<cascade-letters>Oh..."
++:minorPause();
++setFacing(Conscience, down);
+Conscience: "<delay=200 cascade-letters> Is there?"
+Atrium Employee Jason: "Eh, it's probably just a glitch or something."
+Atrium Employee Jason: "Let give you a quick re-scan."
++:teardrop(Conscience);
++:teardrop(Ada);
++walkToMarker(Atrium Employee Jason, MarkerJasonExamineConscience);
++:shakeZ(Atrium Employee Jason);
+Atrium Employee Jason: "Should only take a second."
++none();
++waitMS(100);
++:bumpY(Atrium Employee Jason, 0, 1);
++playSound(terminal_beep);
++waitMS(500);
++lookAtEachOther(Ada, Atrium Employee Jason);
 +:question(Atrium Employee Jason);
 Atrium Employee Jason: "You two look really similar.  Are you twins or something?"
++:teardrop(Ada);
 Ada: "<cascade-letters>......"
++lookAtEachOther('Conscience', 'Atrium Employee Jason');
 +:happy(Conscience);
-Conscience: "Yeah, let's go with that."
+Conscience: "Yeah, that seems... <cascade-letters>appropriate<scale=0.5> enough."
 +setConversationSpeaker('none');
-+waitMS(1000);
-+lookAtCharacter('Ada', 'Atrium Employee Jason');
-+lookAtCharacter('Conscience', 'Atrium Employee Jason');
++waitMS(100);
++lookAtEachOther('Ada', 'Atrium Employee Jason');
++lookAtEachOther('Conscience', 'Atrium Employee Jason');
++waitMS(100);
++:bumpY(Atrium Employee Jason, 0, 1);
++none();
++waitMS(100);
++:bumpY(Atrium Employee Jason, 0, 1);
++waitMS(500);
+Atrium Employee Jason: "Hmm.  Something's still kinda wonky."
+Atrium Employee Jason: "For some reason the system isn't reporting that your input is registering correctly."
++:question(Atrium Employee Jason);
+Atrium Employee Jason: "But you seem to be moving around fine, right?"
++lookAtCharacter('Ada', 'Conscience');
++jump(Conscience);
+Conscience: "Yup!"
++:teardrop(Ada);
++:teardrop(Atrium Employee Jason);
+Atrium Employee Jason: "Hm.  Well whatever.  It looks fine to me, let's just keep going."
++walkToMarker(Atrium Employee Jason, MarkerJasonExamineConsciencePre);
++lookAtEachOther('Ada', 'Atrium Employee Jason');
++lookAtEachOther('Conscience', 'Atrium Employee Jason');
 +:happy(Atrium Employee Jason);
-Atrium Employee Jason: "<cascade>Well, I am happy to accommodate the both of you.  Welcome to our tutorial area: the <color=BLUE>Skyway</>!"
+Atrium Employee Jason: "<cascade>I am happy to accommodate the both of you."
+Atrium Employee Jason: "Welcome to our tutorial area: the <color=BLUE>Skyway</>!"
 Atrium Employee Jason: "We hope that you enjoy your time here; it is a truly magical place."
++:shakeZ(Atrium Employee Jason);
 Atrium Employee Jason: "If you don't mind, please follow me further to the tutorial area and I can show you a bit about how this place works."
 +setConversationSpeaker('none');
 +walkToMarker('Atrium Employee Jason', 'MarkerJason3');
@@ -224,7 +272,7 @@ Conscience: "It appears that way, yes."
 +:wink(Ada);
 Ada: "Although <cascade-letters>twins?<cascade delay=100> I do find that amusing."
 +:shakeZ(Conscience);
-Conscience: "It's basically true, if you <color=Blue scale=0.5> ignore <color=LIGHTBLUE scale=0.5>some <scale=0.5>things."
+Conscience: "It's basically true..."
 Conscience: "This is pretty cool though, they've got quite an advanced interface."
 +setConversationSpeaker('none');
 +callScript('utils-character-jump', 'Conscience');
@@ -1051,6 +1099,7 @@ Conscience: "Don't tell me you forgot how to use those!"
 Conscience: "Remember?  You have to go into the <color=BLUE>Menu -> Items</> and find it under the consumables."
 +:exclaim(Conscience);
 Conscience: "Once you use that <color=BLUE>DeVisibleCloak</> we should be able to traverse this room without too much trouble."
+Conscience: "<scale=0.75 />Unless you want to stupidly try to fight every monster in this room..."
 +:utils-stop-Conscience-dialogue();
 +endConversation();
 

@@ -8,9 +8,9 @@
 +setConversationWithoutBars(Ada);
 +setAnimationState('Ada', 'idle');
 +fadeOut(1000, true);
-+waitMS(100);
++waitMS(100, '', true);
 +playSound('change_room');
-+waitMS(900);
++waitMS(900, '', true);
 +changeRoom([ARG0], [ARG1]);
 +fadeIn(900, true);
 +endConversation(100);
@@ -49,8 +49,8 @@
 +waitMS(750);
 
 #utils-kiosk-stats-activate
-step-first,?with(Haptic Bracer):this
-action,?with(Haptic Bracer):utils-kiosk-status-activate-action
+step-first,?with(HapticBracer):this
+action,?with(HapticBracer):utils-kiosk-status-activate-action
 @this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
 @utils-kiosk-status-activate-action
@@ -64,9 +64,9 @@ step,this
 +changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
 
 #utils-kioskStats
-step-first,?with(Haptic Bracer):utils-kioskStats_on
-step-off,?with(Haptic Bracer):utils-kioskStats_off
-action,?with(Haptic Bracer):utils-kioskStats_action
+step-first,?with(HapticBracer):utils-kioskStats_on
+step-off,?with(HapticBracer):utils-kioskStats_off
+action,?with(HapticBracer):utils-kioskStats_action
 step-first,utils-kioskStats_no_bracer
 action,utils-kioskStats_action_cancel
 @utils-kioskStats_on
@@ -146,24 +146,24 @@ action,utils-heal-pool-action
 +walkToMarker('Ada', MarkerVRLanding);
 +setFacing('Ada', 'down');
 +playSound('vr_portal_buzz');
-+waitMS(500);
++waitMS(500, '', true);
 +playSound('vr_portal_focus');
 +setAnimation('Ada', 'ada_enter_vr_portal');
-+waitMS(225);
++waitMS(225, '', true);
 +playSound('vr_portal_start');
-+waitMS(850);
++waitMS(850, '', true);
 +playSound('battle_jump');
-+waitMS(150);
++waitMS(150, '', true);
 +playSound('battle_jump');
-+waitMS(250);
++waitMS(250, '', true);
 +playSound('battle_jump');
-+waitMS(750);
++waitMS(750, '', true);
 +playSound('battle_encountered');
 +fadeOutColor(255, 255, 255, 1000);
 +spawnParticleAtCharacter('EFFECT_TEMPLATE_VR_PORTAL', 'Ada', 'normal');
 +playSound('vr_portal_zoom');
 +fadeInColor(255, 255, 255, 1000);
-+waitMS(2000);
++waitMS(2000, '', true);
 +fadeOut();
 +playSound('vr_portal_landed');
 +changeRoom([ARG0], [ARG1]);
@@ -362,6 +362,12 @@ action,utils-heal-pool-action
 +acquireItem([ARG0]);
 +endConversation();
 
+// This function called by acquirable items when you pick them up.
+// ARG0 = number of tickets to modify
+@utils-get-acquirable-tickets
++setConversation(Ada);
++modifyTickets([ARG0]);
+
 // ARG0 = item template name
 @utils-get-treasure-cutscene
 +spawnParticleAtCharacter(EFFECT_TEMPLATE_TREASURE, 'Ada', 'rise');
@@ -391,11 +397,11 @@ action,utils-heal-pool-action
 +setConversationSpeaker(none);
 +waitMS(100);
 +offsetCharacter([ARG0], [ARG1]/2, 0, 0);
-+waitMS(33);
++waitMS(33, '', true);
 +offsetCharacter([ARG0], [ARG1]/2, 0, 0);
-+waitMS(33);
++waitMS(33, '', true);
 +offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
-+waitMS(33);
++waitMS(33, '', true);
 +offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
 
 // ARG0 = name of character to bump
@@ -404,16 +410,16 @@ action,utils-heal-pool-action
 +setConversationSpeaker(none);
 +waitMS(100);
 +offsetCharacter([ARG0], 0, [ARG1], 0);
-+waitMS(50);
++waitMS(50, '', true);
 +offsetCharacter([ARG0], 0, -[ARG1], 0);
 
 // ARG0 = name of character to bump
 // ARG1 = negative or positive px value to bump
 @bumpZ
 +setConversationSpeaker(none);
-+waitMS(100);
++waitMS(100, '', true);
 +offsetCharacter([ARG0], 0, 0, [ARG1]);
-+waitMS(100);
++waitMS(100, '', true);
 +offsetCharacter([ARG0], 0, 0, -[ARG1]);
 
 @exclaim
