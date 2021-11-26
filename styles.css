@@ -2,6 +2,18 @@
   font-family: Consolas;
   src: url(res/fonts/Consolas.woff);
 }
+/* @font-face {
+  font-family: HelicoCentricaRoman;
+  src: url(res/fonts/HelicoCentrica-Roman.woff);
+} */
+/* @font-face {
+  font-family: LEDBoard;
+  src: url(res/fonts/AdvancedLedBoard7.woff);
+} */
+@font-face {
+  font-family: DataLatin;
+  src: url(res/fonts/data-latin.ttf);
+}
 
 body {
   font-family: Consolas;

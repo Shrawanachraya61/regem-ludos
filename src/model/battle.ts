@@ -463,6 +463,7 @@ export const battleInvokeEvent = (
   eventName: BattleEvent,
   arg: any
 ) => {
+  console.log('invoke event', eventName, arg);
   // REALLY IMPORTANT: this has to be a copy or you get bugs when an event removes
   // itself while the event is firing.
   const events = battle.subscriptions[eventName].slice();

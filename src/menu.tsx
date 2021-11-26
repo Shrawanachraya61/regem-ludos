@@ -411,12 +411,14 @@ export const main = async (): Promise<void> => {
   pressAnyKey.appendChild(flower);
 
   const pressAnyKeyInner = document.createElement('div');
-  pressAnyKeyInner.innerHTML = 'Press Any Key.';
-  pressAnyKeyInner.style.padding = '8px';
+  pressAnyKeyInner.innerHTML = 'Press Any Key';
+  pressAnyKeyInner.style.padding = '16px';
   pressAnyKeyInner.style.background = colors.DARKGREY;
   pressAnyKeyInner.style['font-size'] = '20px';
   pressAnyKeyInner.style.margin = '16px';
   pressAnyKeyInner.style.border = '2px solid ' + colors.BLUE;
+  pressAnyKeyInner.style['font-family'] = 'DataLatin';
+  pressAnyKeyInner.style['letter-spacing'] = '1px';
   pressAnyKeyInner.style['border-radius'] = '8px';
   pressAnyKeyInner.style['z-index'] = 1;
   // pressAnyKeyInner.style['border-bottom'] = '2px solid ' + colors.DARKBLUE_ALT;

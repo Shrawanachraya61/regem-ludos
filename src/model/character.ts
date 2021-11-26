@@ -603,7 +603,7 @@ export const characterGetResvPct = (ch: Character): number => {
 
 export const characterSetTransform = (
   ch: Character,
-  transform: Transform
+  transform: Transform | null
 ): void => {
   ch.transform = transform;
 };

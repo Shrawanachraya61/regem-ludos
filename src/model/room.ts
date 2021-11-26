@@ -295,6 +295,14 @@ export const createRoom = (name: string, tiledJson: any): Room => {
     ),
   };
 
+  // Surprisingly useful to account for my stupidity
+  // Object.defineProperty(room, 'name', {
+  //   value: name,
+  //   writable: false,
+  //   enumerable: true,
+  //   configurable: true,
+  // });
+
   console.log(
     'create room',
     name
@@ -562,8 +570,8 @@ export const createRoom = (name: string, tiledJson: any): Room => {
       p => p.name === 'encounterName'
     );
     if (customEncounterName) {
-      const roamerName = (room.name =
-        '_' + chTemplate.name + '_' + tiledObject.id);
+      const roamerName =
+        room.name + '_' + chTemplate.name + '_' + tiledObject.id;
       const scene = getCurrentScene();
 
       if (sceneIsEncounterDefeated(scene, roamerName, room.name)) {

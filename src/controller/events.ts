@@ -36,6 +36,8 @@ export const initEvents = (): void => {
       return;
     }
 
+    // console.log('keydown', ev.code, ev.key);
+
     setKeyDown(ev.code);
     setKeyDown(ev.key);
 

@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"test3.json"
-        }
-    },
  "height":5,
  "infinite":false,
  "layers":[
@@ -58,10 +50,10 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":47,
+ "nextobjectid":48,
  "orientation":"isometric",
  "renderorder":"right-down",
- "tiledversion":"1.7.0",
+ "tiledversion":"1.7.2",
  "tileheight":16,
  "tilesets":[
         {

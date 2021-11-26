@@ -61,11 +61,23 @@ const MenuTitle = style('div', () => {
     background: `linear-gradient(90deg, ${colors.DARKBLUE} 0%, rgba(0,0,0,0) 100%)`,
     margin: '8px',
     marginBottom: '-8px',
-    padding: '8px',
-    fontSize: '32px',
     textTransform: 'uppercase',
     borderBottom: `2px solid ${colors.BLUE}`,
     zIndex: 2,
+
+    // fontFamily: 'Consolas',
+    // padding: '8px',
+    // fontSize: '32px',
+
+    fontFamily: 'DataLatin',
+    padding: '8px',
+    fontSize: '42px',
+    letterSpacing: '3px',
+
+    // fontFamily: 'HelicoCentricaRoman',
+    // padding: '8px 8px 0px 16px',
+    // fontSize: '42px',
+    // letterSpacing: '6px',
   };
 });
 const MenuContent = style('div', () => {

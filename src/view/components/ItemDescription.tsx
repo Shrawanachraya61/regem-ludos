@@ -26,6 +26,8 @@ const EquipmentDescriptionTitle = style('div', () => {
     minHeight: '16px',
     border: '1px solid' + colors.WHITE,
     background: colors.DARKRED,
+    fontFamily: 'DataLatin',
+    letterSpacing: '1px',
     margin: '2px',
   };
 });
@@ -34,6 +36,8 @@ const EquipmentTitleText = style('div', () => {
   return {
     padding: '8px',
     fontSize: '24px',
+    fontFamily: 'DataLatin',
+    letterSpacing: '1px',
   };
 });
 

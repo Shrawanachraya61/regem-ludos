@@ -47,9 +47,9 @@ import { AppSection } from 'model/store';
 import { getLastUpdatedQuests, resetLastUpdatedQuests } from 'model/quest';
 import { getScores, ILeaderboardEntry, setLeaderboard } from 'model/scores';
 
-const APP_LS_PREFIX = 'regem_ludos_';
+const APP_LS_PREFIX = 'regem_ludos';
 const APP_SETTINGS_KEY = 'settings';
-const APP_SAVE_KEY = 'save_';
+const APP_SAVE_KEY = 'save';
 
 interface ISaveSettings {
   volumeLevels: {

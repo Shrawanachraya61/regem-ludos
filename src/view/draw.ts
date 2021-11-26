@@ -649,7 +649,7 @@ export const drawRoom = (
     const [px, py] = isoToPixelCoords(x, y);
     const [pxO, pyO] = pxToCanvasCoords4by3(px, py);
     drawText(
-      `OPos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
+      `PX Pos: ${pxO.toFixed(0)}, ${pyO.toFixed(0)}`,
       20,
       194,
       {
@@ -661,7 +661,7 @@ export const drawRoom = (
 
     const tile = roomGetTileBelow(room, [x, y]);
     drawText(
-      `TPos: ${tile?.x.toFixed(0)}, ${tile?.y.toFixed(0)}`,
+      `Tile Pos: ${tile?.x.toFixed(0)}, ${tile?.y.toFixed(0)}`,
       20,
       224,
       {

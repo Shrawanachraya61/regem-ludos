@@ -342,6 +342,7 @@ export const initiateBattle = (
     battle,
     BattleEvent.onTurnStarted,
     (allegiance: BattleAllegiance) => {
+      console.log('ON TURN STARTED', allegiance);
       if (allegiance === BattleAllegiance.ALLY) {
         panCameraRelativeToBattleCenter(300, 20, 0);
         battlePauseActionTimers(battle, battle.allies);
@@ -355,6 +356,7 @@ export const initiateBattle = (
     battle,
     BattleEvent.onTurnEnded,
     (allegiance: BattleAllegiance) => {
+      console.log('ON TURN ENDED', allegiance);
       if (allegiance === BattleAllegiance.ALLY) {
         battleUnpauseActionTimers(battle, battle.allies);
       } else {
@@ -562,6 +564,28 @@ export const battleKeyHandler = async (ev: KeyboardEvent) => {
           playSoundName('menu_cancel');
         }
         renderUi();
+      }
+      break;
+    }
+    case '0':
+    case 'Digit0': {
+      // TODO Remove this
+      if (!isPaused && battleGetActingAllegiance(battle) === null) {
+        battle.enemies.forEach(bCh => {
+          applyDamage(battle, bCh, {
+            damage: 99999999,
+            particleColor: colors.BLACK,
+            soundName: 'terminal_beep',
+            postfix: '!!!!',
+          });
+        });
+        setTimeout(() => {
+          battleInvokeEvent(
+            battle,
+            BattleEvent.onTurnEnded,
+            BattleAllegiance.ALLY
+          );
+        }, 100);
       }
       break;
     }
@@ -1308,6 +1332,10 @@ export const getReturnToOverworldBattleCompletionCB = (
       const player = getCurrentPlayer();
       characterSetPos(player.leader, leaderPos);
       characterSetFacing(player.leader, leaderFacing);
+      player.partyStorage.forEach(ch => {
+        characterSetTransform(ch, null);
+      });
+
       if (roamer) {
         const roamerName = roamer.name;
         const scene = getCurrentScene();

@@ -5,7 +5,7 @@ import { Item, ItemTemplate, ItemType } from '.';
 
 export const init = (exp: { [key: string]: ItemTemplate }) => {
   exp.TicketCache10 = {
-    label: 'Ticket Cache',
+    label: '10 Tickets',
     description: 'Some tickets that are acquirable.',
     effectDescription: `Some tickets.`,
     type: ItemType.JUNK,

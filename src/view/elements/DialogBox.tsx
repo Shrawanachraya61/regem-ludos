@@ -47,6 +47,8 @@ const DialogTitle = style('div', (props: { danger?: boolean }) => {
     fontSize: '32px',
     textTransform: 'uppercase',
     borderBottom: `2px solid ${props.danger ? colors.RED : colors.BLUE}`,
+    fontFamily: 'DataLatin',
+    letterSpacing: '2px',
   };
 });
 const DialogContent = style('div', () => {

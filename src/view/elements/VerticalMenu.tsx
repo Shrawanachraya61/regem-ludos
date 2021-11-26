@@ -172,6 +172,17 @@ const MenuTitleRoot = style('div', (props: { title?: string }) => ({
   // justifyContent: props.title ? 'space-around' : 'center',
   alignItems: 'baseline',
   textTransform: 'uppercase',
+  color: colors.ORANGE,
+
+  // fontFamily: 'HelicoCentricaRoman',
+  // fontSize: '30px',
+  // height: '34px',
+  // letterSpacing: '2px',
+  // lineHeight: '0.85',
+
+  fontFamily: 'DataLatin',
+  fontSize: '16px',
+  letterSpacing: '1px',
 }));
 const CloseButtonIconWrapper = style(
   'div',
@@ -198,6 +209,7 @@ const TitleTextWrapper = style(
   (props: { lineHeight: MenuLineHeight }) => {
     return {
       ...getMenuLineHeightStyles(props.lineHeight),
+      fontSize: 'unset',
       // width: 'calc(100% - 34px)',
     };
   }

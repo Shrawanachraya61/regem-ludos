@@ -462,7 +462,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
         <CenterWrapper>
           <EquipmentTypeSelectWrapper>
             <VerticalMenu
-              title="Equipment"
+              title="Slot"
               width="100%"
               height="268px"
               open={true}
@@ -504,7 +504,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                   }
                 }
                 if (equippedItemLabel !== '(none equipped)') {
-                  equippedItemLabelColor = colors.YELLOW;
+                  equippedItemLabelColor = colors.LIGHTGREEN;
                 }
 
                 const item = characterGetEquippedItem(
@@ -519,7 +519,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
                       selected={menuState.selectedEquipmentType === type}
                     >
                       <div>
-                        <b>{type}</b>
+                        <b>{type === EquipmentType.ARMOR ? 'Garb' : type}</b>
                       </div>
                       <div
                         style={{
@@ -583,7 +583,7 @@ const MenuEquipment = (props: IMenuEquipmentProps) => {
         </CenterWrapper>
         <ItemSelectWrapper>
           <VerticalMenu
-            title="Items"
+            title="Item"
             width="100%"
             height="268px"
             maxHeight="226px"
