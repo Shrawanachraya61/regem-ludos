@@ -848,6 +848,18 @@
                  "width":32,
                  "x":137,
                  "y":217
+                }, 
+                {
+                 "gid":194,
+                 "height":32,
+                 "id":138,
+                 "name":"MarkerGreeterC",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":220,
+                 "y":180
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -856,7 +868,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":138,
+ "nextobjectid":139,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

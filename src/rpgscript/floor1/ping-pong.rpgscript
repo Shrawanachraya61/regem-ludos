@@ -212,6 +212,7 @@ Floor1PingPongGuyB: "It's distracting!  You'll make me lose concentration."
 +lookAtEachOther(Ada, Floor1PingPongGuyA);
 +:teardrop(Floor1PingPongGuyA);
 Floor1PingPongGuyA: "Sorry.  We're probably gonna be using these for a while."
++setFacing(Floor1PingPongGuyA, leftdown);
 +panCameraBackToPlayer(300);
 +setAiState(Floor1PingPongGuyA, pingpong_interrupted, false);
 +setAiState(Floor1PingPongGuyB, pingpong_interrupted, false);

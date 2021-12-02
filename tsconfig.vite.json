@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src/",
+    "paths": {
+      "picostyle": [
+        "lib/picostyle"
+      ],
+      "preact/hooks": [
+        "lib/preact-hooks"
+      ],
+      "preact": [
+        "lib/preact"
+      ],
+    },
+    "target": "ES2017",
+    "module": "amd",
+    "moduleResolution": "node",
+    "outFile": "./main.js",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": false,
+    "lib": [
+      "dom",
+      "ES2017"
+    ],
+    "removeComments": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "esModuleInterop": true,
+    "pretty": true,
+  },
+  "references": [],
+  "include": [
+    "src/**/*",
+  ]
+}

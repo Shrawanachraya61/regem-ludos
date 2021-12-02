@@ -544,6 +544,8 @@ export const panCameraToFitCharacters = (
   // SC.panCameraToFitCharacters(ms, true, ...characterNames);
 };
 
+export const panCameraBattle = () => {};
+
 export const playSound = (soundName: string) => {
   return;
 };
@@ -729,6 +731,7 @@ const commands = {
   panCameraRelativeToPlayer,
   panCameraBackToPlayer,
   panCameraToFitCharacters,
+  panCameraBattle,
   playSound,
   playMusic,
   stopMusic,

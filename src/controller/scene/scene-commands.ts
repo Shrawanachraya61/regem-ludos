@@ -1,4 +1,4 @@
-import { getUiInterface } from 'view/ui';
+import { getUiInterface, renderUi } from 'view/ui';
 import {
   setCutsceneText,
   showSection,
@@ -115,6 +115,7 @@ import {
 } from 'model/sound';
 import {
   getReturnToOverworldBattleCompletionCB,
+  panCameraRelativeToBattleCenter,
   transitionToBattle,
 } from '../battle-management';
 import {
@@ -2263,6 +2264,24 @@ export const panCameraToFitCharacters = (
   }
 };
 
+export const panCameraBattle = (
+  position: 'ALLY' | 'CENTER' | 'ENEMY',
+  ms = 1000,
+  skipWait = false
+) => {
+  none();
+  if (position === 'ALLY') {
+    panCameraRelativeToBattleCenter(ms, -20, 0);
+  } else if (position === 'ENEMY') {
+    panCameraRelativeToBattleCenter(ms, 20, 0);
+  } else {
+    panCameraRelativeToBattleCenter(ms, 0, 0);
+  }
+  if (!skipWait) {
+    return waitMS(ms);
+  }
+};
+
 export const playSound = (soundName: string) => {
   playSoundName(soundName);
 };
@@ -2272,10 +2291,12 @@ export const playMusic = async (musicName: string) => {
   playMusicName(musicName, true);
 };
 
-export const stopMusic = (ms?: number) => {
+export const stopMusic = (ms?: number, skipWait?: boolean) => {
   const duration = ms ?? 1000;
   stopCurrentMusic(duration);
-  return waitMS(duration);
+  if (!skipWait) {
+    return waitMS(duration);
+  }
 };
 
 export const spawnParticleAtTarget = (
@@ -2389,6 +2410,8 @@ export const setCharacterText = (text: string) => {
 
 export const showUISection = (sectionName: string, ...args: any[]) => {
   if (sectionName === 'BattleUI') {
+    showSection(AppSection.BattleUI, true);
+  } else if (sectionName === 'BattleUICutscene') {
     showSection(AppSection.BattleUI, false);
   } else if (sectionName === 'Save') {
     showSave(() => {
@@ -2408,6 +2431,11 @@ export const showUISection = (sectionName: string, ...args: any[]) => {
     showModal(args[0], {
       onClose: () => {
         sceneStopWaitingUntil(getCurrentScene());
+
+        // HACK need to render ui since game goes from paused to unpaused after this.
+        setTimeout(() => {
+          renderUi();
+        }, 100);
       },
     });
     return waitUntil();
@@ -2720,6 +2748,7 @@ const commands = {
   panCameraRelativeToPlayer,
   panCameraBackToPlayer,
   panCameraToFitCharacters,
+  panCameraBattle,
   playSound,
   playMusic,
   stopMusic,

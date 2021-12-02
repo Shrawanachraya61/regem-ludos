@@ -31,7 +31,7 @@ import {
 } from 'model/render-object';
 import { createCanvas } from 'model/canvas';
 import { sceneIsEncounterDefeated } from './scene';
-import { getCurrentOverworld, getCurrentScene } from './generics';
+import { getCurrentOverworld, getCurrentScene, getResPath } from './generics';
 import { getIfExists as getItem, Item } from 'db/items';
 import { Transform, TransformEase } from './utility';
 import { addRoomUiParticle, removeRoomUiParticle } from 'controller/ui-actions';
@@ -214,7 +214,7 @@ const gidToTileSpriteAndSize = (
 
 let dynamicPropsTileset: null | string[] = null;
 export const loadDynamicPropsTileset = async () => {
-  const xml = await fetch('res/props-dynamic.tiled-sheet.tsx').then(result =>
+  const xml = await fetch(`${getResPath()}/props-dynamic.tiled-sheet.tsx`).then(result =>
     result.text()
   );
 

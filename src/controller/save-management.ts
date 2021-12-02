@@ -63,8 +63,8 @@ interface ISaveSettings {
 
 export interface ISave {
   id: string;
-  timestampSaved: Date;
-  timestampLoaded: Date;
+  timestampSaved: Date | string;
+  timestampLoaded: Date | string;
   durationPlayed: number;
   debug: boolean;
   questsUpdated?: string[];
@@ -99,7 +99,7 @@ interface ICharacterSave {
   y: number;
   z: number;
   name: string;
-  facing: Facing;
+  facing: Facing | string;
   experience: number;
   experienceCurrency: number;
   equipment: {
@@ -335,13 +335,14 @@ export const deleteSave = (saveIndex: number) => {
   }
 };
 
-export const saveGame = (saveIndex: number) => {
+export const saveGame = (saveIndex = 0) => {
   const saveList = loadSaveListFromLS();
   if (saveIndex < 0) {
     saveIndex = 0;
   }
+  let save: ISave | null = null;
   if (saveIndex >= saveList.length) {
-    const save = createSave({
+    save = createSave({
       saveId: randomId(),
       durationPlayed: getDurationPlayed(),
       lastTimestampLoaded: new Date(getTimeLoaded()),
@@ -351,7 +352,7 @@ export const saveGame = (saveIndex: number) => {
   } else {
     const oldSave = saveList[saveIndex];
     console.log('CREATE SAVE2', oldSave);
-    const save = createSave({
+    save = createSave({
       saveId: oldSave.id,
       durationPlayed: getDurationPlayed(),
       lastTimestampLoaded: new Date(getTimeLoaded()),
@@ -359,6 +360,16 @@ export const saveGame = (saveIndex: number) => {
     saveList[saveIndex] = save;
   }
   saveSaveListToLS(saveList);
+  return save;
+};
+
+(window as any).save = () => {
+  const save = createSave({
+    saveId: randomId(),
+    durationPlayed: getDurationPlayed(),
+    lastTimestampLoaded: new Date(getTimeLoaded()),
+  });
+  return save;
 };
 
 const loadGame = (save: ISave) => {
@@ -562,7 +573,7 @@ const iCharacterSaveToCharacter = (
     }
   }
 
-  characterSetFacing(ch, chSave.facing);
+  characterSetFacing(ch, chSave.facing as Facing);
 
   return ch;
 };

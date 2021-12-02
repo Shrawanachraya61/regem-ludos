@@ -133,7 +133,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     label: 'Garlic Sticks',
     sortName: 'snack-garlic-sticks',
     description:
-      'This short cylinder holds a veritable bevy of delicious garlic treats.',
+      'This crackly package holds a veritable bevy of delicious garlic treats.',
     effectDescription:
       'Increase ACC by 1  for all party members for thirty seconds.',
     type: ItemType.USABLE_OVERWORLD,
@@ -149,7 +149,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
     label: 'Espresso Tart',
     sortName: 'snack-espresso-tart',
     description:
-      "This nondescript rectangle might not look like much, but it's packed with a strong enough concentration of caffeine and flavor to life the spirts of any drowsy individual.",
+      "This beige-colored pastry might not look like much, but it's packed with a strong enough concentration of caffeine and flavor to life the spirts of any drowsy individual.",
     effectDescription:
       'Increase EVA by 1  for all party members for thirty seconds.',
     type: ItemType.USABLE_OVERWORLD,

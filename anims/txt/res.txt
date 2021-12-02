@@ -1011,6 +1011,16 @@ AnimSprite,effects_45,100
 AnimSprite,effects_44,100
 AnimSprite,effects_43,100
 AnimSprite,invisible,100
+Animation,effects_phone_left,false
+AnimSprite,invisible,50
+AnimSprite,effects_48,50
+AnimSprite,effects_49,50
+AnimSprite,effects_50,50
+AnimSprite,invisible,50
+AnimSprite,effects_48,50
+AnimSprite,effects_49,50
+AnimSprite,effects_50,50
+AnimSprite,invisible,50
 Picture,effects_cars,effects_cars.png,96,96
 Animation,blue_car_walk_leftup,true
 AnimSprite,effects_cars_0,70

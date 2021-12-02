@@ -148,7 +148,7 @@ export const getTarget = (battle: Battle, bCh: BattleCharacter) => {
   if (allegiance === BattleAllegiance.ALLY) {
     target = battleGetTargetedEnemy(battle, selectedAction.type);
   } else {
-    target = battleGetNearestAttackable(battle, allegiance);
+    target = bCh.target ?? null;
   }
   return target;
 };

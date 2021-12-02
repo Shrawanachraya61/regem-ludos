@@ -7,19 +7,25 @@ import {
   battleUnsubscribeEvent,
   BattleEvent,
   battleSubscribeEvent,
+  battleRemoveBattleCharacter,
 } from 'model/battle';
 import { get as getEnemy } from 'db/enemies';
 import { CharacterTemplate } from 'model/character';
-import { callScriptDuringBattle } from 'controller/battle-management';
+import {
+  callScriptDuringBattle,
+  createAndCallScriptDuringBattle,
+} from 'controller/battle-management';
 import { callScriptDuringOverworld } from 'controller/overworld-management';
 import { getCurrentBattle } from 'model/generics';
 import { get as getItem } from 'db/items';
 
 import { varyStats } from 'utils';
+import { spawnParticleAtCharacter } from 'controller/scene/scene-commands';
+import { EFFECT_TEMPLATE_DEAD32 } from 'model/particle';
 
 export const init = (exp: Record<string, BattleTemplate>) => {
   exp.ENCOUNTER_TUT1 = {
-    roomName: 'battleTut1',
+    roomName: 'battleTut1Centered',
     baseExperience: 1,
     baseTokens: 0,
     disableFlee: true,
@@ -45,7 +51,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   };
 
   exp.ENCOUNTER_TUT1_5 = {
-    roomName: 'battleTut1',
+    roomName: 'battleTut1Centered',
     baseExperience: 1,
     baseTokens: 0,
     disableFlee: true,
@@ -74,7 +80,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   };
 
   exp.ENCOUNTER_TUT2 = {
-    roomName: 'battleTut1',
+    roomName: 'battleTut1Centered2',
     baseExperience: 2,
     baseTokens: 0,
     disableFlee: true,
@@ -86,7 +92,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       },
       {
         chTemplate: varyStats(getEnemy('TUT_ROBOT_MELEE_SPEEDY')),
-        position: BattlePosition.BACK,
+        position: BattlePosition.MIDDLE,
         ai: 'BATTLE_AI_ATTACK',
       },
     ],
@@ -105,7 +111,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
   };
 
   exp.ENCOUNTER_TUT3 = {
-    roomName: 'battleTut1',
+    roomName: 'battleTut1Centered2',
     baseExperience: 2,
     baseTokens: 0,
     disableFlee: true,
@@ -125,8 +131,22 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       onBattleStart: async (battle: Battle) => {
         await callScriptDuringBattle('floor1-tut-vr2-battle3-on-start');
       },
-      onBattleEnd: async (battle: Battle) => {
-        await callScriptDuringBattle('floor1-tut-vr2-battle3-on-end');
+      onCharacterDefeated: async bCh => {
+        const battle = getCurrentBattle();
+        if (battle.enemies.length === 1) {
+          bCh.preventRemove = true;
+          await createAndCallScriptDuringBattle(
+            `
+            +setConversation('Ada');
+            +panCameraBattle(ENEMY);
+            +playSound(robot_staggered_damaged);
+            Robot: "<cascade-letters color=LIGHTBLUE>*bzzt* E...R...R...O...R... *bzzt*"
+            +panCameraBattle(NONE);
+            +endConversation();
+            `
+          );
+          battleRemoveBattleCharacter(getCurrentBattle(), bCh);
+        }
       },
       onAfterBattleEnded: async () => {
         await callScriptDuringOverworld('floor1-tut-vr2-battle3-on-after-end', {
@@ -137,9 +157,8 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       },
     },
   };
-
   exp.ENCOUNTER_TUT4 = {
-    roomName: 'battleTut1',
+    roomName: 'battleTut1Centered2',
     baseExperience: 2,
     baseTokens: 0,
     disableFlee: true,
@@ -159,8 +178,22 @@ export const init = (exp: Record<string, BattleTemplate>) => {
       onBattleStart: async (battle: Battle) => {
         await callScriptDuringBattle('floor1-tut-vr2-battle4-on-start');
       },
-      onBattleEnd: async (battle: Battle) => {
-        await callScriptDuringBattle('floor1-tut-vr2-battle4-on-end');
+      onCharacterDefeated: async bCh => {
+        const battle = getCurrentBattle();
+        if (battle.enemies.length === 1) {
+          bCh.preventRemove = true;
+          await createAndCallScriptDuringBattle(
+            `
+            +setConversation('Ada');
+            +playSound(robot_staggered_damaged);
+            +panCameraBattle(ENEMY);
+            Robot: "<cascade-letters color=LIGHTBLUE> F...A...I...L...U...R...E..."
+            +panCameraBattle(NONE);
+            +endConversation();
+            `
+          );
+          battleRemoveBattleCharacter(getCurrentBattle(), bCh);
+        }
       },
       onAfterBattleEnded: async () => {
         await callScriptDuringOverworld('floor1-tut-vr2-battle4-on-after-end', {
@@ -286,7 +319,58 @@ export const init = (exp: Record<string, BattleTemplate>) => {
     baseExperience: 10,
     baseTokens: 25,
     disableFlee: true,
-    // music: 'music_tense_battle',
+    music: 'music_tense_battle',
+    events: {
+      onBattleStart: async battle => {
+        await createAndCallScriptDuringBattle(
+          `
+          +setConversation('Conscience');
+          +panCameraBattle(ENEMY);
+          +playSound(robot_staggered_damaged);
+          Big Robot: "<cascade-letters=25 color=YELLOW>*bzzt* PREPARE FOR UTTER ANNIHILATION."
+          +panCameraBattle(ALLY, 500);
+          +:exclaim(Conscience);
+          Conscience: "That thing has a TON of armor!"
+          Conscience: "We'll have to get rid of it somehow before we can damage it."
+          +panCameraBattle(NONE, 500);
+          +endConversation();
+          `,
+          true
+        );
+      },
+      onCharacterDefeated: async bCh => {
+        if (bCh.ch.spriteBase === 'tut_robot_boss') {
+          const battle = getCurrentBattle();
+          bCh.preventRemove = true;
+          battle.enemies.forEach(bCh2 => {
+            if (bCh !== bCh2) {
+              spawnParticleAtCharacter(
+                'EFFECT_TEMPLATE_DEAD32',
+                bCh2.ch.name,
+                'normal'
+              );
+              battleRemoveBattleCharacter(getCurrentBattle(), bCh2);
+            }
+          });
+          await createAndCallScriptDuringBattle(
+            `
+            +setConversation('Ada');
+            +playSound(robot_staggered_damaged);
+            +panCameraBattle(ENEMY);
+            Big Robot: "<cascade-letters=25 color=YELLOW scale=0.8>*bzzt* S..O..R..R..Y.. C..O..M..R..A..D..E..S.."
+            +panCameraBattle(NONE);
+            +endConversation();
+            `
+          );
+          spawnParticleAtCharacter(
+            'EFFECT_TEMPLATE_DEAD32',
+            bCh.ch.name,
+            'normal'
+          );
+          battleRemoveBattleCharacter(getCurrentBattle(), bCh);
+        }
+      },
+    },
     enemies: [
       {
         chTemplate: getEnemy('TUT_ROBOT_BOSS'),

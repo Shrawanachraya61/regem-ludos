@@ -200,7 +200,7 @@ export const init = (exp: { [key: string]: ItemTemplate }) => {
   exp.PierceSword = {
     label: 'Pierce Sword',
     description:
-      'A slightly more refined version of the standard issue Training Sword.  The hilt is balanced slightly differently to allow for more force on the followup swing.',
+      'A slightly more refined version of the standard issue Training Sword.  The hilt is balanced to allow for more force on the followup swing.',
     type: ItemType.WEAPON,
     weaponType: WeaponType.SWORD,
     skills: [battleActions.TrainingSwordSwingPlus],

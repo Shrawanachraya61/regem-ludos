@@ -223,7 +223,13 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
     <Root id="battle-conclusion-root">
       {props.isVictory ? (
         <>
-          <span>VICTORY!</span>
+          <span
+            style={{
+              fontFamily: 'DataLatin',
+            }}
+          >
+            VICTORY!
+          </span>
           <RewardsList>
             {rewards.tokens ? (
               <div>
@@ -284,7 +290,13 @@ const BattleConclusion = (props: IBattleConclusionProps): h.JSX.Element => {
         </>
       ) : (
         <>
-          <span>DEFEAT!</span>
+          <span
+            style={{
+              fontFamily: 'DataLatin',
+            }}
+          >
+            DEFEAT!
+          </span>
         </>
       )}
       <VerticalMenu

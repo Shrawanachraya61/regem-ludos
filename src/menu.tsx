@@ -1,6 +1,6 @@
 /* @jsx h */
 import { loadRes } from 'controller/res-loader';
-import { getCurrentScene, setUseZip } from 'model/generics';
+import { getCurrentScene, getResPath, setUseZip } from 'model/generics';
 import {
   loadSound,
   loadSoundSpritesheet,
@@ -368,7 +368,7 @@ const loadPrimaryAssets = async () => {
   }
 };
 
-export const main = async (): Promise<void> => {
+export const menu = async (): Promise<void> => {
   setUseZip(true);
 
   loadSound('game_ready', 'game_ready.mp3', SoundType.NORMAL, 1, false);
@@ -405,7 +405,7 @@ export const main = async (): Promise<void> => {
   pressAnyKey.appendChild(pressAnyKeyInnerGradient);
 
   const flower = document.createElement('img');
-  flower.src = 'res/img/flower.png';
+  flower.src = `${getResPath()}/img/flower.png`;
   flower.style.width = '64px';
   flower.className = 'bob-load';
   pressAnyKey.appendChild(flower);

@@ -56,6 +56,8 @@ import { useEffect } from 'preact/hooks';
 import { beginQuest } from 'model/quest';
 import { getIfExists as getSave } from 'db/saves';
 import { initConsole } from 'view/console';
+import { menu } from './menu';
+import { soundboard } from './soundboard';
 
 function parseQuery(queryString: string): Record<string, string> {
   const query = {};
@@ -88,6 +90,24 @@ const loadingTick = () => {
 export const main = async (): Promise<void> => {
   setUseZip(true);
   initConsole();
+
+  const query = parseQuery(window.location.search);
+
+  if (!query.room && !query.save && !query.debug && !query.soundboard) {
+    console.log('loading main app.');
+    const loading = document.getElementById('page-loading');
+    if (loading) {
+      loading.style.display = 'none';
+    }
+    (document.getElementById('controls') as any).style.display = 'none';
+    return menu();
+  }
+  if (query.soundboard) {
+    console.log('loading soundboard app.');
+    return soundboard();
+  }
+  console.log('loading debug app.');
+
   console.time('load');
 
   // Mount this first so that appInterface is MOST LIKELY set when loading the overworld,
@@ -195,7 +215,6 @@ export const main = async (): Promise<void> => {
   }
 
   console.log('initiate overworld');
-  const query = parseQuery(window.location.search);
   if (query.room) {
     const overworldTemplate = getOverworld(query.room);
     initiateOverworld(player, overworldTemplate);
@@ -215,6 +234,8 @@ export const main = async (): Promise<void> => {
       return;
     }
     loadSavedGame(save);
+  } else if (query.soundboard) {
+  } else if (query.debug) {
   } else {
     initiateOverworld(player, getOverworld('test2'));
   }
@@ -223,7 +244,6 @@ export const main = async (): Promise<void> => {
   console.log('run loop');
   runMainLoop();
 
-  (document.getElementById('controls') as any).style.display = 'none';
   renderUi();
 
   // HudGamepad.GamePad.setup({
@@ -237,3 +257,23 @@ export const main = async (): Promise<void> => {
   //   ],
   // });
 };
+
+window.addEventListener('load', () => {
+  if (!(window as any).requirejs) {
+    (window as any).DEVELOPMENT = true;
+    // requirejs.config({
+    //   map: {
+    //     '*': {
+    //       preact: 'lib/preact',
+    //       'preact/hooks': 'lib/preact-hooks',
+    //       picostyle: 'lib/picostyle',
+    //     },
+    //   },
+    // });
+    const loading = document.getElementById('page-loading');
+    if (loading) {
+      loading.style.color = '#42CAFD';
+    }
+    main();
+  }
+});

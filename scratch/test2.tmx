@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="88">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="89">
  <editorsettings>
   <export target="../src/map/test2.json" format="json"/>
  </editorsettings>
@@ -159,5 +159,6 @@
   <object id="85" name="MarkerZagMachine" gid="194" x="44" y="376" width="32" height="32"/>
   <object id="86" name="#test2-zag-machine" x="24" y="356" width="28" height="48"/>
   <object id="87" name="ItemTicketCache10" gid="201" x="243" y="521" width="32" height="32"/>
+  <object id="88" name="TestDialogF" gid="193" x="240.5" y="451.5" width="32" height="32"/>
  </objectgroup>
 </map>

@@ -8,6 +8,7 @@ import { playSoundName } from 'model/sound';
 import { useEffect, useState } from 'preact/hooks';
 import { getUiInterface } from 'view/ui';
 import { AppSection } from 'model/store';
+import { getResPath } from 'model/generics';
 
 const MenuWrapper = style('div', (props: { dark?: boolean }) => {
   return {
@@ -50,7 +51,7 @@ const MenuBackground = style('div', () => {
     width: '100%',
     height: '100%',
     opacity: '0.04',
-    backgroundImage: 'url(res/bg/flowers_menu_bg.png)',
+    backgroundImage: `url(${getResPath()}/bg/flowers_menu_bg.png)`,
     zIndex: 0,
     pointerEvents: 'none',
   };

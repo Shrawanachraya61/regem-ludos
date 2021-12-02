@@ -204,6 +204,18 @@ export const init = () => {
     animName: 'effect_pingpong_rtl',
   };
 
+  const EFFECT_TEMPLATE_PHONE_LEFT: ParticleTemplate = {
+    animName: 'effects_phone_left',
+    duration: 450,
+    offset: [-8, -2],
+  };
+
+  const EFFECT_TEMPLATE_PHONE_RIGHT: ParticleTemplate = {
+    animName: 'effects_phone_left_f',
+    duration: 450,
+    offset: [8, -2],
+  };
+
   const EFFECT_TEMPLATE_EMOTION_BUBBLE: ParticleTemplate = {
     duration: 750,
     uiComponent: (props: { particle: Particle }) => {
@@ -220,6 +232,9 @@ export const init = () => {
           ref.current.style.animation = `${dialogBubbleClose} ${transitionDuration}ms linear`;
         });
       }, []);
+
+      const animName = 'effect_emotions_' + emotion;
+
       return (
         <CharacterFollower ch={ch} renderKey={`particle-${ch.name}-${emotion}`}>
           <div
@@ -235,7 +250,7 @@ export const init = () => {
               // height: '100%',
             }}
           >
-            <StaticAnimDiv scale={3} animName={'effect_emotions_' + emotion} />
+            <StaticAnimDiv scale={3} animName={animName} />
           </div>
         </CharacterFollower>
       );
@@ -262,6 +277,8 @@ export const init = () => {
     EFFECT_TEMPLATE_PORTAL_SPAWN,
     EFFECT_TEMPLATE_SPAWN,
     EFFECT_TEMPLATE_BUFF,
+    EFFECT_TEMPLATE_PHONE_LEFT,
+    EFFECT_TEMPLATE_PHONE_RIGHT,
     EFFECT_TEMPLATE_PING_PONG_LTR,
     EFFECT_TEMPLATE_PING_PONG_RTL,
     EFFECT_TEMPLATE_EMOTION_BUBBLE,

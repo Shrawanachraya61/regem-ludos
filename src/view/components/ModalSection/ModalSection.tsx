@@ -1,29 +1,35 @@
 /* @jsx h */
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { hideModal, hideSection } from 'controller/ui-actions';
 import { AppSection, ModalSection } from 'model/store';
 import DialogBox from 'view/elements/DialogBox';
 import MenuBox from 'view/elements/MenuBox';
 import { colors, style } from 'view/style';
-import { getUiInterface } from 'view/ui';
+import { getUiInterface, renderUi } from 'view/ui';
 import { playSound } from 'controller/scene/scene-commands';
-import { timeoutPromise } from 'utils';
+import { Point, timeoutPromise } from 'utils';
 import {
   getBattleActionKey,
   getBattleActionLabel,
   getCancelKeyLabel,
+  getConfirmKeyLabel,
   getPauseKeyLabel,
 } from 'controller/events';
-import { getCurrentPlayer } from 'model/generics';
+import { getCurrentBattle, getCurrentPlayer, getResPath } from 'model/generics';
 import VerticalMenu from 'view/elements/VerticalMenu';
 import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import { Character, characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
 import CharacterNameLabel from 'view/elements/CharacterNameLabel';
 import CharacterStatus from '../CharacterStatus';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import UseItemDescription from '../UseItemDescription';
 import CharacterFollowerMenu from 'view/elements/CharacterFollowerMenu';
+import { SVGLine, useSVGLine } from 'view/hooks';
+import { allyIndexToKey } from 'controller/battle-management';
+import { battleSetEnemyRangeTargetIndex } from 'model/battle';
+import MeleeTargetIcon from 'view/icons/TargetMelee';
+import RangeTargetIcon from 'view/icons/Target';
 
 export const MAX_WIDTH = '570px';
 const TUTORIAL_MAX_WIDTH = '500px';
@@ -47,27 +53,52 @@ const CenterAligned = style('div', () => {
   };
 });
 
+const TargetIconContainer = style('div', () => {
+  return {
+    width: '42px',
+    height: '42px',
+    display: 'inline-block',
+    padding: '8px',
+    border: '1px solid ' + colors.WHITE,
+    marginBottom: '16px',
+    background: colors.BLACK,
+  };
+});
+
 const TutorialAttackModal = (props: ICustomModalProps) => {
+  const svgId = 'line-dialog-box';
+  const div1Id = 'line-dialog-box-div1';
+  const div2Id = 'primary-Ada';
+
+  useSVGLine({
+    svgId,
+    div1Id,
+    div2Id,
+    offset1: [0, 0],
+    offset2: [0, -40],
+  });
+
+  const battle = getCurrentBattle();
+  const key = allyIndexToKey(battle.alliesStorage.indexOf(battle.allies[0]));
+
   return (
-    <DialogBox
-      title="Tutorial"
-      onClose={props.onClose}
-      maxWidth={TUTORIAL_MAX_WIDTH}
-    >
-      <p>Welcome to the Regem Ludos Battle System!</p>
-      <p>
-        Wait for the action bar to fill up, then initiate an attack by tapping
-        the character portrait or button <b>{getBattleActionLabel(0)}</b>.
-        Characters may have multiple attacks, so keep tapping until they are all
-        used up!
-      </p>
-      <CenterAligned>
-        <img
-          src="res/img/tutorial-ada-waiting-ready.png"
-          alt="tutorial-image"
-        ></img>
-      </CenterAligned>
-    </DialogBox>
+    <>
+      <DialogBox
+        title="Tutorial"
+        onClose={props.onClose}
+        maxWidth={TUTORIAL_MAX_WIDTH}
+        disableBackground={true}
+        offset={[0, 100]}
+      >
+        <p>
+          When this bar is full, continuously press {key} or tap Ada's portrait
+          to <span style={{ color: colors.LIGHTBLUE }}>attack</span>. Ada can
+          attack more than once.
+        </p>
+        <div id={div1Id}></div>
+      </DialogBox>
+      <SVGLine id={svgId} />
+    </>
   );
 };
 
@@ -102,7 +133,7 @@ const TutorialAttackAmounts = (props: ICustomModalProps) => {
       </p>
       <CenterAligned>
         <img
-          src="res/img/tutorial-training-swing.png"
+          src={`${getResPath()}img/tutorial-training-swing.png`}
           alt="tutorial-image"
         ></img>
       </CenterAligned>
@@ -124,107 +155,253 @@ const TutorialAttackAmounts = (props: ICustomModalProps) => {
 };
 
 const TutorialStagger = (props: ICustomModalProps) => {
+  const svgId = 'line-dialog-box';
+  const div1Id = 'line-dialog-box-div1';
+  const div2Id = 'name-label-Robot';
+
+  useSVGLine({
+    svgId,
+    div1Id,
+    div2Id,
+    offset1: [0, 0],
+    offset2: [0, 75],
+  });
+
   return (
-    <DialogBox
-      title="Tutorial"
-      onClose={props.onClose}
-      maxWidth={TUTORIAL_MAX_WIDTH}
-    >
-      <p>
-        STAGGER is an important mechanic in the Regem Ludos Arcade Battle
-        System!
-      </p>
-      <p>
-        Below the HP bar of each character is a STAG gauge. This gage fills when
-        the character is hit.
-      </p>
-      <p>If this gauge completely fills, then the character is STAGGERED</p>
-      <p>
-        While STAGGERED, a character takes double damage and their action bar is
-        reset.
-      </p>
-    </DialogBox>
+    <>
+      <DialogBox
+        title="Tutorial"
+        onClose={props.onClose}
+        maxWidth={TUTORIAL_MAX_WIDTH}
+        disableBackground={true}
+        offset={[200, -115]}
+      >
+        <div id={div1Id}></div>
+        <p>
+          Attacks fill this bar. When this bar is full, a character is{' '}
+          <span style={{ color: colors.YELLOW }}>STAGGERED</span>.
+        </p>
+        <p>
+          When <span style={{ color: colors.YELLOW }}>STAGGERED</span>, a
+          character takes increased damage and cannot act until the bar
+          depletes.
+        </p>
+      </DialogBox>
+      <SVGLine id={svgId} />
+    </>
   );
 };
 
 const TutorialBackRow = (props: ICustomModalProps) => {
+  const battle = getCurrentBattle();
+  const key = allyIndexToKey(battle.alliesStorage.indexOf(battle.allies[1]));
+
+  useEffect(() => {
+    if (diagIndex === 0) {
+      // HACK Pointedly makes the range index in the back on render.  Maybe not the best
+      // place for this...
+      battleSetEnemyRangeTargetIndex(battle, 1);
+      renderUi();
+    }
+  }, []);
+
+  const [diagIndex, setDiagIndex] = useState(0);
+
+  const svgId = 'line-dialog-box2';
+  const div1Id = 'line-dialog-box-div1';
+  let div2Id = 'primary-Conscience';
+
+  let elem: any;
+  let diagOffset: Point = [0, 0];
+  let svgStartOffset: Point = [0, 0];
+  let svgOffset: Point = [0, 0];
+  if (diagIndex === 0) {
+    elem = (
+      <p>
+        Conscience has joined! When this bar is full, press {key} or tap
+        Conscience's portrait to{' '}
+        <span style={{ color: colors.LIGHTBLUE }}>attack</span>. Both Conscience
+        and Ada can attack simultaneously.
+      </p>
+    );
+    diagOffset = [-128, 100];
+    svgOffset = [0, -40];
+    div2Id = 'primary-Conscience';
+  } else if (diagIndex === 1) {
+    elem = (
+      <p>
+        <CenterAligned>
+          <TargetIconContainer>
+            <RangeTargetIcon color={colors.RED} />
+          </TargetIconContainer>
+        </CenterAligned>
+        Conscience has a{' '}
+        <span style={{ color: colors.LIGHTRED }}>ranged weapon</span>. This icon
+        indicates the target of all ranged attacks. It can be placed on any
+        enemy on the battlefield by tapping the enemy.
+      </p>
+    );
+    diagOffset = [-150, -20];
+    svgStartOffset = [0, 85];
+    div2Id = 'Robot M Fast_1';
+  } else if (diagIndex === 2) {
+    elem = (
+      <p>
+        <CenterAligned>
+          <TargetIconContainer>
+            <MeleeTargetIcon color={colors.YELLOW} />
+          </TargetIconContainer>
+        </CenterAligned>
+        Ada has a <span style={{ color: colors.YELLOW }}>melee weapon</span>.
+        This icon indicates the target of all melee attacks. It can ONLY be
+        placed on any enemies in the{' '}
+        <span style={{ color: colors.LIGHTGREEN }}>FRONT ROW</span> of the
+        battlefield.
+      </p>
+    );
+    diagOffset = [-205, 100];
+    svgStartOffset = [0, 85];
+    div2Id = 'Robot M_0';
+  }
+
+  useSVGLine({
+    svgId,
+    div1Id,
+    div2Id,
+    offset1: svgStartOffset,
+    offset2: svgOffset,
+  });
+
   return (
-    <DialogBox
-      title="Tutorial"
-      onClose={props.onClose}
-      maxWidth={TUTORIAL_MAX_WIDTH}
-    >
-      <p>
-        Characters equipped with a <b>Swing</b> action can only target
-        characters in the first row. Only when characters in the first row have
-        been defeated can a character target the back rows with a <b>Swing</b>{' '}
-        action.
-      </p>
-      <p>
-        However, a character equipped with a <b>Shoot</b> action can target any
-        character in the battle.
-      </p>
-      <p>
-        Characters with a <b>Shoot</b> action will target the character
-        indicated by the spinning, red circle. <b>Shoot</b> actions typically
-        inflict less damage, but are especially useful at chipping down enemies
-        on the back line.
-      </p>
-    </DialogBox>
+    <>
+      <DialogBox
+        title="Tutorial"
+        onClose={() => {
+          if (diagIndex < 2) {
+            setDiagIndex(diagIndex + 1);
+          } else {
+            props.onClose();
+          }
+        }}
+        maxWidth={TUTORIAL_MAX_WIDTH}
+        disableBackground={true}
+        offset={diagOffset}
+        remainOpen={diagIndex < 2}
+      >
+        {diagIndex > 0 ? <div id={div1Id}></div> : null}
+        {elem}
+        {diagIndex === 0 ? <div id={div1Id}></div> : null}
+      </DialogBox>
+      <SVGLine id={svgId} />
+    </>
   );
 };
 
 const TutorialMagic = (props: ICustomModalProps) => {
+  const svgId = 'line-dialog-box';
+  const div1Id = 'line-dialog-box-div1';
+  const div2Id = 'Robot Mage_1';
+
+  useSVGLine({
+    svgId,
+    div1Id,
+    div2Id,
+    offset1: [0, 0],
+    offset2: [0, 0],
+  });
+
   return (
-    <DialogBox
-      title="Tutorial"
-      onClose={props.onClose}
-      maxWidth={TUTORIAL_MAX_WIDTH}
-    >
-      <p>
-        Some enemies are able to use a <b>Magic</b> action. These abilities are
-        usually very powerful and may also have a wide range of effects.
-      </p>
-      <p>
-        To use a <b>Magic</b> action, however, a character must prepare the
-        action first by entering into a CASTING state. During this state, a
-        character cannot act until the CASTING is complete, or that character is
-        interrupted. When a character is interrupted, the spell is stopped and
-        the character's action timer is reset.
-      </p>
-      <p>
-        While a character is CASTING, they can be interrupted by taking damage
-        from a character with a <b> Swing </b> action. However, a <b>Ranged</b>{' '}
-        action does not interrupt a cast unless it otherwise states on the
-        action description.
-      </p>
-    </DialogBox>
+    <>
+      <DialogBox
+        title="Tutorial"
+        onClose={props.onClose}
+        maxWidth={TUTORIAL_MAX_WIDTH}
+        disableBackground={true}
+        offset={[-75, -75]}
+      >
+        <p>
+          A character casting a spell can be{' '}
+          <span style={{ color: colors.LIGHTGREEN }}>INTERRUPTED</span> if
+          enough damage is dealt.
+        </p>
+        <div id={div1Id}></div>
+      </DialogBox>
+      <SVGLine id={svgId} />
+    </>
   );
 };
 
 const TutorialArmor = (props: ICustomModalProps) => {
+  const [diagIndex, setDiagIndex] = useState(0);
+
+  const svgId = 'line-dialog-box';
+  const div1Id = 'line-dialog-box-div1';
+  let div2Id = 'Robot Armored_0';
+
+  let elem: any;
+  let diagOffset: Point = [0, 0];
+  let offset1: Point = [0, 0];
+  let offset2: Point = [0, 0];
+
+  if (diagIndex === 0) {
+    elem = (
+      <p>
+        A character with armor is{' '}
+        <span style={{ color: colors.YELLOW }}>IMMUNE</span> to physical damage.
+        One point of armor can be removed by two characters landing attacks
+        simultaneously.
+      </p>
+    );
+    diagOffset = [-205, -5];
+    offset2 = [40, 60];
+    div2Id = 'Robot Armored_0';
+  } else if (diagIndex === 1) {
+    elem = (
+      <p>
+        Certain items are also able to remove armor. Items can be used in the
+        pause menu{' '}
+        <span style={{ color: colors.LIGHTRED }}>
+          only when the enemy is not attacking
+        </span>
+        .
+      </p>
+    );
+
+    diagOffset = [-275, -200];
+    div2Id = 'top-bar-menu';
+    offset1 = [-260, -150];
+    offset2 = [0, 30];
+  }
+
+  useSVGLine({
+    svgId,
+    div1Id,
+    div2Id,
+    offset1,
+    offset2,
+  });
+
   return (
-    <DialogBox
-      title="Tutorial"
-      onClose={props.onClose}
-      maxWidth={TUTORIAL_MAX_WIDTH}
-    >
-      <p>
-        Some particularly difficult enemies have points of <b> Armor</b>. While
-        an enemy has armor, any <b>Swing</b> action will do zero damage to that
-        enemy.
-      </p>
-      <p>
-        There are two primary ways to remove <b> Armor </b> from an enemy. The
-        first is to hit two attacks simultaneously. This breaks one point of
-        armor.
-      </p>
-      <p>
-        The second is to use a <b>Swing</b> action with the PIERCE attribute. A
-        PIERCE <b>Swing</b> action will immediately remove one point of armor
-        when it hits.
-      </p>
-    </DialogBox>
+    <>
+      <DialogBox
+        title="Tutorial"
+        onClose={() => {
+          if (diagIndex < 1) {
+            setDiagIndex(diagIndex + 1);
+          } else {
+            props.onClose();
+          }
+        }}
+        maxWidth={TUTORIAL_MAX_WIDTH}
+        remainOpen={diagIndex < 1}
+        disableBackground={true}
+        offset={diagOffset}
+      >
+        {elem}
+        <div id={div1Id}></div>
+      </DialogBox>
+      <SVGLine id={svgId} />
+    </>
   );
 };
 

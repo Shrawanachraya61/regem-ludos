@@ -38,6 +38,7 @@ interface IBattleCharacterProps {
   isEnemy: boolean;
   animName?: string;
   hideTargets?: boolean;
+  id: string;
 }
 
 const targetRotate = keyframes({
@@ -194,7 +195,7 @@ const BattleCharacterFollower = (props: IBattleCharacterProps) => {
   return (
     <CharacterFollower
       ch={bCh.ch}
-      renderKey={'follower-' + bCh.ch.name}
+      renderKey={props.id}
       onClick={handleEnemyClick}
       onMouseOver={() => {
         bCh.ch.highlighted = true;

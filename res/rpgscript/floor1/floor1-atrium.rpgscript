@@ -364,11 +364,12 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Ada: "He told me he is on the second floor."
   Ada: "Do you know where I need to go to get up there?"
   +:teardrop(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "<cascade-letters>Um..."
   AtriumGreeterEmployee: "Please direct all directions-related questions to my cohort at the front desk."
   AtriumGreeterEmployee: "She will happily assist if you are lost."
   +endConversation();
 @floor1-atrium-greeter-employee2
-+lookAtEachOther(Ada, AtriumGreeterEmployee);
+  +lookAtEachOther(Ada, AtriumGreeterEmployee);
   +setConversation(Ada);
   AtriumGreeterEmployee: "On behalf of the arcade staff, we hope you have a wonderful time!"
   +endConversation();
@@ -379,11 +380,13 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
   AtriumGreeterEmployee: "<cascade>Welcome to the <color=BLUE>Regem Ludos Arcade</>!"
   +setConversationSpeaker(none);
+  +walkToMarker(AtriumGreeterEmployee, MarkerGreeterC, 0, 0, true);
   +walkToMarker(Ada, MarkerFloor1AtriumGreeterEmployeeWalk);
   +lookAtEachOther(Ada, AtriumGreeterEmployee);
   +panCameraToFitCharacters(500, false, Ada, AtriumGreeterEmployee);
   +:exclaim(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Oh! <delay=200 cascade>You're from that prep school <color=BLUE>Erran Valley<cascade> a few blocks from here right?"
+  +lookAtEachOther(Ada, AtriumGreeterEmployee);
   Ada: "Yes, I am.  How did you know?"
   +:happy(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Oh, you kids from that school are a cut above the rest.  I can recognize one of you lot from a mile away."
@@ -395,28 +398,54 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   +:utils-start-Conscience-dialogue-single();
   +setConversation(Conscience);
   +:lightbulb(Conscience);
-  Conscience: "(Carl-Arnold has the record for every arcade machine?  Whoah.)"
+  Conscience: "<color=ORANGE>Carl-Arnold</> has the record for every arcade machine?  Whoah."
   +setConversation(Ada);
   +:bored(Ada);
-  Ada: "<cascade-letters>How quaint..."
+  Ada: "<cascade-letters>How quite <italic>contrived</> of him."
   +setConversation(Ada);
+  +setFacing(AtriumGreeterEmployee, down);
+  +:teardrop(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "<cascade-letters>Um...."
+  +setFacing(AtriumGreeterEmployee, leftdown);
+  +:question(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Are you speaking with someone... behind you?"
+  +none();
+  +setAnimationAndWait('Ada', 'ada_shake_head_down');
+  +lookAtEachOther(Ada, AtriumGreeterEmployee);
+  +:shakeZ(Ada);
+  Ada: "Sorry.  I mumble to myself sometimes.  It is a tick I have."
+  +setFacing(Conscience, leftdown);
+  +:exhale(Conscience);
+  +setConversation(Conscience);
+  Conscience: "Here we go again..."
+  +:teardrop(AtriumGreeterEmployee);
+  +setConversation(Ada);
+  AtriumGreeterEmployee: "Oh! Sorry!"
+  +setFacing(AtriumGreeterEmployee, down);
+  +:shakeZ(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "<cascade-letters>I just thought..."
+  +:nervous(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Nevermind! <scale=0.5 />Why am I so awkward!"
+  +lookAtEachOther(Ada, AtriumGreeterEmployee);
   +lookAtCharacter(Conscience, AtriumGreeterEmployee);
-  +lookAtCharacter(Ada, AtriumGreeterEmployee);
-  +:happy(AtriumGreeterEmployee)
-  AtriumGreeterEmployee: "There's obviously a reason why your school is the most well-regarded prep school in the state."
-  AtriumGreeterEmployee: "I <scale=1.25>ALWAYS</> try to keep my eye out for one of you."
+  +:jump(AtriumGreeterEmployee);
+  +:shakeZ(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Um. Anyway, I was saying..."
+  +:lightbulb(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "Oh yeah! You're from <color=BLUE>Erran Valley High School</>!"
+  AtriumGreeterEmployee: "There's obviously a reason why your school is the <color=PURPLE />most well-regarded prep school in the state."
   +:question(Ada);
   Ada: "Are there many students from <color=BLUE>Erran Valley</> who come here?"
   AtriumGreeterEmployee: "From time to time, yeah."
   +:lightbulb(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Actually, I saw a few of you come in earlier.  Not sure where they all went, though."
-  +:heart(AtriumGreeterEmployee);
-  AtriumGreeterEmployee: "It's rare to have so many of you in here at once!  I can't wait to see what happens!"
   +:teardrop(Ada);
   Ada: "<cascade>Um.  <cascade-letters>Thanks.  I guess."
   Ada: "I do not really plan on having anything interesting happening at all, as a matter of fact."
   AtriumGreeterEmployee: "Anyway, if you need any assistance, don't hesitate to speak with any of the employees!"
   AtriumGreeterEmployee: "You can recognize us by our hats and white attire."
+  +:spin(AtriumGreeterEmployee);
+  +:exclaim(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "On behalf of the arcade staff, we hope you have a wonderful time!"
   +setConversationSpeaker(none);
   +panCameraBackToPlayer(500);
@@ -425,7 +454,13 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   Conscience: "<cascade>Looks like <color=ORANGE>Carl-Arnold</> has somewhat of a name around here."
   +setConversation(Ada);
   Ada: "I suppose he does."
+  +setFacing(AtriumGreeterEmployee, rightup);
+  +:teardrop(AtriumGreeterEmployee);
+  AtriumGreeterEmployee: "<scale=0.5>She said it was a tick...  Just ignore it..."
+  +setConversation(Conscience);
+  +:sigh(Conscience);
   +:utils-stop-Conscience-dialogue();
+  +resetAi(AtriumGreeterEmployee);
   +endConversation(500, true);
 
 #floor1-AtriumNPC1NPC2
@@ -448,9 +483,10 @@ Floor1AtriumNPC2: "Ya... I have no idea."
 +waitMS(100);
 Floor1AtriumNPC2: "I'm sure something just held him up."
 +setFacing(Floor1AtriumNPC2, leftdown);
++:bored(Floor1AtriumNPC1);
 Floor1AtriumNPC1: "If he's not here in the next three minutes, I'm going to that <color=BLUE>Vortex</> machine and not leaving until I have the high score."
 +lookAtEachOther(Floor1AtriumNPC1, Floor1AtriumNPC2);
-+:angry(Floor1AtriumNPC1)
++:shakeZ(Floor1AtriumNPC1)
 Floor1AtriumNPC1: "I mean it.  I'm sick of waiting around for you guys."
 +:teardrop(Floor1AtriumNPC2);
 Floor1AtriumNPC2: "Isn't this supposed to be a date or something?"

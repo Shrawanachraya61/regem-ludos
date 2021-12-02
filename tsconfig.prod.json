@@ -6,6 +6,7 @@
         "node_modules/preact/"
       ]
     },
+    "noEmit": true,
     "target": "ES2017",
     "module": "amd",
     "moduleResolution": "node",

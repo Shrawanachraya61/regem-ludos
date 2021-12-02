@@ -175,7 +175,7 @@
     },
     "fanfare": {
       "start": 78,
-      "end": 81.60489795918367,
+      "end": 81.89224489795919,
       "loop": false
     },
     "gain_token": {
@@ -263,174 +263,184 @@
       "end": 119.31353741496599,
       "loop": false
     },
-    "pop": {
+    "phone_voice1": {
       "start": 121,
-      "end": 121.03020408163265,
+      "end": 121.28734693877551,
+      "loop": false
+    },
+    "phone_voice2": {
+      "start": 123,
+      "end": 123.28734693877551,
+      "loop": false
+    },
+    "pop": {
+      "start": 125,
+      "end": 125.03020408163265,
       "loop": false
     },
     "quest_completed": {
-      "start": 123,
-      "end": 123.26122448979592,
+      "start": 127,
+      "end": 127.26122448979592,
       "loop": false
     },
     "quest_started": {
-      "start": 125,
-      "end": 125.26122448979592,
+      "start": 129,
+      "end": 129.26122448979592,
       "loop": false
     },
     "red_door_close": {
-      "start": 127,
-      "end": 127.73142857142857,
+      "start": 131,
+      "end": 131.73142857142858,
       "loop": false
     },
     "red_door_open": {
-      "start": 129,
-      "end": 129.88816326530613,
+      "start": 133,
+      "end": 133.88816326530613,
       "loop": false
     },
     "rez": {
-      "start": 131,
-      "end": 133.14204081632653,
+      "start": 135,
+      "end": 137.14204081632653,
       "loop": false
     },
     "robot_channel_start": {
-      "start": 135,
-      "end": 136.08020408163264,
+      "start": 139,
+      "end": 140.08020408163264,
       "loop": false
     },
     "robot_charge_up": {
-      "start": 138,
-      "end": 138.81680272108844,
+      "start": 142,
+      "end": 142.81680272108844,
       "loop": false
     },
     "robot_clank": {
-      "start": 140,
-      "end": 140.6530612244898,
+      "start": 144,
+      "end": 144.6530612244898,
       "loop": false
     },
     "robot_clank2": {
-      "start": 142,
-      "end": 142.47020408163266,
+      "start": 146,
+      "end": 146.47020408163266,
       "loop": false
     },
     "robot_clank3": {
-      "start": 144,
-      "end": 144.39183673469387,
+      "start": 148,
+      "end": 148.39183673469387,
       "loop": false
     },
     "robot_clank4": {
-      "start": 146,
-      "end": 146.3657142857143,
+      "start": 150,
+      "end": 150.3657142857143,
       "loop": false
     },
     "robot_staggered3": {
-      "start": 148,
-      "end": 148.7034693877551,
+      "start": 152,
+      "end": 152.7034693877551,
       "loop": false
     },
     "robot_staggered_damaged2": {
-      "start": 150,
-      "end": 150.32036281179137,
+      "start": 154,
+      "end": 154.32036281179137,
       "loop": false
     },
     "shoot_arrow": {
-      "start": 152,
-      "end": 152.16761904761904,
+      "start": 156,
+      "end": 156.16761904761904,
       "loop": false
     },
     "skye_kick_vending_machine": {
-      "start": 154,
-      "end": 154.26727891156463,
+      "start": 158,
+      "end": 158.26727891156463,
       "loop": false
     },
     "sliding_door_close": {
-      "start": 156,
-      "end": 156.44408163265305,
+      "start": 160,
+      "end": 160.44408163265305,
       "loop": false
     },
     "sliding_door_open": {
-      "start": 158,
-      "end": 158.44408163265305,
+      "start": 162,
+      "end": 162.44408163265305,
       "loop": false
     },
     "spawn_enemy": {
-      "start": 160,
-      "end": 160.60124716553287,
+      "start": 164,
+      "end": 164.60124716553287,
       "loop": false
     },
     "terminal_cancel": {
-      "start": 162,
-      "end": 162.14190476190475,
+      "start": 166,
+      "end": 166.14190476190475,
       "loop": false
     },
     "token_get": {
-      "start": 164,
-      "end": 164.26122448979592,
+      "start": 168,
+      "end": 168.26122448979592,
       "loop": false
     },
     "use_item": {
-      "start": 166,
-      "end": 166.29020408163265,
+      "start": 170,
+      "end": 170.29020408163265,
       "loop": false
     },
     "vending_machine": {
-      "start": 168,
-      "end": 168.80979591836734,
+      "start": 172,
+      "end": 172.80979591836734,
       "loop": false
     },
     "vr_portal_activate": {
-      "start": 170,
-      "end": 170.47020408163266,
+      "start": 174,
+      "end": 174.47020408163266,
       "loop": false
     },
     "vr_portal_beep": {
-      "start": 172,
-      "end": 172.23020408163265,
+      "start": 176,
+      "end": 176.23020408163265,
       "loop": false
     },
     "vr_portal_buzz": {
-      "start": 174,
-      "end": 174.6943537414966,
+      "start": 178,
+      "end": 178.6943537414966,
       "loop": false
     },
     "vr_portal_deactivate": {
-      "start": 176,
-      "end": 176.47020408163266,
+      "start": 180,
+      "end": 180.47020408163266,
       "loop": false
     },
     "vr_portal_focus": {
-      "start": 178,
-      "end": 178.69020408163266,
+      "start": 182,
+      "end": 182.69020408163266,
       "loop": false
     },
     "vr_portal_landed": {
-      "start": 180,
-      "end": 180.45020408163265,
+      "start": 184,
+      "end": 184.45020408163265,
       "loop": false
     },
     "vr_portal_start": {
-      "start": 182,
-      "end": 182.95020408163265,
+      "start": 186,
+      "end": 186.95020408163265,
       "loop": false
     },
     "vr_portal_zoom": {
-      "start": 184,
-      "end": 187.60020408163265,
+      "start": 188,
+      "end": 191.60020408163265,
       "loop": false
     },
     "woosh": {
-      "start": 189,
-      "end": 189.4171201814059,
+      "start": 193,
+      "end": 193.4171201814059,
       "loop": false
     },
     "woosh_reverse": {
-      "start": 191,
-      "end": 191.35156462585033,
+      "start": 195,
+      "end": 195.35156462585033,
       "loop": false
     },
     "zap": {
-      "start": 193,
-      "end": 193.26122448979592,
+      "start": 197,
+      "end": 197.26122448979592,
       "loop": false
     }
   },

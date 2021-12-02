@@ -14,6 +14,10 @@ import {
 } from './sound';
 import { IItemStoreSave } from 'controller/save-management';
 
+export const getResPath = () => {
+  return (window as any).RES_PATH ?? '';
+};
+
 let currentRoom: Room | null = ((window as any).room = null);
 export const getCurrentRoom = (): Room => currentRoom as Room;
 export const setCurrentRoom = (r: Room): void => {

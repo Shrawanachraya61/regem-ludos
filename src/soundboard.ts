@@ -1,8 +1,10 @@
 import { loadRes } from 'controller/res-loader';
 import { playSoundName, sounds, loadSoundSpritesheet } from 'model/sound';
 
-export const main = async (): Promise<void> => {
+export const soundboard = async (): Promise<void> => {
   console.log('load res');
+  document.body.innerHTML = '';
+  document.body.style['overflow-y'] = 'auto';
   await loadSoundSpritesheet('foley/foley.mp3');
   await loadRes();
 

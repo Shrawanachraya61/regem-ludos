@@ -40,14 +40,14 @@
 </data>
  </layer>
  <objectgroup id="2" name="Objects" offsetx="-4" offsety="4">
-  <object id="57" name="MarkerEnemy0" gid="355" x="202.5" y="119.5" width="32" height="32"/>
-  <object id="62" name="MarkerAlly0" gid="194" x="124" y="144" width="32" height="32"/>
-  <object id="63" name="MarkerAlly1" gid="194" x="149.5" y="178.5" width="32" height="32"/>
+  <object id="57" name="MarkerEnemy0" gid="355" x="180.5" y="125.5" width="32" height="32"/>
+  <object id="62" name="MarkerAlly0" gid="194" x="111.5" y="154.5" width="32" height="32"/>
+  <object id="63" name="MarkerAlly1" gid="194" x="143.5" y="186.5" width="32" height="32"/>
   <object id="64" name="MarkerAlly2" gid="194" x="103.5" y="164.5" width="32" height="32"/>
   <object id="65" name="MarkerAlly3" gid="194" x="128.5" y="199.5" width="32" height="32"/>
   <object id="66" name="MarkerAlly4" gid="194" x="83" y="183" width="32" height="32"/>
   <object id="67" name="MarkerAlly5" gid="194" x="108.5" y="217.5" width="32" height="32"/>
-  <object id="68" name="MarkerEnemy1" gid="194" x="147.5" y="94.5" width="32" height="32"/>
-  <object id="69" name="MarkerEnemy2" gid="194" x="244" y="126" width="32" height="32"/>
+  <object id="68" name="MarkerEnemy1" gid="194" x="131.5" y="92.5" width="32" height="32"/>
+  <object id="69" name="MarkerEnemy2" gid="194" x="231" y="121" width="32" height="32"/>
  </objectgroup>
 </map>

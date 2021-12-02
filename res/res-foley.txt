@@ -87,6 +87,8 @@ Sound,make_purchase,foley/make_purchase.mp3,Blades of Exile SND15 https://github
 Sound,zap_quiet,foley/zap.mp3,0.5,Creative Commons 0 https://freesound.org/people/michael_grinnell/sounds/512471/
 Sound,deep_siren,foley/deep_siren.mp3,1.0,Attribution https://freesound.org/people/InspectorJ/sounds/455602/
 Sound,vending_machine,foley/vending_machine.mp3,0.8, Attribution https://freesound.org/people/HarryPeeks/sounds/242138/ + Creative Commons https://freesound.org/people/Kodack/sounds/258020/
+Sound,phone_voice1,foley/phone_voice1.mp3,0.5,zzfx
+Sound,phone_voice2,foley/phone_voice2.mp3,0.5,zzfx
 
 Music,music_menu,music/menu.mp3
 Music,music_battle1,music/battle1.mp3
@@ -96,7 +98,7 @@ Music,music_outside_arcade,music/outside_arcade2.mp3
 Music,music_bowling,music/regem_ludos_bowling.mp3
 Music,music_tense,music/tense.mp3
 Music,music_tutorial,music/tutorial.mp3
-Music,music_tutorial_dungeon,music/tutorial_dungeon.mp3
 Music,music_pre_tense_battle,music/pre_tense_battle.mp3
+Music,music_tense_battle,music/tense_battle.mp3
 Music,music_store,music/store.mp3
 Music,music_snoop,music/snoop.mp3

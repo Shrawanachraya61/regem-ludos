@@ -407,12 +407,28 @@ action,this
 @this
 +lookAtEachOther(Ada, TestDialogE);
 +setConversation(Ada);
-testDialogE: "This script tests nested if statements."
+TestDialogE: "This script tests nested if statements."
 +?once(test-testDialogE1):{
   +setStorage('test-testDialogEVal', 5);
   +?once(test-testDialogE2):{
     testDialogE: "This should show up only once.  Speak to me again to verify."
   }
 }
-test-testDialogE: "The test has completed."
+TestDialogE: "The test has completed."
++endConversation();
+
+#test-testDialogF
+action,this
+@this
++lookAtEachOther(Ada, TestDialogF);
++setConversation(Ada);
++:bumpY(TestDialogF, 2);
+TestDialogF: "This script tests irregular emotion bubbles."
++:phone_left(phone_voice1);
++:bumpY(TestDialogF, 2);
+TestDialogF: "That should have been phone_left.  And again:"
++:phone_left(phone_voice1);
++:bumpY(TestDialogF, 2);
+TestDialogF: "That should have been phone_left again."
+TestDialogE: "The test has completed."
 +endConversation();

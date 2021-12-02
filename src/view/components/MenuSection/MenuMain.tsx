@@ -13,7 +13,7 @@ import StaticAnimDiv from 'view/elements/StaticAnimDiv';
 import Button, { ButtonType } from 'view/elements/Button';
 import { useInputEventStack } from 'view/hooks';
 import { playSoundName } from 'model/sound';
-import { getCurrentPlayer, getCurrentScene } from 'model/generics';
+import { getCurrentPlayer, getCurrentScene, getResPath } from 'model/generics';
 import { characterGetHpPct } from 'model/character';
 import ProgressBar from 'view/elements/ProgressBar';
 import { useEffect, useState } from 'preact/hooks';
@@ -65,7 +65,7 @@ const MenuBackground = style('div', () => {
     width: '100%',
     height: '100%',
     opacity: '0.04',
-    backgroundImage: 'url(res/bg/flowers_menu_bg.png)',
+    backgroundImage: `url(${getResPath()}/bg/flowers_menu_bg.png)`,
     zIndex: 0,
     pointerEvents: 'none',
   };

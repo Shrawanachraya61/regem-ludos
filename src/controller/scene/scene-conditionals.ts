@@ -122,6 +122,16 @@ const inParty = (chName: string) => {
   );
 };
 
+const hasEnoughTokens = (tokens: string | number) => {
+  const player = getCurrentPlayer();
+  return player.tokens >= Number(tokens);
+};
+
+const hasEnoughTickets = (tickets: string | number) => {
+  const player = getCurrentPlayer();
+  return player.tickets >= Number(tickets);
+};
+
 const exp = {
   questActive,
   questNotStarted,
@@ -131,6 +141,8 @@ const exp = {
   questStepLT,
   questStepEQ,
   inParty,
+  hasEnoughTokens,
+  hasEnoughTickets,
 };
 
 export default exp;

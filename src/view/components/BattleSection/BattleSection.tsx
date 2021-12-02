@@ -4,6 +4,7 @@ import { useState } from 'preact/hooks';
 import {
   getCurrentBattle,
   getCurrentPlayer,
+  getCurrentScene,
   getIsPaused,
 } from 'model/generics';
 import { style, colors } from 'view/style';
@@ -45,6 +46,7 @@ import BattleItems from './BattleItems';
 import BattleTurnIndicator from './BattleTurnIndicator';
 import { fleeBattle } from 'controller/battle-management';
 import CharacterFollowerMenu from 'view/elements/CharacterFollowerMenu';
+import { sceneIsWaiting } from 'model/scene';
 
 const BOX_SHADOW = '0px 0px 12px 8px rgba(0, 0, 0, 0.75)';
 
@@ -148,9 +150,15 @@ const BattleSection = (props: IBattleSectionProps) => {
 
   const isPaused = getIsPaused();
   const isEffectActive = uiState.effect.active;
-  const isCutsceneVisible = getUiInterface().appState.sections.includes(
-    AppSection.Cutscene
-  );
+  const isCutsceneVisible =
+    getUiInterface().appState.sections.includes(AppSection.Cutscene) ||
+    sceneIsWaiting(getCurrentScene());
+
+  // console.log(
+  //   'RENDER BATTLE SECTION',
+  //   isCutsceneVisible,
+  //   getUiInterface().appState.sections
+  // );
 
   const [
     currentlyActingAllegiance,
@@ -232,13 +240,6 @@ const BattleSection = (props: IBattleSectionProps) => {
     background: colors.DARKGREEN,
   };
 
-  console.log(
-    'RENDER BATTLE SECTION',
-    isPaused,
-    isEffectActive,
-    uiState.effect
-  );
-
   return (
     <Root id="battle-section-root">
       <CharacterInfoCardsContainer id="ch-info-cards-ctr">
@@ -283,6 +284,7 @@ const BattleSection = (props: IBattleSectionProps) => {
         return (
           <BattleCharacterFollower
             key={bCh.ch.name}
+            id={bCh.ch.name}
             bCh={bCh}
             battleIndex={battle.alliesStorage.indexOf(bCh)}
             isEnemy={false}
@@ -297,7 +299,8 @@ const BattleSection = (props: IBattleSectionProps) => {
       {battle.enemies.map(bCh => {
         return (
           <BattleCharacterFollower
-            key={bCh.ch.name}
+            key={bCh.ch.nameLabel + '_' + battle.enemiesStorage.indexOf(bCh)}
+            id={bCh.ch.nameLabel + '_' + battle.enemiesStorage.indexOf(bCh)}
             bCh={bCh}
             battleIndex={battle.enemies.indexOf(bCh)}
             isEnemy={true}
@@ -358,6 +361,7 @@ const BattleSection = (props: IBattleSectionProps) => {
               width="100%"
               open={true}
               isCursorSelectInactive={!isPaused || menuState !== ''}
+              hideCloseBox={true}
               title="Battle Menu"
               items={[
                 {

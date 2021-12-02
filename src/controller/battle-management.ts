@@ -47,6 +47,7 @@ import {
   battleCharacterGetEvasion,
   battleCharacterHasStatus,
   battleCharacterIsKnockedDown,
+  battleCharacterIsDefeated,
 } from 'model/battle-character';
 import {
   Character,
@@ -118,7 +119,7 @@ import {
   SwingType,
 } from 'controller/battle-actions';
 import { pause, unpause } from './loop';
-import { callScript } from 'controller/scene-management';
+import { callScript, createAndCallScript } from 'controller/scene-management';
 import { popKeyHandler, pushKeyHandler, pushEmptyKeyHandler } from './events';
 import { getUiInterface, renderUi } from 'view/ui';
 import { colors } from 'view/style';
@@ -148,7 +149,7 @@ import {
   stopCurrentMusic,
 } from 'model/sound';
 import { overworldShow } from 'model/overworld';
-import { sceneSetEncounterDefeated } from 'model/scene';
+import { sceneIsWaiting, sceneSetEncounterDefeated } from 'model/scene';
 import { getScreenSize } from 'model/canvas';
 
 export const transitionToBattle = async (
@@ -175,6 +176,9 @@ export const transitionToBattle = async (
     battlePauseTimers(battle);
     if (template.events?.onBattleStart) {
       await template.events?.onBattleStart(battle);
+      setTimeout(() => {
+        renderUi();
+      }, 100);
     }
     showSection(AppSection.BattleUI, true);
     await invokeAllChannels(battle);
@@ -252,7 +256,10 @@ export const transitionToBattle = async (
       battle.isPaused = false;
       battle.transitioning = false;
       if (template.events?.onBattleStart) {
-        template.events?.onBattleStart(battle);
+        await template.events?.onBattleStart(battle);
+        setTimeout(() => {
+          renderUi();
+        }, 1);
       } else {
         await invokeAllChannels(battle);
         battleUnpauseTimers(battle);
@@ -310,13 +317,15 @@ export const initiateBattle = (
 
   battle.allies.forEach(bCh => {
     if (bCh.ch.hp > 0) {
-      resetCooldownTimer(bCh);
+      resetCooldownTimer(bCh, true);
     } else {
       bCh.isDefeated = true;
       bCh.shouldRemove = true;
     }
   });
-  battle.enemies.forEach(resetCooldownTimer);
+  battle.enemies.forEach(bCh => {
+    resetCooldownTimer(bCh, true);
+  });
   battle.alliesStorage.forEach(ally => {
     characterSetFacing(ally.ch, Facing.RIGHT);
   });
@@ -359,11 +368,18 @@ export const initiateBattle = (
       console.log('ON TURN ENDED', allegiance);
       if (allegiance === BattleAllegiance.ALLY) {
         battleUnpauseActionTimers(battle, battle.allies);
+        battle.allies.forEach(bCh => {
+          bCh.target = undefined;
+        });
       } else {
         battleUnpauseActionTimers(battle, battle.enemies);
+        battle.enemies.forEach(bCh => {
+          bCh.target = undefined;
+        });
       }
-
-      panCameraToBattleCenter(300);
+      if (!sceneIsWaiting(getCurrentScene())) {
+        panCameraToBattleCenter(300);
+      }
     }
   );
 
@@ -395,6 +411,13 @@ export const initiateBattle = (
       battle,
       BattleEvent.onTurnEnded,
       template.events?.onTurnEnded
+    );
+  }
+  if (template.events?.onCharacterDefeated) {
+    battleSubscribeEvent(
+      battle,
+      BattleEvent.onCharacterDefeated,
+      template.events?.onCharacterDefeated
     );
   }
 
@@ -475,6 +498,28 @@ export const callScriptDuringBattle = async (scriptName: string) => {
     popKeyHandler(keyHandler);
     battleUnpauseTimers(battle);
     showSection(AppSection.BattleUI, true);
+  }
+};
+
+export const createAndCallScriptDuringBattle = async (
+  scriptSrc: string,
+  showUi = false
+) => {
+  const battle = getCurrentBattle();
+  if (battle) {
+    battle.isPaused = true;
+    const keyHandler = pushEmptyKeyHandler();
+    hideSections();
+    battlePauseTimers(battle);
+    disableKeyUpdate();
+    await createAndCallScript(getCurrentScene(), scriptSrc);
+    battle.isPaused = false;
+    enableKeyUpdate();
+    popKeyHandler(keyHandler);
+    battleUnpauseTimers(battle);
+    if (showUi) {
+      showSection(AppSection.BattleUI, true);
+    }
   }
 };
 
@@ -788,16 +833,21 @@ export const applyStaggerDamage = (
   staggerDamage: number
 ) => {
   console.log('apply stagger damage of', staggerDamage, 'to', bCh.ch.name);
-  if (bCh.armor > 0) {
-    staggerDamage = staggerDamage / 2;
+  // if (bCh.armor > 0) {
+  //   staggerDamage = staggerDamage / 2;
+  // }
+
+  if (battleCharacterIsDefeated(bCh)) {
+    return;
   }
 
   if (battleCharacterIsStaggered(bCh)) {
+    console.log('bCh is already staggered');
     bCh.staggerTimer.start();
   } else {
+    console.log('STAGGER!', bCh.actionState);
     bCh.staggerGauge.fill(staggerDamage);
     if (bCh.staggerGauge.isFull()) {
-      console.log('STAGGER!');
       bCh.canActSignaled = false;
       if (bCh.staggerSoundName) {
         console.log('PLAY STAGGER SOUND', bCh.staggerSoundName);
@@ -861,6 +911,9 @@ export const applyArmorDamage = (
       playSoundName('battle_armor_broken');
       victim.armor--;
       armorReduced = true;
+    }
+    if (victim.armor > 0) {
+      // nextDamageAmount = 0;
     }
   }
 
@@ -1069,15 +1122,23 @@ export const applyMagicDamage = (
   return true;
 };
 
-export const resetCooldownTimer = (bCh: BattleCharacter) => {
+export const resetCooldownTimer = (
+  bCh: BattleCharacter,
+  isAtStartOfBattle?: boolean
+) => {
   const skill = bCh.ch.skills[bCh.ch.skillIndex];
   const speed = bCh.ch.stats.SPD;
+  let cooldown = skill?.cooldown ?? 1000;
+  if (isAtStartOfBattle && bCh.ch.startingCooldown !== undefined) {
+    cooldown = bCh.ch.startingCooldown;
+  }
+
   if (skill) {
     // taken from calc for ability haste
     // https://www.reddit.com/r/leagueoflegends/comments/i5m8m6/i_made_a_chart_to_convert_cdr_to_ability_haste/
     const cdr = 1 - 1 / (1 + speed / 100);
     // all skills must have a cooldown of at least 1 second
-    let newTime = Math.max(skill.cooldown - skill.cooldown * cdr, 1000);
+    let newTime = Math.max(cooldown - cooldown * cdr, 1000);
 
     if (battleCharacterHasStatus(bCh, BattleStatus.HASTE)) {
       newTime = newTime / 2;
@@ -1249,7 +1310,6 @@ export const applyDamage = (
       battle.room,
       createWeightedParticle(EFFECT_TEMPLATE_GEM, centerPx, centerPy, 1000)
     );
-    battleInvokeEvent(battle, BattleEvent.onCharacterDefeated, bCh);
   } else if (bCh.ch.hp > 0 && soundName) {
     playSoundName(soundName);
   }
@@ -1343,8 +1403,10 @@ export const getReturnToOverworldBattleCompletionCB = (
       }
 
       if (currentMusic) {
-        playMusic(currentMusic.soundName, true);
-        musicSetPlaybackPosition(currentMusic, musicPlaybackPosition);
+        playMusic(getCurrentOverworld().music, true);
+        if (currentMusic.soundName === getCurrentOverworld().music) {
+          musicSetPlaybackPosition(currentMusic, musicPlaybackPosition);
+        }
       }
 
       if (template.events?.onAfterBattleEnded) {
@@ -1366,7 +1428,7 @@ const checkBattleCompletion = async (battle: Battle) => {
     }
 
     console.log('VICTORY');
-    stopCurrentMusic();
+    stopCurrentMusic(250);
     playSoundName('fanfare');
     hideSections();
     timeoutPromise(2800).then(() => {

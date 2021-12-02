@@ -43,9 +43,18 @@ export const init = () => {
     const target = randInArr(targets);
 
     // const target = targets[0];
-    console.log('BATTLE AI ATTACK', bCh, targets);
+    console.log(
+      'BATTLE AI ATTACK',
+      bCh.ch.name,
+      targets.map(bCh => bCh.ch.name)
+    );
     if (target) {
+      if (!bCh.target) {
+        bCh.target = target;
+      }
       invokeSkill(bCh, skill);
+    } else {
+      bCh.target = undefined;
     }
   };
 
@@ -65,6 +74,9 @@ export const init = () => {
       );
       const target = randInArr(targets);
       if (target) {
+        if (!bCh.target) {
+          bCh.target = target;
+        }
         invokeSkill(bCh, skill);
       }
     } else {
@@ -77,6 +89,9 @@ export const init = () => {
       );
       const target = randInArr(targets);
       if (target) {
+        if (!bCh.target) {
+          bCh.target = target;
+        }
         invokeSkill(bCh, skill);
       }
     }

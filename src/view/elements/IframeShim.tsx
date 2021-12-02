@@ -1,4 +1,5 @@
 /* @jsx h */
+import { getResPath } from 'model/generics';
 import { h } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { style, MEDIA_QUERY_PHONE_WIDTH, colors } from 'view/style';
@@ -85,7 +86,11 @@ const IframeShim = (props: IIframeShimProps) => {
           >
             Loading game...
           </span>
-          <img src="res/img/flower.svg" alt="loading" id="page-loading-icon" />
+          <img
+            src={`${getResPath()}/img/flower.svg`}
+            alt="loading"
+            id="page-loading-icon"
+          />
         </div>
       ) : null}
       <iframe

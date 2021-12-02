@@ -9,6 +9,7 @@ import {
   WeaponEquipState,
   characterSetFacing,
   Character,
+  characterSetSpriteBase,
 } from 'model/character';
 import { getCurrentRoom } from 'model/generics';
 import { roomRemoveCharacter } from 'model/room';
@@ -32,7 +33,6 @@ export const init = () => {
       },
     }),
   };
-
   exp.Floor1GreenCar = {
     name: 'Floor1GreenCar',
     spriteBase: 'green_car',
@@ -48,7 +48,6 @@ export const init = () => {
       },
     }),
   };
-
   exp.Floor1WhiteCar = {
     name: 'Floor1WhiteCar',
     spriteBase: 'white_car',
@@ -61,6 +60,50 @@ export const init = () => {
       pauseDurationMs: 1000,
       onReachDestination: ch => {
         roomRemoveCharacter(getCurrentRoom(), ch);
+      },
+    }),
+  };
+
+  exp.Floor1OutsideWalker1 = {
+    name: 'Floor1OutsideWalker1',
+    spriteBase: 'guy3',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    // speed: 5,
+    overworldAi: createWalkerAI(['MarkerWalker1', 'MarkerWalker2'], {
+      pauseDurationMs: 7000,
+      onReachDestination: ch => {
+        const chSprites = ['guy', 'guy2', 'guy3', 'guy4'];
+        characterSetSpriteBase(ch, randInArr(chSprites));
+        // setAtMarker(ch.name, 'MarkerWalker2');
+      },
+    }),
+  };
+  exp.Floor1OutsideWalker2 = {
+    name: 'Floor1OutsideWalker2',
+    spriteBase: 'girl3',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 1.1,
+    overworldAi: createWalkerAI(['MarkerWalker1', 'MarkerWalker2'], {
+      pauseDurationMs: 7000,
+      onReachDestination: ch => {
+        const chSprites = ['guy5', 'guy6', 'guy7', 'guy8', 'girl'];
+        characterSetSpriteBase(ch, randInArr(chSprites));
+      },
+    }),
+  };
+  exp.Floor1OutsideWalker3 = {
+    name: 'Floor1OutsideWalker2',
+    spriteBase: 'guy8',
+    facing: Facing.LEFT_UP,
+    animationState: AnimationState.IDLE,
+    speed: 0.9,
+    overworldAi: createWalkerAI(['MarkerWalker1', 'MarkerWalker2'], {
+      pauseDurationMs: 7000,
+      onReachDestination: ch => {
+        const chSprites = ['girl2', 'girl3', 'girl4', 'girl5', 'girl6'];
+        characterSetSpriteBase(ch, randInArr(chSprites));
       },
     }),
   };

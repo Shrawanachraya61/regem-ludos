@@ -63,6 +63,7 @@ const commands = [
   'panCameraRelativeToPlayer',
   'panCameraBackToPlayer',
   'panCameraToFitCharacters',
+  'panCameraBattle',
   'playSound',
   'playMusic',
   'stopMusic',

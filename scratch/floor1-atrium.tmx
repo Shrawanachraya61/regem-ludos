@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="138">
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="139">
  <editorsettings>
   <export target="../src/map/floor1-atrium.json" format="json"/>
  </editorsettings>
@@ -164,5 +164,6 @@
   <object id="135" name="MarkerGreeterA" gid="194" x="213.5" y="158.5" width="32" height="32"/>
   <object id="136" name="MarkerGreeterB" gid="194" x="260" y="158" width="32" height="32"/>
   <object id="137" name="MarkerPingPongB" gid="194" x="137" y="217" width="32" height="32"/>
+  <object id="138" name="MarkerGreeterC" gid="194" x="220" y="180" width="32" height="32"/>
  </objectgroup>
 </map>

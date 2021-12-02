@@ -192,6 +192,7 @@ const App = () => {
 
 export const renderUi = (): void => {
   if (uiInterface) {
+    // console.trace('render');
     uiInterface.render();
   }
 };

@@ -1,7 +1,5 @@
 import { normalizeClamp, timeoutPromise } from 'utils';
-import { getNow, getSoundEnabled, getVolume } from './generics';
-
-const SOUND_PATH_PREFIX = 'res/snd';
+import { getNow, getResPath, getSoundEnabled, getVolume } from './generics';
 
 interface ISoundSpritesheetMetadata {
   resources: string[];
@@ -74,6 +72,7 @@ const addSpritesheetUpdateListener = (audio: HTMLAudioElement) => {
 };
 
 export const loadSoundSpritesheet = async (url: string) => {
+  const SOUND_PATH_PREFIX = `${getResPath()}/snd`;
   const metaUrl = SOUND_PATH_PREFIX + '/' + url.slice(0, -4) + '.json';
   spritesheetMetadata = await fetch(metaUrl)
     .then(res => res.json())
@@ -167,6 +166,7 @@ export const loadSound = async (
   volumeModifier: number,
   useSpritesheet?: boolean
 ) => {
+  const SOUND_PATH_PREFIX = `${getResPath()}/snd`;
   if (useSpritesheet) {
     try {
       const spritesheetSound = getSound('spritesheet');

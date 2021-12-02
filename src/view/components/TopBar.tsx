@@ -122,6 +122,7 @@ const TopBar = (props: ITopBarProps) => {
       <TopBarWrapper>
         {props.buttons.includes(TopBarButtons.MENU) ? (
           <Button
+            id="top-bar-menu"
             disabled={props.disabled}
             style={buttonStyle}
             type={ButtonType.PRIMARY}
@@ -135,6 +136,7 @@ const TopBar = (props: ITopBarProps) => {
         ) : null}
         {props.buttons.includes(TopBarButtons.BATTLE_MENU) ? (
           <Button
+            id="top-bar-menu"
             disabled={props.disabled}
             style={buttonStyle}
             type={ButtonType.PRIMARY}

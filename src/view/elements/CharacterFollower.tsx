@@ -58,6 +58,7 @@ export const CharacterFollower = (
 
   return (
     <Root
+      id={renderKey}
       style={{
         left:
           resultX + ((spriteWidth - followerWidth) * getDrawScale()) / 2 + 'px',

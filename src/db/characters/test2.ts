@@ -50,6 +50,14 @@ export const init = () => {
     talkTrigger: 'test-testDialogE',
   };
 
+  exp.TestDialogF = {
+    name: 'TestDialogF',
+    spriteBase: 'girl6',
+    facing: Facing.LEFT_DOWN,
+    animationState: AnimationState.IDLE,
+    talkTrigger: 'test-testDialogF',
+  };
+
   exp.Shopkeep = {
     name: 'Shopkeep',
     spriteBase: 'employee-guy',

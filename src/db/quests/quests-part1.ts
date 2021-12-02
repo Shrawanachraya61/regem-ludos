@@ -131,9 +131,10 @@ export const init = (exp: { [key: string]: QuestTemplate }) => {
       },
       {
         completedScriptKey: 'quest_floor1PingPongGirl_5',
-        label: 'Enter the secret storage room near the floor 1 prize counter.',
+        label:
+          'Enter the secret storage area in the room with the prize counter on floor 1.',
         description:
-          'Apparantly there is a secret storage room accessible via a door on the south wall of the room on floor 1 with the prize counter.  Find it and give the password "ZOOFA" to whomever is inside.',
+          'Apparantly there is a secret storage room accessible via a door on the south wall of the room with the prize counter on floor 1.  Find it and give the password "ZOOFA" to whomever is inside.',
       },
       {
         completedScriptKey: 'quest_floor1PingPongGirl_6',

@@ -266,6 +266,41 @@ export const drawAnimation = (
   }
 };
 
+export const drawAnimationNoUpdate = (
+  anim: Animation,
+  x: number,
+  y: number,
+  scale?: number,
+  ctx?: CanvasRenderingContext2D
+): void => {
+  scale = scale || 1;
+  ctx = ctx || getCtx();
+  const sprite = anim.getSprite();
+  if (!sprite) {
+    console.error(anim);
+    throw new Error(`Cannot draw animation that did not provide a sprite.`);
+  }
+  try {
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'black';
+    const [image, sprX, sprY, sprW, sprH] =
+      typeof sprite === 'string' ? getSprite(sprite) : sprite;
+    ctx.drawImage(
+      image,
+      sprX,
+      sprY,
+      sprW,
+      sprH,
+      Math.floor(x),
+      Math.floor(y),
+      sprW * scale,
+      sprH * scale
+    );
+  } catch (e) {
+    throw new Error(`Error attempting to draw animation sprite: "${sprite}"`);
+  }
+};
+
 // NF = no Math.floor
 export const drawAnimationNF = (
   anim: Animation,
@@ -527,7 +562,7 @@ export const drawRoom = (
       } else if (sprite && !isFloor && !isMarker && !isTrigger) {
         drawSprite(sprite, px as number, py as number);
       } else if (anim) {
-        drawAnimation(anim, px as number, py as number);
+        drawAnimationNoUpdate(anim, px as number, py as number);
       }
     } else {
       if (isMarker) {

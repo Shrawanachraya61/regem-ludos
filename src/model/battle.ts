@@ -1,4 +1,9 @@
-import { Room, roomAddParticle, roomRemoveParticle } from 'model/room';
+import {
+  Room,
+  roomAddParticle,
+  roomRemoveCharacter,
+  roomRemoveParticle,
+} from 'model/room';
 import { BattleAI } from 'db/battle-ai';
 import {
   BattleCharacter,
@@ -148,6 +153,7 @@ export interface BattleTemplate {
     onBattleEnd?: (battle: Battle) => Promise<void>;
     onCharacterDamaged?: (bCh: BattleCharacter) => Promise<void>;
     onTurnEnded?: (allegiance: BattleAllegiance) => Promise<void>;
+    onCharacterDefeated?: (bCh: BattleCharacter) => Promise<void>;
     onAfterBattleEnded?: () => Promise<void>;
   };
 }
@@ -182,13 +188,13 @@ export enum BattleDamageType {
 }
 
 export interface BattleStats {
-  POW: number;
+  POW: number; // increase this to do more bonus weapon damage
   ACC: number;
-  FOR: number;
-  CON: number;
-  RES: number;
-  SPD: number;
-  EVA: number;
+  FOR: number; // damage reduction for physical
+  CON: number; // reduces time spent staggered
+  RES: number; // damage reduction for magic
+  SPD: number; // cooldown reduction on ability usage
+  EVA: number; // evasion (max at 50%)
   HP: number;
   STAGGER: number; // stagger hp
   RESV: number;
@@ -549,6 +555,25 @@ export const battleGetActingAllegiance = (
   }
 
   return null;
+};
+
+export const battleRemoveBattleCharacter = (
+  battle: Battle,
+  bCh: BattleCharacter
+) => {
+  let ind = battle.enemies.indexOf(bCh);
+  // if ch is an enemy, remove from room
+  if (ind > -1) {
+    bCh.shouldRemove = true;
+    battle.defeated.push(bCh);
+    roomRemoveCharacter(battle.room, bCh.ch);
+    return;
+  }
+  ind = battle.allies.indexOf(bCh);
+  if (ind > -1) {
+    bCh.shouldRemove = true;
+    battle.defeated.push(bCh);
+  }
 };
 
 // melee characters can only target enemies if there are no enemies in front of them

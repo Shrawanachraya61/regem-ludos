@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import { useEffect, useReducer, useState } from 'preact/hooks';
 import { addRenderable, removeRenderable } from 'model/generics';
 import {
@@ -11,6 +12,8 @@ import { getUiInterface } from './ui';
 import { ModalSection } from 'model/store';
 import { hideModal, showModal } from 'controller/ui-actions';
 import { popKeyHandler, pushEmptyKeyHandler } from 'controller/events';
+import { colors } from './style';
+import { Point } from 'utils';
 
 let hooksInitialized = false;
 
@@ -232,4 +235,73 @@ export const useConfirmModal = (
   };
 
   return [confirmVisible, showConfirmModal, hideModal];
+};
+
+export const useSVGLine = (props: {
+  svgId: string;
+  div1Id: string;
+  div2Id: string;
+  offset1: Point;
+  offset2: Point;
+  color?: string;
+}) => {
+  const svgId = props.svgId;
+  const div1Id = props.div1Id;
+  const div2Id = props.div2Id;
+
+  useEffect(() => {
+    // It takes 100ms for the dialog box transition to finish
+    setTimeout(() => {
+      const line = document.getElementById(svgId);
+      const div1 = document.getElementById(div1Id);
+      const div2 = document.getElementById(div2Id);
+
+      console.log('IDS FOR SVG LINE', svgId, div1Id, div2Id, line, div1, div2);
+      const rect1 = div1?.getBoundingClientRect();
+      const rect2 = div2?.getBoundingClientRect();
+
+      if (line && rect1 && rect2) {
+        const x1 = rect1.left + rect1.width / 2 + props.offset1[0];
+        const y1 = rect1.top + rect1.height / 2 + props.offset1[1];
+        const x2 = rect2.left + rect2.width / 2 + props.offset2[0];
+        const y2 = rect2.top + rect2.height / 2 + props.offset2[1];
+        line.setAttribute('x1', String(x1));
+        line.setAttribute('y1', String(y1));
+        line.setAttribute('x2', String(x2));
+        line.setAttribute('y2', String(y2));
+        line.setAttribute('color', props.color ?? colors.WHITE);
+      }
+    }, 110);
+  });
+};
+
+export const SVGLine = (props: { id: string; width?: number }) => {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        pointerEvents: 'none',
+        top: '0px',
+        left: '0px',
+        width: '100%',
+        height: '100%',
+        zIndex: 25,
+      }}
+    >
+      <svg
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+      >
+        <line
+          id={props.id}
+          style={{
+            strokeWidth: props.width ?? 4 + 'px',
+            stroke: colors.WHITE,
+          }}
+        ></line>
+      </svg>
+    </div>
+  );
 };

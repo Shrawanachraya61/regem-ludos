@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="isometric" renderorder="right-down" width="16" height="16" tilewidth="32" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="62">
+ <editorsettings>
+  <export target="../src/map/battle-tut1_centered2.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="walls" tilewidth="32" tileheight="64" tilecount="128" columns="16">
+  <image source="../res/walls.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="129" name="floors" tilewidth="32" tileheight="32" tilecount="64" columns="8">
+  <image source="../res/floors.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="193" name="control" tilewidth="32" tileheight="32" tilecount="16" columns="4">
+  <image source="../res/control.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="209" name="props" tilewidth="32" tileheight="64" tilecount="128" columns="16">
+  <image source="../res/props.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="337" name="walls128" tilewidth="32" tileheight="128" tilecount="16" columns="8">
+  <image source="../res/walls128.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="353" source="props-dynamic.tsx"/>
+ <layer id="1" name="Tiles" width="16" height="16" offsetx="0" offsety="16">
+  <data encoding="csv">
+129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
+129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
+129,129,187,187,187,187,187,187,187,187,187,187,187,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,189,189,189,189,189,189,189,189,189,189,187,129,129,
+129,129,187,187,187,187,187,187,187,187,187,187,187,187,129,129,
+129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,
+129,129,129,129,129,129,129,129,129,129,129,129,129,129,129,129
+</data>
+ </layer>
+ <objectgroup id="2" name="Objects">
+  <object id="50" name="MarkerAlly0" gid="354" x="96.5" y="127.5" width="32" height="32"/>
+  <object id="51" name="MarkerAlly5" gid="354" x="104" y="213" width="32" height="32"/>
+  <object id="52" name="MarkerAlly2" gid="354" x="77" y="144" width="32" height="32"/>
+  <object id="53" name="MarkerAlly1" gid="354" x="144.5" y="175.5" width="32" height="32"/>
+  <object id="54" name="MarkerEnemy2" gid="355" x="163.5" y="90.5" width="32" height="32"/>
+  <object id="55" name="MarkerEnemy4" gid="355" x="169" y="52" width="32" height="32"/>
+  <object id="56" name="MarkerEnemy1" gid="355" x="191" y="159" width="32" height="32"/>
+  <object id="57" name="MarkerEnemy0" gid="355" x="157" y="125" width="32" height="32"/>
+  <object id="58" name="MarkerAlly3" gid="354" x="125" y="192" width="32" height="32"/>
+  <object id="59" name="MarkerAlly4" gid="354" x="56" y="165" width="32" height="32"/>
+  <object id="60" name="MarkerEnemy3" gid="355" x="196" y="121" width="32" height="32"/>
+  <object id="61" name="MarkerEnemy5" gid="355" x="217" y="100" width="32" height="32"/>
+ </objectgroup>
+</map>

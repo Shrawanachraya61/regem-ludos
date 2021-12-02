@@ -433,6 +433,39 @@
                  "width":32,
                  "x":440,
                  "y":144
+                }, 
+                {
+                 "height":28.5,
+                 "id":112,
+                 "name":"#floor1-tut-no-terminal",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":26.5,
+                 "x":48.5,
+                 "y":73
+                }, 
+                {
+                 "height":31.5,
+                 "id":113,
+                 "name":"#floor1-tut-no-terminal",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":27.5,
+                 "x":48.5,
+                 "y":310
+                }, 
+                {
+                 "height":30,
+                 "id":116,
+                 "name":"#floor1-tut-no-terminal",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":34,
+                 "x":407.5,
+                 "y":16.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -441,7 +474,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":112,
+ "nextobjectid":117,
  "orientation":"isometric",
  "properties":[
         {

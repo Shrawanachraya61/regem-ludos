@@ -30,6 +30,7 @@ import {
 } from 'utils';
 import { BattleActions, BattleAction } from 'controller/battle-actions';
 import {
+  getCurrentBattle,
   getCurrentPlayer,
   getCurrentRoom,
   getFrameMultiplier,
@@ -60,6 +61,7 @@ import {
 } from 'db/items';
 import { getSprite } from './sprite';
 import { renderUi } from 'view/ui';
+import { stringify } from 'querystring';
 
 export const DEFAULT_SPEED = 0.5;
 
@@ -203,6 +205,7 @@ export interface Character {
   template: CharacterTemplate | null;
   encounter?: BattleTemplate;
   encounterStuckRetries: number;
+  startingCooldown?: number;
   sortOffset?: number;
   ro?: RenderObject;
   itemStatuses: {
@@ -236,6 +239,7 @@ export interface CharacterTemplate {
   collisionSize?: number;
   collisionOffset?: Point;
   visionRange?: number;
+  startingCooldown?: number;
   equipment?: {
     weapon: Item;
     accessory1?: Item;
@@ -403,6 +407,9 @@ export const characterCreateFromTemplate = (
   if (template.sortOffset !== undefined) {
     ch.sortOffset = template.sortOffset;
   }
+  if (template.startingCooldown) {
+    ch.startingCooldown = template.startingCooldown;
+  }
   ch.template = template;
   return ch;
 };
@@ -479,6 +486,11 @@ export const characterSetAnimationState = (
     anim.reset();
     anim.start();
   }
+};
+
+export const characterSetSpriteBase = (ch: Character, spriteBase: string) => {
+  ch.spriteBase = spriteBase;
+  characterSetAnimationState(ch, ch.animationState, true);
 };
 
 export const characterGetAnimationState = (ch: Character): AnimationState => {
@@ -772,7 +784,9 @@ const characterFinishWalking = (ch: Character) => {
 
 export const characterStopWalking = (ch: Character) => {
   ch.walkTarget = null;
-  characterSetAnimationState(ch, AnimationState.IDLE);
+  if (!getCurrentBattle()) {
+    characterSetAnimationState(ch, AnimationState.IDLE);
+  }
 };
 
 export const characterHasTimer = (ch: Character, timer: Timer) => {

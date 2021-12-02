@@ -2,7 +2,7 @@ import { drawSprite } from 'view/draw';
 import { createCanvas } from 'model/canvas';
 import { TILE_WIDTH, TILE_HEIGHT } from 'model/room';
 import { getZipImageData } from 'controller/res-loader';
-import { shouldUseZip } from './generics';
+import { getResPath, shouldUseZip } from './generics';
 
 export type Sprite = [
   HTMLCanvasElement | HTMLImageElement,
@@ -45,7 +45,7 @@ export const loadImage = async (
       img.onerror = () => {
         reject('Failed to load image: ' + fileName);
       };
-      img.src = 'res/' + fileName;
+      img.src = `${getResPath()}/` + fileName;
     });
   }
 };

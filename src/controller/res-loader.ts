@@ -1,11 +1,14 @@
 import { Animation, createAnimationBuilder } from 'model/animation';
 import { loadImageAsSpritesheet, SpriteModification } from 'model/sprite';
 import { loadSound, SoundType } from 'model/sound';
-import { shouldUseZip } from 'model/generics';
+import { getResPath, shouldUseZip } from 'model/generics';
 
 const getJSZip = () => {
   return (window as any).JSZip;
 };
+
+// const PATH_PREFIX = 'res/'
+const PATH_PREFIX = `${getResPath()}/`;
 
 const zipImages = {};
 const zipAudio = {};
@@ -13,7 +16,6 @@ const zipAudio = {};
 class AssetLoader {
   async processAssetFile(text: string): Promise<void> {
     const loadCbs = [] as any[];
-
     const _Sound = async function (line: any) {
       const [, soundName, soundUrl, volumeModifierStr] = line;
       let volumeModifier = parseFloat(volumeModifierStr);
@@ -162,16 +164,16 @@ class AssetLoader {
 }
 
 export const loadRes = async (loadingTick?: () => void) => {
-  const text = await (await fetch('res/res.txt')).text();
-  const foley = await (await fetch('res/res-foley.txt')).text();
-  const bg = await (await fetch('res/res-bg.txt')).text();
+  const text = await (await fetch(PATH_PREFIX + 'res.txt')).text();
+  const foley = await (await fetch(PATH_PREFIX + 'res-foley.txt')).text();
+  const bg = await (await fetch(PATH_PREFIX + 'res-bg.txt')).text();
   if (loadingTick) {
     loadingTick();
   }
 
   if (shouldUseZip()) {
     const zips = await Promise.all([
-      fetchZipArchive('res/images.zip'),
+      fetchZipArchive(PATH_PREFIX + 'images.zip'),
       // fetchZipArchive('res/snd/foley/foley.zip'),
     ]);
     const imagesArchive = zips[0];

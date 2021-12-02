@@ -33,11 +33,13 @@ import {
   BattleEvent,
   battleSubscribeEvent,
   battleUnsubscribeEvent,
+  battleRemoveBattleCharacter,
 } from './battle';
 import { playSoundName } from './sound';
-import { getNow } from './generics';
+import { getCurrentScene, getNow } from './generics';
 import { get as getBattleAction } from 'db/battle-actions';
 import { getIfExists as getCharacterTemplate } from 'db/characters';
+import { sceneIsWaiting } from './scene';
 
 export enum BattleActionState {
   IDLE = 'idle',
@@ -69,6 +71,7 @@ export interface BattleCharacter {
     status: BattleStatus;
     timer: Timer;
   }[];
+  target?: BattleCharacter;
   canActSignaled: boolean;
   onCanActCb: () => Promise<void>;
   onCast: () => Promise<void>;
@@ -77,6 +80,8 @@ export interface BattleCharacter {
   staggerSoundName?: string;
   ai?: BattleAI;
   isReviving: boolean;
+
+  preventRemove: boolean;
 }
 
 const battleCharacterCreate = (
@@ -92,9 +97,9 @@ const battleCharacterCreate = (
     shouldRemove: false,
     actionTimer: new Timer(skill?.cooldown ?? 2000),
     actionReadyTimer: new Timer(1500),
-    staggerTimer: new Timer(4000),
+    staggerTimer: new Timer(6000),
     staggerGauge: new Gauge(staggerDmg, 0.002),
-    koTimer: new Timer(4000),
+    koTimer: new Timer(6000),
     castTimer: new Timer(1000),
     armorTimer: new Timer(250),
     position,
@@ -112,6 +117,7 @@ const battleCharacterCreate = (
     onChannelInterrupted: async function () {},
     ai: undefined,
     isReviving: false,
+    preventRemove: false,
   };
   return bCh;
 };
@@ -212,6 +218,9 @@ export const battleCharacterCanAct = (
     return false;
   }
   if (battleCharacterIsStaggered(bCh) || battleCharacterIsKnockedDown(bCh)) {
+    return false;
+  }
+  if (sceneIsWaiting(getCurrentScene())) {
     return false;
   }
   const ch = bCh.ch;
@@ -438,6 +447,10 @@ export const battleCharacterRecoverFromStagger = (
   }
 };
 
+export const battleCharacterIsDefeated = (bCh: BattleCharacter) => {
+  return bCh.isDefeated;
+};
+
 export const updateBattleCharacter = (
   battle: Battle,
   bCh: BattleCharacter
@@ -465,7 +478,6 @@ export const updateBattleCharacter = (
 
       // HACK: assumes that a character can only die at the end of a turn
       const removeCharacter = () => {
-        battleInvokeEvent(battle, BattleEvent.onCharacterDamaged, bCh);
         battleUnsubscribeEvent(
           battle,
           BattleEvent.onTurnEnded,
@@ -473,24 +485,19 @@ export const updateBattleCharacter = (
         );
 
         // HACK: it's possible to use an item to revive a character as they are dying
-        // before the turn is over, so it is important to short-circuit this cb
-        // if that is the case
+        // before the turn is over, if that is the case it is important to short-circuit
+        // this cb
         if (!bCh.isDefeated) {
           return;
         }
+        battleInvokeEvent(battle, BattleEvent.onCharacterDefeated, bCh);
 
-        let ind = battle.enemies.indexOf(bCh);
-        // if ch is an enemy, remove from room
-        if (ind > -1) {
-          bCh.shouldRemove = true;
-          battle.defeated.push(bCh);
-          roomRemoveCharacter(battle.room, bCh.ch);
-          return;
-        }
-        ind = battle.allies.indexOf(bCh);
-        if (ind > -1) {
-          bCh.shouldRemove = true;
-          battle.defeated.push(bCh);
+        // Invoking defeated event might cause a character to remain in battle
+        // ex: Play cutscene as something is dying.
+        // preventRemove keeps a dying character from being removed from the
+        // battle and passes control to the cutscene to decide when to remove the ch.
+        if (!bCh.preventRemove) {
+          battleRemoveBattleCharacter(battle, bCh);
         }
       };
       battleSubscribeEvent(battle, BattleEvent.onTurnEnded, removeCharacter);

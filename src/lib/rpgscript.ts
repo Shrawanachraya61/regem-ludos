@@ -1,6 +1,7 @@
 import { Scene, sceneHasCommand } from 'model/scene';
 
-const RPGSCRIPT_LOAD_DIR = 'src/rpgscript';
+const RPGSCRIPT_LOAD_DIR =
+  ((window as any).RPGSCRIPT_PATH ?? '') + '/rpgscript';
 
 function splitNotInParens(str: string, spl: string) {
   const ret: string[] = [];

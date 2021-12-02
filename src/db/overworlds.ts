@@ -5,6 +5,8 @@ import { TransformEase, Transform, Timer } from 'model/utility';
 
 import * as battle1Json from 'map/battle1.json';
 import * as battleTut1 from 'map/battle-tut1.json';
+import * as battleTut1Centered from 'map/battle-tut1_centered.json';
+import * as battleTut1Centered2 from 'map/battle-tut1_centered2.json';
 import * as battleTutBoss from 'map/battle-tutBoss.json';
 
 import * as testJson from 'map/test.json';
@@ -73,6 +75,8 @@ const overworldToRoom = {
 
   battle1: battle1Json,
   battleTut1,
+  battleTut1Centered,
+  battleTut1Centered2,
   battleTutBoss,
 
   bowlingAlleyStandalone,
@@ -132,7 +136,7 @@ export const init = async () => {
   const STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM = new Transform(
     [0, 0, 0],
     [-684, 0, 0],
-    30000,
+    40000,
     TransformEase.LINEAR
   );
 
@@ -169,6 +173,10 @@ export const init = async () => {
   exp.floor1Outside.backgroundColor = colors.DARKBLUE;
 
   Object.assign(exp.floor1Atrium ?? {}, {
+    backgroundColor: colors.BLACK,
+    music: 'music_atrium',
+  });
+  Object.assign(exp.floor1TutEntrance ?? {}, {
     backgroundColor: colors.BLACK,
     music: 'music_atrium',
   });
@@ -217,13 +225,15 @@ export const init = async () => {
     'floor1TutVRPreBoss',
     'floor1TutVRBoss',
     'battleTut1',
+    'battleTut1Centered',
+    'battleTut1Centered2',
     'battleTutBoss',
   ].forEach((name, i) => {
     Object.assign(exp[name] ?? {}, {
       backgroundColor: colors.DARKBLUE,
-      backgroundImage: 'bg-clouds',
+      backgroundImage: 'bg-clouds2',
       backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
-      music: i <= 1 ? 'music_tutorial' : 'music_tutorial_dungeon',
+      music: i <= 1 ? 'music_tutorial' : 'music_tutorial',
     });
     if (name.includes('battle')) {
       exp[name].music = undefined;

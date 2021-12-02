@@ -3,7 +3,7 @@ import { h } from 'preact';
 import { colors, keyframes, style } from 'view/style';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import AnimDiv from 'view/elements/StaticAnimDiv';
-import { getUiInterface } from 'view/ui';
+import { getUiInterface, uiInterface } from 'view/ui';
 import {
   AppSection,
   CutsceneSpeaker,
@@ -34,6 +34,7 @@ import {
   getCurrentRoom,
   getCurrentScene,
   getCutsceneSpeedMultiplier,
+  getResPath,
   isCutsceneSkipEnabled,
   isKeyDown,
 } from 'model/generics';
@@ -111,7 +112,7 @@ const BarBackground = style('div', () => {
     width: '100%',
     height: '100%',
     opacity: '0.04',
-    backgroundImage: 'url(res/bg/flowers_menu_bg.png)',
+    backgroundImage: `url(${getResPath()}/bg/flowers_menu_bg.png)`,
     zIndex: 0,
   };
 });
@@ -649,6 +650,14 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     }
   });
 
+  const skipCutsceneEnabled =
+    !isSkipping &&
+    !skipConfirmVisible &&
+    !getCurrentBattle() &&
+    cutscene.showBars !== false &&
+    !getUiInterface()?.appState.sections.includes(AppSection.Quest) &&
+    isCutsceneSkipEnabled();
+
   const skipCutscene = async () => {
     const handler = pushEmptyKeyHandler();
     // setBarsVisible(false);
@@ -728,18 +737,11 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
         showSettings(handleSettingsClose);
       }
 
-      if (
-        isSkipKey(ev.key) &&
-        !isSkipping &&
-        !skipConfirmVisible &&
-        !getCurrentBattle() &&
-        cutscene.showBars !== false &&
-        isCutsceneSkipEnabled()
-      ) {
+      if (isSkipKey(ev.key) && skipCutsceneEnabled) {
         showSkipConfirmModal();
       }
     },
-    [isSkipping, skipConfirmVisible]
+    [isSkipping, skipConfirmVisible, skipCutsceneEnabled]
   );
 
   const handleSettingsClose = () => {
@@ -785,19 +787,13 @@ const CutsceneSection = (props: { renderImmediate?: boolean }) => {
     skipConfirmVisible
   );
 
-  const topBarButtons = [TopBarButtons.SETTINGS];
+  const topBarButtons: TopBarButtons[] = [];
 
-  // Hack removes this button from visibility during battles, but leaves the settings one
+  // Hack removes these buttons from visibility during battles
   if (!getCurrentBattle()) {
+    topBarButtons.push(TopBarButtons.SETTINGS);
     topBarButtons.push(TopBarButtons.SKIP_CUTSCENE);
   }
-
-  const skipCutsceneEnabled =
-    !isSkipping &&
-    !skipConfirmVisible &&
-    !getCurrentBattle() &&
-    cutscene.showBars !== false &&
-    isCutsceneSkipEnabled();
 
   return (
     <Root

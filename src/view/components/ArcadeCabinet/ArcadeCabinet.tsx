@@ -23,6 +23,7 @@ import { hideArcadeGame } from 'controller/ui-actions';
 import {
   getArcadeGameVolume,
   getCurrentPlayer,
+  getResPath,
   isArcadeGameMuted,
   setArcadeGameMuted,
 } from 'model/generics';
@@ -193,7 +194,7 @@ const CabinetTitle = style('div', (props: {}) => {
 
 const CabinetImage = style('div', () => {
   return {
-    backgroundImage: 'url(res/img/arcade-cabinet.png)',
+    backgroundImage: `url(${getResPath()}/img/arcade-cabinet.png)`,
     width: '646px',
     height: '712px',
     position: 'absolute',
@@ -423,7 +424,7 @@ const CabinetInner = (props: ICabinetInnerProps) => {
           loading={!isGameReady}
           borderImageUrl={
             meta?.cabinet?.cabinetBorderImagePath ??
-            'res/img/arcade-border-1.png'
+            `${getResPath()}/img/arcade-border-1.png`
           }
         ></IframeShim>
       ) : (
@@ -542,6 +543,7 @@ const ArcadeCabinet = (props: IArcadeCabinetProps) => {
   const handleMuted = () => {
     const nextMuted = !muted;
     setMuted(nextMuted);
+
     if (nextMuted) {
       muteAudio();
     } else {

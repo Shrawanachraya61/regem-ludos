@@ -6,12 +6,13 @@ import { useInputEventStack, useKeyboardEventListener } from 'view/hooks';
 import { isCancelKey, isConfirmKey } from 'controller/events';
 import { useEffect, useState } from 'preact/hooks';
 import { playSoundName } from 'model/sound';
+import { Point } from 'utils';
 
-const DialogWrapper = style('div', () => {
+const DialogWrapper = style('div', (props: { disableBackground?: boolean }) => {
   return {
     opacity: '0',
     transition: 'opacity 100ms',
-    background: 'rgba(0, 0, 0, 0.5)',
+    background: props.disableBackground ? 'unset' : 'rgba(0, 0, 0, 0.5)',
     position: 'fixed',
     left: '0px',
     top: '0px',
@@ -26,7 +27,12 @@ const DialogWrapper = style('div', () => {
 });
 const DialogContainer = style(
   'div',
-  (props: { maxWidth?: string; danger?: boolean }) => {
+  (props: {
+    maxWidth?: string;
+    danger?: boolean;
+    offsetX: number;
+    offsetY: number;
+  }) => {
     return {
       margin: '4px',
       padding: '4px',
@@ -35,7 +41,7 @@ const DialogContainer = style(
       border: `2px solid ${props.danger ? colors.RED : colors.BLUE}`,
       background: colors.BGGREY,
       color: colors.WHITE,
-      transform: 'scale(0)',
+      transform: `scale(0) translate(${props.offsetX}px, ${props.offsetY})`,
       transition: 'transform 100ms',
     };
   }
@@ -74,6 +80,9 @@ interface IDialogProps {
   maxWidth?: string;
   closeButtonLabel?: string;
   danger?: boolean;
+  disableBackground?: boolean;
+  offset?: Point;
+  remainOpen?: boolean;
   children?: any;
 }
 const DialogBox = (props: IDialogProps) => {
@@ -90,6 +99,12 @@ const DialogBox = (props: IDialogProps) => {
       return;
     }
 
+    if (props.remainOpen) {
+      playSoundName('menu_select');
+      cb();
+      return;
+    }
+
     setIsClosing(true);
     const elem = document.getElementById('dialog-container');
     if (elem) {
@@ -100,7 +115,6 @@ const DialogBox = (props: IDialogProps) => {
       elem2.style.opacity = '0';
     }
     setTimeout(() => {
-      console.log('on close in dialog box');
       cb();
     }, 100);
   };
@@ -108,6 +122,12 @@ const DialogBox = (props: IDialogProps) => {
   useKeyboardEventListener(
     ev => {
       if (isClosing || confirmActive || cancelActive) {
+        return;
+      }
+
+      if (props.remainOpen) {
+        playSoundName('menu_select');
+        props.onClose();
         return;
       }
 
@@ -169,26 +189,39 @@ const DialogBox = (props: IDialogProps) => {
         }
       }
     },
-    [buttonCursorPosition]
+    [
+      buttonCursorPosition,
+      isClosing,
+      confirmActive,
+      cancelActive,
+      props.onClose,
+    ]
   );
 
   useEffect(() => {
     const elem = document.getElementById('dialog-container');
     if (elem) {
-      elem.style.transform = 'scale(1)';
+      elem.style.transform = `scale(1) translate(${props.offset?.[0] ?? 0}px, ${
+        props.offset?.[1] ?? 0
+      }px)`;
     }
     const elem2 = document.getElementById('dialog-wrapper');
     if (elem2) {
       elem2.style.opacity = '1';
     }
-  }, []);
+  }, [props.offset]);
 
   return (
-    <DialogWrapper id="dialog-wrapper">
+    <DialogWrapper
+      id="dialog-wrapper"
+      disableBackground={props.disableBackground}
+    >
       <DialogContainer
         id="dialog-container"
         maxWidth={props.maxWidth}
         danger={props.danger}
+        offsetX={props.offset?.[0] ?? 0}
+        offsetY={props.offset?.[1] ?? 0}
       >
         <DialogTitle danger={props.danger}>{props.title}</DialogTitle>
         <DialogContent>{props.children}</DialogContent>
@@ -246,9 +279,7 @@ const DialogBox = (props: IDialogProps) => {
                 transform: confirmActive ? 'translateY(2px)' : '',
               }}
               onClick={() => {
-                console.log('handle button click in dialog');
                 handleClosing(() => {
-                  console.log('handle button click in dialog handle closing');
                   props.onClose();
                 });
               }}

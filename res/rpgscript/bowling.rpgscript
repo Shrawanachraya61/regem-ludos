@@ -80,11 +80,19 @@ action,this
 Floor1BowlingEmployee: "<cascade>Here to play some <color=YELLOW cascade>bowling<cascade>?  It's 5 tokens to play."
 +awaitChoice('Yes, I would like to go bowling.', 'No, thank you.');
 +?eq(lastChoiceIndex, 0):{
-  +modifyTokens(-5);
-  Floor1BowlingEmployee: "Let me grab you a pair of shoes."
-  +fadeOut(500);
-  +endConversation();
-  +:begin-bowling();
+  +?isnot(func(hasEnoughTokens, 5)):{
+    +:teardrop(Floor1BowlingEmployee);
+    Floor1BowlingEmployee: "It looks like you don't have enough tokens..."
+    Floor1BowlingEmployee: "Sorry, you'll have to get some more before I can let you play."
+    +endConversation();
+  }
+  +?func(hasEnoughTokens, 5):{
+    +modifyTokens(-5);
+    Floor1BowlingEmployee: "Let me grab you a pair of shoes."
+    +fadeOut(500);
+    +endConversation();
+    +:begin-bowling();
+  }
 }
 +?eq(lastChoiceIndex, 1):{
   +none();

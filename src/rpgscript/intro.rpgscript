@@ -1,6 +1,20 @@
 @floor1Outside
 +:intro();
 
+//[ARG1] = sound
+@phone_left
++none()
++playSound([ARG0]);
++spawnParticleAtCharacter('EFFECT_TEMPLATE_PHONE_LEFT', 'Ada', 'normal');
++waitMS(1000);
+
+//[ARG1] = sound
+@phone_right
++none()
++playSound([ARG0]);
++spawnParticleAtCharacter('EFFECT_TEMPLATE_PHONE_RIGHT', 'Ada', 'normal');
++waitMS(1000);
+
 @intro
 +fadeOut(0);
 +setAtMarker(ada, MarkerAdaStart);
@@ -24,6 +38,7 @@
 +playSound('phone_beep');
 +waitMS(500);
 Ada: "This is Ada."
++:phone_right(phone_voice1);
 Voice On Phone: "Have you arrived yet?"
 Ada: "I am just outside."
 +playMusic('music_outside_arcade');
@@ -38,14 +53,14 @@ Ada: "The <color=BLUE>Regem Ludos Arcade</>.  It looks like quite a large buildi
 +panCameraBackToPlayer();
 +setAnimationAndWait('Ada', 'ada_phone_down');
 +setAnimation('Ada', 'ada_phone_loop');
-Voice On Phone: "Yes! Large grey building, right?  It's actually even bigger than it looks."
++:phone_right(phone_voice2);
+Voice On Phone: "Yes! Large grey building, right?  It's actually quite a bit larger than it looks."
 +:question(Ada);
 Ada: "Is that so?"
 Ada: "How long is this going to take?  I have better things to do than trying to find you in there."
-+none();
-+waitMS(100);
++:phone_right(phone_voice1);
 Voice on Phone: "Oh, don't worry about that!"
-Voice on Phone: "You brought your... friend with you, right?"
+Voice on Phone: "You brought your... <color=PURPLE>interesting, little friend</> with you, right?"
 +setConversationSpeaker('none');
 +setAnimation('Ada', 'ada_phone_rightdown');
 +panCameraRelativeToPlayer(55, 30);
@@ -67,8 +82,12 @@ Voice on Phone: "You brought your... friend with you, right?"
 +setFacing('Conscience', 'leftdown');
 +waitMS(500);
 +playSound(car_woosh);
-+waitMS(250);
++waitMS(100);
++offsetCharacter(Conscience, 0, -2);
++waitMS(150);
++offsetCharacter(Conscience, 0, -2);
 +:jump(Conscience);
++offsetCharacter(Conscience, 0, -3);
 +:surprised(Conscience);
 +waitMS(300);
 +:exclaim(Ada);
@@ -76,10 +95,12 @@ Ada: "Of course.  She is always with me."
 +setConversationSpeaker('none');
 +panCameraBackToPlayer();
 +setAnimation('Ada', 'ada_phone_loop');
++:phone_right(phone_voice1);
 Voice on Phone: "Good!  Very good!"
-Voice on Phone: "I'm on the SECOND floor.  Meet me up here."
+Voice on Phone: "I'm on the <color=YELLOW>SECOND</> floor. Come meet me up here."
 Voice on Phone: "Like I said before, I have a special surprise for you."
-Voice on Phone: "Quite SPECIAL indeed."
++:phone_right(phone_voice2);
+Voice on Phone: "<cascade-letters>Quite SPECIAL indeed."
 Voice on Phone: "Hehehe."
 +setConversationSpeaker('none');
 +waitMS(500);
@@ -125,10 +146,9 @@ Conscience: "Yeah.  You'd think it would have more flashy lights or something."
 Ada: "Come on.  Let us get this over with."
 +setConversationSpeaker('none');
 +callScript('utils-stop-Conscience-dialogue');
-+endConversation();
 +walkToOffset('Ada', 16, -16, true);
 +fadeOut();
 +changeRoom(floor1Atrium, MarkerDoorEntrance);
 +setFacing('Ada', 'rightup');
 +fadeIn();
-+endConversation(0, true);
++endConversation();

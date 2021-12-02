@@ -9,7 +9,11 @@ import MenuLoad from './MenuSection/MenuLoad';
 import { getCancelKeyLabel } from 'controller/events';
 import { CardSize, sizes as cardSizes } from 'view/elements/Card';
 import { playSoundName } from 'model/sound';
-import { getCurrentScene, setCurrentPlayer, setTimeLoaded } from 'model/generics';
+import {
+  getCurrentScene,
+  setCurrentPlayer,
+  setTimeLoaded,
+} from 'model/generics';
 import { getCanvas, setDrawScale } from 'model/canvas';
 import { initHooks } from 'view/hooks';
 import { get as getCharacter } from 'db/characters';
@@ -24,6 +28,8 @@ import { renderUi } from 'view/ui';
 import { runMainLoop } from 'controller/loop';
 import { ISave, loadSavedGame } from 'controller/save-management';
 import { beginQuest } from 'model/quest';
+import { hideSection } from 'controller/ui-actions';
+import { AppSection } from 'model/store';
 
 const setupGame = async () => {
   setTimeLoaded(+new Date());
@@ -58,7 +64,8 @@ const createNewGame = async () => {
   runMainLoop();
 
   (document.getElementById('controls') as any).style.display = 'none';
-  renderUi();
+  hideSection(AppSection.Debug);
+  // renderUi();
 };
 
 const MenuContent = (props: {
@@ -74,7 +81,7 @@ const MenuContent = (props: {
       <div>
         <ConfirmModal
           onConfirm={() => {
-            playSoundName('level_up');
+            playSoundName('rez');
             props.startGame();
           }}
           onClose={() => {
