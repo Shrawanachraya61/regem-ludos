@@ -93,7 +93,8 @@ export const main = async (): Promise<void> => {
 
   const query = parseQuery(window.location.search);
 
-  if (!query.room && !query.save && !query.debug && !query.soundboard) {
+  if (query.menu) {
+  // if (!query.room && !query.save && !query.debug && !query.soundboard) {
     console.log('loading main app.');
     const loading = document.getElementById('page-loading');
     if (loading) {

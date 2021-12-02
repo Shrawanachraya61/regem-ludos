@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "http-server -o index.html?model=player_ship -g -p 8084"
+    "start": "http-server -o main.html?model=player_ship -g -p 8084"
   },
   "devDependencies": {
     "eslint": "^7.30.0",

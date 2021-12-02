@@ -407,6 +407,7 @@ export const menu = async (): Promise<void> => {
   const flower = document.createElement('img');
   flower.src = `${getResPath()}/img/flower.png`;
   flower.style.width = '64px';
+  flower.style['image-rendering'] = 'pixelated';
   flower.className = 'bob-load';
   pressAnyKey.appendChild(flower);
 

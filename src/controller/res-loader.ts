@@ -7,8 +7,6 @@ const getJSZip = () => {
   return (window as any).JSZip;
 };
 
-// const PATH_PREFIX = 'res/'
-const PATH_PREFIX = `${getResPath()}/`;
 
 const zipImages = {};
 const zipAudio = {};
@@ -164,6 +162,8 @@ class AssetLoader {
 }
 
 export const loadRes = async (loadingTick?: () => void) => {
+  const PATH_PREFIX = `${getResPath()}/`;
+
   const text = await (await fetch(PATH_PREFIX + 'res.txt')).text();
   const foley = await (await fetch(PATH_PREFIX + 'res-foley.txt')).text();
   const bg = await (await fetch(PATH_PREFIX + 'res-bg.txt')).text();

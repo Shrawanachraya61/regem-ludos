@@ -16,9 +16,12 @@ jest.mock('model/sound', () => ({
   ...jest.requireActual('model/sound'),
   playSound: jest.fn(),
   playSoundName: jest.fn(),
+  playMusic: jest.fn(),
   getCurrentMusic: jest.fn(),
   stopCurrentMusic: jest.fn(),
 }));
+
+// (window as any).RPGSCRIPT_PATH = 'src';
 
 // jest.mock('preact/hooks', () => {
 //   return {
@@ -44,7 +47,7 @@ fetchMock.mockResponse(async req => {
   let respText = '';
 
   if (/rpgscript/.test(req.url)) {
-    respText = fs.readFileSync(__dirname + '/../' + req.url).toString();
+    respText = fs.readFileSync(__dirname + '/../src' + req.url).toString();
   }
   if (/res.txt/.test(req.url)) {
     respText = fs.readFileSync(__dirname + '/../' + req.url).toString();

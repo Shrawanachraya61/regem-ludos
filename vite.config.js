@@ -1,28 +1,27 @@
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { resolve } from 'path';
 
-export default defineConfig(() => {
+export default defineConfig((...args) => {
+  let rootPath = '../';
+
   const config = {
     plugins: [
       tsconfigPaths({
-        projects: ['../tsconfig.vite.json'],
+        projects: [rootPath + 'tsconfig.vite.json'],
       }),
     ],
     root: '.',
-    publicDir: '../res/',
+    base: '/regem-ludos',
+    publicDir: rootPath + '/res/',
     esbuild: {
       jsxFactory: 'h',
       jsxFragment: 'Fragment',
       // pure: ['console.log', 'console.debug', 'console.warn'],
     },
     build: {
-      outDir: '../dist',
+      outDir: rootPath + 'dist',
       assetsDir: 'release',
       cssCodeSplit: false,
-      // rollupOptions: {
-      //   external: ['styles.css'],
-      // },
     },
     server: {
       open: 'index.html',

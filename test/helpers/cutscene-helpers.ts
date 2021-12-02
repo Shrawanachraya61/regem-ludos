@@ -48,6 +48,7 @@ export const invokeTalkTriggerSkip = async (chName: string) => {
 export const callScriptSkip = async (scriptName: string) => {
   const scene = getCurrentScene();
   scene.skip = true;
+  console.log('Call script', scene);
   callScript(scene, scriptName);
   let ctr = 0;
   while (sceneIsPlaying(scene) && ctr < 500) {
@@ -57,6 +58,6 @@ export const callScriptSkip = async (scriptName: string) => {
       getAppState().quest.onClose();
     }
     ctr++;
-    await Promise.resolve();
+    await new Promise(resolve => setTimeout(resolve, 1));
   }
 };

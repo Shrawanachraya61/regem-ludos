@@ -69,7 +69,6 @@ describe('Tutorial quest', () => {
     ];
     const scene = getCurrentScene();
     const quest = getQuest(questName);
-
     for (let i = 0; i < scripts.length; i++) {
       const scriptName = scripts[i];
       expect(getCurrentQuestStep(scene, questName)?.i).toEqual(i);
