@@ -1,0 +1,167 @@
+@floor2-throne-room-lotte1
+// Ada, Conscience, and Lotte have just come out of the portal.
++setConversation('Lotte');
++lookAtEachOther(lotte, ada);
++lookAtEachOther(lotte, conscience);
+Lotte: "How curious..."
++lookAtEachOther(lotte, ada);
++waitMS(300);
++lookAtEachOther(lotte, conscience);
++waitMS(300);
++lookAtEachOther(lotte, ada);
++waitMS(300);
++lookAtEachOther(lotte, conscience);
+Lotte: "He insisted that you were real, but I didn't actually believe him."
++jump(conscience);
+Conscience: "What, me?  Of course I'm real!"
+Ada: "<cascade-letters scale=0.75>Conscience..."
+Conscience: "You're wearing a really pretty costume by the way."
+Lotte: "Why, <cascade-letters>yes I am!  <delay=250 cascade>I'm glad you noticed."
++callScript(utils-character-spin, lotte);
+Lotte: "I'm a <color=BLUE>sorceress</>.  It suits me, does it not?"
+Ada: "<cascade>Can you just hurry up and take us to <color=ORANGE>Carl-Arnold</>?"
++callScript(utils-character-sigh, lotte);
+Lotte: "<cascade-letters>Fine, fine."
+Lotte: "Please follow me."
+// lotte walks upwards then stops and turns around
++lookAtEachOther(lotte, conscience);
+Lotte: "<cascade>He <scale=1.25>is very <italic>eager</> to see you, after all."
++endConversation();
+// lotte walks forward and leaves
+
+@floor2-throne-room-lotte2
+// Lotte has left the room
++lookAtCharacter(Ada, Conscience);
++setConversation2(Ada, Conscience);
+Ada: "<cascade=150>What are you <cascade-letters=50>DOING</>?"
+Conscience: "I'm just being polite."
+Ada: "<cascade>Are you not alarmed by the number of people who are surprised to see you?"
+Conscience: "<cascade>It's only natural.  Most people don't have <color=BLUE>an entity like me<cascade> with whom they can exclusively communicate."
+Conscience: "<cascade>Actually, it's refreshing to speak directly with somebody else; surprise and all."
+Ada: "It is making me nervous.  I am not supposed to show you to <scale=1.25>everybody</> I meet."
+// Conscience giggles
+Conscience: "<cascade>Are you sure you're not confusing that with <scale=1.25 color=GREEN cascade-letters=60>jealousy<cascade>?"
+Ada: "This VR is very strange, Conscience.  I am not familiar with it, and the more I see of it, the more I realize that I do not know what is capable of happening in here."
+Ada: "And as I have said before, I do not trust <color=ORANGE>Carl-Arnold</> for a moment."
+Ada: "You should be more cautious."
+Conscience: "What's the worst he's gonna do?  Kick us out?"
+// Lotte comes back
+Lotte: "Are you two going to follow me?  I don't have the most patience, you know."
+Conscience: "We're coming!"
++endConversation();
+
+
+@floor2-throne-room-carnold1
++setConversation2(Carnold, Ada);
+// Bartolo and Lotte are in flanking positions of Carl-Arnold on the left and right respectively
+// Ada walks towards Carl-Arnold
+Ada: "Alright Carl-Arnold!  I am here!"
++none();
+// Ada walks forward and stops a few feet away from Carl-Arnold
+Ada: "What is it that you want?"
+// looking away from Ada
+// look at ada
+Carnold: "<cascade=75>Well, well, well. <cascade> If it isn't my evocative <cascade-letters=50 color=ORANGE>arch nemesis<cascade>."
+Ada: "Delusional as ever I see.  <cascade>I am most definitely not your <cascade-letters=50 color=ORANGE>arch nemesis<cascade>.  I hardly recognize you as existing."
++jump(Carnold);
+Carnold: "You don't know how much it hurts me to to hear that!"
+Carnold: "<cascade>I thought you would have realized by now how similar we are in thought and... <cascade-letters=100>ambition</>."
+Ada: "That is likely one of the worst insults you could have said to me."
+// Carnold laughs
+Carnold: "Oh how I adore you're willing skepticism. <delay=250>Never change, <color=ORANGE cascade-letters>Adalais<cascade>.  We will have to speak further."
+Carnold: "Right now there's someone else I'd like to meet."
+// Carnold walks to Conscience
+Carnold: "<cascade>You must be the fabled <color=ORANGE>Conscience<cascade> I've heard so much about."
+Carnold: "It's a pleasure to meet you."
+// Conscience giggles
+Conscience: "Hehe.  The <italic>pleasure</> is mine."
+Carnold: "Manners?  I didn't expect that from one of Adalais's ilk."
+Carnold: "<cascade-letters>Although."
++none();
+// Carnold looks at Ada, then back at Conscience
+Carnold: "You are the spitting image of her.  How curious."
+Conscience: "More approachable, at least?"
+// Carnold laughs
+Carnold: "It's truly unfortunate that the only way I can interact with you is through this VR."
+// Ada steps forward
+Ada: "<cascade>Is that what you really wanted?  To speak with <color=ORANGE>Conscience</>?"
+// Carnold faces Ada
+Carnold: "An entity whom no one can see but you except - of course - in this VR?  She is quite interesting."  
+Carnold: "I'd be lying if I said that wasn't part of the reason.  You have to admit that she is quite interesting indeed."
+Carnold: "<cascade>However there's <color=RED>much<cascade> more that I want from you."
+Ada: "Tell me what it is you want so I can get on my way."
+Carnold: "<cascade>I notice you didn't say 'we'.  Is <color=ORANGE>Conscience<cascade> inferred to be with you all the time."
+Ada: "Of course."
+Carnold: "I see."
+// Carnold walks to the tree
+Carnold: "I'm sure you've seen by now.  But the VR that <color=BLUE>this arcade</> is able to render is quite advanced."
+Carnold: "This room in particular is my creation, by the way."
+Carnold: "We are miles underground in this dreary dungeon.  And yet--"
+Carnold: "I am able to specify that this lovely tree should grow right in this spot.  It has neither sunlight, nor soil, nor consistent water.  But here it is."
+Carnold: "Neither realistic nor feasible, and yet it looks quite convincing, does it not?"
+Ada: "<cascade-letters>......"
+Carnold: "This room is a perk of my status with the <color=ORANGE>Regem Ludos Arcade</>."
+Carnold: "You see, I am a sort of an accepted <cascade-letters scale=1.25 color=BLUE>god</> of this place."
+Carnold: "I'm certain you heard this already, but I am the sole owner of the high scores in the vast majority of the games here."
+Carnold: "<scale=0.75 cascade>The ones I don't have are clear time-wasters and unworthy of my time."
+Carnold: "My elevated status allows me to control many facets of <color=ORANGE>the Regem Ludos Arcade's VR</>.  Much more than the average player."
+Carnold: "For example..."
+// Carnold snaps his fingers and a cage appears around Conscience
++:exclaim(Conscience);
+Conscience: "Hey! <delay=250> What is going on?"
+// Conscience struggles to get out of the cage.
+// Ada steps violently forward
++:exclaim(Ada);
+Ada: "What is the meaning of this, Carl-Arnold!"ik
++:lightbulb(Carnold);
+Carnold: "Would you look at that, it worked!"
+// Bartolo and Lotte laugh
+// Carnold walks to Ada
+Carnold: "You know Ada, I've always wondered something about you."
+Carnold: "You have excellent grades, top of the class even."
+Carnold: "By far, you get the most attention from teachers..."
+Carnold: "If I was an outsider, I'd conclude that you are the smartest student in all of <color=BLUE>Erran Valley High School</>."
+Carnold: "But I have to wonder: how much of that is <color=BLUE>you</>?"
+// Carnold looks at Conscience
+Carnold: "And how much of that is your <cascade-letters>nebulous accomplice?"
+// Carnold looks back at Ada
++:exclaim(Ada);
+Ada: "As far as you are concerned, we are the same.  She acts as my liaison in any given situation, as per the <color=ORANGE>Artificial Intelligence Law</>."
++:bored(Carnold);
+Carnold: "Yeah, yeah, I've heard all about that.  I'd like to believe that you comply with such a thing. But I really wonder if that's true."
+Carnold: "Are you really that smart, or is <color=ORANGE>Conscience</> giving you... a little help?"
++:smirk(Carnold);
+Carnold: "So I've surmised a bit of a test.  It's actually quite simple."
+Carnold: "This arcade has several floors.  Ten, to be exact.  I'd like for you to ascend all of these floors and reach the top."
+Carnold: "I'll be waiting for you there.  Once you arrive, we can truly see if your <color=YELLOW>golden reputation</> is warranted."
+Carnold: "If you defeat me in a duel, then I shall let your beloved AI go, admitting that you are indeed worthy of your reputation."
++:smirk(Carnold);
+Carnold: "However, if you lose, then perhaps there's more to your success than meets the eye."
++:exclaim(Ada);
+Ada: "No!  I will not play your games.  This is ridiculous!"
+// Carnold laughs
+Carnold: "<cascade>Are you afraid you can't accomplish this <color=RED>simple task</>?"
++:angry(Ada);
+Ada: "You cannot take Conscience!"
+// Ada rushes forward, but is stopped by some kind of spell from Lotte
++:bored(Lotte);
+Lotte: "So pathetic.  I'm disappointed."
++lookAtCharacter(Bartolo, Carnold);
++:question(Bartolo);
+Bartolo: "This rough-hewn specimen is who we were waiting for?"
+Bartolo: "She seems so incompetent."
+// Carnold
++:happy(Carnold);
+Carnold: "I am the owner of this domain, <color=ORANGE>Adalais</>."
+Carnold: "If you want Conscience back, then you'll have to defeat me on the 10th floor of this arcade."
+Carnold: "It's as simple as that."
+// Carnold turns to Bartolo
++:lightbulb(Carnold);
+Carnold: "<cascade>Know that I am not unreasonable.  I've also arranged for several of your <color=BLUE> friends</> to be here today."
+Carnold: "Seek them out if you wish. After all, who ever did anything without at least a little help?"
+// Carnold looks at Lotte, then Bartolo in turn
+Carnold: "I'm done, get her out of here."
+// Carnold walks away
+// Bartolo ushers Ada back to the VR Portal with some kind of robot
+Ada: "Wait!  Give Conscience back!"
+// Bartolo forcefully sends Ada back through the portal

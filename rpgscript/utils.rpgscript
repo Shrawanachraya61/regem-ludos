@@ -1,0 +1,557 @@
+// this exists because of the number of times I've accidentally written +:none()
+@none
++none();
+
+// ARG0 = name of map to transition to
+// ARG1 = name of marker to place player at
+@utils-change-room
++setConversationWithoutBars(Ada);
++setAnimationState('Ada', 'idle');
++fadeOut(1000, true);
++waitMS(100, '', true);
++playSound('change_room');
++waitMS(900, '', true);
++changeRoom([ARG0], [ARG1]);
++fadeIn(900, true);
++endConversation(100);
+@changeRoom
++callScript(utils-change-room,[ARG0],[ARG1]);
+
+// ARG0 = boolean: skip the walkOffset
+@utils-start-Conscience-dialogue
++setFacing('Ada', down);
++spawnCharacterAtCharacter('Conscience', 'Ada');
++?isnot([ARG0]):{
+  +waitMS(250);
+  +walkToOffset('Conscience', 16, 16);
+  +lookAtEachOther('Ada', 'Conscience');
+  +endConversation();
+  +setConversation2('Ada', 'Conscience');
+}
++?is([ARG0]):{
+  +setConversation2('Ada', 'Conscience', 0);
+}
+
+// ARG0 = boolean: skip the walkOffset
+@utils-start-Conscience-dialogue-single
++setFacing('Ada', down);
++waitMS(250);
++spawnCharacterAtCharacter('Conscience', 'Ada');
++?isnot([ARG0]):{
+  +walkToOffset('Conscience', 16, 16);
+}
++lookAtEachOther('Ada', 'Conscience');
+
+@utils-stop-Conscience-dialogue
++setConversationSpeaker("none");
++walkToCharacter("Conscience", "Ada");
++despawnCharacter("Conscience");
++waitMS(750);
+
+#utils-kiosk-stats-activate
+step-first,?with(HapticBracer):this
+action,?with(HapticBracer):utils-kiosk-status-activate-action
+@this
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
+@utils-kiosk-status-activate-action
++pauseOverworld();
++playSound(blip);
++showUISection(LevelUp);
+
+#utils-kiosk-stats-deactivate
+step,this
+@this
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
+
+#utils-kioskStats
+step-first,?with(HapticBracer):utils-kioskStats_on
+step-off,?with(HapticBracer):utils-kioskStats_off
+action,?with(HapticBracer):utils-kioskStats_action
+step-first,utils-kioskStats_no_bracer
+action,utils-kioskStats_action_cancel
+@utils-kioskStats_on
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_ACTIVE);
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskStats_off
++changeTileAtMarker(MarkerKioskStats, KIOSK_STATS_PASSIVE);
+@utils-kioskStats_action
++pauseOverworld();
++playSound(blip);
++showUISection(LevelUp);
+@utils-kioskStats_no_bracer
++setCharacterText('This kiosk requires a Haptic Bracer.');
+@utils-kioskStats_action_cancel
++playSound(terminal_cancel);
+
+#utils-kioskSavePoint
+step-first,utils-kioskSavePoint_on
+step-off,utils-kioskSavePoint_off
+action,utils-kioskSavePoint_action
+@utils-kioskSavePoint_on
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskSavePoint_off
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+@utils-kioskSavePoint_action
++pauseOverworld();
++playSound(blip);
++showUISection(Save);
+
+#utils-kioskInfoStats
+step-first,utils-kioskInfoStats_on
+action,utils-kioskInfoStats_action
+@utils-kioskInfoStats_on
++setCharacterText('Press Action (X) to access this kiosk.');
+@utils-kioskInfoStats_action
++pauseOverworld();
++playSound(blip);
++showUISection(InfoStats);
+
+#utils-save-point-activate
+step,this
+action,utils-save-point-activate-action
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_ACTIVE);
+@utils-save-point-activate-action
++pauseOverworld();
++playSound(blip);
++showUISection(Save);
+
+#utils-save-point-deactivate
+step,this
+@this
++changeTileAtMarker(MarkerSavePoint, SAVE_POINT_PASSIVE);
+
+#utils-heal-pool
+step-first,this
+action,utils-heal-pool-action
+@this
++setCharacterText('Press Action (X) to imbibe the liquid in the pool.');
+@utils-heal-pool-action
++playSound(rez);
+// +changeTileAtMarker(MarkerHealPool, HEAL_POOL_INACTIVE);
++modifyPartyHP(99999);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_BUFF, Ada, normal);
++waitMS(1000);
+
+@utils-vr-step
++playSound(beep);
++setCharacterText('The Haptic Bracer is vibrating.');
+
+// ARG0 = name of map to transition to
+// ARG1 = name of marker to place player at
+// ARG2 = boolean: should spawn party members?
+@utils-transition-to-vr
++setCharacterText('');
++walkToMarker('Ada', MarkerVRLanding);
++setFacing('Ada', 'down');
++playSound('vr_portal_buzz');
++waitMS(500, '', true);
++playSound('vr_portal_focus');
++setAnimation('Ada', 'ada_enter_vr_portal');
++waitMS(225, '', true);
++playSound('vr_portal_start');
++waitMS(850, '', true);
++playSound('battle_jump');
++waitMS(150, '', true);
++playSound('battle_jump');
++waitMS(250, '', true);
++playSound('battle_jump');
++waitMS(750, '', true);
++playSound('battle_encountered');
++fadeOutColor(255, 255, 255, 1000);
++spawnParticleAtCharacter('EFFECT_TEMPLATE_VR_PORTAL', 'Ada', 'normal');
++playSound('vr_portal_zoom');
++fadeInColor(255, 255, 255, 1000);
++waitMS(2000, '', true);
++fadeOut();
++playSound('vr_portal_landed');
++changeRoom([ARG0], [ARG1]);
++?is(ARG2):{
+  +spawnPartyMembersInFormation();
+}
++?isnot(ARG2):{
+  +spawnParticleAtCharacter(EFFECT_TEMPLATE_PORTAL_SPAWN, 'Ada', 'normal');
+}
++fadeIn();
+//wait for the spawn particles to finish
++waitMS(1000);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-jump
++setConversationSpeaker(none);
++playSound('jump_cutscene');
++jump([ARG0]);
+@jump
++callScript(utils-character-jump,[ARG0]);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-giggle
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(200);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(200);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_GIGGLE, [ARG0], 'weighted');
++waitMS(1000);
+@giggle
++callScript(utils-character-giggle,[ARG0]);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-sigh
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SIGH, [ARG0], 'rise');
++waitMS(1250);
+@sigh
++callScript(utils-character-sigh,[ARG0]);
+
+// ARG0 = name of character to spawn particles at
+@utils-character-shrug
++setConversationSpeaker(none);
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SHRUG, [ARG0], 'rise');
++waitMS(1250);
+@shrug
++callScript(utils-character-shrug,[ARG0]);
+
+// ARG0 = name of character to look around
+@utils-character-look-around
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(500);
++setFacing([ARG0], 'rightdown');
++waitMS(100);
++setFacing([ARG0], 'right');
++waitMS(500);
++setFacing([ARG0], 'rightdown');
++waitMS(100);
++setFacing([ARG0], 'down');
++waitMS(500);
++setFacing([ARG0], 'leftdown');
++waitMS(100);
++setFacing([ARG0], 'left');
++waitMS(500);
++setFacing([ARG0], 'leftdown');
++waitMS(100);
++setFacing([ARG0], 'down');
+@lookAround
++callScript(utils-character-look-around,[ARG0]);
+
+// ARG0 = name of character to look around
+@lookAroundFast
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+
+// ARG0 = name of character to look around
+@lookAroundQuestion
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(200);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(200);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+
+// ARG0 = name of character to spin
+@utils-character-spin
++setConversationSpeaker(none);
++setFacing([ARG0], 'down');
++waitMS(500);
++playSound('woosh');
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(33);
++setFacing([ARG0], 'rightup');
++waitMS(33);
++setFacing([ARG0], 'up');
++waitMS(33);
++setFacing([ARG0], 'leftup');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(33);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
+@spin
++callScript(utils-character-spin,[ARG0]);
+
+// ARG0 = name of character to spin
+@utils-character-shake-z
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, -2);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 0);
++waitMS(300);
+@shakeZ
++callScript(utils-character-shake-z,[ARG0]);
+
+@utils-character-shake-x
++setConversationSpeaker(none);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], -2, 0, 0);
++waitMS(33);
++offsetCharacter([ARG0], 0, 0, 0);
++waitMS(300);
+@shakeX
++callScript(utils-character-shake-x,[ARG0]);
+
+// ARG0 = ch template name
+// ARG1 = marker name
+@utils-spawn-character-at-marker
++setConversationSpeaker(none);
++playSound('spawn_enemy');
++spawnParticleAtMarker(EFFECT_TEMPLATE_SPAWN, [ARG1], 'normal');
++waitMS(400);
++spawnCharacterAtMarker([ARG0], [ARG1]);
+@spawnAtMarker
++callScript(utils-spawn-character-at-marker,[ARG0],[ARG1]);
+
+// ARG0 = ch template name
+@utils-despawn-character
++setConversationSpeaker(none);
++playSound('spawn_enemy');
++spawnParticleAtCharacter(EFFECT_TEMPLATE_SPAWN, [ARG0], 'normal');
++waitMS(400);
++despawnCharacter([ARG0]);
+@despawn
++callScript(utils-despawn-character,[ARG0]);
+
+// ARG0 = item template name
+@utils-get-treasure
++spawnParticleAtCharacter(EFFECT_TEMPLATE_TREASURE, 'Ada', 'rise');
++playSound('get_item');
++setConversation('Ada');
++acquireItem([ARG0]);
++endConversation();
+
+// This function called by acquirable items when you pick them up.
+// ARG0 = number of tickets to modify
+@utils-get-acquirable-tickets
++setConversation(Ada);
++modifyTickets([ARG0]);
+
+// ARG0 = item template name
+@utils-get-treasure-cutscene
++spawnParticleAtCharacter(EFFECT_TEMPLATE_TREASURE, 'Ada', 'rise');
++playSound('get_item');
++setConversation('Ada');
++acquireItem([ARG0]);
+
+// ARG0 = marker where the top side door is
+// ARG1 = door sprite, eg RED_DOOR_BCK
+@openDoubleDoors
++changeTileAtMarker([ARG0], [ARG1]_OPEN2);
++changeTileAtMarker([ARG0], [ARG1]_OPEN1, 16, 0);
+@closeDoubleDoors
++changeTileAtMarker([ARG0], [ARG1]_CLOSED2);
++changeTileAtMarker([ARG0], [ARG1]_CLOSED1, 16, 0);
+
+// ARG0 = marker where the door is
+// ARG1 = door sprite, eg TALL_RED_DOOR_BCK
+@openDoor
++changeTileAtMarker([ARG0], [ARG1]_OPEN);
+@closeDoor
++changeTileAtMarker([ARG0], [ARG1]_CLOSED);
+
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpX
++setConversationSpeaker(none);
++waitMS(100);
++offsetCharacter([ARG0], [ARG1]/2, 0, 0);
++waitMS(33, '', true);
++offsetCharacter([ARG0], [ARG1]/2, 0, 0);
++waitMS(33, '', true);
++offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
++waitMS(33, '', true);
++offsetCharacter([ARG0], -[ARG1]/2, 0, 0);
+
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpY
++setConversationSpeaker(none);
++waitMS(100);
++offsetCharacter([ARG0], 0, [ARG1], 0);
++waitMS(50, '', true);
++offsetCharacter([ARG0], 0, -[ARG1], 0);
+
+// ARG0 = name of character to bump
+// ARG1 = negative or positive px value to bump
+@bumpZ
++setConversationSpeaker(none);
++waitMS(100, '', true);
++offsetCharacter([ARG0], 0, 0, [ARG1]);
++waitMS(100, '', true);
++offsetCharacter([ARG0], 0, 0, -[ARG1]);
+
+@exclaim
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], exclaim);
++waitMS(1000);
+@question
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], question);
++waitMS(1000);
+@teardrop
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], teardrop);
++waitMS(1000);
+@lightbulb
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], lightbulb);
++waitMS(1000);
+@heart
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], heart);
++waitMS(1000);
+@happy
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], happy);
++waitMS(1000);
+@smirk
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], smirk);
++waitMS(1000);
+@bored
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], bored);
++waitMS(1000);
+@surprised
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], surprised);
++waitMS(1000);
+@sad
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], sad);
++waitMS(1000);
+@grumpy
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], grumpy);
++waitMS(1000);
+@blush
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], blush);
++waitMS(1000);
+@angry
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], angry);
++waitMS(1000);
+@wink
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], wink);
++waitMS(1000);
+@flat
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], flat);
++waitMS(1000);
+@yawn
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], yawn);
++waitMS(1000);
+@serious
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], serious);
++waitMS(1000);
+@exhale
++none()
++playSound(emotion);
++spawnEmotionParticleAtCharacter([ARG0], exhale);
++waitMS(1000);
+@minorPause
++none();
++waitMS(1000);
+@smallPause
++:minorPause();
+@nervous
++setConversationSpeaker(none);
++playSound('jump_cutscene');
++setFacing([ARG0], 'down');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(33);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(33);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(100);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++playSound('jump_cutscene');
++setFacing([ARG0], 'down');
++waitMS(33);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'right');
++waitMS(100);
++setFacing([ARG0], 'rightdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++waitMS(33);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'left');
++waitMS(33);
++setFacing([ARG0], 'leftdown');
++waitMS(33);
++setFacing([ARG0], 'down');
++none();

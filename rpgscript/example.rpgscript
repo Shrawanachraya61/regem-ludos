@@ -1,0 +1,14 @@
+#example
+action,?once('5d573129'):this
+@this
+Shopkeeper: "Welcome to my store!"
++?is(discount):{
+  Shopkeeper: "You get a store discount!"
+}
+
+#example2
+step-first,?once('92d3a6a4'):this
+@this
++setConversation('Conscience');
+Conscience: "I'm testing that once elements actually work."
++endConversation();

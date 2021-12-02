@@ -1,0 +1,104 @@
+Sound,blip,foley/blip.mp3,0.7,zzfx
+Sound,pop,foley/pop.mp3,0.7,zzfx
+Sound,menu_move,foley/menu_move2.mp3,0.35,zzfx
+Sound,menu_select,foley/menu_select2.mp3,
+Sound,menu_select2,foley/menu_cancel.mp3,0.7,zzfx
+Sound,menu_cancel,foley/terminal_cancel.mp3,0.7,zzfx
+Sound,menu_choice_open,foley/menu_choice_open2.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/
+Sound,menu_choice_close,foley/menu_choice_close.mp3, Attribution https://freesound.org/people/dersuperanton/sounds/435556/ reverse and pitch shifted down
+Sound,menu_sparkle,foley/menu_sparkle2.mp3,0.8,Attribution https://freesound.org/people/Soughtaftersounds/sounds/145459/
+Sound,menu_close,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
+Sound,lose_token,foley/gain_token.mp3
+Sound,insert_token,foley/insert_token.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
+Sound,eject_tokens,foley/eject_tokens.mp3,Creative Commons https://freesound.org/people/ToniTobe/sounds/233288/
+Sound,start_arcade_game,foley/arcade_game_triggered.mp3,Non-Commercial https://freesound.org/people/pumodi/sounds/150222/
+Sound,ready_arcade_game,foley/arcade_game_ready.mp3,Attribution https://freesound.org/people/broumbroum/sounds/50562/
+Sound,get_item,foley/get_item2.mp3
+Sound,skye_kick_vending_machine,foley/skye_kick_vending_machine.mp3,Creative Commons https://freesound.org/people/CS279/sounds/202757/
+Sound,dialog_select,foley/dialog_select.mp3,Creative Commons https://freesound.org/people/CS279/sounds/198449/
+Sound,dialog_woosh,foley/dialog_woosh.mp3,Creative Commons https://freesound.org/people/anagar/sounds/267950/
+Sound,dialog_start,foley/dialog_start.mp3,0.7, zzfx
+Sound,aggro_alert,foley/aggro_alert.mp3,fl studio
+Sound,battle_encountered,foley/encounter.mp3,jsfxr
+Sound,woosh,foley/woosh.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,woosh_reverse,foley/woosh_reverse.mp3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,fanfare,foley/fanfare.mp3,0.3,Creative Commons https://freesound.org/people/qubodup/sounds/60013/
+Sound,despawn,foley/despawn.mp3,0.55,jsfxr
+Sound,battle_jump,foley/jump2.mp3,0.9,Attribution https://freesound.org/people/andersmmg/sounds/518970/
+Sound,battle_shoot_arrow,foley/shoot_arrow.mp3,jsfxr
+Sound,battle_swing1,foley/battle_swing1.mp3,0.6,jsfxr
+Sound,battle_swing2,foley/battle_swing2.mp3,0.6,jsfxr
+Sound,battle_swing3,foley/battle_swing3.mp3,0.6,jsfxr
+Sound,battle_swing4,foley/battle_swing4.mp3,0.6,jsfxr
+Sound,battle_armor_hit,foley/battle_armor_hit3.mp3,0.9,zzfx
+Sound,battle_armor_broken,foley/battle_armor_broken3.mp3,0.9 zzfx
+Sound,battle_arrow_hit,foley/battle_arrow_hit.mp3,jsfxr
+Sound,battle_robot_charge_up,foley/robot_charge_up.mp3,0.9,jsfxr
+Sound,battle_interrupt_channel,foley/battle_interrupt_channel.mp3,0.7,zzfx
+Sound,battle_cast,foley/battle_cast.mp3,0.8,zzfx
+Sound,battle_fire_explosion1,foley/battle_fire_explosion1_1.mp3,1,zzfx
+Sound,battle_evasion,foley/evasion3.mp3,1,fl studio
+Sound,battle_ready,foley/battle_ready2.mp3,0.7,zzfx
+Sound,battle_staggered1,foley/battle_staggered1_2.mp3,0.9,zzfx
+Sound,battle_recovery,foley/battle_recovery.mp3,0.6,zzfx
+Sound,battle_lost,foley/battle_lost.mp3,0.6,zzfx
+Sound,dead,foley/dead3.mp3,1,jsfxr
+Sound,phone_ring,foley/phone_ring.mp3,0.7,Creative Commons https://freesound.org/people/Provan9/sounds/345684/
+Sound,phone_beep,foley/phone_beep.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/
+Sound,phone_beep_off,foley/phone_beep_off.mp3,0.9,Creative Commons https://freesound.org/people/bay_area_bob/sounds/542044/ GASP
+Sound,vr_portal_activate,foley/vr_portal_activate.mp3,0.7,zzfx
+Sound,vr_portal_deactivate,foley/vr_portal_deactivate.mp3,0.7,zzfx
+Sound,vr_portal_beep,foley/vr_portal_beep.mp3,0.8,zzfx
+Sound,vr_portal_buzz,foley/vr_portal_buzz.mp3,0.9,zzfx
+Sound,vr_portal_landed,foley/vr_portal_landed.mp3,0.45,zzfx
+Sound,vr_portal_zoom,foley/vr_portal_zoom.mp3,0.5,zzfx
+Sound,vr_portal_focus,foley/vr_portal_focus.mp3,0.7,zzfx
+Sound,vr_portal_start,foley/vr_portal_start.mp3,0.7,zzfx
+Sound,despawn_tut_wall,foley/despawn_tut_wall.mp3,0.5,zzfx
+Sound,terminal_beep,foley/blip.mp3,0.7,zzfx
+Sound,beep,foley/blip.mp3,0.7,zzfx
+Sound,terminal_cancel,foley/terminal_cancel.mp3,0.7,zzfx
+Sound,spawn_enemy,foley/spawn_enemy.mp3,0.7,zzfx
+Sound,change_room,foley/change_room.mp3,1,Attribution https://freesound.org/people/newagesoup/sounds/377830/ 
+Sound,jump_cutscene,foley/jump_cutscene.mp3,0.7,zzfx
+Sound,bass_kicks,foley/bass_kicks2.mp3,1,fl studio
+Sound,robot_channel_start,foley/robot_channel_start.mp3,0.7,zzfx
+Sound,robot_staggered,foley/robot_staggered3.mp3,0.9,zzfx
+Sound,robot_staggered_damaged,foley/robot_staggered_damaged2.mp3,0.8,zzfx
+Sound,robot_clank,foley/robot_clank.mp3,0.8,https://freesound.org/people/yottasounds/sounds/175180/ Attribution
+Sound,robot_clank2,foley/robot_clank2.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
+Sound,robot_clank3,foley/robot_clank3.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
+Sound,robot_clank4,foley/robot_clank4.mp3,0.8,https://freesound.org/people/RossBell/sounds/389432/ Creative Commons 0
+Sound,use_item,foley/use_item.mp3,0.7,zzfx
+Sound,rez,foley/rez.mp3,1.0,fl studio
+Sound,level_up,foley/level_up.mp3,0.8,zzfx
+Sound,exp_gain,foley/exp_gain2.mp3,1.0,fl studio
+Sound,emotion,foley/emotion.mp3,0.15,zzfx
+Sound,notification,foley/notification.mp3,0.3,zzfx
+Sound,quest_started,foley/quest_started.mp3,0.3,zzfx
+Sound,quest_completed,foley/quest_completed.mp3,0.3,zzfx
+Sound,car_woosh,foley/car_woosh.mp3,1.0,Creative Commons https://freesound.org/people/NachtmahrTV/sounds/553259/ cut and sped up
+Sound,sliding_door_open,foley/sliding_door_open.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ reversed cut and sped up
+Sound,sliding_door_close,foley/sliding_door_close.mp3,1.0,Creative Commons Non Commercial https://freesound.org/people/Jagadamba/sounds/253916/ cut and sped up
+Sound,red_door_open,foley/red_door_open.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut
+Sound,red_door_close,foley/red_door_close.mp3,Creative Commons Attribution https://freesound.org/people/cgrote/sounds/133841/ cut pitch down
+Sound,token_get,foley/token_get.mp3,Creative Commons https://freesound.org/people/Pogmog/sounds/393909/
+Sound,make_purchase,foley/make_purchase.mp3,Blades of Exile SND15 https://github.com/calref/cboe/tree/master/rsrc/sounds
+Sound,zap_quiet,foley/zap.mp3,0.5,Creative Commons 0 https://freesound.org/people/michael_grinnell/sounds/512471/
+Sound,deep_siren,foley/deep_siren.mp3,1.0,Attribution https://freesound.org/people/InspectorJ/sounds/455602/
+Sound,vending_machine,foley/vending_machine.mp3,0.8, Attribution https://freesound.org/people/HarryPeeks/sounds/242138/ + Creative Commons https://freesound.org/people/Kodack/sounds/258020/
+Sound,phone_voice1,foley/phone_voice1.mp3,0.5,zzfx
+Sound,phone_voice2,foley/phone_voice2.mp3,0.5,zzfx
+
+Music,music_menu,music/menu.mp3
+Music,music_battle1,music/battle1.mp3
+Music,music_battle_victory,music/battle_victory.mp3
+Music,music_atrium,music/atrium3.mp3
+Music,music_outside_arcade,music/outside_arcade2.mp3
+Music,music_bowling,music/regem_ludos_bowling.mp3
+Music,music_tense,music/tense.mp3
+Music,music_tutorial,music/tutorial.mp3
+Music,music_pre_tense_battle,music/pre_tense_battle.mp3
+Music,music_tense_battle,music/tense_battle.mp3
+Music,music_store,music/store.mp3
+Music,music_snoop,music/snoop.mp3

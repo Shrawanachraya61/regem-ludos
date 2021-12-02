@@ -1,0 +1,3 @@
+Picture,bg-fog,bg/bg-fog.png,1024,683
+Picture,bg-clouds,bg/bg-clouds.png,1024,683
+Picture,bg-clouds2,bg/bg-clouds2.png,1024,683
