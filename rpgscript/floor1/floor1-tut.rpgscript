@@ -740,7 +740,7 @@ Atrium Employee Jason: "Huh?"
 +setFacing(Atrium Employee Jason, 'left');
 +setFacing(Ada, 'leftup');
 +setFacing(Conscience, 'leftup');
-+stopMusic(1000);
++stopMusic(500);
 +playSound('despawn_tut_wall');
 +changeTileAtMarker(MarkerGate3, TUT_GATE);
 +waitMS(100);
@@ -754,6 +754,7 @@ Atrium Employee Jason: "What the...?"
 +setConversationSpeaker(none);
 +callScript('utils-spawn-character-at-marker', TutRobotDummy2, MarkerRobot3);
 +callScript('utils-spawn-character-at-marker', TutRobotDummy1, MarkerRobot4);
++playMusic(music_tense);
 +waitMS(200);
 +setFacing(Conscience, 'rightup');
 +setFacing(Ada, 'rightup');
@@ -802,6 +803,7 @@ Conscience: "Looks like we'll have to fight them!"
 +endConversation();
 +despawnCharacter(TutRobotDummy1);
 +despawnCharacter(TutRobotDummy2);
++stopMusic(1);
 +enterCombat(ENCOUNTER_TUT4);
 
 @floor1-tut-vr2-battle4-on-start
@@ -863,7 +865,7 @@ Ada: "What was that?"
 +setConversationSpeaker(none);
 +setFacing(Ada, up);
 +setFacing(Conscience, up);
-+playMusic(music_tense);
++playMusic(music_pre_tense_battle);
 +panCameraRelativeToPlayer(0, -30);
 +setConversation('Ada');
 +playSound(robot_staggered_damaged);
@@ -908,6 +910,7 @@ Conscience: "C'mon!  We gotta go!"
 +walkToOffset(TutRobotDummy1, 0, 32, true);
 +walkToMarker(Conscience, MarkerJason8, 0, 0, true);
 +walkToMarker(Ada, MarkerJason8);
++stopMusic(750, true);
 +callScript('utils-change-room', 'floor1TutVR3', 'MarkerDoorFromVR2');
 +:floor1-tut-begin-vr3();
 
