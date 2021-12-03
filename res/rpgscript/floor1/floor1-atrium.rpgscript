@@ -433,14 +433,16 @@ step-off,floor1-openDoorsToAtriumFromPrimaryClose
   AtriumGreeterEmployee: "Um. Anyway, I was saying..."
   +:lightbulb(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Oh yeah! You're from <color=BLUE>Erran Valley High School</>!"
-  AtriumGreeterEmployee: "There's obviously a reason why your school is the <color=PURPLE />most well-regarded prep school in the state."
+
+  Ada: "<cascade>Um.  <cascade-letters>Thanks.  I guess."
   +:question(Ada);
   Ada: "Are there many students from <color=BLUE>Erran Valley</> who come here?"
   AtriumGreeterEmployee: "From time to time, yeah."
   +:lightbulb(AtriumGreeterEmployee);
   AtriumGreeterEmployee: "Actually, I saw a few of you come in earlier.  Not sure where they all went, though."
+  AtriumGreeterEmployee: "It'll be so interesting to have so many of you around!"
+  AtriumGreeterEmployee: "There's a reason why your school is the <color=PURPLE />most well-regarded prep school in the state."
   +:teardrop(Ada);
-  Ada: "<cascade>Um.  <cascade-letters>Thanks.  I guess."
   Ada: "I do not really plan on having anything interesting happening at all, as a matter of fact."
   AtriumGreeterEmployee: "Anyway, if you need any assistance, don't hesitate to speak with any of the employees!"
   AtriumGreeterEmployee: "You can recognize us by our hats and white attire."

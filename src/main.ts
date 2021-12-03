@@ -92,15 +92,16 @@ export const main = async (): Promise<void> => {
   initConsole();
 
   const query = parseQuery(window.location.search);
+  (document.getElementById('controls') as any).style.display = 'none';
 
   if (query.menu) {
-  // if (!query.room && !query.save && !query.debug && !query.soundboard) {
+    // if (!query.room && !query.save && !query.debug && !query.soundboard) {
     console.log('loading main app.');
     const loading = document.getElementById('page-loading');
     if (loading) {
       loading.style.display = 'none';
     }
-    (document.getElementById('controls') as any).style.display = 'none';
+
     return menu();
   }
   if (query.soundboard) {
@@ -191,6 +192,7 @@ export const main = async (): Promise<void> => {
 
   characterEquipItem(player.leader, getItem('ShieldRing'), 0);
   characterEquipItem(player.leader, getItem('PierceSword'));
+  characterEquipItem(conscience, getItem('TrainingSword'));
   // player.leader.hp = 0;
 
   characterEquipItem(conscience, player.backpack[1]);

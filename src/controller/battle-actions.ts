@@ -233,18 +233,20 @@ export const jumpToTarget = async (
     for (let i = 0; i < jumpTileOffsetIters; i++) {
       endPoint[0] -= TILE_WIDTH / 2;
     }
-    // if (battleCharacterGetRow(bCh) === BattleRow.BOTTOM) {
-    //   endPoint[0] += TILE_WIDTH / 2;
-    //   endPoint[1] += TILE_WIDTH / 2;
-    // }
+    const ind = battle.alliesStorage.indexOf(bCh) + 2;
+    if (ind % 2 === 1) {
+      endPoint[0] += TILE_WIDTH / 2;
+      endPoint[1] += TILE_WIDTH / 2;
+    }
   } else {
     for (let i = 0; i < jumpTileOffsetIters; i++) {
       endPoint[0] += TILE_WIDTH / 2;
     }
-    // if (battleCharacterGetRow(bCh) === BattleRow.TOP) {
-    //   endPoint[0] -= TILE_WIDTH / 2;
-    //   endPoint[1] -= TILE_WIDTH / 2;
-    // }
+    const ind = battle.enemiesStorage.indexOf(bCh) + 2;
+    if (ind % 2 === 1) {
+      endPoint[0] -= TILE_WIDTH / 2;
+      endPoint[1] -= TILE_WIDTH / 2;
+    }
   }
   const distance = calculateDistance(startPoint, endPoint);
   const transform = new Transform(

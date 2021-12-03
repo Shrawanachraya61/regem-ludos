@@ -140,7 +140,7 @@ export const init = (exp: Record<string, BattleTemplate>) => {
             +setConversation('Ada');
             +panCameraBattle(ENEMY);
             +playSound(robot_staggered_damaged);
-            Robot: "<cascade-letters color=LIGHTBLUE>*bzzt* E...R...R...O...R... *bzzt*"
+            Robot: "<cascade-letters color=LIGHTBLUE>*bzzt* R...E...G...R...E...T... *bzzt*"
             +panCameraBattle(NONE);
             +endConversation();
             `

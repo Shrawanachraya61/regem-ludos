@@ -29,7 +29,7 @@
     "test:ci": "yarn tsc && jest --coverage --ci --reporters='default' --reporters='./scripts/github-actions-reporter'",
     "clean": "rm -rf .build && rm -rf dist && rm -rf *.map main.js",
     "tsc": "tsc --project tsconfig.prod.json",
-    "vite": "concurrently -n 1,2 \"vite serve src --config ./vite.config.js\" \"http-server\"",
+    "vite": "concurrently -n 1,2 \"vite serve src --config ./vite.config.js\" \"http-server -c-1\"",
     "vite:build": "vite build src --config ./vite.config.js && node scripts/build-vite.js src"
   },
   "devDependencies": {

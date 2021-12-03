@@ -422,6 +422,7 @@ action,this
 @this
 +lookAtEachOther(Ada, TestDialogF);
 +setConversation(Ada);
++setFacing(Ada, down);
 +:bumpY(TestDialogF, 2);
 TestDialogF: "This script tests irregular emotion bubbles."
 +:phone_left(phone_voice1);
@@ -430,5 +431,5 @@ TestDialogF: "That should have been phone_left.  And again:"
 +:phone_left(phone_voice1);
 +:bumpY(TestDialogF, 2);
 TestDialogF: "That should have been phone_left again."
-TestDialogE: "The test has completed."
+TestDialogF: "The test has completed."
 +endConversation();

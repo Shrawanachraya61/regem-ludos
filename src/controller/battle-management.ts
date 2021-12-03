@@ -186,7 +186,7 @@ export const transitionToBattle = async (
     battle.isStarted = true;
     battleUnpauseTimers(battle);
     battleSubscribeEvent(battle, BattleEvent.onCompletion, () => {
-      stopCurrentMusic(1000);
+      stopCurrentMusic(250);
       if (onCompletion) {
         onCompletion();
       }
@@ -267,7 +267,7 @@ export const transitionToBattle = async (
     });
 
     battleSubscribeEvent(battle, BattleEvent.onCompletion, () => {
-      stopCurrentMusic(1000);
+      stopCurrentMusic(250);
       if (onCompletion) {
         onCompletion();
       }
@@ -367,12 +367,18 @@ export const initiateBattle = (
     (allegiance: BattleAllegiance) => {
       console.log('ON TURN ENDED', allegiance);
       if (allegiance === BattleAllegiance.ALLY) {
-        battleUnpauseActionTimers(battle, battle.allies);
+        battleUnpauseActionTimers(
+          battle,
+          battle.allies.filter(bCh => !battleCharacterIsStaggered(bCh))
+        );
         battle.allies.forEach(bCh => {
           bCh.target = undefined;
         });
       } else {
-        battleUnpauseActionTimers(battle, battle.enemies);
+        battleUnpauseActionTimers(
+          battle,
+          battle.allies.filter(bCh => !battleCharacterIsStaggered(bCh))
+        );
         battle.enemies.forEach(bCh => {
           bCh.target = undefined;
         });
@@ -925,6 +931,12 @@ export const applyArmorDamage = (
       EFFECT_TEMPLATE_ARMOR_REDUCED
     );
     roomAddParticle(battle.room, particle);
+  } else if (nextDamageAmount === 0) {
+    const [centerPx, centerPy] = characterGetPosCenterPx(victim.ch);
+    roomAddParticle(
+      getCurrentRoom(),
+      createStatusParticle('Block', centerPx, centerPy, 'white')
+    );
   }
 
   return {
@@ -1377,7 +1389,7 @@ export const getReturnToOverworldBattleCompletionCB = (
   if (currentMusic) {
     musicPlaybackPosition = musicGetCurrentPlaybackPosition(currentMusic);
   }
-  stopCurrentMusic();
+  stopCurrentMusic(250);
 
   return () => {
     console.log('BATTLE COMPLETED!');
@@ -1403,10 +1415,12 @@ export const getReturnToOverworldBattleCompletionCB = (
       }
 
       if (currentMusic) {
-        playMusic(getCurrentOverworld().music, true);
-        if (currentMusic.soundName === getCurrentOverworld().music) {
-          musicSetPlaybackPosition(currentMusic, musicPlaybackPosition);
-        }
+        stopCurrentMusic(250).then(() => {
+          playMusic(getCurrentOverworld().music, true);
+          if (currentMusic.soundName === getCurrentOverworld().music) {
+            musicSetPlaybackPosition(currentMusic, musicPlaybackPosition);
+          }
+        });
       }
 
       if (template.events?.onAfterBattleEnded) {
@@ -1473,7 +1487,7 @@ export const fleeBattle = (battle: Battle) => {
   battle.transitioning = true;
   popKeyHandler(battleKeyHandler);
   battlePauseActionTimers(battle);
-  stopCurrentMusic();
+  stopCurrentMusic(250);
 
   const jumpTimeMs = 500;
   const jumpTimeMsPostLag = 500;

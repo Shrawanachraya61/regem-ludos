@@ -569,7 +569,8 @@ export const overworldKeyHandler = async (ev: KeyboardEvent) => {
         overworldHide(getCurrentOverworld());
         transitionToBattle(
           getCurrentPlayer(),
-          getEncounter('ENCOUNTER_IMPOSSIBLE'),
+          getEncounter('ENCOUNTER_TUT2'),
+          // getEncounter('ENCOUNTER_IMPOSSIBLE'),
           () => {
             console.log('COMPLETED!');
           },
