@@ -168,7 +168,7 @@ export const init = () => {
           experience: 2,
           experienceCurrency: 10,
           equipment: {
-            weapon: 1,
+            weapon: -1,
             accessory1: -1,
             accessory2: -1,
             armor: -1,

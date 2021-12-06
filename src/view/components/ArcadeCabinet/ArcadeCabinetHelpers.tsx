@@ -31,13 +31,13 @@ export interface IHelpProps {
 }
 
 export enum ArcadeGamePath {
-  PRESIDENT = 'iframes/president/dist/president.html',
-  TIC_TAC_TOE = 'iframes/tic-tac-toe/dist/tic-tac-toe.html',
-  INVADERZ = 'iframes/invaderz/dist/index.html',
-  ELASTICITY = 'iframes/elasticity/dist/elasticity.html',
-  VORTEX = 'iframes/vortex/dist/index.html',
-  ZAG = 'iframes/zag/dist/index.html',
-  BOWLING = 'iframes/regem-ludos-bowling/dist/index.html',
+  PRESIDENT = 'iframes/games/president/dist/president.html',
+  TIC_TAC_TOE = 'iframes/games/tic-tac-toe/dist/tic-tac-toe.html',
+  INVADERZ = 'iframes/games/invaderz/dist/index.html',
+  ELASTICITY = 'iframes/games/elasticity/dist/elasticity.html',
+  VORTEX = 'iframes/games/vortex/dist/index.html',
+  ZAG = 'iframes/games/zag/dist/index.html',
+  BOWLING = 'iframes/games/regem-ludos-bowling/dist/index.html',
 }
 
 export interface IArcadeCabinetConfig {

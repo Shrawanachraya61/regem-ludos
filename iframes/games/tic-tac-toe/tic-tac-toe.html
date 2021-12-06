@@ -1,0 +1,94 @@
+<html>
+  <header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <!-- <link rel="stylesheet" href="../lib.css" /> -->
+    <title>Tic Tac Toe</title>
+    <style>
+      body {
+        background: black;
+        color: #dedede;
+        margin: 0px;
+        font-family: 'retro';
+        font-size: 20px;
+      }
+      button {
+        background: black;
+        color: white;
+        margin: 8px;
+        border: 2px outset #dedede;
+        padding: 8px 16px;
+      }
+      #game {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+      }
+      #score-area {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        align-items: center;
+        width: 412px;
+        height: 120px;
+      }
+      #game-result {
+        width: 150px;
+        text-align: center;
+      }
+      .score {
+        text-align: center;
+      }
+      .score-label {
+        width: 130px;
+        text-align: center;
+      }
+
+      .tap-to-start {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+        font-size: 32px;
+        user-select: none;
+      }
+
+      @font-face {
+        font-family: 'retro';
+        src: url('Retron2000.ttf') format('truetype');
+      }
+    </style>
+  </header>
+  <body>
+    <div id="game" style="display: none">
+      <div id="score-area" style="display: none">
+        <div>
+          <div class="score-label">Player</div>
+          <div class="score" id="player-score">0</div>
+        </div>
+        <div id="game-result">Game Result</div>
+        <div>
+          <div class="score-label">CPU</div>
+          <div class="score" id="cpu-score">0</div>
+        </div>
+      </div>
+      <div id="canvas-area"></div>
+      <button id="start" onclick="start()">Start</button>
+    </div>
+
+    <!-- These are needed for lib I guess. -->
+    <div id="board"></div>
+    <div id="canvas"></div>
+  </body>
+  <footer>
+    <script type="text/javascript" src="tic-tac-toe.js"></script>
+    <script type="text/javascript" src="../../../lib.js"></script>
+  </footer>
+</html>

@@ -1,0 +1,115 @@
+<html>
+  <header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <title>Title</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../../../lib.css" />
+    <style>
+      body {
+        background: black;
+        color: #dedede;
+        margin: 0px;
+        font-family: monospace;
+        font-size: 20px;
+      }
+      button {
+        font-family: 'TerminalWideRegular';
+        background: linear-gradient(
+          0deg,
+          rgba(57, 137, 47, 1) 0%,
+          rgba(61, 214, 35, 1) 100%
+        );
+        color: white;
+        font-size: 24px;
+        border: 1px solid white;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button:hover {
+        filter: brightness(80%);
+      }
+      table {
+        font-family: 'TerminalWideRegular';
+      }
+      canvas {
+        border: none;
+        height: 100%;
+      }
+      .prepare-area {
+        /* animation: pulse 3s linear infinite; */
+      }
+      @keyframes pulse {
+        0% {
+          border-color: red;
+        }
+        25% {
+          border-color: blue;
+        }
+        50% {
+          border-color: green;
+        }
+        75% {
+          border-color: yellow;
+        }
+        100% {
+          border-color: red;
+        }
+      }
+      .icon {
+        cursor: pointer;
+      }
+      .icon:hover {
+        filter: brightness(80%);
+      }
+      .icon:active {
+        filter: brightness(120%);
+      }
+      #root {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        flex-direction: row;
+        margin-top: 60px;
+      }
+      #canvas-area {
+        height: 80%;
+        box-sizing: border-box;
+        border: 0px solid white;
+      }
+      @media only screen and (max-height: 1000px) {
+        #canvas-area {
+          height: 75%;
+        }
+      }
+      @media only screen and (max-height: 800px) {
+        #canvas-area {
+          height: 65%;
+        }
+      }
+      @font-face {
+        font-family: 'TerminalWideRegular';
+        src: url('TerminalWideRegular.woff');
+      }
+    </style>
+  </header>
+  <body>
+    <div id="root">
+      <div id="canvas-area"></div>
+      <div id="input-area"></div>
+    </div>
+  </body>
+  <footer>
+    <script src="main.js"></script>
+    <script type="text/javascript" src="../../../lib.js"></script>
+  </footer>
+</html>

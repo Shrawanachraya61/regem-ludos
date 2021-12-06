@@ -1365,6 +1365,8 @@ AnimSprite,employee-guy5_1,90
 AnimSprite,employee-guy5_7,90
 AnimSprite,employee-guy5_1,90
 AnimSprite,employee-guy5_8,90
+Picture,favicon-lg,favicon-lg.png,64,64
+Picture,favicon,favicon.png,64,64
 Picture,floors,floors.png,32,32
 Animation,tile_floor_flicker,true
 AnimSprite,floors_59,100

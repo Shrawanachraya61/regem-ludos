@@ -8,7 +8,7 @@ Regem Ludos features a plethora of Arcade Games which you can play either by fin
 
 ------
 
-Invaderz - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/invaderz/dist/index.html?tap=true)
+Invaderz - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/games/invaderz/dist/index.html?tap=true)
 
 A simple top down shooter where enemies multiply as you destroy them.
 
@@ -18,7 +18,7 @@ A simple top down shooter where enemies multiply as you destroy them.
 
 ------
 
-Vortex - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/vortex/dist/index.html?tap=true)
+Vortex - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/games/vortex/dist/index.html?tap=true)
 
 Asteroids-like featuring sprites generated from 3d models and several unique powerups.
 
@@ -28,9 +28,9 @@ Asteroids-like featuring sprites generated from 3d models and several unique pow
 
 ------
 
-Zag - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/zag/dist/index.html?tap=true)
+Zag - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/games/zag/dist/index.html?tap=true)
 
-Centipede-like with a few alterations.
+Centipede-like with a few obvious alterations.
 
 ![image](https://user-images.githubusercontent.com/1266353/141657708-887c0caf-30a7-4896-b768-57b956a8b432.png)
 
@@ -38,7 +38,7 @@ Centipede-like with a few alterations.
 
 ------
 
-Elasticity - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/elasticity/dist/index.html?tap=true)
+Elasticity - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/games/elasticity/dist/index.html?tap=true)
 
 Breakout-like with a gritty-earth theming and challenging levels.
 
@@ -48,7 +48,7 @@ Breakout-like with a gritty-earth theming and challenging levels.
 
 ------
 
-Tic Tac Toe - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/tic-tac-toe/dist/tic-tac-toe.html?tap=true)
+Tic Tac Toe - [Play Here!](https://benjamin-t-brown.github.io/regem-ludos/iframes/games/tic-tac-toe/dist/tic-tac-toe.html?tap=true)
 
 An implementation of Tic Tac Toe where the AI is random and passive-aggressive.
 

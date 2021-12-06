@@ -241,7 +241,7 @@ Atrium Employee Jason: "You two look really similar.  Are you twins or something
 Ada: "<cascade-letters>......"
 +lookAtEachOther('Conscience', 'Atrium Employee Jason');
 +:happy(Conscience);
-Conscience: "Yeah... <cascade-letters>that seems appropriate enough.<scale=0.75>"
+Conscience: "Yeah... <cascade-letters>that seems appropriate enough."
 +setConversationSpeaker('none');
 +waitMS(100);
 +lookAtEachOther('Ada', 'Atrium Employee Jason');

@@ -1,0 +1,194 @@
+<html>
+  <header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="../../../lib.css" />
+    <title>Zag</title>
+    <style id="custom-style">
+      canvas {
+        transform: translateY(-100px);
+      }
+      @media (min-aspect-ratio: 678/1035) {
+        .board {
+          transform: translateY(-30px);
+        }
+        canvas {
+          box-sizing: border-box;
+          width: auto;
+          height: calc(100% - 335px);
+          transform: translateY(-100px);
+        }
+      }
+      @media (min-aspect-ratio: 9/11) {
+        .board {
+          transform: translateY(-30px);
+        }
+        canvas {
+          box-sizing: border-box;
+          width: auto;
+          height: calc(100% - 335px);
+          transform: translateY(-100px);
+        }
+      }
+    </style>
+    <style>
+      .shoot-button {
+        transform: translateY(-103px) translateX(6px);
+      }
+    </style>
+  </header>
+  <body>
+    <div id="loading" class="fixed">
+      <img src="loading.gif" alt="loading" />
+    </div>
+    <div id="error" class="fixed" style="display: none">
+      <div
+        style="display:flex;flex-direction:column;align-items:center;justify-content center;"
+      >
+        <img src="error.png" alt="error" />
+        <div style="margin-top: 8px">
+          Encountered a problem with this content.
+        </div>
+      </div>
+    </div>
+    <div id="game" style="display: none">
+      <div id="board" class="board">
+        <canvas id="canvas" width="512" height="512"></canvas>
+      </div>
+      <div id="top-bar-controls" class="top-bar-controls">
+        <button id="toggle-sound" onclick="Lib.toggleSound()">
+          Toggle Sound
+        </button>
+        <button id="toggle-scale" onclick="Lib.toggleScale()">
+          Toggle Scale
+        </button>
+        <button id="toggle-controls" onclick="Lib.toggleButtons()">
+          Toggle Controls
+        </button>
+        <button id="toggle-controls2" onclick="toggleControlsLayout()">
+          Change Layout
+        </button>
+      </div>
+      <div id="on-screen-controls" class="on-screen-controls">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: flex-end;
+          "
+        >
+          <div style="display: flex; margin-left: 32px">
+            <div
+              id="ctrls-root"
+              style="display: flex; flex-direction: column; align-items: center; width: 240px; translateX(-30px) translateY(30px)"
+            >
+              <div
+                id="up"
+                style="padding-left: 14px; transform: translateY(24px)"
+              >
+                <div
+                  class="on-screen-control-button"
+                  onmousedown="Lib.handleButtonDown(Lib.BUTTON_UP)"
+                  onmouseup="Lib.handleButtonUp(Lib.BUTTON_UP)"
+                  ontouchstart="Lib.handleButtonDown(Lib.BUTTON_UP)"
+                  ontouchend="Lib.handleButtonUp(Lib.BUTTON_UP)"
+                >
+                  /\
+                </div>
+              </div>
+              <div
+                id="left-right"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  width: 200px;
+                "
+              >
+                <div
+                  class="on-screen-control-button"
+                  onmousedown="Lib.handleButtonDown(Lib.BUTTON_LEFT)"
+                  onmouseup="Lib.handleButtonUp(Lib.BUTTON_LEFT)"
+                  ontouchstart="Lib.handleButtonDown(Lib.BUTTON_LEFT)"
+                  ontouchend="Lib.handleButtonUp(Lib.BUTTON_LEFT)"
+                >
+                  <=
+                </div>
+                <div
+                  class="on-screen-control-button"
+                  onmousedown="Lib.handleButtonDown(Lib.BUTTON_RIGHT)"
+                  onmouseup="Lib.handleButtonUp(Lib.BUTTON_RIGHT)"
+                  ontouchstart="Lib.handleButtonDown(Lib.BUTTON_RIGHT)"
+                  ontouchend="Lib.handleButtonUp(Lib.BUTTON_RIGHT)"
+                >
+                  =>
+                </div>
+              </div>
+              <div
+                id="down"
+                style="padding-left: 14px; transform: translateY(-24px)"
+              >
+                <div
+                  class="on-screen-control-button"
+                  onmousedown="Lib.handleButtonDown(Lib.BUTTON_DOWN)"
+                  onmouseup="Lib.handleButtonUp(Lib.BUTTON_DOWN)"
+                  ontouchstart="Lib.handleButtonDown(Lib.BUTTON_DOWN)"
+                  ontouchend="Lib.handleButtonUp(Lib.BUTTON_DOWN)"
+                >
+                  \/
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; margin-right: 32px">
+            <div
+              class="on-screen-control-button shoot-button"
+              style="background: red"
+              onmousedown="Lib.handleButtonDown(Lib.BUTTON_SPACE)"
+              onmouseup="Lib.handleButtonUp(Lib.BUTTON_SPACE)"
+              ontouchstart="Lib.handleButtonDown(Lib.BUTTON_SPACE)"
+              ontouchend="Lib.handleButtonUp(Lib.BUTTON_SPACE)"
+            >
+              Shoot
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <script>
+      function init() {
+        window.toggleControlsLayout();
+
+        var script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+        script.setAttribute('async', true);
+        script.setAttribute('src', 'zag.js');
+        document.body.appendChild(script);
+      }
+      function start() {
+        Lib.enableModuleControls();
+        Lib.handleButtonDown(13);
+        setTimeout(() => {
+          Lib.handleButtonUp(13);
+        }, 1);
+      }
+      function end() {
+        Lib.disableModuleControls();
+      }
+      window.notifyHighScore = function (val) {
+        Lib.notifyGameCompleted(val);
+      };
+      window.toggleControlsLayout = function () {
+        var isDisabled = document.styleSheets[1].disabled;
+        document.styleSheets[1].disabled = !isDisabled;
+        console.log('TOGGLE CONTROLS LAYOUT', !isDisabled);
+      };
+    </script>
+    <script type="text/javascript" src="../../../lib.js"></script>
+  </footer>
+</html>

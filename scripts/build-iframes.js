@@ -30,14 +30,14 @@ async function main() {
       const folderName = folderNames[i];
       console.log('[BUILD IFRAME]', '------', folderName, '------');
       await execAsync(
-        `yarn --cwd ${__dirname}/../iframes/${folderName} build${
+        `yarn --cwd ${__dirname}/../iframes/games/${folderName} build${
           isDev ? ':dev' : ''
         }`
       );
-      const dest = `${__dirname}/../iframes/dist/${folderName}/dist`;
+      const dest = `${__dirname}/../iframes/dist/games/${folderName}/dist`;
       await execAsync(`mkdir -p ${dest}`);
       await execAsync(
-        `cp -v ${__dirname}/../iframes/${folderName}/dist/* ${dest}`
+        `cp -v ${__dirname}/../iframes/games/${folderName}/dist/* ${dest}`
       );
     }
   } else {

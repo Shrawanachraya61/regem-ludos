@@ -231,7 +231,7 @@ export const init = async () => {
   ].forEach((name, i) => {
     Object.assign(exp[name] ?? {}, {
       backgroundColor: colors.DARKBLUE,
-      backgroundImage: 'bg-clouds2',
+      backgroundImage: 'bg-clouds3',
       backgroundTransform: STANDARD_RIGHT_TO_LEFT_BG_TRANSFORM,
       music: i <= 1 ? 'music_tutorial' : 'music_tutorial',
     });
